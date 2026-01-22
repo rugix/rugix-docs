@@ -2,11 +2,10 @@
 sidebar_position: 4
 ---
 
-import JSONSchemaViewer from "@theme/JSONSchemaViewer";
-import ReactMarkdown from "react-markdown";
+import JSONSchemaViewer from "@theme/JSONSchemaViewer"
+import ReactMarkdown from "react-markdown"
 
-import ConfigSchema from "@site/schemas/rugix-ctrl-bootstrapping.schema.json";
-
+import ConfigSchema from "@site/schemas/rugix-ctrl-bootstrapping.schema.json"
 
 # Bootstrapping
 
@@ -28,7 +27,6 @@ The bootstrapping process is configured in the `/etc/rugix/bootstrapping.toml` c
 :::
 
 [^bootstrap-in-production]: Note that a malicious actor may be able to create this file on a production device and then trigger the bootstrapping process, even if secure boot and other security measures are in place. This may pose a security risk. In those cases, it is recommended to use a user-defined `prepare` bootstrapping hook that will check whether the device should be bootstrapped using some other source, such as one-time-programmable memory, and abort the process based on the outcome of that check.
-
 
 ## System Layout
 
@@ -102,13 +100,17 @@ If you do not want Rugix Ctrl to create any partitions, simply set the layout's 
 type = "none"
 ```
 
-
 ## Configuration Reference
 
 For reference, here is the complete schema for the bootstrapping configuration file:
 
-<JSONSchemaViewer schema={ConfigSchema} viewerOptions={{
-    DescriptionComponent: ({description}) => <ReactMarkdown children={description} />
-}}/>
+<JSONSchemaViewer
+  schema={ConfigSchema}
+  viewerOptions={{
+    DescriptionComponent: ({ description }) => (
+      <ReactMarkdown children={description} />
+    ),
+  }}
+/>
 
-You will find the most recent version of this schema [on GitHub](https://github.com/silitics/rugix/blob/main/schemas/rugix-ctrl-bootstrapping.schema.json).
+You will find the most recent version of this schema [on GitHub](https://github.com/rugix/rugix/blob/main/schemas/rugix-ctrl-bootstrapping.schema.json).

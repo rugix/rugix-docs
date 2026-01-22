@@ -13,7 +13,7 @@ Migrating from Mender to Rugix Ctrl requires a custom [system configuration file
 Here is an example for GRUB with the default Mender boot partitions:
 
 ```toml title="/etc/rugix/system.toml"
-#:schema https://raw.githubusercontent.com/silitics/rugix/refs/heads/main/schemas/rugix-ctrl-system.schema.json
+#:schema https://raw.githubusercontent.com/rugix/rugix/refs/heads/main/schemas/rugix-ctrl-system.schema.json
 
 [boot-flow]
 type = "mender-grub"

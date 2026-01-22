@@ -2,20 +2,19 @@
 sidebar_position: 4
 ---
 
-import JSONSchemaViewer from "@theme/JSONSchemaViewer";
-import ReactMarkdown from "react-markdown";
+import JSONSchemaViewer from "@theme/JSONSchemaViewer"
+import ReactMarkdown from "react-markdown"
 
-import RecipeSchema from "@site/schemas/rugix-bakery-recipe.schema.json";
-
+import RecipeSchema from "@site/schemas/rugix-bakery-recipe.schema.json"
 
 # Recipes
 
-As part of the build process, recipes perform the actual work, creating and modifying build outputs. Each recipe consists of a sequence of _steps_ to be executed. Recipes are defined by directories in the `recipes` directory. Each recipe gets its own directory with a _recipe configuration_ file `recipe.toml` and a `steps` subdirectory defining the individual steps to be executed. The configuration file may specify a *description*, a *priority*, *dependencies* of the recipe, and *parameters*.
+As part of the build process, recipes perform the actual work, creating and modifying build outputs. Each recipe consists of a sequence of _steps_ to be executed. Recipes are defined by directories in the `recipes` directory. Each recipe gets its own directory with a _recipe configuration_ file `recipe.toml` and a `steps` subdirectory defining the individual steps to be executed. The configuration file may specify a _description_, a _priority_, _dependencies_ of the recipe, and _parameters_.
 
 Here is the configuration of the [`core/ssh`](https://github.com/silitics/rugpi/blob/main/bakery/repositories/core/recipes/ssh) recipe as an example:
 
 ```toml title="recipes/hello-world/recipe.toml"
-#:schema https://raw.githubusercontent.com/silitics/rugix/refs/tags/v0.8.0/schemas/rugix-bakery-layer.schema.json
+#:schema https://raw.githubusercontent.com/rugix/rugix/refs/tags/v0.8.0/schemas/rugix-bakery-layer.schema.json
 
 description = "enabling SSH"
 priority = 80_000
@@ -32,7 +31,6 @@ The `ssh` recipe depends on the [`pkg-update` recipe](https://github.com/silitic
 Recipes are always applied in the order of their priority (higher means earlier). In particular, this means that dependencies may be applied _after_ recipes that depend on them, if they have a lower priority. Note that priorities can also be negative.
 
 Check out the set of [core recipes](https://github.com/silitics/rugpi/tree/main/bakery/repositories/core/recipes) for examples.
-
 
 ## Parameters
 
@@ -51,7 +49,6 @@ Parameter values are exposed to a recipe's steps (see below) via environment var
 :::tip
 Avoid hard-coding configuration values in your recipes and use parameters instead.
 :::
-
 
 ## Steps
 
@@ -95,7 +92,6 @@ You can use `run` steps to perform all kinds of tasks. For instance, the [`yocto
 #### `install`
 
 Steps of the kind `install` can be used to run scripts inside the system being built:
-
 
 ```bash title="XXX-install.*"
 #!/usr/bin/env bash
@@ -152,7 +148,6 @@ dpkg --list >"${SBOM_PATH}"
 
 This provides a very flexible mechanism to generate all kinds of build artifacts and complementary documentation.
 
-
 ## Custom Build Environments
 
 You may find that Rugix Bakery's build environment (where `run` steps run) lacks certain tools that you would like to use to build your system.
@@ -161,7 +156,7 @@ If that is the case, you can create a custom Docker image based on Rugix Bakery'
 For instance, to add Node.js to the build environment you can use the following `Dockerfile`:
 
 ```docker title="Dockerfile"
-ARG RUGIX_BAKERY_IMAGE=ghcr.io/silitics/rugix-bakery:v0.8
+ARG RUGIX_BAKERY_IMAGE=ghcr.io/rugix/rugix-bakery:v0.8
 
 FROM ${RUGIX_BAKERY_IMAGE}
 
@@ -190,13 +185,17 @@ For now, however, we recommend you simply build your own version of the Rugix Ba
 **To avoid fragmentation of the ecosystem, you should not be requiring a custom image when providing reusable recipes and layers via a repository.**
 :::
 
-
 ## Configuration Reference
 
 For reference, here is the complete schema for recipe configuration files:
 
-<JSONSchemaViewer schema={RecipeSchema} viewerOptions={{
-    DescriptionComponent: ({description}) => <ReactMarkdown children={description} />
-}}/>
+<JSONSchemaViewer
+  schema={RecipeSchema}
+  viewerOptions={{
+    DescriptionComponent: ({ description }) => (
+      <ReactMarkdown children={description} />
+    ),
+  }}
+/>
 
-You will find the most recent version of this schema [on GitHub](https://github.com/silitics/rugix/blob/main/schemas/rugix-bakery-recipe.schema.json).
+You will find the most recent version of this schema [on GitHub](https://github.com/rugix/rugix/blob/main/schemas/rugix-bakery-recipe.schema.json).

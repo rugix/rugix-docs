@@ -36,11 +36,11 @@ const config: Config = {
           sidebarPath: require.resolve("./sidebars.js"),
           // lastVersion: "current",
           lastVersion: "0.8.14",
-          editUrl: "https://github.com/silitics/rugix/tree/main/www/",
+          editUrl: "https://github.com/rugix/rugix/tree/main/www/",
         },
         blog: {
           showReadingTime: true,
-          editUrl: "https://github.com/silitics/rugix/tree/main/www/",
+          editUrl: "https://github.com/rugix/rugix/tree/main/www/",
           blogSidebarCount: "ALL",
           blogSidebarTitle: "All Posts",
         },
@@ -98,7 +98,7 @@ const config: Config = {
           dropdownActiveClassDisabled: true,
         },
         {
-          href: "https://github.com/silitics/rugix",
+          href: "https://github.com/rugix/rugix",
           position: "right",
           className: "header-github-link",
           "aria-label": "GitHub",
@@ -130,7 +130,7 @@ const config: Config = {
           items: [
             {
               label: "GitHub",
-              href: "https://github.com/silitics/rugix",
+              href: "https://github.com/rugix/rugix",
             },
             {
               label: "Discord",

@@ -2,11 +2,10 @@
 sidebar_position: 2
 ---
 
-import JSONSchemaViewer from "@theme/JSONSchemaViewer";
-import ReactMarkdown from "react-markdown";
+import JSONSchemaViewer from "@theme/JSONSchemaViewer"
+import ReactMarkdown from "react-markdown"
 
-import TestSchema from "@site/schemas/rugix-bakery-test.schema.json";
-
+import TestSchema from "@site/schemas/rugix-bakery-test.schema.json"
 
 # System Testing
 
@@ -21,9 +20,8 @@ By catching integration errors early, it reduces the need for costly and time-co
 This feature is experimental.
 **We may introduce breaking changes to the configuration schema in minor versions.**
 Currently, the testing functionality is rather rudimentary as we are still working on it.
-[Any feedback is appreciated!](https://github.com/login?return_to=https://github.com/silitics/rugix/issues)
+[Any feedback is appreciated!](https://github.com/login?return_to=https://github.com/rugix/rugix/issues)
 :::
-
 
 ## Test Workflows
 
@@ -58,7 +56,7 @@ ssh-keygen -t rsa -b 4096 -f id_rsa
 
 We recommend generating the keys locally and putting them into a directory outside of version control.
 
-If you want an example for how to set everything up, you can look at the system tests that we use to [test Rugix Ctrl](https://github.com/silitics/rugix/tree/main/tests).
+If you want an example for how to set everything up, you can look at the system tests that we use to [test Rugix Ctrl](https://github.com/rugix/rugix/tree/main/tests).
 
 The declaration of test systems is followed by a specification of _test steps_.
 
@@ -100,7 +98,6 @@ In addition, the `run` action supports the following optional options:
 - `may-fail`: Allows the script to fail with a non-zero exit code without failing the test.
 - `stdin-file`: Path to a file which is provided as stdin to the script. Can be used to stream an update into the system.
 
-
 ## Running Tests
 
 Tests can be run with the `test` command:
@@ -109,13 +106,17 @@ Tests can be run with the `test` command:
 ./run-bakery test
 ```
 
-
 ## Configuration Reference
 
 For reference, here is the complete schema for test configuration files:
 
-<JSONSchemaViewer schema={TestSchema} viewerOptions={{
-    DescriptionComponent: ({description}) => <ReactMarkdown children={description} />
-}}/>
+<JSONSchemaViewer
+  schema={TestSchema}
+  viewerOptions={{
+    DescriptionComponent: ({ description }) => (
+      <ReactMarkdown children={description} />
+    ),
+  }}
+/>
 
-You will find the most recent version of this schema [on GitHub](https://github.com/silitics/rugix/blob/main/schemas/rugix-bakery-test.schema.json).
+You will find the most recent version of this schema [on GitHub](https://github.com/rugix/rugix/blob/main/schemas/rugix-bakery-test.schema.json).

@@ -2,11 +2,10 @@
 sidebar_position: 2
 ---
 
-import JSONSchemaViewer from "@theme/JSONSchemaViewer";
-import ReactMarkdown from "react-markdown";
+import JSONSchemaViewer from "@theme/JSONSchemaViewer"
+import ReactMarkdown from "react-markdown"
 
-import ConfigSchema from "@site/schemas/rugix-ctrl-system.schema.json";
-
+import ConfigSchema from "@site/schemas/rugix-ctrl-system.schema.json"
 
 # System Configuration
 
@@ -27,7 +26,6 @@ A manual configuration is still experimental.
 Note that this only means that you may have to migrate your configuration more frequently, not that your system will become unstable or break out of the sudden (assuming that you test updates properly).
 :::
 
-
 ## Config and Data Partitions
 
 The _config partition_ and _data partition_ serve as core storage elements for a device.
@@ -41,7 +39,7 @@ The partitions can be specified either via the `device` setting, which points to
 Example configuration:
 
 ```toml title="/etc/rugix/system.toml"
-#:schema https://raw.githubusercontent.com/silitics/rugix/refs/tags/v0.8.0/schemas/rugix-ctrl-system.schema.json
+#:schema https://raw.githubusercontent.com/rugix/rugix/refs/tags/v0.8.0/schemas/rugix-ctrl-system.schema.json
 
 [config-partition]
 # The config partition is `/dev/sda1`.
@@ -67,7 +65,6 @@ In that case, you are responsible for mounting them (if they are not disabled) a
 
 By default, Rugix Ctrl will assume that the first partition on the root device is the config partition and that the sixth (GPT) or seventh (MBR) partition is the data partition, depending on the type of partition table it finds on the root device.
 
-
 ## Update Slots
 
 Rugix Ctrl's OTA update mechanism uses _slots_ to flexibly handle different OTA scenarios and requirements.[^rauc]
@@ -85,7 +82,7 @@ Each slot has a name and one of the following types:
 Here is an example configuration for a typical A/B setup with four slots. The block device of a `block` slot can be specified either explicitly via the `device` setting or by a root device partition number via the `partition` setting.
 
 ```toml title="/etc/rugix/system.toml"
-#:schema https://raw.githubusercontent.com/silitics/rugix/refs/tags/v0.8.0/schemas/rugix-ctrl-system.schema.json
+#:schema https://raw.githubusercontent.com/rugix/rugix/refs/tags/v0.8.0/schemas/rugix-ctrl-system.schema.json
 
 [slots.boot-a]
 type = "block"
@@ -159,7 +156,6 @@ Boot groups are also used to prevent updates of _active_ slots, where an active 
 Updates can be explicitly installed to a particular boot group using the `--boot-group` parameter.
 Without that parameter and if there are only two boot groups, Rugix Ctrl will automatically use the inactive boot group.
 
-
 ## Boot Flow
 
 Bootloader integrations are referred to as _boot flows_.
@@ -176,13 +172,17 @@ Currently, Rugix supports the following boot flow types:
 
 For further details on boot flows, we refer to the [Boot Flows](./boot-flows.md) section.
 
-
 ## Configuration Reference
 
 For reference, here is the complete schema for system configuration files:
 
-<JSONSchemaViewer schema={ConfigSchema} viewerOptions={{
-    DescriptionComponent: ({description}) => <ReactMarkdown children={description} />
-}}/>
+<JSONSchemaViewer
+  schema={ConfigSchema}
+  viewerOptions={{
+    DescriptionComponent: ({ description }) => (
+      <ReactMarkdown children={description} />
+    ),
+  }}
+/>
 
-You will find the most recent version of this schema [on GitHub](https://github.com/silitics/rugix/blob/main/schemas/rugix-ctrl-system.schema.json).
+You will find the most recent version of this schema [on GitHub](https://github.com/rugix/rugix/blob/main/schemas/rugix-ctrl-system.schema.json).

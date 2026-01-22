@@ -2,11 +2,10 @@
 sidebar_position: 4
 ---
 
-import JSONSchemaViewer from "@theme/JSONSchemaViewer";
-import ReactMarkdown from "react-markdown";
+import JSONSchemaViewer from "@theme/JSONSchemaViewer"
+import ReactMarkdown from "react-markdown"
 
-import ConfigSchema from "@site/schemas/rugix-bundle-manifest.schema.json";
-
+import ConfigSchema from "@site/schemas/rugix-bundle-manifest.schema.json"
 
 # Update Bundles
 
@@ -15,7 +14,6 @@ Updates are delivered to devices in the form of _update bundles_.
 Rugix update bundles are based on a format specifically engineered for **efficient and secure** over-the-air updates.
 The format provides **built-in support for cryptographic integrity checks, compression, and best-in-class delta updates**.
 
-
 ## Introduction
 
 An update bundle is a single file that may contain multiple update _payloads_.
@@ -23,11 +21,11 @@ Typically, for each payload, the update bundle specifies a slot (see [System Con
 
 Before we continue, let's define a few terms:
 
-- *Slot Data*: Data that will exist in a slot after a successful update.
-- *Payload File*: Single file corresponding to a payload in an update bundle.
-- *Payload Data*: Actual data of a payload stored in an update bundle.
+- _Slot Data_: Data that will exist in a slot after a successful update.
+- _Payload File_: Single file corresponding to a payload in an update bundle.
+- _Payload Data_: Actual data of a payload stored in an update bundle.
 
-For instance, if a slot corresponds to a block device, then the slot data *and* payload file may be a filesystem image.
+For instance, if a slot corresponds to a block device, then the slot data _and_ payload file may be a filesystem image.
 However, if a slot corresponds to a directory, then the slot data is the contents of this directory and the payload file may be a Tar archive of the directory's contents.
 Now, the payload data is derived from the payload file.
 For instance, the payload file may be compressed before being stored in an update bundle.
@@ -60,11 +58,10 @@ Update bundles can be built for two _types_ of updates:
 For full system updates, a boot group must be provided to `rugix-ctrl` as a installation target (if there are more than two boot groups).
 For incremental system updates, a boot group can be provided but it does not have to be.
 
-
 ## Bundle Creation
 
 To work with bundles, you can use Rugix Bundler (`rugix-bundler`).
-You can download pre-built binaries from [the Releases page of Rugix's Git repository](https://github.com/silitics/rugix/releases/).
+You can download pre-built binaries from [the Releases page of Rugix's Git repository](https://github.com/rugix/rugix/releases/).
 If you are using Rugix Bakery, you can also use `./run-bakery bundler`.
 
 Rugix Bundler offers a subcommand for creating a bundle from a _bundle directory_:
@@ -85,7 +82,7 @@ Rugix Bakery will generate bundles with good default settings so you do not have
 Here is an example of a bundle manifest:
 
 ```toml
-#:schema https://raw.githubusercontent.com/silitics/rugix/refs/tags/v0.8.0/schemas/rugix-bundle-manifest.schema.json
+#:schema https://raw.githubusercontent.com/rugix/rugix/refs/tags/v0.8.0/schemas/rugix-bundle-manifest.schema.json
 
 update-type = "full"
 
@@ -128,7 +125,6 @@ Note that this is not a hash over the entire bundle but just the bundle's header
 The header of the bundle, in turn, contains hashes of the payload headers as well as of the payloads themselves.
 Combined these hashes form a [Merkle tree](https://en.wikipedia.org/wiki/Merkle_tree).
 That way, by providing the hash of the root, Rugix Ctrl can verify different parts of the bundle individually as they are read.
-
 
 ## Payload Delivery
 
@@ -191,7 +187,7 @@ When unpacking the payload, the block index is used to verify the integrity of e
 This enables streaming updates while never writing any untrusted data anywhere.
 Furthermore, it becomes impossible to exploit security vulnerabilities in tools processing the bundle file as part of the installation stage, as no untrusted input is fed to the installation stage.
 
-**Block Deduplication.** 
+**Block Deduplication.**
 Normally, we would write the payload file directly into the bundle.
 However, if we have a block index and block deduplication is enabled, then we only write blocks which we have not previously written, i.e., we use the block index to skip duplicate blocks of the payload file.
 When later reading the payload data from the bundle, we use the block index to restore the original payload file by reading any blocks that we already saw earlier from the slot where the payload is written to.
@@ -237,13 +233,17 @@ If block compression is enabled, then the size index stores the sizes of compres
 This allows skipping blocks that we already have.
 If blocks are variable size, then the true block size of unknown blocks becomes known only after decompression.
 
-
 ## Configuration Reference
 
 For reference, here is the complete schema for bundle manifest files:
 
-<JSONSchemaViewer schema={ConfigSchema} viewerOptions={{
-    DescriptionComponent: ({description}) => <ReactMarkdown children={description} />
-}}/>
+<JSONSchemaViewer
+  schema={ConfigSchema}
+  viewerOptions={{
+    DescriptionComponent: ({ description }) => (
+      <ReactMarkdown children={description} />
+    ),
+  }}
+/>
 
-You will find the most recent version of this schema [on GitHub](https://github.com/silitics/rugix/blob/main/schemas/rugix-bundle-manifest.schema.json).
+You will find the most recent version of this schema [on GitHub](https://github.com/rugix/rugix/blob/main/schemas/rugix-bundle-manifest.schema.json).
