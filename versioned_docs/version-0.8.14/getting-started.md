@@ -16,8 +16,6 @@ So, let's get started and unlock the potential of Rugix for your embedded projec
 
 If you want to get started with Rugix Ctrl and Yocto instead of Rugix Bakery, check out [Rugix's Yocto layers](https://github.com/silitics/meta-rugix/tree/main).
 
-
-
 ## Setup and Installation
 
 First, you need to set up Rugix Bakery.
@@ -35,7 +33,7 @@ The script runs an ephemeral Docker container with Rugix Bakery and sets everyth
 To start a fresh project, create an empty directory and then run:
 
 ```shell
-curl -sfSO https://raw.githubusercontent.com/silitics/rugix/v0.8/bakery/run-bakery && chmod +x ./run-bakery
+curl -sfSO https://raw.githubusercontent.com/rugix/rugix/v0.8/bakery/run-bakery && chmod +x ./run-bakery
 ```
 
 This command will download the `run-bakery` shell script from Rugix's GitHub repository and make it executable.
@@ -54,7 +52,6 @@ docker run --privileged --rm tonistiigi/binfmt --install all
 ```
 
 This will allow you to build Linux distributions for a huge variety of different architectures.
-
 
 ## Initializing the Project
 
@@ -79,7 +76,6 @@ The template specifies multiple systems as it gives you the option to build imag
 In addition, there are two directories `recipes` and `layers`.
 A _recipe_ describes additions and modifications that should be made to a system being build and a _layer_ combines multiple recipes.
 Let's now make some changes and customize our Debian variant.
-
 
 ## System Customization
 
@@ -106,7 +102,6 @@ As you may have noticed by now, Rugix Bakery adopts a declarative approach: You 
 If you are able to write a `Dockerfile` for your application or configure a system with a shell, you should find it easy to write custom recipes for your application.
 For further details, [check out the documentation on Rugix Bakery](./bakery/).
 :::
-
 
 ## Building an Image
 
@@ -137,7 +132,6 @@ Layers can build on top of each other and the device-specific layers use the `cu
 This makes it straightforward to build images for multiple devices.
 A typical use case would be to define a base layer with your application and then declare multiple systems for different devices and system testing.
 
-
 ## Running a VM
 
 While you could use the EFI-compatible images to manually create VMs, there is an easier way built directly into Rugix Bakery.
@@ -161,7 +155,6 @@ ssh -p 2222 -L 8080:localhost:80 root@127.0.0.1
 
 The option `-L 8080:localhost:80` will also forward port `8080` on your machine to the port `80` of the VM.
 Hence, you can now view the static website installed into your system by opening http://localhost:8080 in your browser.
-
 
 ## Installing an Update
 
@@ -223,11 +216,10 @@ The update is now complete!
 
 For further details regarding the update process, [check out Rugix Ctrl's documentation](./ctrl/).
 
-
 ## Conclusion
 
 Congratulations on completing the Rugix quickstart guide! 🙌
-You have successfully set up Rugix Bakery, customized your Debian-based system, built images for different devices, and learned how to install over-the-air updates with Rugix Ctrl. 
+You have successfully set up Rugix Bakery, customized your Debian-based system, built images for different devices, and learned how to install over-the-air updates with Rugix Ctrl.
 Rugix is designed to simplify the development of embedded Linux devices, making it easier for you to innovate and deploy reliable systems.
 
 While this guide has covered the basics, there's more to learn and explore.
@@ -240,8 +232,8 @@ Happy building! 🚀
 
 :::tip
 
-**Looking for a way to securely access and update your devices in the field?** Check out [Nexigon](https://nexigon.dev/?utm_source=rugix.org&utm_campaign=rugix-quickstart-guide), the ready-made infrastructure layer for connected devices, designed to seamlessly integrate with your applications and workflows.
-As a next step, you can follow the [Nexigon quickstart guide for Rugix](https://docs.nexigon.dev/agent/build-system-integration/rugix/getting-started?utm_source=rugix.org&utm_campaign=rugix-quickstart-guide) to onboard your device and connect it to Nexigon.
+**Looking for a way to securely access and update your devices in the field?** Check out [Nexigon](https://nexigon.cloud/?utm_source=rugix.org&utm_campaign=rugix-quickstart-guide), the ready-made infrastructure layer for connected devices, designed to seamlessly integrate with your applications and workflows.
+As a next step, you can follow the [Nexigon quickstart guide for Rugix](https://docs.nexigon.dev/rugix/getting-started?utm_source=rugix.org&utm_campaign=rugix-quickstart-guide) to onboard your device and connect it to Nexigon.
 Nexigon is developed by the creators of Rugix as a complementary commercial offering to support the development and maintenance of Rugix as an open-source project.
 Neither Nexigon nor Rugix are bound to each other and you can use Nexigon without Rugix or vice versa.
 **Rugix [supports a variety of fleet management solutions](./ctrl/advanced/fleet-management.md) and gives you the freedom to choose the one that best fits your needs.**

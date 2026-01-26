@@ -8,9 +8,9 @@ In principle, Rugix Bakery supports all Raspberry Pi models.
 
 Here is an overview over all the supported Raspberry Pi models:
 
-| Pi 5 | Pi 4 | Pi 3   | Pi 2 v1.2 | Pi 2  | Pi 1   | Pi Zero 2 | Pi Zero | CM 4 | CM 3  | CM 1   |
-| ---- | ---- | ------ | --------- | ----- | ------ | --------- | ------- | ---- | ----- | ------ |
-| ✅   | ✅   | ✅[^1]  | ✅[^1] | ❓[^1] | ✅[^1] | ✅[^1] | ✅[^1] | ✅ | ❓[^1] | ❓[^1] |
+| Pi 5 | Pi 4 | Pi 3   | Pi 2 v1.2 | Pi 2   | Pi 1   | Pi Zero 2 | Pi Zero | CM 4 | CM 3   | CM 1   |
+| ---- | ---- | ------ | --------- | ------ | ------ | --------- | ------- | ---- | ------ | ------ |
+| ✅   | ✅   | ✅[^1] | ✅[^1]    | ❓[^1] | ✅[^1] | ✅[^1]    | ✅[^1]  | ✅   | ❓[^1] | ❓[^1] |
 
 ✅ fully supported, ❓ in principle supported but untested
 
@@ -21,6 +21,7 @@ Here is an overview over all the supported Raspberry Pi models:
 Raspberry Pi OS releases based on Debian Bullseye and Bookworm are supported.
 
 For 32-bit models and to build 32-bit images for 64-bit boards, you need to set the `architecture` for the respective system to:
+
 ```toml
 architecture = "armhf"
 ```
@@ -57,7 +58,7 @@ Those files are placed by the respective core recipes in the following directory
 ${RUGIX_LAYER_DIR}/roots/boot/
 ```
 
-Have a look at the recipes [`rpi-debian-setup`](https://github.com/silitics/rugix/tree/main/bakery/repositories/core/recipes/rpi-debian-setup) and [`rpi-alpine-setup`](https://github.com/silitics/rugix/tree/main/bakery/repositories/core/recipes/rpi-alpine-setup) for details.
+Have a look at the recipes [`rpi-debian-setup`](https://github.com/rugix/rugix/tree/main/bakery/repositories/core/recipes/rpi-debian-setup) and [`rpi-alpine-setup`](https://github.com/rugix/rugix/tree/main/bakery/repositories/core/recipes/rpi-alpine-setup) for details.
 You can modify the files in the `roots/boot` directory with custom recipes.
 For builds based on Raspberry Pi OS, Rugix Bakery will extract the boot partition to `roots/boot`.
 

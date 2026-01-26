@@ -15,7 +15,7 @@ It also allows you to choose a fleet management provider based on the needs and 
 
 :::
 
-Currently, there are ready-made integrations with [Nexigon](https://nexigon.dev/?utm_source=rugix.org&utm_campaign=rugix-fleet-management), [thin-edge.io](https://thin-edge.io/), [Memfault](https://memfault.com/), and [Mender](https://mender.io/).
+Currently, there are ready-made integrations with [Nexigon](https://nexigon.cloud/?utm_source=rugix.org&utm_campaign=rugix-fleet-management), [thin-edge.io](https://thin-edge.io/), [Memfault](https://memfault.com/), and [Mender](https://mender.io/).
 For other fleet management solutions, you can develop your own integration or [contract Silitics](/commercial-support), the company behind Rugix, to develop an integration for you.
 
 ## Nexigon
@@ -23,7 +23,7 @@ For other fleet management solutions, you can develop your own integration or [c
 Nexigon is a ready-made, modular infrastructure layer for connected devices, designed to seamlessly integrate with your applications and workflows.
 Nexigon is developed by the creators of Rugix as a complementary commercial offering to support the ongoing development and maintenance of Rugix as an open-source project.
 Nexigon provides a secure, reliable, and scalable foundation you can build upon.
-Follow the [Nexigon quickstart guide for Rugix](https://docs.nexigon.dev/agent/build-system-integration/rugix/getting-started?utm_source=rugix.org&utm_campaign=rugix-fleet-management) to onboard your device and connect it to Nexigon within minutes.
+Follow the [Nexigon quickstart guide for Rugix](https://docs.nexigon.dev/rugix/getting-started?utm_source=rugix.org&utm_campaign=rugix-fleet-management) to onboard your device and connect it to Nexigon within minutes.
 
 ## thin-edge.io
 

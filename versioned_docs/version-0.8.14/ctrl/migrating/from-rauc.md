@@ -10,14 +10,14 @@ RAUC supports U-Boot, GRUB, Barebox, and EFI.
 **At the time of writing, Rugix Ctrl only supports migrating from U-Boot and GRUB.**
 Furthermore, Rugix Ctrl only supports installing updates to block devices.
 Raw flash devices requiring UBI are not supported yet.
-If you need support for any of the above, please [open an issue](https://github.com/silitics/rugix/issues/new/choose) or [reach out for commercial support](mailto:hello@silitics.com?subject=Migrating%20to%20Rugix%20Ctrl).
+If you need support for any of the above, please [open an issue](https://github.com/rugix/rugix/issues/new/choose) or [reach out for commercial support](mailto:hello@silitics.com?subject=Migrating%20to%20Rugix%20Ctrl).
 
 Rugix Ctrl implements two RAUC-compatible boot flows, `rauc-uboot` and `rauc-grub`, which are compatible with RAUC's U-Boot and GRUB integration, respectively.
 Migrating from RAUC to Rugix Ctrl requires a [system configuration file](../advanced/system-configuration.mdx) that specifies the correct RAUC-compatible boot flow, boot groups, and slots.
 Here is an example for U-Boot with typical A/B boot partitions:
 
 ```toml title="/etc/rugix/system.toml"
-#:schema https://raw.githubusercontent.com/silitics/rugix/refs/heads/main/schemas/rugix-ctrl-system.schema.json
+#:schema https://raw.githubusercontent.com/rugix/rugix/refs/heads/main/schemas/rugix-ctrl-system.schema.json
 
 [boot-flow]
 type = "rauc-uboot"

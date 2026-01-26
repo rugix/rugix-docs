@@ -6,25 +6,24 @@ It mitigates the risks associated with remote software updates in the field, **e
 To set the stage, let's first focus on the things that could go wrong and the ideal features and properties of an update solution.
 
 1. **Interrupted Updates:** If something interrupts the update process, such as an unplanned power outage, a partially installed update may leave the system in an inoperable state.
-Therefore, a robust update solution must be _atomic_, ensuring that updates are either installed completely or not at all, always leaving the system in an operational state, no matter what happens.
+   Therefore, a robust update solution must be _atomic_, ensuring that updates are either installed completely or not at all, always leaving the system in an operational state, no matter what happens.
 
 2. **Uncertain Production Environment:** While extensive testing should be done prior to deploying any updates, replicating the exact production environment and conditions can be difficult.
-An update that turns out to be incompatible with the particularities of the production environment under difficult to replicate conditions may leave the system in an inoperable state.
-Therefore, a robust update solution must have the possibility for _on-device validation and rollback_ of updates.
-If any problems are detected with an update on a particular device, a rollback to the previous, known-good version should be automatically triggered.
+   An update that turns out to be incompatible with the particularities of the production environment under difficult to replicate conditions may leave the system in an inoperable state.
+   Therefore, a robust update solution must have the possibility for _on-device validation and rollback_ of updates.
+   If any problems are detected with an update on a particular device, a rollback to the previous, known-good version should be automatically triggered.
 
 3. **Data Loss and Accidental State:** Whenever an update is installed, the existing state of a system must be handled carefully to ensure that no data is lost.
-For instance, user settings and data stored on the device must be preserved.
-At the same time, a system must be safeguarded against corruption by _accidental state_ that should not be kept, such as configuration files incompatible with the new version.
-Therefore, a robust update solution must provide reliable _state management_ mechanisms.
+   For instance, user settings and data stored on the device must be preserved.
+   At the same time, a system must be safeguarded against corruption by _accidental state_ that should not be kept, such as configuration files incompatible with the new version.
+   Therefore, a robust update solution must provide reliable _state management_ mechanisms.
 
 4. **Cyber Attacks:** A malicious actor may try to compromise a device by installing a manipulated update.
-If they succeed and gain access, they can use the device to further infiltrate the network it is attached to, gaining wide-spread access that can quickly lead to huge damages extending far beyond the functionality of the original device.
-Therefore, an update solution must provide mechanisms to prevent manipulated updates from being installed.
+   If they succeed and gain access, they can use the device to further infiltrate the network it is attached to, gaining wide-spread access that can quickly lead to huge damages extending far beyond the functionality of the original device.
+   Therefore, an update solution must provide mechanisms to prevent manipulated updates from being installed.
 
 Rugix Ctrl addresses these challenges by ensuring atomic updates, on-device validation with rollback capabilities, reliable state management, and protection against malicious updates.
 By utilizing Rugix Ctrl, you can rest assured that your devices remain reliable, secure, and up-to-date, **allowing you to focus on delivering value to your users**.
-
 
 ## High-Level Overview
 
@@ -46,7 +45,7 @@ This binary is used to query and manage the state of the system, to install upda
 The state management functionality provided by Rugix Ctrl is completely optional and you can use Rugix Ctrl as an update installer only, if you wish.
 In addition to `rugix-ctrl`, which runs on your device, Rugix Ctrl also provides a tool, `rugix-bundler`, to create _update bundles_.
 Update bundles contain the actual data required to install an update, like filesystems and some meta information.
-You find pre-built binaries of these tools on [the Releases page of Rugix's Git repository](https://github.com/silitics/rugix/releases/).
+You find pre-built binaries of these tools on [the Releases page of Rugix's Git repository](https://github.com/rugix/rugix/releases/).
 
 :::tip
 The easiest way to use Rugix Ctrl is with [Rugix Bakery](../bakery/index.md), a flexible and user-friendly build system for bespoke Linux distributions developed by the Rugix Project.
@@ -75,20 +74,20 @@ Nevertheless, here is our attempt to compare the tools.
 
 For our comparison, we consider the following solutions in addition to Rugix Ctrl.
 
-[*Mender*](https://docs.mender.io/artifact-creation/standalone-deployment) is an open-source over-the-air (OTA) software updater for embedded Linux devices and a fleet management solution.
+[_Mender_](https://docs.mender.io/artifact-creation/standalone-deployment) is an open-source over-the-air (OTA) software updater for embedded Linux devices and a fleet management solution.
 
-[*RAUC*](https://rauc.io/) (Robust Auto-Update Controller) is a lightweight and flexible update solution designed for embedded systems. It supports various update scenarios and provides robust mechanisms to ensure the integrity and reliability of updates.
+[_RAUC_](https://rauc.io/) (Robust Auto-Update Controller) is a lightweight and flexible update solution designed for embedded systems. It supports various update scenarios and provides robust mechanisms to ensure the integrity and reliability of updates.
 
-[*SWUpdate*](https://sbabic.github.io/swupdate/swupdate.html) (Software Update) considers itself an update framework for embedded systems. It provides foundational building blocks that can be flexibly combined to build tailored update workflows for different scenarios and use cases.
+[_SWUpdate_](https://sbabic.github.io/swupdate/swupdate.html) (Software Update) considers itself an update framework for embedded systems. It provides foundational building blocks that can be flexibly combined to build tailored update workflows for different scenarios and use cases.
 
 Let's start with the uncontroversial facts about licenses and programming languages:[^prog-lang]
 
 [^prog-lang]: The programming language may be relevant, if you want/need to extend the solution yourself.
 
-| | Mender | RAUC | SWUpdate | Rugix Ctrl |
-| -: | :-: | :-: | :-: | :-: |
-| License | Apache-2.0 | LGPL-2.1 | GPL-2.0 | MIT/Apache-2.0 |
-| Language | C++ | C | C | Rust |
+|          |   Mender   |   RAUC   | SWUpdate |   Rugix Ctrl   |
+| -------: | :--------: | :------: | :------: | :------------: |
+|  License | Apache-2.0 | LGPL-2.1 | GPL-2.0  | MIT/Apache-2.0 |
+| Language |    C++     |    C     |    C     |      Rust      |
 
 All the solutions we consider here are open-source and can be used in commercial products.
 
@@ -117,31 +116,35 @@ If it does not suit your needs, you can also opt-out of the state management mec
 
 Now, here is the promised feature-wise comparison of the different solutions.[^contribute-comparison]
 
-[^contribute-comparison]: If you think that this comparison is unfair, inaccurate, or lacks certain important features, please [open an issue](https://github.com/silitics/rugix/issues/new/choose).
+[^contribute-comparison]: If you think that this comparison is unfair, inaccurate, or lacks certain important features, please [open an issue](https://github.com/rugix/rugix/issues/new/choose).
 
-| | Mender | RAUC | SWUpdate | Rugix Ctrl | Description |
-| - | :-: | :-: | :-: | :-: | - |
-| Streaming: Arbitrary Sources | ❌ | ❌ | ✅ | ✅ | Streaming updates from arbitrary sources. |
-| Streaming: HTTP | ✅ | ✅ | ✅ | ✅ | Streaming updates from an HTTP server. |
-| Delta Updates: Dynamic | ❌ | ✅ | ✔️[^build-yourself] | ✅ | Fetch only changed blocks via HTTP. |
-| Delta Updates: Static | ✔️[^mender-delta] | ❌ | ✔️[^build-yourself] | ✅ | Offline delta compression. |
-| Non-A/B Update Schemes | ❌[^mender-update-modules] | ✅ | ✅ | ✅ | Support for non-A/B rootfs updates.
-| Update Scripts | ✅ | ✅ | ✅ | ✅ | Ship and run scripts as part of an update. |
-| Arbitrary Update Payloads | ✅ | ✅ | ✅ | ✅ | Support for arbitrary update payloads.
-| Bootloaders: Grub | ✅ | ✅ | ✅ | ✅ | Support for Grub. |
-| Bootloaders: U-Boot | ✅ | ✅ | ✅ | ✅ | Support for U-Boot. |
-| Bootloaders: Barebox | ❌ | ✅ | ❌ | ❌ | Support for Barebox. |
-| Bootloaders: Tryboot[^tryboot] | ❌ | ❌ | ❌ | ✅ | Support for Tryboot. |
-| Bootloaders: Custom | ❌ | ✅ | ✅ | ✅ | Custom bootloader integrations. |
-| Security: Artifact Verification | ✅  | ✅ | ✅  | ✅ | Check the integrity of the update as a whole. |
-| Security: Block-Wise Verification | ❌ | ✅ | ❌ | ✅ | Check blocks individually before writing them. |
-| Security: Embedded Signatures | ✅ | ✅ | ✅ | ✅ | Embed signatures into an update. |
-| Security: External Signatures | ❌ | ❌ | ❌ | ✅ | Use an external signature/root of trust. |
-| Security: Encrypted Updates | ❌ | ✅ | ✅ | ❌ | Encrypted update artifacts.
-| Yocto Integration | ✅ | ✅ | ❌[^swu-yocto] | ✅ | Ready-made Yocto integration. |
+|                                   |           Mender           | RAUC |      SWUpdate       | Rugix Ctrl | Description                                    |
+| --------------------------------- | :------------------------: | :--: | :-----------------: | :--------: | ---------------------------------------------- |
+| Streaming: Arbitrary Sources      |             ❌             |  ❌  |         ✅          |     ✅     | Streaming updates from arbitrary sources.      |
+| Streaming: HTTP                   |             ✅             |  ✅  |         ✅          |     ✅     | Streaming updates from an HTTP server.         |
+| Delta Updates: Dynamic            |             ❌             |  ✅  | ✔️[^build-yourself] |     ✅     | Fetch only changed blocks via HTTP.            |
+| Delta Updates: Static             |     ✔️[^mender-delta]      |  ❌  | ✔️[^build-yourself] |     ✅     | Offline delta compression.                     |
+| Non-A/B Update Schemes            | ❌[^mender-update-modules] |  ✅  |         ✅          |     ✅     | Support for non-A/B rootfs updates.            |
+| Update Scripts                    |             ✅             |  ✅  |         ✅          |     ✅     | Ship and run scripts as part of an update.     |
+| Arbitrary Update Payloads         |             ✅             |  ✅  |         ✅          |     ✅     | Support for arbitrary update payloads.         |
+| Bootloaders: Grub                 |             ✅             |  ✅  |         ✅          |     ✅     | Support for Grub.                              |
+| Bootloaders: U-Boot               |             ✅             |  ✅  |         ✅          |     ✅     | Support for U-Boot.                            |
+| Bootloaders: Barebox              |             ❌             |  ✅  |         ❌          |     ❌     | Support for Barebox.                           |
+| Bootloaders: Tryboot[^tryboot]    |             ❌             |  ❌  |         ❌          |     ✅     | Support for Tryboot.                           |
+| Bootloaders: Custom               |             ❌             |  ✅  |         ✅          |     ✅     | Custom bootloader integrations.                |
+| Security: Artifact Verification   |             ✅             |  ✅  |         ✅          |     ✅     | Check the integrity of the update as a whole.  |
+| Security: Block-Wise Verification |             ❌             |  ✅  |         ❌          |     ✅     | Check blocks individually before writing them. |
+| Security: Embedded Signatures     |             ✅             |  ✅  |         ✅          |     ✅     | Embed signatures into an update.               |
+| Security: External Signatures     |             ❌             |  ❌  |         ❌          |     ✅     | Use an external signature/root of trust.       |
+| Security: Encrypted Updates       |             ❌             |  ✅  |         ✅          |     ❌     | Encrypted update artifacts.                    |
+| Yocto Integration                 |             ✅             |  ✅  |   ❌[^swu-yocto]    |     ✅     | Ready-made Yocto integration.                  |
 
 [^mender-update-modules]: With Mender's update modules you could build this yourself, however, there is no built-in support.
+
 [^mender-delta]: Only supported in the enterprise version, not the open-source version.
+
 [^build-yourself]: You can build this yourself using third-party tools.
+
 [^tryboot]: Official mechanism to realize A/B updates on Raspberry Pi.
+
 [^swu-yocto]: You need to build this yourself based on your concrete update workflow.

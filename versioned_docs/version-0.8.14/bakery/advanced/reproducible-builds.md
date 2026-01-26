@@ -4,9 +4,9 @@ sidebar_position: 5
 
 # Reproducible Builds
 
-At Rugix, we are huge proponents of [*reproducible builds*](https://reproducible-builds.org/).
+At Rugix, we are huge proponents of [_reproducible builds_](https://reproducible-builds.org/).
 
-> “A build is *reproducible* if given the same source code, build environment and build instructions, any party can recreate bit-by-bit identical copies of all specified artifacts.” – https://reproducible-builds.org/docs/definition/
+> “A build is _reproducible_ if given the same source code, build environment and build instructions, any party can recreate bit-by-bit identical copies of all specified artifacts.” – https://reproducible-builds.org/docs/definition/
 
 We aim to enable reproducible builds of Rugix itself as well as of system images built with Rugix.
 
@@ -30,16 +30,15 @@ Building upon Debian snapshots also has the advantage that it reduces the surfac
 To obtain a reproducible build environment, we follow a two stage process:
 
 - Stage 0: We build a Debian Docker image containing [`mmdebstrap`](https://manpages.debian.org/bookworm/mmdebstrap/mmdebstrap.1.en.html).
-This image will not be reproducible as it is based on the latest version of Debian Bookworm.
-We are only using it to bootstrap Stage 1.
+  This image will not be reproducible as it is based on the latest version of Debian Bookworm.
+  We are only using it to bootstrap Stage 1.
 - Stage 1: Using the previously built Docker image, we bootstrap a Debian Docker image based on an official snapshot.
-This image will be fully reproducible and everything we install will be pinned to the respective snapshot.
-Thereby, all images that we derive from it, e.g., to build Rugix, Grub, or U-Boot, are also fully reproducible.
+  This image will be fully reproducible and everything we install will be pinned to the respective snapshot.
+  Thereby, all images that we derive from it, e.g., to build Rugix, Grub, or U-Boot, are also fully reproducible.
 
 Everything else we built will be based on the reproducible Stage 1 image.
 
-The infrastructure for reproducible builds is implemented as part of Rugix's [`xtask`](https://github.com/silitics/Rugix/tree/main/xtask).
-
+The infrastructure for reproducible builds is implemented as part of Rugix's [`xtask`](https://github.com/rugix/rugix/tree/main/xtask).
 
 ## Reproducibility of Images
 

@@ -2,11 +2,10 @@
 sidebar_position: 1
 ---
 
-import JSONSchemaViewer from "@theme/JSONSchemaViewer";
-import ReactMarkdown from "react-markdown";
+import JSONSchemaViewer from "@theme/JSONSchemaViewer"
+import ReactMarkdown from "react-markdown"
 
-import OutputSchema from "@site/schemas/rugix-ctrl-output-info.schema.json";
-
+import OutputSchema from "@site/schemas/rugix-ctrl-output-info.schema.json"
 
 # Over-the-Air Updates
 
@@ -20,8 +19,8 @@ This approach drastically reduces the likelihood of bricking devices in the fiel
 In addition, it has the following advantages:
 
 - OTA updates can almost completely run in the background, without adversely affecting any users of a device.
-The only service interruption is caused, when the device reboots into the new version.
-Rebooting to finalize an update can happen at the discretion of users and, if all goes well, does not take longer than any normal reboot, minimizing any inconveniences.
+  The only service interruption is caused, when the device reboots into the new version.
+  Rebooting to finalize an update can happen at the discretion of users and, if all goes well, does not take longer than any normal reboot, minimizing any inconveniences.
 - As the previous version is kept, a rollback to the old version is always possible if there are any problems with the new version.[^rollback]
 
 [^rollback]: This requires support by your application.
@@ -54,7 +53,6 @@ If you want your own integration, check out the [documentation on boot flows](./
 
 We also refer to Partition 1 as the _config partition_ and to Partition 6 as the _data partition_.
 
-
 ## Querying the System State
 
 To query the state of the system, e.g., to find out which partitions are in use, you can use `rugix-ctrl system info`.
@@ -63,12 +61,16 @@ Note that this command will produce JSON output when piped into another program 
 You can use tools like [`jq`](https://jqlang.org/) to process the JSON output produced by Rugix Ctrl.
 As a reference, here is the full schema of the output of `rugix-ctrl system info`:
 
-<JSONSchemaViewer schema={OutputSchema} viewerOptions={{
-    DescriptionComponent: ({description}) => <ReactMarkdown children={description} />
-}}/>
+<JSONSchemaViewer
+  schema={OutputSchema}
+  viewerOptions={{
+    DescriptionComponent: ({ description }) => (
+      <ReactMarkdown children={description} />
+    ),
+  }}
+/>
 
-You will find the most recent version of this schema [on GitHub](https://github.com/silitics/rugix/blob/main/schemas/rugix-ctrl-output-info.schema.json).
-
+You will find the most recent version of this schema [on GitHub](https://github.com/rugix/rugix/blob/main/schemas/rugix-ctrl-output-info.schema.json).
 
 ## Installing an Update
 

@@ -4,11 +4,12 @@ _Rugix Bakery_ is a flexible, user-friendly build system for bespoke Linux distr
 It enables you to build customized variants of binary distributions, such as [Debian](https://debian.org/) and [Alpine Linux](https://alpinelinux.org/), or to build distributions entirely from source, leveraging industry standards like the [Yocto Project](https://www.yoctoproject.org/).
 While inherently flexible and not tied to any specific distribution, Rugix Bakery ships with ready-to-use integrations for Debian, Alpine Linux, Raspberry Pi OS, and the Yocto Project's Poky reference distribution.[^rugix-yocto]
 
-[^rugix-yocto]: You can run Yocto builds within Rugix Bakery.
-In that case, the entire Yocto build for a given device will typically take place in a device-specific Rugix Bakery root layer.
-Currently, **this integration is primarily intended as a proof of concept** for integrating a more traditional approach into Rugix Bakery.
-If everything happens inside Yocto and you do not intend to apply any customizations or derive different variants from the same Yocto build, Rugix Bakery does not add much over a pure Yocto setup.
-At the bare minimum, Rugix Bakery gives you an isolated build environment in terms of the Rugix Bakery Docker image and you may be able to use the other features of Rugix Bakery, e.g., its [system testing framework](./advanced/system-testing.mdx).
+[^rugix-yocto]:
+    You can run Yocto builds within Rugix Bakery.
+    In that case, the entire Yocto build for a given device will typically take place in a device-specific Rugix Bakery root layer.
+    Currently, **this integration is primarily intended as a proof of concept** for integrating a more traditional approach into Rugix Bakery.
+    If everything happens inside Yocto and you do not intend to apply any customizations or derive different variants from the same Yocto build, Rugix Bakery does not add much over a pure Yocto setup.
+    At the bare minimum, Rugix Bakery gives you an isolated build environment in terms of the Rugix Bakery Docker image and you may be able to use the other features of Rugix Bakery, e.g., its [system testing framework](./advanced/system-testing.mdx).
 
 Typically, Rugix Bakery is used to build _full system images_ and Rugix Ctrl _update bundles_ for OTA system updates.
 System images generally contain a complete Linux root filesystem, a Linux kernel, and other, additional files required for booting a system.
@@ -17,7 +18,6 @@ For [supported devices](./devices/index.mdx), Rugix Bakery can build bootable im
 Rugix Bakery allows you to define multiple _systems_ in a single _project_.
 You can share build configurations between systems and build different _build artifacts_, such as system images, update bundles, individual filesystems, documentation, and a _software bill of materials_ (SBOM) for each system.
 The ability to declare multiple systems is particularly useful when building your application for different device variants, also including images for testing in VMs, while sharing a common base.
-
 
 ## Build Process: High-Level Introduction
 
@@ -31,7 +31,6 @@ In that regard, layers are akin to image layers in Docker.[^yocto-layers] A _rec
 A layer is then built by applying the recipes specified in the layer's build configuration, optionally using a _parent layer_ as a base.
 
 [^yocto-layers]: If you are coming from Yocto, Rugix Bakery layers are distinct from Yocto layers in that they contain actual _build outputs_ while Yocto layers add or modify _build metadata and configurations_ used by the build system.
-
 
 Here is a summary of the core concepts of the build process:
 
@@ -63,7 +62,7 @@ graph TD;
     device2 --> image2([image2]);
     device2 --> update2([update2]);
 
-```
+````
 </p>
 
 You can use the same process to build different software variants with a shared base as well.
@@ -90,8 +89,8 @@ The script runs an ephemeral Docker container with Rugix Bakery and sets everyth
 To start a fresh project, create an empty directory and then run:
 
 ```shell
-curl -sfSO https://raw.githubusercontent.com/silitics/rugix/v0.8/bakery/run-bakery && chmod +x ./run-bakery
-```
+curl -sfSO https://raw.githubusercontent.com/rugix/rugix/v0.8/bakery/run-bakery && chmod +x ./run-bakery
+````
 
 This command will download the `run-bakery` shell script from Rugix's GitHub repository and make it executable.
 You can then run Rugix Bakery with `./run-bakery`.
@@ -108,26 +107,27 @@ Rugix Bakery currently requires the container to run in privileged mode such tha
 These are required to run tools inside an environment that looks like the final system.
 In the future, we plan to leverage Linux user namespaces to isolate the build and the system from the host without requiring elevated privileges.[^privileges]
 
-[^privileges]: Existing tools use different approaches to set up an environment that looks like the final system without requiring privileges.
-For instance, Yocto uses a tool called [Pseudo](https://git.yoctoproject.org/pseudo/about/) (an alternative to the better-known tool [Fakeroot](https://manpages.debian.org/bookworm/pseudo/fakeroot.1.en.html)), to intercept calls to system APIs via `LD_PRELOAD` and thereby fake a root environment.
-This approach has limitations, for instance, it does not work with statically-linked binaries and also does not allow starting services binding sockets to ports below 1024.
-Rugix Bakery strives to provide a container-like environment by using Linux namespaces and process isolation which does not suffer from the same limitations as existing approaches and thereby mimics a real system more closely.
-
+[^privileges]:
+    Existing tools use different approaches to set up an environment that looks like the final system without requiring privileges.
+    For instance, Yocto uses a tool called [Pseudo](https://git.yoctoproject.org/pseudo/about/) (an alternative to the better-known tool [Fakeroot](https://manpages.debian.org/bookworm/pseudo/fakeroot.1.en.html)), to intercept calls to system APIs via `LD_PRELOAD` and thereby fake a root environment.
+    This approach has limitations, for instance, it does not work with statically-linked binaries and also does not allow starting services binding sockets to ports below 1024.
+    Rugix Bakery strives to provide a container-like environment by using Linux namespaces and process isolation which does not suffer from the same limitations as existing approaches and thereby mimics a real system more closely.
 
 ## CPU Architectures
 
 Rugix Bakery supports the following CPU architectures:[^architecture-plans]
 
-[^architecture-plans]: We plan to support more architectures in the future.
-Feel free to [open an issue on GitHub](https://github.com/silitics/rugpi/issues/new).
+[^architecture-plans]:
+    We plan to support more architectures in the future.
+    Feel free to [open an issue on GitHub](https://github.com/silitics/rugpi/issues/new).
 
-| Architecture | Description | Alpine | Debian | Raspberry Pi OS |
-| ------------ | ----------- | ------ | ------ | --------------- |
-| `amd64` | 64-bit x86 | `x86_64` | `amd64` | – |
-| `arm64` | 64-bit ARMv8 | `aarch64` | `arm64` | `arm64` |
-| `armv7` | 32-bit ARMv7 | `armv7` | `armhf` | – |
-| `armhf` | 32-bit ARMv6 (Hard-Float) | `armhf` | – | `armhf` |
-| `arm` | 32-bit ARMv6 | – | `armel` | – |
+| Architecture | Description               | Alpine    | Debian  | Raspberry Pi OS |
+| ------------ | ------------------------- | --------- | ------- | --------------- |
+| `amd64`      | 64-bit x86                | `x86_64`  | `amd64` | –               |
+| `arm64`      | 64-bit ARMv8              | `aarch64` | `arm64` | `arm64`         |
+| `armv7`      | 32-bit ARMv7              | `armv7`   | `armhf` | –               |
+| `armhf`      | 32-bit ARMv6 (Hard-Float) | `armhf`   | –       | `armhf`         |
+| `arm`        | 32-bit ARMv6              | –         | `armel` | –               |
 
 Note that different distributions have different and sometimes inconsistent names for different CPU families.
 For instance, what Debian calls `armhf` is called `armv7` for Alpine Linux and is not the same as `armhf` for Raspberry Pi OS.
@@ -140,7 +140,6 @@ docker run --privileged --rm tonistiigi/binfmt --install all
 ```
 
 This will allow you to build Linux distributions for a huge variety of different architectures.
-
 
 ## Comparison to Other Solutions
 
