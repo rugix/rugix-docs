@@ -32,12 +32,9 @@ jobs:
 
       - name: Deploy
         if: github.ref == 'refs/heads/main'
-        env:
-          SSH_DEPLOY_KEY: ${{ secrets.SSH_DEPLOY_KEY }}
-        run: |
-          eval $(ssh-agent -s)
-          ssh-add <(echo "$SSH_DEPLOY_KEY")
-          mkdir -p ~/.ssh/
-          echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
-          ssh deploy@srv0.silitics.com "rsync --version"
-          rsync -avz --delete build/ deploy@srv0.silitics.com:/var/www/oss.silitics.com/rugix/
+        uses: silitics/actions/deploy-site@main
+        with:
+          domain: rugix.org
+          source-dir: build
+          s3-access-key: ${{ variables.SILITICS_SITES_SECRET_KEY }}
+          s3-secret-key: ${{ secrets.SILITICS_SITES_ACCESS_SECRET }}
