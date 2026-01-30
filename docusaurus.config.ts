@@ -5,8 +5,8 @@ const config: Config = {
   title: "Rugix",
   tagline:
     "A suite of open-source tools to build reliable embedded Linux devices with efficient and secure over-the-air update capabilities.",
-  url: "https://oss.silitics.com/",
-  baseUrl: "/rugix/",
+  url: "https://rugix.org/",
+  baseUrl: "/",
 
   onBrokenLinks: "warn",
 
@@ -181,7 +181,7 @@ const config: Config = {
     [
       "docusaurus-plugin-plausible",
       {
-        domain: "oss.silitics.com",
+        domain: "rugix.org",
       },
     ],
     async function tailwind(context, options) {
