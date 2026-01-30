@@ -58,7 +58,7 @@ Those files are placed by the respective core recipes in the following directory
 ${RUGIX_LAYER_DIR}/roots/boot/
 ```
 
-Have a look at the recipes [`rpi-debian-setup`](https://github.com/rugix/rugix/tree/main/bakery/repositories/core/recipes/rpi-debian-setup) and [`rpi-alpine-setup`](https://github.com/rugix/rugix/tree/main/bakery/repositories/core/recipes/rpi-alpine-setup) for details.
+Have a look at the recipes [`rpi-debian-setup`](https://github.com/rugix/rugix-bakery/tree/main/container/repositories/core/recipes/rpi-debian-setup) and [`rpi-alpine-setup`](https://github.com/rugix/rugix-bakery/tree/main/container/repositories/core/recipes/rpi-alpine-setup) for details.
 You can modify the files in the `roots/boot` directory with custom recipes.
 For builds based on Raspberry Pi OS, Rugix Bakery will extract the boot partition to `roots/boot`.
 

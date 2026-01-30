@@ -9,7 +9,7 @@ import LayerSchema from "@site/schemas/rugix-bakery-layer.schema.json"
 
 # Layers
 
-Layers are defined by _layer configuration files_ `<layer name>.toml` in the `layers` directory. As described in the [introduction](./index.md), a layer is built by executing recipes. For a given layer, the respective layer configuration file specifies the recipes to be executed as well as an optional parent layer that should be used as a base. Here is an example taken from the [Debian template](https://github.com/rugix/rugix/tree/main/bakery/templates/debian-grub-efi):
+Layers are defined by _layer configuration files_ `<layer name>.toml` in the `layers` directory. As described in the [introduction](./index.md), a layer is built by executing recipes. For a given layer, the respective layer configuration file specifies the recipes to be executed as well as an optional parent layer that should be used as a base. Here is an example taken from the [Debian template](https://github.com/rugix/rugix-bakery/tree/main/container/templates/debian-grub-efi):
 
 ```toml title="layers/customized.toml"
 #:schema https://raw.githubusercontent.com/rugix/rugix/refs/tags/v0.8.0/schemas/rugix-bakery-layer.schema.json
@@ -101,6 +101,6 @@ For reference, here is the complete schema for layer configuration files:
   }}
 />
 
-You will find the most recent version of this schema [on GitHub](https://github.com/rugix/rugix/blob/main/schemas/rugix-bakery-layer.schema.json).
+You will find the most recent version of this schema [on GitHub](https://github.com/rugix/rugix-bakery/blob/main/schemas/rugix-bakery-layer.schema.json).
 
 [^1]: The layer should be fully reproducible, however, Rugix Bakery does currently not support building images reproducibly. We will add this functionality in the future such that images can be reproduced bit-by-bit.

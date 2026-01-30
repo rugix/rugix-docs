@@ -36,11 +36,11 @@ const config: Config = {
           sidebarPath: require.resolve("./sidebars.js"),
           // lastVersion: "current",
           lastVersion: "0.8.14",
-          editUrl: "https://github.com/rugix/rugix/tree/main/www/",
+          editUrl: "https://github.com/rugix/rugix-docs/tree/main/",
         },
         blog: {
           showReadingTime: true,
-          editUrl: "https://github.com/rugix/rugix/tree/main/www/",
+          editUrl: "https://github.com/rugix/rugix-docs/tree/main/",
           blogSidebarCount: "ALL",
           blogSidebarTitle: "All Posts",
         },
