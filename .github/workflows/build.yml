@@ -36,5 +36,5 @@ jobs:
         with:
           domain: rugix.org
           source-dir: build
-          s3-access-key: ${{ variables.SILITICS_SITES_SECRET_KEY }}
+          s3-access-key: ${{ vars.SILITICS_SITES_SECRET_KEY }}
           s3-secret-key: ${{ secrets.SILITICS_SITES_ACCESS_SECRET }}
