@@ -13,19 +13,20 @@ function HomepageHeader() {
     >
       <div className="mx-auto text-center px-4">
         <h1 className="text-3xl md:text-5xl">
-          Ruggedized Linux for Embedded Systems
+          Over-the-Air Updates for Embedded Linux
         </h1>
-        <p className="mx-auto max-w-[60ch] text-lg md:text-xl my-6">
-          Open-source tools for building and updating industrial Linux devices.
-          <br />
+        <p className="mx-auto max-w-[70ch] text-lg md:text-xl mt-6 mb-2">
           <strong>Deploy updates with confidence. Never brick a device.</strong>
+        </p>
+        <p className="mx-auto max-w-[70ch] text-base md:text-lg mb-6 opacity-80">
+          100% open-source. Atomic updates. Delta compression. Cryptographic verification.
         </p>
         <div className={styles.buttons}>
           <Link
             className="button button--secondary button--lg"
             to="/docs/getting-started"
           >
-            <span className="hidden sm:inline">From Zero to OTA Update in 20 Minutes 🚀</span>
+            <span className="hidden sm:inline">From Zero to OTA Update in 30 Minutes 🚀</span>
             <span className="sm:hidden">Get Started 🚀</span>
           </Link>
         </div>
@@ -40,8 +41,7 @@ function ToolOverview() {
       <div className="container">
         <h2 className="text-center text-3xl mb-4">Two Tools. One Goal.</h2>
         <p className="text-center max-w-[60ch] mx-auto mb-10 text-lg opacity-80">
-          Rugix provides everything you need to build and maintain robust
-          embedded Linux products, from development to production.
+          Robust and secure updates without the complexity.
         </p>
         <div className="flex flex-wrap justify-center gap-8 px-4">
           <Link
@@ -50,7 +50,7 @@ function ToolOverview() {
           >
             <h3 className="text-xl mb-2">Rugix Ctrl</h3>
             <p className="opacity-80 mb-3">
-              <strong>The update and state management engine.</strong>
+              <strong>On-device update engine.</strong>
             </p>
             <p className="text-sm opacity-70 mb-4">
               Atomic A/B updates with automatic rollback, delta updates,
@@ -68,13 +68,13 @@ function ToolOverview() {
           >
             <h3 className="text-xl mb-2">Rugix Bakery</h3>
             <p className="opacity-80 mb-3">
-              <strong>The image build system.</strong>
+              <strong>Custom Linux build system.</strong>
             </p>
             <p className="text-sm opacity-70 mb-4">
-              Build custom Linux distributions based on Debian, Alpine Linux, or
-              Raspberry Pi OS. Container-based reproducible builds, multiple
-              system variants, integrated testing with VM support, and SBOM
-              generation for compliance. OTA updates powered by Rugix Ctrl.
+              Build custom Linux distributions in days, not months. Based on
+              Debian or Alpine Linux. Container-based reproducible builds,
+              multiple system variants, integrated testing with VM support,
+              and SBOM generation. OTA updates powered by Rugix Ctrl.
             </p>
             <span className="text-sm font-medium text-[var(--ifm-color-primary)]">
               Learn more →
@@ -82,8 +82,9 @@ function ToolOverview() {
           </Link>
         </div>
         <p className="text-center max-w-[60ch] mx-auto mt-8 opacity-70">
-          Use both together for a complete solution, or integrate Rugix Ctrl
-          into your existing Yocto or Buildroot workflow.
+          Rugix Ctrl runs on your device and installs updates. Rugix Bakery
+          builds the system images. Use both together for a complete solution,
+          or integrate Rugix Ctrl into your existing Yocto or Buildroot workflow.
         </p>
       </div>
     </section>
@@ -138,8 +139,8 @@ export default function Home(): JSX.Element {
               />
             </a>
           </div>
-          <div className="flex flex-wrap justify-center gap-8 px-4 mt-10">
-            <div className="max-w-sm p-6 rounded-xl bg-white/50 dark:bg-black/20 border border-solid border-gray-200 dark:border-gray-700">
+          <div className="flex flex-wrap justify-center items-stretch gap-8 px-4 mt-10">
+            <div className="max-w-sm p-6 rounded-xl bg-white/50 dark:bg-black/20 border border-solid border-gray-200 dark:border-gray-700 flex flex-col justify-center">
               <div className="italic leading-[1.6] mb-4">
                 "If you're not using Rugix, you're making things harder than
                 they need to be."
@@ -148,7 +149,7 @@ export default function Home(): JSX.Element {
                 David Lekve, CTO at <a href="https://enmo.ai">enmo</a>
               </div>
             </div>
-            <div className="max-w-sm p-6 rounded-xl bg-white/50 dark:bg-black/20 border border-solid border-gray-200 dark:border-gray-700">
+            <div className="max-w-sm p-6 rounded-xl bg-white/50 dark:bg-black/20 border border-solid border-gray-200 dark:border-gray-700 flex flex-col justify-center">
               <div className="italic leading-[1.6] mb-4">
                 "Rugix is thoughtfully designed, fast to get started with, and
                 flexible in all the right ways. It's the tool suite for embedded
@@ -170,7 +171,7 @@ export default function Home(): JSX.Element {
               src="https://oss.silitics.com/third-party-logos/enmo-battery-brain.webp"
               alt="BatteryBrain device"
             />
-            <div className="max-w-[55ch]">
+            <div className="max-w-[60ch]">
               <h3 className="text-xl mb-2">BatteryBrain</h3>
               <div className="italic leading-[1.6]">
                 "At Enmo, we use Rugix for our product, BatteryBrain—a device

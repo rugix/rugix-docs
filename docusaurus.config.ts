@@ -4,7 +4,7 @@ import type * as Preset from "@docusaurus/preset-classic"
 const config: Config = {
   title: "Rugix",
   tagline:
-    "A suite of open-source tools to build reliable embedded Linux devices with efficient and secure over-the-air update capabilities.",
+    "Everything you need to build and maintain robust Linux-powered products, from development to production.",
   url: "https://rugix.org/",
   baseUrl: "/",
 
