@@ -55,7 +55,7 @@ function ToolOverview() {
             <p className="text-sm opacity-70 mb-4">
               Atomic A/B updates with automatic rollback, delta updates,
               cryptographic verification, and robust state management. Supports
-              any bootloader and integrates with any fleet management solution.
+              any bootloader and integrates with different fleet management solutions.
               Works with Yocto, Buildroot, or any Linux build system.
             </p>
             <span className="text-sm font-medium text-[var(--ifm-color-primary)]">
