@@ -171,7 +171,7 @@ const config: Config = {
     },
     prism: {
       theme: require("prism-react-renderer").themes.vsDark,
-      additionalLanguages: ["rust", "toml", "yaml", "bash", "docker"],
+      additionalLanguages: ["rust", "toml", "yaml", "bash", "docker", "nix"],
     },
   } satisfies Preset.ThemeConfig,
 
