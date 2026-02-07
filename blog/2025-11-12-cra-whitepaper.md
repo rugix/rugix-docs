@@ -1,6 +1,6 @@
 ---
-slug: cra-whitepaper
-title: "Whitepaper: A Practical Reference Architecture for CRA Compliance"
+slug: cra-whitepaper-with-ey
+title: CRA Whitepaper with EY
 authors: koehlma
 tags: [rugix, cra, security, compliance]
 ---
