@@ -105,7 +105,7 @@ export default function Home(): JSX.Element {
             <a href="https://goaqa.com/" target="_blank" className="flex">
               <img
                 className="max-h-8"
-                src="https://oss.silitics.com/third-party-logos/aqa.png"
+                src="https://silitics.com/files/third-party-logos/aqa.png"
                 alt="Aqa Technologies, Inc."
               />
             </a>
@@ -116,14 +116,14 @@ export default function Home(): JSX.Element {
             >
               <img
                 className="max-h-7"
-                src="https://oss.silitics.com/third-party-logos/echecker.svg"
+                src="https://silitics.com/files/third-party-logos/echecker.svg"
                 alt="eChecker"
               />
             </a>
             <a href="https://enmo.ai/" target="_blank" className="flex">
               <img
                 className="max-h-7"
-                src="https://oss.silitics.com/third-party-logos/enmo.webp"
+                src="https://silitics.com/files/third-party-logos/enmo.webp"
                 alt="Enmo"
               />
             </a>
@@ -134,7 +134,7 @@ export default function Home(): JSX.Element {
             >
               <img
                 className="max-h-7"
-                src="https://oss.silitics.com/third-party-logos/umbrel.svg"
+                src="https://silitics.com/files/third-party-logos/umbrel.svg"
                 alt="Umbrel, Inc."
               />
             </a>
@@ -168,7 +168,7 @@ export default function Home(): JSX.Element {
           <div className="flex items-center justify-center gap-x-8 flex-wrap gap-y-4 px-4">
             <img
               className="h-40"
-              src="https://oss.silitics.com/third-party-logos/enmo-battery-brain.webp"
+              src="/img/enmo-battery-brain.webp"
               alt="BatteryBrain device"
             />
             <div className="max-w-[60ch]">
