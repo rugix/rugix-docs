@@ -86,13 +86,13 @@ const config: Config = {
         },
         { to: "/blog", label: "Blog", position: "left" },
         {
-          to: "/cyber-resilience-act",
-          label: "Cyber Resilience Act",
+          to: "/fleet-management",
+          label: "Fleet Management",
           position: "right",
         },
         {
-          to: "/commercial-support",
-          label: "Commercial Support",
+          to: "/cyber-resilience-act",
+          label: "Cyber Resilience Act",
           position: "right",
         },
         {
@@ -133,6 +133,10 @@ const config: Config = {
           title: "Community",
           items: [
             {
+              label: "Blog",
+              href: "/blog",
+            },
+            {
               label: "GitHub",
               href: "https://github.com/rugix/rugix",
             },
@@ -146,8 +150,16 @@ const config: Config = {
           title: "More",
           items: [
             {
-              label: "Blog",
-              to: "/blog",
+              label: "Fleet Management",
+              to: "/fleet-management",
+            },
+            {
+              label: "Cyber Resilience Act",
+              to: "/cyber-resilience-act"
+            },
+            {
+              label: "Commercial Support",
+              to: "/commercial-support",
             },
           ],
         },

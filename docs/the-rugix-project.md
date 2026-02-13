@@ -16,8 +16,8 @@ Failed updates, incompatible or inconsistent software, and improper state manage
 Our aim is to **make it easy to follow best practices**, like read-only system partitions, fully atomic updates with on-device validation, and declarative, ideally fully reproducible builds.
 **We will not sacrifice robustness and reliability for simplicity.**
 
-The Rugix Project is driven by [Silitics](https://silitics.com), a for-profit company with a strong commitment to open source.
-If you want to learn more about the story and business case behind Rugix, please read our [Commitment to Open Source](/open-source-commitment).
+The Rugix Project is developed by [Silitics](https://silitics.com), a company 100% owned and led by its founder [Maximilian Köhl](https://github.com/koehlma).
+If you want to learn more about how we think about open source as a business, read our [Commitment to Open Source](/open-source-commitment).
 
 For a comparison of Rugix's tools to other solutions, check out the documentation of the respective tool:
 

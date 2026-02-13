@@ -1,43 +1,35 @@
-# Navigating the Cyber Resilience Act with Rugix
+# Cyber Resilience Act
 
-The *Cyber Resilience Act* (CRA) is about to reshape how connected devices and software products are developed, maintained, and brought to market in the European Union. Whether you're building smart devices, industrial systems, or embedded Linux platforms, **CRA compliance will not be optional**—and the time to prepare is now.
+The _Cyber Resilience Act_ (CRA) introduces mandatory cybersecurity requirements for all products with digital elements sold in the European Union. Reporting obligations take effect in **September 2026**, with full enforcement following in **December 2027**. If you manufacture, import, or distribute connected devices or embedded software in the EU, this applies to you.
 
-## What is the CRA, and Why Should You Care?
+## What the CRA Requires
 
-The CRA is an upcoming EU regulation that introduces mandatory cybersecurity requirements for all products with digital elements. That includes everything from IoT devices and networked appliances to firmware and embedded Linux distributions. If you manufacture, import, or distribute such products within the EU, you will be expected to:
+The CRA covers everything from IoT devices and networked appliances to firmware and embedded Linux distributions. At its core, it requires you to:
 
 - Ensure products are **secure by design**.
 - Maintain a clear and **up-to-date Software Bill of Materials** (SBOM).
 - Provide **timely security updates** throughout the product's lifecycle.
 - Establish **processes for vulnerability handling** and incident reporting.
 
-In short, you must not only build secure systems—you must also prove they are secure, traceable, and maintained.
+You must not only build secure systems, you must also prove they are secure, traceable, and maintained.
 
-## How Rugix Helps You Prepare
+## How Rugix Helps
 
-Rugix is designed for building and managing robust embedded Linux systems. From day one, Rugix has focused on security, maintainability, and updateability—qualities that align closely with CRA requirements.
+Together with [EY](https://www.ey.com/) and [Cumulocity](https://www.cumulocity.com/), we have published a [whitepaper on a practical reference architecture for CRA compliance](/blog/cra-whitepaper-with-ey). The whitepaper combines EY's legal expertise, Cumulocity's IoT fleet management, and our embedded engineering experience. Rugix serves as a core component of the reference architecture, providing essential on-device functionality.
 
-Here’s how Rugix fits into your CRA compliance journey:
+Specifically, Rugix covers two critical technical building blocks:
 
--  **SBOM Generation with Rugix Bakery.** Rugix Bakery builds tailored Linux distributions and automatically generates SBOMs as part of the build process. These machine-readable lists of included components are a core requirement of CRA compliance and crucial for vulnerability management and documentation.
-- **Updates with Rugix Ctrl.** Rugix Ctrl provides a reliable and secure over-the-air update mechanism, allowing you to push security updates promptly—another cornerstone of CRA compliance.
+- **Robust Updates with Rugix Ctrl.** Rugix Ctrl provides atomic A/B updates with automatic rollback and cryptographic signature verification. The CRA requires that you can deliver security updates reliably throughout your product's lifecycle.
+- **SBOM Generation with Rugix Bakery.** Rugix Bakery builds tailored Linux distributions and automatically generates SBOMs as part of the build process. These machine-readable lists of included components are a core CRA requirement and crucial for vulnerability management.
 
-Together, these tools give you a **solid technical foundation** for meeting your legal obligations.
+## From Device to Fleet
 
-## Compliance Is More Than Just Updates
+Having the right on-device tooling is a necessary foundation, but the CRA also requires you to actually deliver updates to devices in the field and handle vulnerability reporting across your fleet. That means you need fleet management infrastructure on top of Rugix.
 
-While Rugix takes care of critical infrastructure—like SBOMs and updates—CRA compliance requires more than just the right tooling. It involves organizational processes, product lifecycle planning, risk management, and often, tailoring solutions to your specific device and deployment landscape.
+Rugix is [designed to work with any fleet management solution](/fleet-management). If you are looking for a complete stack, [Nexigon](https://nexigon.cloud), our fleet management platform, is built from the ground up to work with Rugix. It provides OTA update orchestration, real-time monitoring, and full audit logging for compliance, giving you a seamless path from build to deployment.
 
-That’s where [Silitics](https://silitics.com) comes in.
+## Working with Us
 
-As the company behind Rugix, Silitics offers commercial support and end-to-end consulting to help you:
+[Silitics](https://silitics.com), the company behind Rugix and Nexigon, offers consulting for companies preparing for CRA compliance. We can help you design secure update strategies, integrate SBOM workflows into your build process, implement vulnerability monitoring, and set up fleet management infrastructure for your specific deployment landscape.
 
-- Assess your product’s CRA exposure.
-- Design and document secure update strategies.
-- Integrate SBOM workflows.
-- Plan for long-term compliance.
-
-#### Ready to Get Started?
-If you're looking for a clear path toward CRA readiness—without reinventing the wheel—Rugix gives you a head start. For everything beyond the technical building blocks, Silitics can help you connect the dots.
-
-[Get in touch to discuss how we can work together toward a secure and compliant future.](mailto:hello@silitics.com)
+[Get in touch](mailto:hello@silitics.com) if you want to talk about how Rugix, Nexigon, and our engineering expertise can help you get CRA-ready.

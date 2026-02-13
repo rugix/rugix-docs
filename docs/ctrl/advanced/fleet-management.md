@@ -9,14 +9,13 @@ To manage a fleet of devices remotely and deliver updates to devices, Rugix Ctrl
 
 :::info
 
-As Rugix Ctrl is independent from a fleet management solution, it avoids vendor lock-in.
-When using Rugix Ctrl, **you can switch between different fleet management solutions at anytime** and continue updating your existing fleet.
-It also allows you to choose a fleet management provider based on the needs and requirements of your application.
+Rugix Ctrl is independent from any particular fleet management solution, avoiding vendor lock-in.
+You can **switch between different fleet management solutions at any time** and continue updating your existing fleet.
+To learn more about our approach, see the [Fleet Management](/fleet-management) page.
 
 :::
 
 Currently, there are ready-made integrations with [Nexigon](https://nexigon.cloud/?utm_source=rugix.org&utm_campaign=rugix-fleet-management), [thin-edge.io](https://thin-edge.io/), [Memfault](https://memfault.com/), and [Mender](https://mender.io/).
-For other fleet management solutions, you can develop your own integration or [contract Silitics](/commercial-support), the company behind Rugix, to develop an integration for you.
 
 ## Nexigon
 
