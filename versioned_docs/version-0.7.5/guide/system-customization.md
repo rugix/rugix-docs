@@ -4,26 +4,26 @@ sidebar_position: 2
 
 # System Customization
 
-Generally, the root filesystem of an image is defined by a *layer*.
+Generally, the root filesystem of an image is defined by a _layer_.
 The layer to use for an image is specified by the `layer` directive of the image.
 Each layer is defined by a file `<layer name>.toml` in the `layers` directory having the following structure:
 
 ```typescript
 type Layer = {
-    parent?: string;
-    root?: boolean,
-    url?: string;
-    recipes?: string[];
-    exclude?: string[];
-    parameters?: {
-        [recipe: string]: {
-            [parameter: string]: string | boolean | number
-        };
+  parent?: string
+  root?: boolean
+  url?: string
+  recipes?: string[]
+  exclude?: string[]
+  parameters?: {
+    [recipe: string]: {
+      [parameter: string]: string | boolean | number
     }
+  }
 }
 ```
 
-A layer may be based upon a *parent* layer, may be fetched from a URL, or be a *root* layer.
+A layer may be based upon a _parent_ layer, may be fetched from a URL, or be a _root_ layer.
 
 Rugpi comes with pre-defined base layers that can be used by setting `parent` to
 
@@ -62,15 +62,15 @@ At the top-level of the layer configuration, the recipes to enable are specified
 ```toml title="<layer name>.toml"
 recipes = [...]
 ```
+
 To exclude specific recipes, use the `exclude` directive:
 
 ```toml
 exclude = [...]
 ```
 
-
 A recipe describes modifications to be done to the system.
-Rugpi Bakery comes with a set of [core recipes](https://github.com/silitics/rugpi/tree/main/bakery/repositories/core/recipes) which you can use.
+Rugpi Bakery comes with a set of [core recipes](https://github.com/rugix/rugix/tree/main/bakery/repositories/core/recipes) which you can use.
 
 Each recipe has its own directory with a `recipe.toml` configuration file.
 Recipes may have a `description`, a `priority`, and `dependencies`.
@@ -141,7 +141,7 @@ Rugpi Bakery does not mount the boot partition to `/boot` or `/boot/firmware`. T
 
 ## Repositories
 
-*Repositories* provide additional recipes and layers.
+_Repositories_ provide additional recipes and layers.
 The builtin `core` repository is always implicitly available.
 Additional repositories can be included in `rugpi-bakery.toml`.
 For instance, the quick-start templates may include the `rugpi-extra` repository with:
@@ -183,4 +183,3 @@ if [ -f "$RUGPI_PROJECT_DIR/.env" ]; then
     . "$RUGPI_PROJECT_DIR/.env"
 fi
 ```
-

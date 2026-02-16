@@ -119,7 +119,7 @@ Rugix Bakery supports the following CPU architectures:[^architecture-plans]
 
 [^architecture-plans]:
     We plan to support more architectures in the future.
-    Feel free to [open an issue on GitHub](https://github.com/silitics/rugpi/issues/new).
+    Feel free to [open an issue on GitHub](https://github.com/rugix/rugix/issues/new).
 
 | Architecture | Description               | Alpine    | Debian  | Raspberry Pi OS |
 | ------------ | ------------------------- | --------- | ------- | --------------- |

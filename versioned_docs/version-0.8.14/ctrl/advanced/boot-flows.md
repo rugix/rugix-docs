@@ -4,9 +4,9 @@ sidebar_position: 3
 
 # Boot Flows
 
-A *boot flow* provides the base mechanism to switch between different boot groups, e.g., to realize an A/B update scheme.
+A _boot flow_ provides the base mechanism to switch between different boot groups, e.g., to realize an A/B update scheme.
 To this end, a boot flow needs to be integrated with a bootloader.
-Rugix Ctrl provides the following *default boot flows*:
+Rugix Ctrl provides the following _default boot flows_:
 
 - `uboot`: Boot flow for U-Boot (A/B updates without a dead men's switch).
 - `grub`: Boot flow for GRUB (A/B updates without a dead men's switch).
@@ -42,7 +42,6 @@ If no boot flow is configured, Rugix Ctrl will try to detect it dynamically at r
 
 In all other cases, automatic runtime detection will fail.
 
-
 ## Boot Flow Interface
 
 Each boot flow must implement at least three operations:
@@ -58,11 +57,11 @@ In addition, a boot flow may support the following operations:
 
 - `pre_install(group)`: Runs before installing an update to the given group.
 - `post_install(group)`: Runs after installing an update to the given group.
-- `mark_good(group)`: Mark the given boot group as *good*.
-- `mark_bad(group)`: Mark the given boot group as *bad*.
+- `mark_good(group)`: Mark the given boot group as _good_.
+- `mark_bad(group)`: Mark the given boot group as _bad_.
 
 The `mark_good` and `mark_bad` operations are useful for implementing a dead men's switch, where the bootloader triggers a failover to another boot group after a certain number of failed boot attempts.
-Rugix Ctrl will **not** automatically mark boot groups as *good* or *bad*, instead an external mechanism is required to monitor the system and trigger the marking through `rugix-ctrl boot`.
+Rugix Ctrl will **not** automatically mark boot groups as _good_ or _bad_, instead an external mechanism is required to monitor the system and trigger the marking through `rugix-ctrl boot`.
 
 :::info
 
@@ -96,7 +95,6 @@ Committing an update will trigger the following operations:
 Note that `set_try_next` may or may not change the default boot group.
 In any case, it must guarantee that there is a (transitive) fallback to the current default to make sure that a broken update will not leave the system in an inoperable state.
 
-
 ## Generic Boot Flows
 
 Generic boot flows are independent of any specific device type.
@@ -116,7 +114,7 @@ The `grub` boot flow implements an A/B switching mechanism and assumes the follo
 ```
 
 That is, it requires separate boot and system partitions.
-The boot partitions must contain a *second stage boot script* that can be safely updated and used to customize the early boot process.
+The boot partitions must contain a _second stage boot script_ that can be safely updated and used to customize the early boot process.
 Furthermore, they typically contain the kernel and initial ramdisk.
 
 To implement the A/B switching Rugix Ctrl uses two boot variables:
@@ -146,7 +144,7 @@ Those boot arguments have the form `ro init=/usr/bin/rugix-ctrl root=PARTUUID=<.
 Those boot arguments may be loaded and used by the second stage boot script, however, they can also be ignored.
 In the future we may add additional variables, e.g., for just the partition UUID.
 
-For further details, we refer to the reference [boot scripts](https://github.com/silitics/rugpi/tree/main/boot/grub/cfg) used by Rugix Bakery.
+For further details, we refer to the reference [boot scripts](https://github.com/rugix/rugix/tree/main/boot/grub/cfg) used by Rugix Bakery.
 
 ### U-Boot
 
@@ -198,7 +196,6 @@ If you need anything specific, [contact us for commercial support](mailto:hello@
 
 :::
 
-
 ### Systemd Boot
 
 :::warning
@@ -218,20 +215,17 @@ Support for Systemd Boot would use the [Boot Loader Interface](https://systemd.i
 
 In contrast to the other boot flows there would be no separate boot partitions.
 
-
 ## RAUC-compatible Boot Flows
 
 The RAUC-compatible boot flows interact with the bootloader in [the same way as RAUC](https://rauc.readthedocs.io/en/latest/reference.html#bootloader-interaction).
 
 See the [RAUC migration guide for details](../migrating/from-rauc.md).
 
-
 ## Mender-compatible Boot Flows
 
 The Mender-compatible boot flows interact with the bootloader in the same way as Mender.
 
 See the [Mender migration guide for details](../migrating/from-mender.md).
-
 
 ## Raspberry Pi Boot Flows
 
@@ -271,7 +265,7 @@ This boot flow assumes the following image and system layout:
 
 ```
 MBR =============================== Image
-     1: config    FAT32 
+     1: config    FAT32
      2: boot-a    FAT32
      3: boot-b    FAT32
      5: system-a
@@ -300,8 +294,7 @@ The reference implementation for Raspberry Pi uses two boot scripts, one first s
 The first stage follows the steps outlined above and then loads the second stage boot script.
 This has the advantage that the second stage script can be updated in a fail-safe way.
 
-For further details, we refer to the reference [boot scripts](https://github.com/silitics/rugpi/tree/main/boot/u-boot/scripts) for Raspberry Pi.
-
+For further details, we refer to the reference [boot scripts](https://github.com/rugix/rugix/tree/main/boot/u-boot/scripts) for Raspberry Pi.
 
 ## On Atomicity of Commits
 

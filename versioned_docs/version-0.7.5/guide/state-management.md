@@ -117,4 +117,4 @@ Likewise, another button could be programmed to initiate a reboot to the spare s
 ## Implementation Details
 
 The state management is implemented by a custom init process which performs the necessary mounts and sets up the root filesystem prior to invoking Systemd.
-For further details, checkout [the implementation](https://github.com/silitics/rugpi/blob/main/crates/rugpi-ctrl/src/init.rs).
+For further details, checkout [the implementation](https://github.com/rugix/rugix/blob/main/crates/rugpi-ctrl/src/init.rs).

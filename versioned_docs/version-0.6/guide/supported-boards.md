@@ -6,13 +6,13 @@ sidebar_position: 0
 
 In principle, Rugpi supports all Raspberry Pi models.
 **We may also extend support to other boards in the future.
-If you are interested in support for other boards, please open a [discussion](https://github.com/silitics/rugpi/discussions) or [contact us directly](mailto:rugpi@silitics.com?subject=Rugpi%20Board%20Support).**
+If you are interested in support for other boards, please open a [discussion](https://github.com/rugix/rugix/discussions) or [contact us directly](mailto:rugpi@silitics.com?subject=Rugpi%20Board%20Support).**
 
 Here is an overview over all the supported Raspberry Pi models:
 
-| Pi 5 | Pi 4 | Pi 3   | Pi 2 v1.2 | Pi 2  | Pi 1   | Pi Zero 2 | Pi Zero | CM 4 | CM 3  | CM 1   |
-| ---- | ---- | ------ | --------- | ----- | ------ | --------- | ------- | ---- | ----- | ------ |
-| ✅   | ✅   | ✅[^1]  | ✅[^1]    | 🤷‍♂️[^1] | ✅[^1] | ✅[^1]     | ✅[^1]  | ✅   | 🤷‍♂️[^1] | 🤷‍♂️[^1] |
+| Pi 5 | Pi 4 | Pi 3   | Pi 2 v1.2 | Pi 2   | Pi 1   | Pi Zero 2 | Pi Zero | CM 4 | CM 3   | CM 1   |
+| ---- | ---- | ------ | --------- | ------ | ------ | --------- | ------- | ---- | ------ | ------ |
+| ✅   | ✅   | ✅[^1] | ✅[^1]    | 🤷‍♂️[^1] | ✅[^1] | ✅[^1]    | ✅[^1]  | ✅   | 🤷‍♂️[^1] | 🤷‍♂️[^1] |
 
 ✅ fully supported, 🤷‍♂️ in principle supported but untested
 
@@ -23,11 +23,13 @@ Here is an overview over all the supported Raspberry Pi models:
 Raspberry Pi OS releases based on Debian Bullseye and Bookworm are supported.
 
 For 32-bit models and to build 32-bit images for 64-bit boards, you need to set the `architecture` for the respective image to:
+
 ```toml
 architecture = "armhf"
 ```
 
 To build 32-bit images, you also need to enable emulation of `armhf` in Docker:
+
 ```shell
 docker run --privileged --rm tonistiigi/binfmt --install armhf
 ```

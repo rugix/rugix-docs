@@ -4,7 +4,7 @@ sidebar_position: 4
 
 # Boot Flows
 
-A *boot flow* provides the base mechanism to switch between the A and B system, e.g., after installing an update.
+A _boot flow_ provides the base mechanism to switch between the A and B system, e.g., after installing an update.
 To this end, it must implement two primitive operations: (i) rebooting to the spare system once and (ii) setting the default system.
 Boot flows are typically implemented on top of a bootloader and Rugpi offers out-of-the-box integrations with popular bootloaders:
 
@@ -70,7 +70,7 @@ The reference implementation for Raspberry Pi uses two boot scripts, one first s
 The first stage follows the steps outlined above and then loads the second stage boot script.
 This has the advantage that the second stage script can be updated in a fail-safe way.
 
-For further details, we refer to the reference [boot scripts](https://github.com/silitics/rugpi/tree/main/boot/u-boot/scripts) for Raspberry Pi.
+For further details, we refer to the reference [boot scripts](https://github.com/rugix/rugix/tree/main/boot/u-boot/scripts) for Raspberry Pi.
 
 ### Grub (EFI)
 

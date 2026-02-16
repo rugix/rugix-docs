@@ -32,4 +32,4 @@ The file `boot.env` contains the kernel command line arguments (generated from `
 We use U-Boot environment files with a CRC32 checksum.
 Hence, if files are corrupted, they will not be loaded.
 
-For further details, we refer to the [boot scripts](https://github.com/silitics/rugpi/tree/main/boot/u-boot/scripts).
+For further details, we refer to the [boot scripts](https://github.com/rugix/rugix/tree/main/boot/u-boot/scripts).

@@ -4,10 +4,10 @@ sidebar_position: 1
 
 # System Customization
 
-Generally, the root filesystem of an image is defined by a *layer*.
+Generally, the root filesystem of an image is defined by a _layer_.
 The layer to use for an image is specified by the `layer` directive of the image.
 Each layer is defined by a file `<layer name>.toml` in the `layers` directory.
-This file specifies the *parent layer*, the recipes to enable, and their parameters.
+This file specifies the _parent layer_, the recipes to enable, and their parameters.
 Note that the parent layer can be an official release of Raspberry Pi OS, e.g., `core/raspios-bookworm`, or any other layer.
 For an example, check out the [`customized` layer](https://github.com/silitics/rugpi-template/blob/main/layers/customized.toml) of the template.
 
@@ -16,6 +16,7 @@ At the top-level of the layer configuration, the recipes to enable are specified
 ```toml title="<layer name>.toml"
 recipes = [...]
 ```
+
 To exclude specific recipes, use the `exclude` directive:
 
 ```toml
@@ -24,7 +25,7 @@ exclude = [...]
 
 ## Repositories
 
-*Repositories* provide additional recipes and layers.
+_Repositories_ provide additional recipes and layers.
 The builtin `core` repository is always implicitly available.
 Additional repositories can be included in `rugpi-bakery.toml`.
 For instance, the quick-start template includes the `rugpi-extra` repository with:
@@ -46,7 +47,7 @@ Among other things, this enables semantic versioning of recipes and layers.
 ## Recipes
 
 A recipe describes modifications to be done to the system.
-Rugpi Bakery comes with a set of [core recipes](https://github.com/silitics/rugpi/tree/main/repositories/core/recipes) which you can use.
+Rugpi Bakery comes with a set of [core recipes](https://github.com/rugix/rugix/tree/main/repositories/core/recipes) which you can use.
 Additional guides and recipes for reoccurring problems are also described in the [Rugpi Cookbook](../cookbook).
 
 Each recipe has its own directory with a `recipe.toml` configuration file.
