@@ -19,7 +19,7 @@ This is not inherently wrong. For some teams, a turnkey solution may be the fast
 
 ## Why This Matters
 
-Embedded devices are not phones. You don't replace them every three years. Industrial IoT deployments routinely have lifecycles of 10 to 15 years. Medical devices, automotive systems, and manufacturing equipment can be even longer. The vendor you choose today needs to still work for you in 2035.
+Embedded devices are not phones. You don't replace them every three years. Industrial IoT deployments routinely have lifecycles of 10 to 15 years. Medical devices, automotive systems, and manufacturing equipment can be even longer. The vendor you choose today needs to work for your throughout the entire product lifecycle.
 
 A lot can happen in that time. Companies get acquired. Pricing models change. Products get discontinued. In just the last few years, we have seen acquisitions, public cloud services being shut down, and open-source offerings with critical features reserved for commercial tiers. These are not hypothetical risks.
 
