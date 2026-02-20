@@ -102,6 +102,17 @@ export default function Home(): JSX.Element {
         <section className="py-16 bg-black/5 dark:bg-white/5">
           <h2 className="text-center text-3xl mb-8">Trusted By</h2>
           <div className="px-4 flex-wrap gap-y-8 flex items-center justify-center gap-x-12 opacity-85">
+            <a
+              href="https://umbrel.com/"
+              target="_blank"
+              className="flex items-center"
+            >
+              <img
+                className="max-h-7"
+                src="https://silitics.com/files/third-party-logos/umbrel.svg"
+                alt="Umbrel, Inc."
+              />
+            </a>
             <a href="https://goaqa.com/" target="_blank" className="flex">
               <img
                 className="max-h-8"
@@ -127,19 +138,16 @@ export default function Home(): JSX.Element {
                 alt="Enmo"
               />
             </a>
-            <a
-              href="https://umbrel.com/"
-              target="_blank"
-              className="flex items-center"
-            >
-              <img
-                className="max-h-7"
-                src="https://silitics.com/files/third-party-logos/umbrel.svg"
-                alt="Umbrel, Inc."
-              />
-            </a>
           </div>
           <div className="flex flex-wrap justify-center items-stretch gap-8 px-4 mt-10">
+            <div className="max-w-sm p-6 rounded-xl bg-white/50 dark:bg-black/20 border border-solid border-gray-200 dark:border-gray-700 flex flex-col justify-center">
+              <div className="italic leading-[1.6] mb-4">
+                "When you ship OTA updates to tens of thousands of devices in people's homes, you need rock-solid reliability. Rugix delivers exactly that."
+              </div>
+              <div className="text-sm opacity-80">
+                Luke Childs, CTO at <a href="https://umbrel.com/">Umbrel</a>
+              </div>
+            </div>
             <div className="max-w-sm p-6 rounded-xl bg-white/50 dark:bg-black/20 border border-solid border-gray-200 dark:border-gray-700 flex flex-col justify-center">
               <div className="italic leading-[1.6] mb-4">
                 "If you're not using Rugix, you're making things harder than
@@ -162,16 +170,36 @@ export default function Home(): JSX.Element {
           </div>
         </section>
 
-        {/* User Success Story */}
+        {/* User Success Stories */}
         <section id="user-success-stories" className="py-16">
-          <h2 className="text-center text-3xl mb-8">User Success Story</h2>
-          <div className="flex items-center justify-center gap-x-8 flex-wrap gap-y-4 px-4">
-            <img
-              className="h-40"
-              src="/img/enmo-battery-brain.webp"
-              alt="BatteryBrain device"
-            />
-            <div className="max-w-[60ch]">
+          <h2 className="text-center text-3xl mb-8">Success Stories</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-16 max-w-4xl mx-auto px-4">
+            <div>
+              <img
+                className="w-full rounded-xl mb-4 aspect-video object-cover"
+                src="/img/umbrel-pro.jpg"
+                alt="Umbrel Pro device"
+              />
+              <h3 className="text-xl mb-2">Umbrel</h3>
+              <p className="mb-3 opacity-80">
+                <a href="https://umbrel.com/">Umbrel</a> is a personal home
+                cloud platform that lets anyone self-host their files, media,
+                and applications with tens of thousands of installations
+                worldwide. Umbrel chose Rugix for{" "}
+                <a href="https://umbrel.com/umbrelos">umbrelOS</a>, powering
+                devices like the recently launched{" "}
+                <a href="https://umbrel.com/umbrel-pro">Umbrel Pro</a>,{" "}
+                their premium home cloud server. Rugix was chosen for
+                its robustness, builtin state management with clean factory
+                resets, and highly efficient delta updates.
+              </p>
+            </div>
+            <div>
+              <img
+                className="w-full rounded-xl mb-4 aspect-video object-cover"
+                src="/img/enmo-battery-brain.webp"
+                alt="BatteryBrain device"
+              />
               <h3 className="text-xl mb-2">BatteryBrain</h3>
               <div className="italic leading-[1.6]">
                 "At Enmo, we use Rugix for our product, BatteryBrain—a device
