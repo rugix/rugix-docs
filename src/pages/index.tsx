@@ -173,7 +173,7 @@ export default function Home(): JSX.Element {
         {/* User Success Stories */}
         <section id="user-success-stories" className="py-16">
           <h2 className="text-center text-3xl mb-8">Success Stories</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-16 max-w-4xl mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-16 max-w-6xl mx-auto px-4">
             <div>
               <img
                 className="w-full rounded-xl mb-4 aspect-video object-cover"
@@ -192,6 +192,23 @@ export default function Home(): JSX.Element {
                 their premium home cloud server. Rugix was chosen for
                 its robustness, builtin state management with clean factory
                 resets, and highly efficient delta updates.
+              </p>
+            </div>
+            <div>
+              <img
+                className="w-full rounded-xl mb-4 aspect-video object-cover"
+                src="/img/echecker-testbench.jpg"
+                alt="eChecker test bench with e-bike"
+              />
+              <h3 className="text-xl mb-2">eChecker</h3>
+              <p className="mb-3 opacity-80">
+                <a href="https://www.ebike-checker.de/en/">eChecker</a> builds
+                test benches for e-bikes, drive units, and
+                e-scooters used by manufacturers worldwide. Each test bench
+                is controlled by an embedded Linux system, powered by Rugix.
+                Rugix enabled eChecker to easily build custom system images
+                and reliably deliver over-the-air software updates to test
+                benches deployed across customer sites.
               </p>
             </div>
             <div>
