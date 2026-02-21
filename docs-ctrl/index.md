@@ -1,3 +1,7 @@
+---
+sidebar_position: 1
+---
+
 # Rugix Ctrl
 
 _Rugix Ctrl_ is a powerful tool for robust over-the-air system updates and system state management.
@@ -48,7 +52,7 @@ Update bundles contain the actual data required to install an update, like files
 You find pre-built binaries of these tools on [the Releases page of Rugix's Git repository](https://github.com/rugix/rugix/releases/).
 
 :::tip
-The easiest way to use Rugix Ctrl is with [Rugix Bakery](../bakery/index.md), a flexible and user-friendly build system for bespoke Linux distributions developed by the Rugix Project.
+The easiest way to use Rugix Ctrl is with [Rugix Bakery](/docs/bakery/), a flexible and user-friendly build system for bespoke Linux distributions developed by the Rugix Project.
 With Rugix Bakery, it is straightforward to integrate Rugix Ctrl into your system.
 Furthermore, Rugix Bakery also includes `rugix-bundler` and can directly create update bundles for Rugix Ctrl.
 :::

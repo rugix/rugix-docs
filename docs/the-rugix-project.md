@@ -21,5 +21,5 @@ If you want to learn more about how we think about open source as a business, re
 
 For a comparison of Rugix's tools to other solutions, check out the documentation of the respective tool:
 
-- [Rugix Ctrl: Comparison to Other Solutions](./ctrl/index.md#comparison-to-other-solutions)
-- [Rugix Bakery: Comparison to Other Solutions](./bakery/index.md#comparison-to-other-solutions)
+- [Rugix Ctrl: Comparison to Other Solutions](/docs/ctrl/#comparison-to-other-solutions)
+- [Rugix Bakery: Comparison to Other Solutions](/docs/bakery/#comparison-to-other-solutions)

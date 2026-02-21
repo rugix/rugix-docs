@@ -1,0 +1,37 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run build:*)",
+      "WebSearch",
+      "WebFetch(domain:interrupt.memfault.com)",
+      "WebFetch(domain:oss.silitics.com)",
+      "WebFetch(domain:thin-edge.github.io)",
+      "WebFetch(domain:silitics.com)",
+      "WebFetch(domain:ecosystem.cumulocity.com)",
+      "WebFetch(domain:umbrel.com)",
+      "WebFetch(domain:news.ycombinator.com)",
+      "WebFetch(domain:www.geeky-gadgets.com)",
+      "WebFetch(domain:thebitcoinhole.com)",
+      "Bash(curl:*)",
+      "Bash(ls:*)",
+      "WebFetch(domain:www.ebike-checker.de)",
+      "WebFetch(domain:www.weinmann-online.de)",
+      "WebFetch(domain:rugix.org)",
+      "Bash(identify:*)",
+      "Bash(nix-shell:*)",
+      "Bash(python3:*)",
+      "WebFetch(domain:nexigon.cloud)",
+      "WebFetch(domain:aqago.com)",
+      "WebFetch(domain:www.embedded-world.de)",
+      "Bash(find:*)",
+      "Bash(git:*)",
+      "WebFetch(domain:docusaurus.io)",
+      "WebFetch(domain:github.com)",
+      "Bash(cp:*)",
+      "Bash(npm run:*)",
+      "Bash(npx docusaurus docs:version:ctrl 1.0 2>&1 && npx docusaurus docs:version:bakery 0.9 2>&1)",
+      "Bash(grep:*)",
+      "Bash(tail:*)"
+    ]
+  }
+}

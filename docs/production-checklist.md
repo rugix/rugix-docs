@@ -14,7 +14,7 @@ Here is a rough checklist of things to consider before deploying anything to pro
 
 ## System Size
 
-Make sure that you have [configured a system size](./ctrl/bootstrapping.mdx#default-layout) that will be sufficient as your system evolves.
+Make sure that you have [configured a system size](/docs/ctrl/bootstrapping#default-layout) that will be sufficient as your system evolves.
 While possible, **growing the system partitions in production is a potentially risky and complex endeavour and not supported by Rugix**. The default size of the system partitions is 4 GiB. To find a good size, consider how your application evolves.
 
 ## Testing
@@ -23,7 +23,7 @@ Always test any images and update bundles before deploying anything in productio
 
 ## Pre-Commit Hooks
 
-Make sure to have proper [pre-commit hooks](./ctrl/hooks.md) installed to prevent any commits as long as there are issues. In particular, make sure that the system is still able to reach any remote servers necessary for remote control or update installation. Without pre-commit hooks, **you risk rendering your device inoperable, loosing the ability to reach it remotely, and loosing the ability to deploy updates**.
+Make sure to have proper [pre-commit hooks](/docs/ctrl/hooks) installed to prevent any commits as long as there are issues. In particular, make sure that the system is still able to reach any remote servers necessary for remote control or update installation. Without pre-commit hooks, **you risk rendering your device inoperable, loosing the ability to reach it remotely, and loosing the ability to deploy updates**.
 
 ## System Users and Groups
 

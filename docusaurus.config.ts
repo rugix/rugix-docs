@@ -34,8 +34,10 @@ const config: Config = {
       {
         docs: {
           sidebarPath: require.resolve("./sidebars.js"),
-          // lastVersion: "current",
-          lastVersion: "0.8.14",
+          lastVersion: "current",
+          versions: {
+            current: { label: "Latest" },
+          },
           editUrl: "https://github.com/rugix/rugix-docs/tree/main/",
         },
         blog: {
@@ -99,8 +101,14 @@ const config: Config = {
         },
         {
           type: "docsVersionDropdown",
+          docsPluginId: "ctrl",
           position: "right",
-          // dropdownItemsAfter: [{to: '/versions', label: 'All versions'}],
+          dropdownActiveClassDisabled: true,
+        },
+        {
+          type: "docsVersionDropdown",
+          docsPluginId: "bakery",
+          position: "right",
           dropdownActiveClassDisabled: true,
         },
         {
@@ -192,6 +200,26 @@ const config: Config = {
   themes: ["@docusaurus/theme-mermaid", "docusaurus-json-schema-plugin"],
 
   plugins: [
+    [
+      "@docusaurus/plugin-content-docs",
+      {
+        id: "ctrl",
+        path: "docs-ctrl",
+        routeBasePath: "docs/ctrl",
+        sidebarPath: require.resolve("./sidebars-ctrl.js"),
+        editUrl: "https://github.com/rugix/rugix-docs/tree/main/",
+      },
+    ],
+    [
+      "@docusaurus/plugin-content-docs",
+      {
+        id: "bakery",
+        path: "docs-bakery",
+        routeBasePath: "docs/bakery",
+        sidebarPath: require.resolve("./sidebars-bakery.js"),
+        editUrl: "https://github.com/rugix/rugix-docs/tree/main/",
+      },
+    ],
     [
       "docusaurus-plugin-plausible",
       {
