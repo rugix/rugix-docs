@@ -138,7 +138,7 @@ export default function Home(): JSX.Element {
                 alt="Enmo"
               />
             </a>
-            <span className="text-sm opacity-60">AND OTHERS</span>
+            <span className="text-sm opacity-60">AND MANY MORE</span>
           </div>
           <div className="flex flex-wrap justify-center items-stretch gap-8 px-4 mt-10">
             <div className="max-w-sm p-6 rounded-xl bg-white/50 dark:bg-black/20 border border-solid border-gray-200 dark:border-gray-700 flex flex-col justify-center">
