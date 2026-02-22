@@ -115,7 +115,7 @@ The bundle contains two payloads, a filesystem for a boot partition (`boot` slot
 
 The `hash-algorithm` property specifies a hash algorithm for ensuring a bundle's integrity.
 By default, an update bundle will include hashes of the payloads as well as other integral parts of the bundle using the specified algorithm.
-When installing an update bundle, you can use `--verify-bundle <hash>` where `<hash>` is a hash of the bundle's header that can be obtained with:
+When installing an update bundle, you can use `--bundle-hash <hash>` where `<hash>` is a hash of the bundle's header that can be obtained with:
 
 ```shell
 rugix-bundler hash <bundle path.rugixb>
@@ -125,6 +125,9 @@ Note that this is not a hash over the entire bundle but just the bundle's header
 The header of the bundle, in turn, contains hashes of the payload headers as well as of the payloads themselves.
 Combined these hashes form a [Merkle tree](https://en.wikipedia.org/wiki/Merkle_tree).
 That way, by providing the hash of the root, Rugix Ctrl can verify different parts of the bundle individually as they are read.
+
+Bundle verification is mandatory by default. Either a valid [embedded signature](../signed-updates.md) or a bundle hash must be provided.
+See [Signed Updates](../signed-updates.md) for details on configuring signature-based verification.
 
 ## Payload Delivery
 

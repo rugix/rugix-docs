@@ -196,10 +196,16 @@ scp -P 2222 build/customized-efi-arm64/system.rugixb root@127.0.0.1:/root
 When the upload is complete, the bundle can be installed via SSH as an update with the following command:
 
 ```shell
-rugix-ctrl update install --verify-bundle <hash> /root/system.rugixb
+rugix-ctrl update install --bundle-hash <hash> /root/system.rugixb
 ```
 
 Here, `<hash>` is the bundle hash produced by the earlier `bake` command.
+
+:::tip
+Rugix Ctrl is secure by design. Thus, it requires either a bundle hash or a [signed bundle](/docs/ctrl/signed-updates) for installation.
+For development purposes, you can skip verification with `--insecure-skip-bundle-verification`.
+For further details, see the dedicated page on [Signed Updates](/docs/ctrl/signed-updates).
+:::
 
 This will install the bundle as an update and then reboot the system.
 You will be able to observe the reboot from the VM console (the terminal where `./run-bakery run` is running).

@@ -31,6 +31,19 @@ If you are creating users or groups with recipes, make sure to use fixed user an
 If you don't assign fixed IDs, the IDs might change over time as you add further users or groups or change the order in which such users or groups are created.
 If you then deploy an update where the user and group IDs have changed over the old version, you are prone to permission errors for persisted state.
 
+## Bundle Signature Verification
+
+Make sure to configure [bundle signature verification](/docs/ctrl/signed-updates) for production.
+Bundle verification is mandatory by default. Rugix Ctrl will refuse to install updates without a valid signature or bundle hash.
+Configure a root certificate in `/etc/rugix/ctrl.toml` so that only bundles signed by your CA can be installed:
+
+```toml title="/etc/rugix/ctrl.toml"
+[signatures]
+roots = ["/etc/rugix/root.crt"]
+```
+
+**Never use `--insecure-skip-bundle-verification` in production**, as it allows the installation of unsigned and unverified update bundles.
+
 ## Root Persistence
 
 While the recipe `core/persist-root-home` is convenient for development, you should not use it in production, in particular, if you plan to update SSH keys in `authorized_keys`.

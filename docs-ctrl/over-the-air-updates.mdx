@@ -146,14 +146,16 @@ This allows users to shut down the system normally while remembering the update 
 
 ### Cryptographic Bundle Verification
 
-To verify the integrity of an update bundle, use the `--verify-bundle <hash>` option.
-This option takes a hash of the bundle header, which is then used to ensure the integrity of the bundle, preventing any manipulated data from ever been written.
+Bundle verification is **mandatory by default**.
+When installing an update, Rugix Ctrl requires either a valid [embedded signature](./signed-updates.md) or a bundle hash (via `--bundle-hash`).
+If neither can be established, the installation will be refused.
 
-Rugix Ctrl does not yet support embedding signatures into a bundle.
-However, you can still implement signed updates in multiple ways on top of Rugix Ctrl's functionality.
-For instance, you could ship a signed update manifest to your device that contains the URL of the bundle and the hash for verification.
-You could also combine such an manifest with the bundle in a Tar archive which users can upload through your web UI.
-The respective endpoint would then read the manifest out of the Tar archive, verify its signature, and afterwards stream the bundle itself into Rugix Ctrl, providing it with the hash for verification.
+To verify the integrity of an update bundle using a hash, use the `--bundle-hash <hash>` option.
+This option takes a hash of the bundle header, which is then used to ensure the integrity of the bundle, preventing any manipulated data from ever being written.
+
+For signature-based verification, Rugix Ctrl supports [embedded CMS signatures](./signed-updates.md) in update bundles.
+Root certificates for verification can be configured in `/etc/rugix/ctrl.toml` or provided via the `--root-cert` CLI option.
+See [Signed Updates](./signed-updates.md) for details on signing bundles and configuring signature verification.
 
 ### Installing Images
 

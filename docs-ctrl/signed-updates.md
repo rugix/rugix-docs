@@ -4,18 +4,11 @@ sidebar_position: 6
 
 # Signed Updates
 
-:::warning
-
-**The functionality described here has not been fully battle-tested yet.**
-
-:::
-
 When updates are installed from untrusted sources, such as user-provided update bundles, it is important to verify that updates are genuine and have not been tampered with.
-To this end, Rugix Ctrl supports *embedded signatures* in update bundles.
-Embedded signatures are based on the widely-adopted [*Cryptographic Message Syntax* (CMS) standard](https://datatracker.ietf.org/doc/html/rfc5652), which supports certificate-based signature verification.
+To this end, Rugix Ctrl supports _embedded signatures_ in update bundles.
+Embedded signatures are based on the widely-adopted [_Cryptographic Message Syntax_ (CMS) standard](https://datatracker.ietf.org/doc/html/rfc5652), which supports certificate-based signature verification.
 This allows existing CA infrastructure to be reused for signing and verifying update bundles.
-Furthermore, updates can be signed using the PKCS#11 interface, which allows for secure key storage in *Hardware Security Modules* (HSMs).
-
+Furthermore, updates can be signed using the PKCS#11 interface, which allows for secure key storage in _Hardware Security Modules_ (HSMs).
 
 ## Signing Bundles
 
@@ -31,27 +24,26 @@ Additional intermediate certificates can be included using the `--intermediate-c
 If you do not have a certificate and private key, you can follow the following steps to create a simple self-signed CA:
 
 1. Generate a root certificate and private key:
-    ```shell
-    openssl ecparam -name prime256v1 -genkey -noout -out root.key
-    openssl req -x509 -new -key root.key -out root.crt -days 3650 -subj "/CN=Update CA"
-    ```
+   ```shell
+   openssl ecparam -name prime256v1 -genkey -noout -out root.key
+   openssl req -x509 -new -key root.key -out root.crt -days 3650 -subj "/CN=Update CA"
+   ```
 2. Generate a short-lived certificate and private key for signing update bundles:
-    ```shell
-    openssl ecparam -name prime256v1 -genkey -noout -out signer.key
-    openssl req -new -key signer.key -out signer.csr -subj "/CN=Update Signer"
-    openssl x509 -req -in signer.csr \
-        -CA root.crt -CAkey root.key -CAcreateserial \
-        -out signer.crt -days 365
-    ```
+   ```shell
+   openssl ecparam -name prime256v1 -genkey -noout -out signer.key
+   openssl req -new -key signer.key -out signer.csr -subj "/CN=Update Signer"
+   openssl x509 -req -in signer.csr \
+       -CA root.crt -CAkey root.key -CAcreateserial \
+       -out signer.crt -days 365
+   ```
 
 The root certificate is valid for 10 years and should be deployed to the devices for verifying updates.
 The signer certificate is valid for one year and should be used for signing bundles.
 **Private keys must be kept secret!**
 
-
 ### External Signing
 
-Instead of signing a bundle directly through `rugix-bundler`, you can also create a raw *signed metadata* file and sign it through some external means.
+Instead of signing a bundle directly through `rugix-bundler`, you can also create a raw _signed metadata_ file and sign it through some external means.
 To generate a signed metadata file, use the following command:
 
 ```shell
@@ -85,7 +77,6 @@ In particular, this allows PKCS#11-compatible HSMs to be used for signing throug
 
 :::
 
-
 ## Verifying Bundles
 
 To verify that a bundle has been signed by a root of trust, you can use the following command:
@@ -96,15 +87,25 @@ rugix-bundler signatures verify <BUNDLE> <CERT> <OUT>
 
 Note that the certificate does not need to be the certificate used for signing but can be any certificate serving as a root of trust for which a certificate chain can be established using the certificates embedded in the CMS signature.
 
-To enforce signatures when installing updates through Rugix Ctrl, use the following options:
+### Configuring Signature Verification
 
+Bundle verification is **mandatory by default**.
+When installing an update, Rugix Ctrl requires either a valid signature or a bundle hash (via `--bundle-hash`).
+If neither can be established, the installation will be refused.
+
+To configure a root certificate for signature verification, create a configuration file at `/etc/rugix/ctrl.toml`:
+
+```toml title="/etc/rugix/ctrl.toml"
+[signatures]
+roots = ["/etc/rugix/root.crt"]
 ```
---verify-signature --root-cert <CERT>
-```
+
+With this configuration, Rugix Ctrl will automatically verify bundle signatures against the specified root certificate when installing updates.
+
+The root certificate can also be specified on the command line with `--root-cert <CERT>`, which overrides the configured default.
 
 :::danger
 
-**Signature verification must be explicitly enabled.**
-In the future, we will make signature verification the mandatory default.
+**To skip bundle verification entirely (not recommended for production), use the `--insecure-skip-bundle-verification` flag.**
 
 :::

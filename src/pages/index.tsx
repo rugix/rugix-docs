@@ -56,7 +56,7 @@ function ToolOverview() {
               Atomic A/B updates with automatic rollback, delta updates,
               cryptographic verification, and robust state management. Supports
               any bootloader and integrates with different fleet management solutions.
-              Works with Yocto, Buildroot, or any Linux build system.
+              Works with Yocto, Buildroot, and Linux build systems.
             </p>
             <span className="text-sm font-medium text-[var(--ifm-color-primary)]">
               Learn more →

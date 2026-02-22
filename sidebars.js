@@ -2,11 +2,11 @@
 const sidebars = {
   docsSidebar: [
     { type: "doc", id: "getting-started" },
-    { type: "doc", id: "the-rugix-project" },
     { type: "html", value: '<hr style="margin: 8px 0" />' },
     { type: "link", label: "Rugix Ctrl", href: "/docs/ctrl" },
     { type: "link", label: "Rugix Bakery", href: "/docs/bakery" },
     { type: "html", value: '<hr style="margin: 8px 0" />' },
+    { type: "doc", id: "the-rugix-project" },
     { type: "doc", id: "production-checklist" },
     { type: "doc", id: "upgrading-from-v0.8" },
     {
