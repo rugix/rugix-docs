@@ -7,19 +7,9 @@ sidebar_position: 5
 We provide open-source [Yocto](https://www.yoctoproject.org/) layers for integrating Rugix Ctrl into a custom, Yocto-based Linux distribution tailored to your embedded device.
 The yocto layers are [available here](https://github.com/silitics/meta-rugix/tree/main).
 
-:::warning
-These Yocto layers are **work-in-progress and not intended for production use** at this time.
-We appreciate any feedback you may have regarding this Yocto integration – feel free to [open an issue](https://github.com/silitics/meta-rugix/issues/new/choose).
-:::
-
 ## Installing Rugix Ctrl
 
-The `meta-rugix-core` layer provides the `rugix-ctrl` and `rugix-ctrl-bin` recipes for installing Rugix Ctrl.
-The `rugix-ctrl-bin` recipes use the pre-build Rugix Ctrl binaries available from Rugix's GitHub releases page.
-
-:::note
-At the moment, the `rugix-ctrl` does not work yet due to a compilation issue.
-:::
+The `meta-rugix-core` layer provides the `rugix-ctrl` recipes for installing Rugix Ctrl.
 
 ## Bootstrapping Configuration
 
@@ -55,6 +45,8 @@ Each payload is then configured through a corresponding `RUGIX_PAYLOAD_` variabl
 :::note
 In the future, we will extend the class to support additional payload types.
 :::
+
+Note that this recipe doesn't produce signed bundles. You can sign bundles after the build process directly using Rugix Bundler.
 
 ## Raspberry Pi
 

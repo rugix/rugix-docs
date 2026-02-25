@@ -101,7 +101,6 @@ roots = ["/etc/rugix/root.crt"]
 ```
 
 With this configuration, Rugix Ctrl will automatically verify bundle signatures against the specified root certificate when installing updates.
-
 The root certificate can also be specified on the command line with `--root-cert <CERT>`, which overrides the configured default.
 
 :::danger

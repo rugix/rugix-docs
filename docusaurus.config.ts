@@ -183,7 +183,7 @@ const config: Config = {
             },
             {
               // German law requires us to have an Impressum.
-              label: "Impressum",
+              label: "Imprint",
               href: "https://silitics.com/impressum",
             },
           ],

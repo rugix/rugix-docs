@@ -6,7 +6,7 @@ sidebar_position: 1
 
 Rugix is a suite of open-source tools designed to build **reliable** embedded Linux devices with **efficient and secure** over-the-air update capabilities.
 For this guide, you will be using two of these tools: _Rugix Bakery_, a flexible and user-friendly build system for bespoke Linux distributions, and _Rugix Ctrl_, a powerful tool for over-the-air system updates and system state management.
-While designed to work seamlessly together, you can also **use the Rugix Ctrl without Rugix Bakery** and vice versa.
+While designed to work seamlessly together, you can also **use Rugix Ctrl without Rugix Bakery** and vice versa.
 
 With Rugix, our mission is clear: **Simplify the development of embedded Linux devices.**
 This quickstart guide will take you through the steps required to build a production-ready, customized variant of [Debian](https://www.debian.org) with over-the-air update support, which you can readily run on any EFI-compatible system or deploy on a Raspberry Pi.
@@ -33,7 +33,7 @@ The script runs an ephemeral Docker container with Rugix Bakery and sets everyth
 To start a fresh project, create an empty directory and then run:
 
 ```shell
-curl -sfSO https://raw.githubusercontent.com/rugix/rugix/v0.8/bakery/run-bakery && chmod +x ./run-bakery
+curl -sfSO https://raw.githubusercontent.com/rugix/rugix-bakery/v0.9/container/run-bakery && chmod +x ./run-bakery
 ```
 
 This command will download the `run-bakery` shell script from Rugix's GitHub repository and make it executable.
@@ -168,10 +168,10 @@ The format provides built-in support for cryptographic integrity checks, compres
 To build an update bundle for the `customized-efi-arm64` system, run:
 
 ```shell
-./run-bakery bake bundle --without-compression customized-efi-arm64
+./run-bakery bake bundle --disable-compression customized-efi-arm64
 ```
 
-We use `--without-compression` here to not waste our time waiting for the compression.
+We use `--disable-compression` here to not waste our time waiting for the compression.
 
 This command is also going to output a hash for verifying the bundle's integrity.
 The hash will have the following form:

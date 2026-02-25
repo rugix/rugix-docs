@@ -205,8 +205,8 @@ export default function Home(): JSX.Element {
               <p className="mb-3 opacity-80">
                 <a href="https://www.ebike-checker.de/en/">eChecker</a> builds
                 test benches for e-bikes, drive units, and
-                e-scooters used by manufacturers worldwide. Each test bench
-                is controlled by an embedded Linux system, powered by Rugix.
+                e-scooters used by test institutes and manufacturers worldwide. Each test bench
+                is controlled by an embedded Linux system, powered by and updated through Rugix.
                 Rugix enabled eChecker to easily build custom system images
                 and reliably deliver over-the-air software updates to test
                 benches deployed across customer sites.
