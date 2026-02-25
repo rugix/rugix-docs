@@ -62,7 +62,7 @@ const config: Config = {
     announcementBar: {
       id: "2026-embedded-world",
       content: `
-          📣 <a target="_blank" href="https://www.embedded-world.de/de-de/aussteller/silitics-gmbh-2520096/rugix-2524144" style="font-size: 110%"><strong>Meet us at Embedded World 2026!</strong></a> 📣
+          📣 <a target="_blank" href="/blog/releases/1.0" style="font-size: 110%"><strong>Rugix 1.0.0 is out!</strong></a> & <a target="_blank" href="https://www.embedded-world.de/de-de/aussteller/silitics-gmbh-2520096/rugix-2524144" style="font-size: 110%"><strong>Meet us at Embedded World 2026!</strong></a> 📣
       `,
       // id: "2026-nexigon-release",
       // content: `
@@ -180,6 +180,10 @@ const config: Config = {
               // German and EU law require us to have a privacy policy.
               label: "Privacy Policy",
               href: "https://silitics.com/privacy-policy",
+            },
+            {
+              label: "Security Policy",
+              href: "https://github.com/rugix/rugix/blob/main/SECURITY.md"
             },
             {
               // German law requires us to have an Impressum.
