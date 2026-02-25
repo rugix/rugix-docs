@@ -60,9 +60,9 @@ const config: Config = {
       respectPrefersColorScheme: false,
     },
     announcementBar: {
-      id: "2026-embedded-world",
+      id: "2026-rugix-1.0",
       content: `
-          📣 <a target="_blank" href="/blog/releases/1.0" style="font-size: 110%"><strong>Rugix 1.0.0 is out!</strong></a> & <a target="_blank" href="https://www.embedded-world.de/de-de/aussteller/silitics-gmbh-2520096/rugix-2524144" style="font-size: 110%"><strong>Meet us at Embedded World 2026!</strong></a> 📣
+          📣 <a target="_blank" href="/blog/releases/1.0" style="font-size: 110%"><strong>Rugix 1.0 is out!</strong></a> | <a target="_blank" href="https://www.embedded-world.de/de-de/aussteller/silitics-gmbh-2520096/rugix-2524144" style="font-size: 110%"><strong>Meet us at Embedded World 2026!</strong></a> 📣
       `,
       // id: "2026-nexigon-release",
       // content: `
@@ -73,7 +73,7 @@ const config: Config = {
       //     📣 <a target="_blank" href="https://silitics.com/news/2025-11-12-cra-whitepaper/" style="font-size: 110%"><strong>Rugix has been featured in a whitepaper on CRA compliance by EY, Cumulocity, and Silitics</strong>.</a> 📣
       //   `,
       backgroundColor: "#6ee7b7",
-      isCloseable: true,
+      // isCloseable: true,
     },
     navbar: {
       title: "Rugix",
