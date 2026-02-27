@@ -34,7 +34,8 @@ If you do not have a certificate and private key, you can follow the following s
    openssl req -new -key signer.key -out signer.csr -subj "/CN=Update Signer"
    openssl x509 -req -in signer.csr \
        -CA root.crt -CAkey root.key -CAcreateserial \
-       -out signer.crt -days 365
+       -out signer.crt -days 365 \
+       -extfile <(printf "basicConstraints=CA:FALSE\nkeyUsage=digitalSignature")
    ```
 
 The root certificate is valid for 10 years and should be deployed to the devices for verifying updates.
