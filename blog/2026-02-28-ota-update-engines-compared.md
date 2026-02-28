@@ -1,5 +1,5 @@
 ---
-slug: 2026-03-28-ota-update-engines-compared
+slug: 2026-02-28-ota-update-engines-compared
 title: "Comparing Open-Source OTA Update Engines for Embedded Linux"
 authors: koehlma
 tags: [rugix, ota, embedded linux, comparison]
