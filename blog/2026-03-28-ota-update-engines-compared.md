@@ -3,7 +3,6 @@ slug: 2026-03-28-ota-update-engines-compared
 title: "Comparing Open-Source OTA Update Engines for Embedded Linux"
 authors: koehlma
 tags: [rugix, ota, embedded linux, comparison]
-draft: true
 ---
 
 If you are building an embedded Linux product, one of the engineering decisions you face is which on-device update engine to use. This decision has lasting implications: embedded devices routinely have lifecycles of 5 to 15 years, and whichever update mechanism you choose today will determine how you ship software to devices already in the field for the entire duration of that lifecycle.
