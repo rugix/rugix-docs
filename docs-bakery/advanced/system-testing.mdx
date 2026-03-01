@@ -43,7 +43,7 @@ Rugix will then run the workflow for each system.
 **You must not build any images manually while running tests.**
 
 To execute commands on the system under test, Rugix Bakery connects to the system running in the VM via SSH.
-To this end, a private key needs to specified.
+To this end, a private key needs to be specified.
 This private key must be placed somewhere in the project directory.
 It is recommended to generate a pair of keys exclusively for this purpose and inject the public key with an additional layer on-top of the actual system layer.[^key-injection]
 To generate a suitable pair of SSH keys in the current working directory, run:

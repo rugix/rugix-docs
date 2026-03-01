@@ -84,7 +84,7 @@ You can use this to import a root filesystem built with an external tool, e.g., 
 
 Note that imported layers must not specify any recipes. Customizations are applied by using them as a parent.
 
-## Excluding recipes
+## Excluding Recipes
 
 Recipes may depend on other recipes and as such will pull in their dependencies automatically when specified in the `recipes` list of a layer. To avoid that, e.g., when you want to replace some recipe with a local variant, you can exclude certain recipes from a layer. To this end, you can provide a list of recipes to exclude via the `exclude` property.
 

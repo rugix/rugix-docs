@@ -24,7 +24,7 @@ The source date is also used to set the [`SOURCE_DATE_EPOCH` environment variabl
 
 Reproducible builds require a known build environment.
 To this end, we use [Debian's official snapshots](https://snapshot.debian.org/) as a basis.
-Note that most [Debian packages are also fully reproducible](https://tests.reproducible-builds.org/debian/reproducible.html), so one could in principle trace everything back its source code.
+Note that most [Debian packages are also fully reproducible](https://tests.reproducible-builds.org/debian/reproducible.html), so one could in principle trace everything back to its source code.
 Building upon Debian snapshots also has the advantage that it reduces the surface area that must be checked for Rugix, provided that one trusts Debian.
 
 To obtain a reproducible build environment, we follow a two stage process:
