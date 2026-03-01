@@ -157,11 +157,18 @@ systemd.tmpfiles.rules = [
   "d /var/cache/yocto 1777 root root -"
   "d /var/cache/yocto/sstate 1777 root root -"
   "d /var/cache/yocto/downloads 1777 root root -"
+  # Default ACLs ensure subdirectories created by one runner remain writable
+  # by others (rootless podman maps each runner to a different host UID).
+  "a+ /var/cache/yocto/sstate - - - - d:o::rwx,d:m::rwx"
+  "a+ /var/cache/yocto/downloads - - - - d:o::rwx,d:m::rwx"
 ];
 ```
 
 The `1777` permission (world-writable with sticky bit) might raise eyebrows.
 We use it because rootless Podman's UID mapping (see later) doesn't preserve group membership, so traditional group-based sharing doesn't work.
+However, `1777` alone isn't enough: it only applies to the top-level directories.
+When one runner creates a subdirectory (e.g., for a new sstate hash prefix), it gets default permissions owned by that runner's mapped UID, and other runners can't write to it.
+The `a+` rules set default POSIX ACLs that are inherited by all newly created subdirectories, ensuring they remain world-writable regardless of which runner created them.
 
 The cache directories are configured through the `SSTATE_DIR` and `DL_DIR` environment variables in the runner configuration.
 
