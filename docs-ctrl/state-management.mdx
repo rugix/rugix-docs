@@ -27,7 +27,7 @@ Rugix Ctrl provides a robust state management mechanism, simplifying state manag
 Rugix Ctrl's state management mechanism has been inspired by Docker.
 The basic idea is to construct a virtual writable root filesystem by layering a writeable overlay on top of a read-only system partition.
 Instead of modifying the system partition, any writes will go to the overlay stored on the data partition.
-To persist state, certain files or directories can be explicitly bind mounted from the data partition, thereby ensuring that their contents persists through updates.
+To persist state, certain files or directories can be explicitly bind mounted from the data partition, thereby ensuring that their content persists through updates.
 The overlay itself is typically ephemeral and will be discarded whenever the system boots.
 This ensures that no accidental state survives a reboot.
 The following diagram visualizes the idea:
@@ -80,7 +80,7 @@ Typically, when using Rugix Bakery with a generic or specific target, this will 
 
 ## Selective Persistent State
 
-As explain above, state that should persist through updates (and reboots) must be explicitly declared and is then managed by Rugix Ctrl.
+As explained above, state that should persist through updates (and reboots) must be explicitly declared and is then managed by Rugix Ctrl.
 Rugix Ctrl can be configured to use bind mounts to persist certain directories and files of the root filesystem on the data partition.
 To this end, _state configuration_ files must be placed in `/etc/rugix/state`.
 
@@ -148,7 +148,7 @@ To this end, run:
 rugix-ctrl state overlay force-persist true
 ```
 
-To disable force persistency of the overlay, run:
+To disable forced persistence of the overlay, run:
 
 ```shell
 rugix-ctrl state overlay force-persist false

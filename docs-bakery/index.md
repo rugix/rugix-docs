@@ -194,7 +194,7 @@ The same holds true for license compliance.
 Interestingly, similar issues also arise for container-based architectures, where you want container images to be reproducible and need to comply with the licenses of the included software.
 We aim to exploit tools and techniques developed in that context for the use with embedded devices, all integrated in a modern build tool.
 
-[^rugix-reproducibility]: We are almost there. Layers can already built reproducibly on Debian snapshots. The only thing missing is a good integration into the overall build system and support for also building images reproducibly. We plan to borrow ideas from modern package managers, generating a _lockfile_ from a build that can be used to reproduce it.
+[^rugix-reproducibility]: We are almost there. Layers can already be built reproducibly on Debian snapshots. The only thing missing is a good integration into the overall build system and support for also building images reproducibly. We plan to borrow ideas from modern package managers, generating a _lockfile_ from a build that can be used to reproduce it.
 
 If you only need to adapt the compile-time options of a specific piece of software or apply patches to it, this is also possible with a binary distribution, especially with Debian, as is building a custom Linux kernel, e.g., with real-time patches or support for niche hardware.
 The exact sources for all Debian packages are available and can be used to build custom variants of these packages.

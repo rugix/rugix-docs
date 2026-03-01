@@ -45,7 +45,7 @@ The primary purpose of targets is to build system images that can be directly bo
 Targets typically support a whole family of devices and are categorized into _generic_, _specific_, and _unknown_ targets.
 
 - **Generic targets** are based on some standardized booting mechanism, such as [UEFI](https://en.wikipedia.org/wiki/UEFI) or [EBBR](https://github.com/ARM-software/ebbr).
-  Images built for a generic targets are suitable for any device that supports the respective booting mechanism.
+  Images built for generic targets are suitable for any device that supports the respective booting mechanism.
 - **Specific targets**, on the other hand, are limited to a certain family of devices.
   Images built for specific targets come with all necessary device-specific configurations resulting in a bootable image that works out-of-the-box.
 - **Unknown targets** are for devices that do not conform to a standardized booting mechanism and are not specifically supported by Rugix Bakery. Using unknown targets allows building images for unsupported devices; however, these images may require additional device-specific modifications to become bootable.

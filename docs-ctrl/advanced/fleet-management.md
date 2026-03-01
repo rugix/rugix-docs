@@ -41,16 +41,12 @@ Check out the [corresponding Interrupt article for further details](https://inte
 
 ## Mender
 
-Open-source Mender support for Rugix Ctrl and Rugix Bakery is provided by [Silitics](https://silitics.com), check out the [Mender Rugix reference repository](https://github.com/silitics/rugpi-template-mender).
-The Mender integration consists in recipes for Rugix Bakery that will install Mender's client as well as a Mender update module to install updates via Mender with Rugix Ctrl.
-Note that Mender also offers their own update installation mechanism, which is part of the Mender client.
-**When you use Mender with Rugix Ctrl, you will not be using this mechanism but Rugix Ctrl instead.
-You can still deploy updates through Mender's fleet management solution as you normally would.**
-If you want to know the differences between Mender's own solution and Rugix Ctrl, check out the [Comparison to Other Solutions](../index.md#comparison-to-other-solutions).
+[Mender](https://mender.io) is a fleet management solution with their own tightly-coupled update engine.
+We provide a [template repository showcasing how to integrate Rugix with Mender](https://github.com/rugix/rugix-template-mender).
 
 :::note
-Unfortunately, Mender's fleet management solution is at the moment incompatible with dynamic delta updates.
-This is also unlikely to change in the future as delta updates are a key feature of Mender's enterprise offering.
+Unfortunately, Mender's fleet management solution is incompatible with dynamic delta updates via Rugix.
+This is also unlikely to change as delta updates are a key commercial feature of their own update client.
 :::
 
 You can also use Rugix Bakery to build images for use with Mender's own OTA solution using [Mender's conversion approach for Debian](https://docs.mender.io/operating-system-updates-debian-family/convert-a-mender-debian-image).

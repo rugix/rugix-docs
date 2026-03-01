@@ -26,7 +26,7 @@ Before we continue, let's define a few terms:
 - _Payload Data_: Actual data of a payload stored in an update bundle.
 
 For instance, if a slot corresponds to a block device, then the slot data _and_ payload file may be a filesystem image.
-However, if a slot corresponds to a directory, then the slot data is the contents of this directory and the payload file may be a Tar archive of the directory's contents.
+However, if a slot corresponds to a directory, then the slot data is the content of this directory and the payload file may be a Tar archive of the directory's contents.
 Now, the payload data is derived from the payload file.
 For instance, the payload file may be compressed before being stored in an update bundle.
 While the payload file must be reconstructible from the update bundle alone, e.g., by decompressing the payload data stored in the bundle, the slot data may or may not be reconstructible from the bundle alone.
@@ -55,7 +55,7 @@ Update bundles can be built for two _types_ of updates:
 - `full`: For full system updates involving a boot flow.
 - `incremental`: For incremental updates not involving a boot flow.
 
-For full system updates, a boot group must be provided to `rugix-ctrl` as a installation target (if there are more than two boot groups).
+For full system updates, a boot group must be provided to `rugix-ctrl` as an installation target (if there are more than two boot groups).
 For incremental system updates, a boot group can be provided but it does not have to be.
 
 ## Bundle Creation
