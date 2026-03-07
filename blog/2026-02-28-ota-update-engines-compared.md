@@ -250,4 +250,4 @@ Every project has different constraints, and we encourage teams to evaluate the 
 
 ---
 
-At [Silitics](https://silitics.com), we help companies develop robust and secure embedded products faster. If you need help choosing or implementing an OTA update solution, we'd love [to hear from you](mailto:hello@silitics.com). Let's solve your challenges together!
+Looking for a device management solution that works regardless of the on-device OTA update engine you are using? Check out [Nexigon](https://nexigon.cloud), by the creators of Rugix. Nexigon provides secure remote access, OTA update orchestration and rollouts, configuration management, and real-time fleet monitoring.
