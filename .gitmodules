@@ -1,3 +1,6 @@
 [submodule "repos/rugix"]
 	path = repos/rugix
 	url = ../rugix
+[submodule "repos/rugix-bakery"]
+	path = repos/rugix-bakery
+	url = ../rugix-bakery
