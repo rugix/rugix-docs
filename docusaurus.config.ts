@@ -212,6 +212,10 @@ const config: Config = {
         routeBasePath: "docs/ctrl",
         sidebarPath: require.resolve("./sidebars-ctrl.js"),
         editUrl: "https://github.com/rugix/rugix-docs/tree/main/",
+        lastVersion: "1.0",
+        versions: {
+          current: { label: "Next" },
+        },
       },
     ],
     [
@@ -222,6 +226,10 @@ const config: Config = {
         routeBasePath: "docs/bakery",
         sidebarPath: require.resolve("./sidebars-bakery.js"),
         editUrl: "https://github.com/rugix/rugix-docs/tree/main/",
+        lastVersion: "1.0",
+        versions: {
+          current: { label: "Next" },
+        },
       },
     ],
     [
