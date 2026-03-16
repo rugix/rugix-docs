@@ -48,7 +48,7 @@ When a new version of an app is installed, it creates a new generation. The exis
 
 A generation is either **incomplete** or **complete**. When a bundle is installed, a new generation is created in the incomplete state. Once all files have been fully extracted, it transitions to complete.
 
-To remove a generation, it is first marked incomplete again and then its files are deleted. If deletion is interrupted, the generation remains incomplete. Incomplete generations are always safe to purge (remove their files), whether they result from an interrupted installation or an interrupted removal. Garbage collection purges incomplete generations and old complete generations that are no longer needed.
+To remove a generation, it is first marked incomplete again and then its files are deleted. If deletion is interrupted, the generation remains incomplete. Incomplete generations are always safe to purge (remove their files), whether they result from an interrupted installation or an interrupted removal.
 
 On the filesystem, each generation is a numbered subdirectory under `<app>/generations/`. The complete/incomplete state is determined by the presence of a `.rugix/complete` marker file inside the generation directory. When the marker is present, the generation is complete; when it is absent, the generation is incomplete.
 
@@ -78,12 +78,11 @@ Rugix Apps ships with the following built-in orchestrators:
 #### Orchestrator Interface
 
 Every orchestrator implements three lifecycle operations.
-Understanding these operations is useful regardless of which orchestrator you use, as they map directly to CLI commands.
 
 | Operation      | Purpose                                                                                            |
 | -------------- | -------------------------------------------------------------------------------------------------- |
 | **activate**   | Set up resources, start the workload, and register auto-start behaviour so the app starts on boot. |
-| **status**     | Query the workload's status: running, stopped, degraded, or unknown.                               |
+| **status**     | Query the workload's status: running, stopped, failed, or unknown.                               |
 | **deactivate** | Stop the workload, disable auto-start, and tear down resources.                                    |
 
 Each operation receives a **context** containing:
@@ -91,6 +90,7 @@ Each operation receives a **context** containing:
 | Field            | Description                                                                          |
 | ---------------- | ------------------------------------------------------------------------------------ |
 | `NAME`           | The app name.                                                                        |
+| `APP_DIR`        | Absolute path to the app directory.                                                  |
 | `GENERATION_DIR` | Absolute path to the generation directory.                                           |
 | `DATA_DIR`       | Absolute path to the app's persistent data directory.                                |
 | `RECOVERY`       | `true` if this invocation is replaying an interrupted transition; `false` otherwise. |
@@ -140,7 +140,7 @@ The generation directory must contain a `docker-compose.yml` file. It may also c
 | ---------- | ------------------------------------------------------------------------------------------- |
 | activate   | Loads all images, then runs `docker compose up -d`.                                         |
 | status     | Checks `docker compose ps --format json` output.                                            |
-| deactivate | Runs `docker compose down`, then best-effort image cleanup (shared images are not removed). |
+| deactivate | Runs `docker compose down`.                                                                  |
 
 ### Binary
 
@@ -174,7 +174,7 @@ Restart=on-failure
 | Operation  | Implementation                                                                                                                                               |
 | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | activate   | Renders the unit template, writes it to the app's `systemd/units` directory and `/run/systemd/system/`, runs `daemon-reload`, then `systemctl enable --now`. |
-| status     | Maps `systemctl is-active` output to running/stopped/degraded/unknown.                                                                                       |
+| status     | Maps `systemctl is-active` output to running/stopped/failed/unknown.                                                                                       |
 | deactivate | Runs `systemctl disable --now`, removes the rendered unit files, runs `daemon-reload`.                                                                       |
 
 See [Systemd Integration](#systemd-integration) for details on boot-time unit restoration.
@@ -195,6 +195,7 @@ The following environment variables are set:
 | Variable                   | Description                                                           |
 | -------------------------- | --------------------------------------------------------------------- |
 | `RUGIX_APP_NAME`           | The app name.                                                         |
+| `RUGIX_APP_DIR`            | Absolute path to the app directory.                                   |
 | `RUGIX_APP_GENERATION_DIR` | Absolute path to the generation directory.                            |
 | `RUGIX_APP_DATA_DIR`       | Absolute path to the app's persistent data directory.                 |
 | `RUGIX_APP_RECOVERY`       | `"true"` if replaying an interrupted transition, `"false"` otherwise. |
@@ -204,7 +205,7 @@ For all operations except `status`, a zero exit code means success and non-zero 
 ```json
 {"status": "running"}
 {"status": "stopped"}
-{"status": "degraded", "message": "health check failing"}
+{"status": "failed", "message": "health check failing"}
 {"status": "unknown"}
 ```
 
@@ -270,6 +271,9 @@ Activation prepares a generation for use, starts the workload, and registers aut
 # Activate a specific generation:
 rugix-ctrl apps activate <app> <generation>
 
+# Re-activate the most recently activated generation:
+rugix-ctrl apps activate <app>
+
 # Deactivate the current generation:
 rugix-ctrl apps deactivate <app>
 ```
@@ -303,14 +307,17 @@ Over time, old generations accumulate on disk.
 To clean them up:
 
 ```shell
-# Keep only the 2 most recent activated generations (default):
+# Garbage collect all apps (keep the last activated generation by default):
+rugix-ctrl apps gc
+
+# Garbage collect a specific app:
 rugix-ctrl apps gc <app>
 
-# Keep a different number:
-rugix-ctrl apps gc <app> --keep 3
+# Keep more previously activated generations:
+rugix-ctrl apps gc --keep 3
 ```
 
-Generations that were never activated are always removed, since they are not valid rollback targets. Among previously activated generations, the `--keep` most recent ones are retained. The currently active generation is never removed.
+Generations that were never activated are always removed, since they are not valid rollback targets. Among previously activated generations, the `--keep` most recent ones are retained (default: 1). The currently active generation is always kept in addition to the `--keep` count.
 
 ## Inspecting Apps
 
@@ -468,11 +475,11 @@ The recovery flag allows scripts to take a different code path if needed (e.g., 
 | `rugix-ctrl apps install <bundle>`            | Install apps from a bundle.                   |
 | `rugix-ctrl apps list`                        | List all installed apps with status.          |
 | `rugix-ctrl apps info <app>`                  | Show details for an app.                      |
-| `rugix-ctrl apps activate <app> <generation>` | Activate a generation (starts the app).       |
+| `rugix-ctrl apps activate <app> [generation]`  | Activate a generation (starts the app).       |
 | `rugix-ctrl apps deactivate <app>`            | Deactivate the current generation (stops it). |
 | `rugix-ctrl apps rollback <app>`              | Roll back to the previous generation.         |
 | `rugix-ctrl apps remove <app>`                | Remove an app entirely.                       |
 | `rugix-ctrl apps generations <app>`           | List all generations.                         |
-| `rugix-ctrl apps gc <app> [--keep N]`         | Garbage collect old generations.              |
+| `rugix-ctrl apps gc [app] [--keep N]`          | Garbage collect old generations.              |
 | `rugix-ctrl apps recover`                     | Recover interrupted transitions for all apps. |
 | `rugix-ctrl apps systemd sync-units`          | Sync persisted units into systemd (for boot). |
