@@ -141,6 +141,12 @@ rugix-ctrl apps install --bundle-hash <hash> iot-gateway-v1.rugixb
 
 This extracts the payloads into a new version, marks it complete, and activates it, which loads the container images with `docker image load` and runs `docker compose up -d`. Mosquitto is now listening on port 1883 and Node-RED is accessible on port 1880.
 
+You can verify the app is running with:
+
+```shell
+rugix-ctrl apps list
+```
+
 **What if something goes wrong?** If activation fails (e.g., a container fails to start), and a previous version exists, Rugix Apps automatically rolls back to it. If the device loses power mid-installation, the incomplete version is never marked as ready. On the next boot, crash recovery detects any interrupted transitions and replays them. In either case, the device converges to a working state without manual intervention.
 
 ### Step 4: Update
@@ -173,7 +179,7 @@ With Rugix Apps, Rugix Ctrl handles both system updates and application updates.
 
 The feature is modular: it works with or without Rugix system updates, state management, or Bakery. The pluggable orchestrator mechanism supports Docker Compose, systemd-managed binaries, and arbitrary workloads via shell scripts. And because app bundles build on the same format as system updates, you get [delta updates](/blog/efficient-delta-updates), [cryptographic verification](/docs/ctrl/signed-updates), streaming installation, and compression without any extra effort.
 
-Rugix Apps is available as an experimental feature in Rugix Ctrl. Unlike the core system update mechanism, which has been battle-tested at scale, Rugix Apps is new and its interfaces may still change in future releases. Check out the [documentation](/docs/ctrl/experimental/rugix-apps) for the full reference, including the complete CLI, all orchestrator options, and details on crash recovery and Systemd integration. We welcome feedback and contributions on [GitHub](https://github.com/rugix/rugix), and if you have questions, join our [Discord community](https://discord.gg/cZ8wP9jNsn).
+Rugix Apps is available as an experimental feature in Rugix Ctrl. Unlike the core system update mechanism, which has been battle-tested at scale, Rugix Apps is new and its interfaces may still change in future releases. Check out the [documentation](/docs/ctrl/application-updates/) for the full reference, including the complete CLI, all orchestrator options, and details on crash recovery and Systemd integration. We welcome feedback and contributions on [GitHub](https://github.com/rugix/rugix), and if you have questions, join our [Discord community](https://discord.gg/cZ8wP9jNsn).
 
 ---
 

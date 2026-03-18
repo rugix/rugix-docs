@@ -238,7 +238,7 @@ There is no single best OTA update engine. The right choice depends on your hard
 
 **OSTree** is a different beast entirely. It is highly opinionated about filesystem layout and deployment model, and it requires significant integration effort. If you are bought into its ecosystem (Fedora, bootc, Torizon OS) and its approach fits your use case, it is a powerful foundation. For teams starting from scratch on embedded Linux, the learning curve and deployment complexity are substantial.
 
-**Rugix Ctrl** is, perhaps to nobody's surprise, what we recommend for new embedded Linux projects in most cases.[^rugix-not-for] It provides best-in-class delta updates, a memory-safe implementation, secure-by-default verification, and optional integrated state management. It is newer than the established tools and not yet as widely deployed, but it is production-ready and proven at scale. For teams that want a modern, secure update engine without inheriting a decade of legacy constraints, we believe it is the strongest option available today.
+**Rugix Ctrl** is what we recommend for new embedded Linux projects in most cases.[^rugix-not-for] It provides best-in-class delta updates, a memory-safe implementation, secure-by-default verification, and optional integrated state management. It is newer than the established tools and not yet as widely deployed, but it is production-ready and proven at scale. For teams that want a modern, secure update engine without inheriting a decade of legacy constraints, we believe it is the strongest option available today.
 
 ## Conclusion
 

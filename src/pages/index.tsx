@@ -46,17 +46,17 @@ function ToolOverview() {
         <div className="flex flex-wrap justify-center gap-8 px-4">
           <Link
             to="/docs/ctrl"
-            className="max-w-md p-6 rounded-xl border border-solid border-gray-200 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-500 hover:bg-black/5 dark:hover:bg-white/5 transition-colors !no-underline !text-inherit hover:!text-inherit"
+            className="max-w-md p-6 rounded-xl border border-solid border-neutral-200 dark:border-neutral-700 hover:border-neutral-400 dark:hover:border-neutral-500 hover:bg-black/5 dark:hover:bg-white/5 transition-colors !no-underline !text-inherit hover:!text-inherit"
           >
             <h3 className="text-xl mb-2">Rugix Ctrl</h3>
             <p className="opacity-80 mb-3">
               <strong>On-device update engine.</strong>
             </p>
             <p className="text-sm opacity-70 mb-4">
-              Atomic A/B updates with automatic rollback, delta updates,
-              cryptographic verification, and robust state management. Supports
-              any bootloader and integrates with different fleet management solutions.
-              Works with Yocto, Buildroot, and other Linux build systems.
+              Atomic A/B system updates with automatic rollback, delta updates,
+              cryptographic verification, and robust state management.
+              Integrates with different fleet management solutions.
+              Optionally, deploy and manage application workloads with Rugix Apps.
             </p>
             <span className="text-sm font-medium text-[var(--ifm-color-primary)]">
               Learn more →
@@ -64,7 +64,7 @@ function ToolOverview() {
           </Link>
           <Link
             to="/docs/bakery"
-            className="max-w-md p-6 rounded-xl border border-solid border-gray-200 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-500 hover:bg-black/5 dark:hover:bg-white/5 transition-colors !no-underline !text-inherit hover:!text-inherit"
+            className="max-w-md p-6 rounded-xl border border-solid border-neutral-200 dark:border-neutral-700 hover:border-neutral-400 dark:hover:border-neutral-500 hover:bg-black/5 dark:hover:bg-white/5 transition-colors !no-underline !text-inherit hover:!text-inherit"
           >
             <h3 className="text-xl mb-2">Rugix Bakery</h3>
             <p className="opacity-80 mb-3">
@@ -81,7 +81,7 @@ function ToolOverview() {
             </span>
           </Link>
         </div>
-        <p className="text-center max-w-[60ch] mx-auto mt-8 opacity-70">
+        <p className="text-center max-w-[60ch] mx-auto mt-8 opacity-80">
           Rugix Ctrl runs on your device and installs updates. Rugix Bakery
           builds the system images. Use both together for a complete solution,
           or integrate Rugix Ctrl into your existing Yocto or Buildroot workflow.
@@ -141,7 +141,7 @@ export default function Home(): JSX.Element {
             <span className="text-sm opacity-60">AND MANY MORE</span>
           </div>
           <div className="flex flex-wrap justify-center items-stretch gap-8 px-4 mt-10">
-            <div className="max-w-sm p-6 rounded-xl bg-white/50 dark:bg-black/20 border border-solid border-gray-200 dark:border-gray-700 flex flex-col justify-center">
+            <div className="max-w-sm p-6 rounded-xl bg-white/50 dark:bg-black/20 border border-solid border-neutral-200 dark:border-neutral-700 flex flex-col justify-center">
               <div className="italic leading-[1.6] mb-4">
                 "When you ship OTA updates to tens of thousands of devices in people's homes, you need rock-solid reliability. Rugix delivers exactly that."
               </div>
@@ -149,7 +149,7 @@ export default function Home(): JSX.Element {
                 Luke Childs, CTO at <a href="https://umbrel.com/">Umbrel</a>
               </div>
             </div>
-            <div className="max-w-sm p-6 rounded-xl bg-white/50 dark:bg-black/20 border border-solid border-gray-200 dark:border-gray-700 flex flex-col justify-center">
+            <div className="max-w-sm p-6 rounded-xl bg-white/50 dark:bg-black/20 border border-solid border-neutral-200 dark:border-neutral-700 flex flex-col justify-center">
               <div className="italic leading-[1.6] mb-4">
                 "If you're not using Rugix, you're making things harder than
                 they need to be."
@@ -158,7 +158,7 @@ export default function Home(): JSX.Element {
                 David Lekve, CTO at <a href="https://enmo.ai">enmo</a>
               </div>
             </div>
-            <div className="max-w-sm p-6 rounded-xl bg-white/50 dark:bg-black/20 border border-solid border-gray-200 dark:border-gray-700 flex flex-col justify-center">
+            <div className="max-w-sm p-6 rounded-xl bg-white/50 dark:bg-black/20 border border-solid border-neutral-200 dark:border-neutral-700 flex flex-col justify-center">
               <div className="italic leading-[1.6] mb-4">
                 "Rugix is thoughtfully designed, fast to get started with, and
                 flexible in all the right ways. It's the tool suite for embedded
