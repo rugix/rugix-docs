@@ -7,13 +7,15 @@ sidebar_position: 0
 An **orchestrator** is a backend that knows how to manage the lifecycle of a particular kind of workload.
 The orchestrator for an app is declared in its app manifest (`app.toml`).
 
-Every orchestrator implements three lifecycle operations:
+Every orchestrator implements five lifecycle operations:
 
 | Operation      | Purpose                                                                                            |
 | -------------- | -------------------------------------------------------------------------------------------------- |
 | **activate**   | Set up resources, start the workload, and register auto-start behaviour so the app starts on boot. |
 | **status**     | Query the workload's status: running, stopped, failed, or unknown.                                 |
 | **deactivate** | Stop the workload, disable auto-start, and tear down resources.                                    |
+| **start**      | Start the workload of an already-active generation.                                                |
+| **stop**       | Stop the workload without tearing down resources or disabling auto-start.                          |
 
 Rugix Apps ships with the following built-in orchestrators:
 

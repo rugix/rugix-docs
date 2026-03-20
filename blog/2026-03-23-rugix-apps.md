@@ -1,5 +1,5 @@
 ---
-slug: 2026-03-20-rugix-apps
+slug: 2026-03-23-rugix-apps
 title: "Reliable Application Updates for Edge Devices with Rugix Apps"
 authors: koehlma
 tags: [rugix, ota, embedded linux, edge, docker]
@@ -148,6 +148,10 @@ rugix-ctrl apps list
 ```
 
 **What if something goes wrong?** If activation fails (e.g., a container fails to start), and a previous version exists, Rugix Apps automatically rolls back to it. If the device loses power mid-installation, the incomplete version is never marked as ready. On the next boot, crash recovery detects any interrupted transitions and replays them. In either case, the device converges to a working state without manual intervention.
+
+:::note
+Automatic crash recovery and systemd unit restoration require [systemd services](https://github.com/rugix/rugix/tree/main/crates/apps/rugix-ctrl/assets) to be installed on the device. See the [reference documentation](/docs/ctrl/application-updates/reference#crash-recovery) for details.
+:::
 
 ### Step 4: Update
 

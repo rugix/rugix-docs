@@ -19,11 +19,17 @@ stateDiagram-v2
     Switching --> Error: failed
     Switching --> Inactive: deactivated
     Error --> Switching: switch
+    Active --> Starting: start
+    Starting --> Active: started / failed
+    Active --> Stopping: stop
+    Stopping --> Active: stopped / failed
 ```
 
 Activation, deactivation, and generation switches are all represented by the `Switching` state, which records an optional `from` generation (to deactivate) and an optional `to` generation (to activate). The `from` generation is deactivated first, then the `to` generation is activated. If activation fails and a `from` generation is available, rollback to that generation is attempted automatically (by activating the `from` generation again). If rollback also fails, the app enters the `Error` state and requires manual intervention.
 
-If the system crashes while in the `Switching` state, [crash recovery](#crash-recovery) retries the switch forward on the next boot.
+Starting and stopping a workload are represented by the `Starting` and `Stopping` states. These are transient states that always transition back to `Active` regardless of whether the operation succeeds or fails. They exist to enable crash recovery: if the system crashes while in one of these states, the operation is replayed on the next boot.
+
+If the system crashes while in the `Switching`, `Starting`, or `Stopping` state, [crash recovery](#crash-recovery) retries the operation on the next boot.
 
 ## Generation State Machine
 
@@ -67,11 +73,11 @@ App data is stored in the Rugix state directory at `/run/rugix/state/apps/` (or 
 │       │   └── myimage.tar
 │       └── .rugix/
 │           ├── generation.json
-│           └── complete
-├── data/                             # persistent app data (survives generations)
-└── systemd/
-    └── units/                        # rendered systemd units
-        └── ...
+│           ├── complete
+│           └── systemd/
+│               └── units/            # rendered systemd units (binary orchestrator)
+│                   └── ...
+└── data/                             # persistent app data (survives generations)
 ```
 
 Key aspects:
@@ -101,33 +107,36 @@ A bundle can contain multiple payloads for the same app. Payloads are applied in
 
 ## Systemd Integration
 
-Orchestrators that use systemd (such as `binary`) persist rendered unit files under `<app>/systemd/units/` in the app directory. This allows units to survive across generations and be restored after a reboot.
+Orchestrators that use systemd (such as `binary`) persist rendered unit files under `.rugix/systemd/units/` inside the generation directory. This ties the rendered units to the generation lifecycle — when a generation is garbage collected or removed, its rendered units are cleaned up automatically.
 
 **Runtime installation.** When a generation is activated, the rendered systemd unit is written to two locations:
 
-1. **`<app>/systemd/units/`** in the app directory. This copy persists across reboots.
+1. **`<gen_dir>/.rugix/systemd/units/`** inside the generation directory. This copy persists across reboots.
 2. **`/run/systemd/system/`**, the systemd runtime directory, for immediate availability.
 
 A `daemon-reload` is triggered so systemd picks up the new unit.
 
 **Boot-time restoration.** Since `/run/` is a tmpfs and its contents do not survive reboots, a oneshot service is needed to restore the units on boot:
 
-```ini title="rugix-app-sync.service"
+```ini title="rugix-apps-restore-units.service"
 [Unit]
-Description=Sync Rugix app units into systemd
+Description=Restore Rugix app units into systemd
 After=local-fs.target
 DefaultDependencies=no
 
 [Service]
 Type=oneshot
-ExecStart=rugix-ctrl apps systemd sync-units
+ExecStart=rugix-ctrl apps service-manager systemd restore-units
 RemainAfterExit=yes
 
 [Install]
 WantedBy=multi-user.target
 ```
 
-The `rugix-ctrl apps systemd sync-units` command copies persisted unit files for all **active** apps into `/run/systemd/system/` and triggers a `daemon-reload`. Apps that are not in the active state are skipped.
+The `rugix-ctrl apps service-manager systemd restore-units` command copies persisted unit files from the active generation's `.rugix/systemd/units/` directory into `/run/systemd/system/`, triggers a `daemon-reload`, enables each unit with `systemctl enable --runtime`, and queues each unit for start with `systemctl start --no-block`.
+
+The `enable --runtime` step registers the unit with systemd (so `systemctl is-enabled` reports the correct state) and creates runtime `.wants/` symlinks based on the unit's `[Install]` section. The `start --no-block` step queues a start job and returns immediately — systemd resolves the unit's declared dependencies (`After=`, `Requires=`, etc.) asynchronously and starts the unit once its dependencies are met, without blocking the restore service or the rest of the boot process.
+
 This service should be enabled on systems that use systemd as the service manager.
 
 ## Crash Recovery
@@ -142,22 +151,28 @@ If the system comes back up and the state is still intermediate, recovery replay
 The state file records one of:
 
 - **`inactive`**: no generation is active.
-- **`switching`**: a transition is in progress. Records an optional `from` generation (being deactivated) and an optional `to` generation (being activated).
+- **`switching`**: a generation transition is in progress. Records an optional `from` generation (being deactivated), an optional `to` generation (being activated), and a `recovery` flag indicating whether this switch is a recovery attempt.
 - **`active`**: a generation is active and ready to run.
-- **`error`**: a transition and automatic rollback both failed. Records the generation that failed and an error message. Manual intervention is required.
+- **`starting`**: the workload of an active generation is being started.
+- **`stopping`**: the workload of an active generation is being stopped.
+- **`error`**: a transition and automatic rollback both failed. Records the `from` generation (previously active, if any), the `to` generation (that failed to activate), and an error message. Crash recovery attempts to re-activate the `from` generation first, falling back to the `to` generation if that also fails.
 
 If the system crashes while in the `switching` state, recovery retries the switch forward. If a switch _fails_ (returns an error rather than being interrupted), the previous generation is automatically rolled back. If rollback also fails, the app transitions to the `error` state.
 
+If the system crashes while in the `starting` or `stopping` state, recovery replays the start or stop operation and then transitions back to `active`.
+
 **Automatic recovery** should be run via a separate boot service that starts late enough for all required dependencies (Docker daemon, network, etc.) to be available:
 
-```ini title="rugix-app-recover.service"
+```ini title="rugix-apps-recover.service"
 [Unit]
 Description=Recover interrupted Rugix app transitions
-After=network.target docker.service
+After=multi-user.target rugix-apps-restore-units.service docker.service
+Wants=rugix-apps-restore-units.service
 
 [Service]
 Type=oneshot
 ExecStart=rugix-ctrl apps recover
+RemainAfterExit=yes
 
 [Install]
 WantedBy=multi-user.target
@@ -169,14 +184,16 @@ The `rugix-ctrl apps recover` command can also be called manually at any time.
 
 | Command                                       | Description                                   |
 | --------------------------------------------- | --------------------------------------------- |
-| `rugix-ctrl apps install <bundle>`            | Install apps from a bundle.                   |
+| `rugix-ctrl apps install <bundle>`            | Install apps from a bundle (`-` for stdin).   |
 | `rugix-ctrl apps list`                        | List all installed apps with status.          |
 | `rugix-ctrl apps info <app>`                  | Show details for an app.                      |
 | `rugix-ctrl apps activate <app> [generation]` | Activate a generation (starts the app).       |
 | `rugix-ctrl apps deactivate <app>`            | Deactivate the current generation (stops it). |
+| `rugix-ctrl apps start <app>`                 | Start the workload of an active app.          |
+| `rugix-ctrl apps stop <app>`                  | Stop the workload without deactivating.       |
 | `rugix-ctrl apps rollback <app>`              | Roll back to the previous generation.         |
 | `rugix-ctrl apps remove <app>`                | Remove an app entirely.                       |
 | `rugix-ctrl apps generations <app>`           | List all generations.                         |
 | `rugix-ctrl apps gc [app] [--keep N]`         | Garbage collect old generations.              |
 | `rugix-ctrl apps recover`                     | Recover interrupted transitions for all apps. |
-| `rugix-ctrl apps systemd sync-units`          | Sync persisted units into systemd (for boot). |
+| `rugix-ctrl apps service-manager systemd restore-units`          | Restore app units into systemd (for boot).    |

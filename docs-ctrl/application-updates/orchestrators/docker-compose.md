@@ -81,11 +81,30 @@ When using `rugix-bundler apps pack docker-compose`, this structure is created a
 
 ## Lifecycle Operations
 
-| Operation  | Implementation                                      |
-| ---------- | --------------------------------------------------- |
-| activate   | Loads all images, then runs `docker compose up -d`. |
-| status     | Checks `docker compose ps --format json` output.    |
-| deactivate | Runs `docker compose down`.                         |
+| Operation  | Implementation                                                                  |
+| ---------- | ------------------------------------------------------------------------------- |
+| activate   | Loads all images, then runs `docker compose up -d --wait` (see Health Checks).  |
+| status     | Checks `docker compose ps --format json` output.                                |
+| deactivate | Runs `docker compose down`.                                                     |
+| start      | Runs `docker compose up -d --wait` (without image loading).                     |
+| stop       | Runs `docker compose stop`.                                                     |
+
+**Boot behavior after `stop`:** `docker compose stop` stops the containers but does not remove them. Whether Docker restarts them on boot depends on the `restart` policy in the compose file. With `restart: always`, Docker restarts the containers automatically. With `restart: unless-stopped`, Docker remembers that the containers were explicitly stopped and does _not_ restart them.
+
+## Health Checks
+
+During activation, `docker compose up` is called with `--wait`, which blocks until all containers with a [`healthcheck`](https://docs.docker.com/reference/compose-file/services/#healthcheck) are healthy. If any container fails its health check, activation fails and the previous version is automatically rolled back. Containers without a `healthcheck` are considered ready as soon as they are running.
+
+The health check timeout defaults to 120 seconds and can be configured in `app.toml`:
+
+```toml title="app.toml"
+orchestrator = "docker-compose"
+
+[health-check]
+timeout = 120
+```
+
+Set `timeout` to `0` to disable waiting for health checks entirely (activation succeeds as soon as the containers are started).
 
 ## Environment Variables
 

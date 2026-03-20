@@ -20,7 +20,12 @@ Description=My Server
 ExecStart=${GENERATION_DIR}/my-server
 WorkingDirectory=${DATA_DIR}
 Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
 ```
+
+The `[Install]` section is required for the unit to start automatically after a reboot. The `WantedBy=` directive determines which systemd target pulls the service in during boot. Systemd respects all ordering and dependency directives (`After=`, `Requires=`, etc.) declared in the `[Unit]` section.
 
 ### 2. Pack the Bundle
 
@@ -73,9 +78,13 @@ The generation directory must contain:
 
 | Operation  | Implementation                                                                                                                                               |
 | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| activate   | Renders the unit template, writes it to the app's `systemd/units` directory and `/run/systemd/system/`, runs `daemon-reload`, then `systemctl enable --now`. |
+| activate   | Renders the unit template, writes it to `.rugix/systemd/units/` in the generation directory and `/run/systemd/system/`, runs `daemon-reload`, then `systemctl enable --runtime` and `systemctl start`. |
 | status     | Maps `systemctl is-active` output to running/stopped/failed/unknown.                                                                                         |
-| deactivate | Runs `systemctl disable --now`, removes the rendered unit files, runs `daemon-reload`.                                                                       |
+| deactivate | Runs `systemctl stop` and `systemctl disable --runtime`, removes the runtime unit file, runs `daemon-reload`.                                                |
+| start      | Runs `systemctl start`.                                                                                                                                      |
+| stop       | Runs `systemctl stop`.                                                                                                                                       |
+
+**Boot behavior after `stop`:** `systemctl stop` stops the service but does not disable it. The unit remains enabled via runtime symlinks, so systemd restarts the service on the next boot (once the unit has been restored and re-enabled by `restore-units`).
 
 ## Boot-Time Restoration
 

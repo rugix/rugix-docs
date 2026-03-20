@@ -11,7 +11,7 @@ This is the most flexible orchestrator and can manage any kind of workload.
 
 ### 1. Write the Orchestrator Script
 
-Create an `orchestrator` script that handles `activate`, `status`, and `deactivate`:
+Create an `orchestrator` script that handles `activate`, `status`, `deactivate`, `start`, and `stop`:
 
 ```bash title="orchestrator"
 #!/bin/sh
@@ -19,24 +19,38 @@ set -eu
 
 PID_FILE="$RUGIX_APP_DATA_DIR/daemon.pid"
 
-case "$1" in
-  activate)
+start_daemon() {
     nohup "$RUGIX_APP_GENERATION_DIR/my-daemon" \
         --data-dir "$RUGIX_APP_DATA_DIR" \
         --pid-file "$PID_FILE" \
         > "$RUGIX_APP_DATA_DIR/daemon.log" 2>&1 &
-    ;;
-  status)
-    if [ -f "$PID_FILE" ] && kill -0 "$(cat "$PID_FILE")" 2>/dev/null; then
-        echo '{"status": "running"}'
-    else
-        echo '{"status": "stopped"}'
-    fi
-    ;;
-  deactivate)
+}
+
+stop_daemon() {
     if [ -f "$PID_FILE" ]; then
         kill "$(cat "$PID_FILE")" 2>/dev/null
         rm -f "$PID_FILE"
+    fi
+}
+
+case "$1" in
+  activate)
+    start_daemon
+    ;;
+  deactivate)
+    stop_daemon
+    ;;
+  start)
+    start_daemon
+    ;;
+  stop)
+    stop_daemon
+    ;;
+  status)
+    if [ -f "$PID_FILE" ] && kill -0 "$(cat "$PID_FILE")" 2>/dev/null; then
+        echo '{"state": "running"}'
+    else
+        echo '{"state": "stopped"}'
     fi
     ;;
 esac
@@ -92,18 +106,21 @@ The working directory is set to the generation directory.
 
 ## Operations
 
-For `activate` and `deactivate`, a zero exit code means success and non-zero means failure (stderr is included in the error message).
+For `activate`, `deactivate`, `start`, and `stop`, a zero exit code means success and non-zero means failure (stderr is included in the error message).
 
 The `status` operation must print a JSON object to stdout:
 
 ```json
-{"status": "running"}
-{"status": "stopped"}
-{"status": "failed", "message": "health check failing"}
-{"status": "unknown"}
+{"state": "running"}
+{"state": "unhealthy", "message": "health check failing"}
+{"state": "stopped"}
+{"state": "failed", "message": "process crashed"}
+{"state": "unknown"}
 ```
 
 If the script exits with a non-zero status or produces invalid JSON, the status is reported as unknown.
+
+**Boot behavior after `stop`:** Entirely determined by the script. If the script simply kills a process, the process will not restart on boot unless the `activate` operation is re-run. Since Rugix only re-runs activation during [crash recovery](../reference#crash-recovery), a stopped workload typically stays stopped across reboots.
 
 ## Idempotency and Recovery
 
