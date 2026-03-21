@@ -51,7 +51,8 @@ This command:
 - `--pull` ensures the latest images are fetched before saving.
 - `--platform` targets the device architecture (e.g., `linux/arm64`, `linux/amd64`).
 - `--include` adds extra files or directories to the bundle.
-- `--no-images` skips bundling container images, useful when devices pull images from a registry at runtime.
+- `--disable-image-bundling` skips bundling container images, useful when devices pull images from a registry at runtime.
+- `--disable-pinning` do not pin bundled images.
 
 ### 3. Install on the Device
 
@@ -81,13 +82,13 @@ When using `rugix-bundler apps pack docker-compose`, this structure is created a
 
 ## Lifecycle Operations
 
-| Operation  | Implementation                                                                  |
-| ---------- | ------------------------------------------------------------------------------- |
-| activate   | Loads all images, then runs `docker compose up -d --wait` (see Health Checks).  |
-| status     | Checks `docker compose ps --format json` output.                                |
-| deactivate | Runs `docker compose down`.                                                     |
-| start      | Runs `docker compose up -d --wait` (without image loading).                     |
-| stop       | Runs `docker compose stop`.                                                     |
+| Operation  | Implementation                                                                 |
+| ---------- | ------------------------------------------------------------------------------ |
+| activate   | Loads all images, then runs `docker compose up -d --wait` (see Health Checks). |
+| status     | Checks `docker compose ps --format json` output.                               |
+| deactivate | Runs `docker compose down`.                                                    |
+| start      | Runs `docker compose up -d --wait` (without image loading).                    |
+| stop       | Runs `docker compose stop`.                                                    |
 
 **Boot behavior after `stop`:** `docker compose stop` stops the containers but does not remove them. Whether Docker restarts them on boot depends on the `restart` policy in the compose file. With `restart: always`, Docker restarts the containers automatically. With `restart: unless-stopped`, Docker remembers that the containers were explicitly stopped and does _not_ restart them.
 
@@ -110,6 +111,6 @@ Set `timeout` to `0` to disable waiting for health checks entirely (activation s
 
 The following environment variables are available in the `docker-compose.yml`:
 
-| Variable            | Description                                           |
-| ------------------- | ----------------------------------------------------- |
-| `RUGIX_APP_DATA_DIR`| Absolute path to the app's persistent data directory. |
+| Variable             | Description                                           |
+| -------------------- | ----------------------------------------------------- |
+| `RUGIX_APP_DATA_DIR` | Absolute path to the app's persistent data directory. |
