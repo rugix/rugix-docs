@@ -20,7 +20,7 @@ In this article, we discuss the challenges of deploying and managing application
 
 As outlined above, different devices in a fleet often need different workloads on top of a shared base system as baking everything into the system image does not scale. But even once you decouple application deployment from system updates, you face a set of challenges that are easy to underestimate.
 
-**Atomicity.** Deploying an application is rarely a single operation. A Docker Compose stack might require loading container images, writing configuration files, and starting multiple services. If the device loses power halfway through, you need a well-defined state to recover from and a mechanism to get there automatically on the next boot. Without that, you end up with a partially deployed application that may not start, may not roll back cleanly, and may require manual intervention on a device that is potentially unreachable.
+**Atomicity.** Deploying an application is rarely a single operation. A Docker Compose stack might require loading container images, writing configuration files, and starting multiple services. If the device loses power halfway through, you need a well-defined state to recover from and a mechanism to get there automatically. Without that, you end up with a partially deployed application that may not start, may not roll back cleanly, and may require manual intervention on a device that is potentially unreachable.
 
 **Rollback.** When a new version of an application does not work as expected, you need a way to get back to the previous working version. That means keeping the previous version's artifacts on disk, knowing which version was last known to work, and having a reliable way to switch back. Most ad-hoc deployment scripts do not track this.
 
@@ -123,7 +123,7 @@ This single command:
 3. Saves the images as a tarball so the bundle is fully self-contained.
 4. Packages everything into a [Rugix Bundle](/docs/ctrl/advanced/update-bundles).
 
-The `--pull` flag ensures the images are fetched before saving. The `--platform` flag targets the device architecture. The `--include` flag adds extra files (here, the Mosquitto configuration) to the bundle. If your devices pull images from a container registry at runtime, pass `--no-images` to skip bundling the images and keep the bundle small.
+The `--pull` flag ensures the images are fetched before saving. The `--platform` flag targets the device architecture. The `--include` flag adds extra files (here, the Mosquitto configuration) to the bundle. If your devices pull images from a container registry at runtime, pass `--disable-image-bundling` to skip bundling the images and keep the bundle small. Rugix Bundler will also automatically pin the included images based on their digest. If you don't want that use `--disable-pinning`.
 
 Rugix Bundler will output a bundle hash of the following form:
 

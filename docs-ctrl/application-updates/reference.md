@@ -182,18 +182,18 @@ The `rugix-ctrl apps recover` command can also be called manually at any time.
 
 ## CLI Reference
 
-| Command                                       | Description                                   |
-| --------------------------------------------- | --------------------------------------------- |
-| `rugix-ctrl apps install <bundle>`            | Install apps from a bundle (`-` for stdin).   |
-| `rugix-ctrl apps list`                        | List all installed apps with status.          |
-| `rugix-ctrl apps info <app>`                  | Show details for an app.                      |
-| `rugix-ctrl apps activate <app> [generation]` | Activate a generation (starts the app).       |
-| `rugix-ctrl apps deactivate <app>`            | Deactivate the current generation (stops it). |
-| `rugix-ctrl apps start <app>`                 | Start the workload of an active app.          |
-| `rugix-ctrl apps stop <app>`                  | Stop the workload without deactivating.       |
-| `rugix-ctrl apps rollback <app>`              | Roll back to the previous generation.         |
-| `rugix-ctrl apps remove <app>`                | Remove an app entirely.                       |
-| `rugix-ctrl apps generations <app>`           | List all generations.                         |
-| `rugix-ctrl apps gc [app] [--keep N]`         | Garbage collect old generations.              |
-| `rugix-ctrl apps recover`                     | Recover interrupted transitions for all apps. |
-| `rugix-ctrl apps service-manager systemd restore-units`          | Restore app units into systemd (for boot).    |
+| Command                                                 | Description                                   |
+| ------------------------------------------------------- | --------------------------------------------- |
+| `rugix-ctrl apps install <bundle>`                      | Install apps from a bundle (`-` for stdin).   |
+| `rugix-ctrl apps list`                                  | List all installed apps with status.          |
+| `rugix-ctrl apps info <app>`                            | Show details for an app.                      |
+| `rugix-ctrl apps activate <app> [generation]`           | Activate a generation (starts the app).       |
+| `rugix-ctrl apps deactivate <app>`                      | Deactivate the current generation (stops it). |
+| `rugix-ctrl apps start <app>`                           | Start the workload of an active app.          |
+| `rugix-ctrl apps stop <app>`                            | Stop the workload without deactivating.       |
+| `rugix-ctrl apps rollback <app>`                        | Roll back to the previous generation.         |
+| `rugix-ctrl apps remove <app>`                          | Remove an app entirely.                       |
+| `rugix-ctrl apps generations <app>`                     | List all generations.                         |
+| `rugix-ctrl apps gc [app] [--keep N]`                   | Garbage collect old generations.              |
+| `rugix-ctrl apps recover`                               | Recover interrupted transitions for all apps. |
+| `rugix-ctrl apps service-manager systemd restore-units` | Restore app units into systemd (for boot).    |
