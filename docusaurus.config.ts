@@ -60,20 +60,11 @@ const config: Config = {
       respectPrefersColorScheme: false,
     },
     announcementBar: {
-      id: "2026-rugix-1.0",
+      id: "2026-rugix-apps",
       content: `
-          📣 <a target="_blank" href="/blog/releases/1.0" style="font-size: 110%"><strong>Rugix 1.0 is out!</strong></a> 📣
+          📣 <a target="_blank" href="/blog/2026-03-23-rugix-apps" style="font-size: 110%"><strong>Introducing Rugix Apps: Reliable Application Updates for Edge Devices</strong></a> 📣
       `,
-      // id: "2026-nexigon-release",
-      // content: `
-      //     🚀 <a target="_blank" href="https://nexigon.cloud" style="font-size: 110%"><strong>Looking for a modern device management solution that plays well with Rugix? Check out Nexigon, by the creators of Rugix!</strong></a>  🚀
-      // `,
-      // id: "2025-cra-whitepaper",
-      // content: `
-      //     📣 <a target="_blank" href="https://silitics.com/news/2025-11-12-cra-whitepaper/" style="font-size: 110%"><strong>Rugix has been featured in a whitepaper on CRA compliance by EY, Cumulocity, and Silitics</strong>.</a> 📣
-      //   `,
       backgroundColor: "#6ee7b7",
-      // isCloseable: true,
     },
     navbar: {
       title: "Rugix",
