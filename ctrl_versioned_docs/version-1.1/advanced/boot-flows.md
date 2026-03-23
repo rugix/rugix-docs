@@ -10,6 +10,7 @@ Rugix Ctrl provides the following _default boot flows_:
 
 - `uboot`: Boot flow for U-Boot (A/B updates without a dead men's switch).
 - `grub`: Boot flow for GRUB (A/B updates without a dead men's switch).
+- `systemd-boot`: Boot flow for `systemd-boot` (A/B updates without a dead men's switch).
 
 For compatibility with other OTA update solutions, Rugix Ctrl further provides the following boot flows:
 
@@ -59,6 +60,7 @@ In addition, a boot flow may support the following operations:
 - `post_install(group)`: Runs after installing an update to the given group.
 - `mark_good(group)`: Mark the given boot group as _good_.
 - `mark_bad(group)`: Mark the given boot group as _bad_.
+- `get_active()`: Get active boot group.
 
 The `mark_good` and `mark_bad` operations are useful for implementing a dead men's switch, where the bootloader triggers a failover to another boot group after a certain number of failed boot attempts.
 Rugix Ctrl will **not** automatically mark boot groups as _good_ or _bad_, instead an external mechanism is required to monitor the system and trigger the marking through `rugix-ctrl boot`.
@@ -164,6 +166,35 @@ In contrast to the `grub` boot flow, there is no additional logic, for instance,
 **Rugix Ctrl does not require any patches to U-Boot.
 The required logic can be entirely implemented in U-Boot scripts.**
 
+### Systemd Boot
+
+`type = "systemd-boot"`
+
+The `systemd-boot` boot flow uses the [Boot Loader Interface](https://systemd.io/BOOT_LOADER_INTERFACE/) for A/B updates.
+In contrast to the other generic boot flows, it does not require separate boot partitions or a config partition.
+Instead, it leverages EFI variables and the `bootctl` utility to control which boot entry is selected by `systemd-boot`.
+
+The boot flow requires a mapping from boot group names to `systemd-boot` entry IDs:
+
+```toml title="/etc/rugix/system.toml"
+[boot-flow]
+type = "systemd-boot"
+[boot-flow.entries]
+a = "boot-a.efi"
+b = "boot-b.efi"
+```
+
+At least two entries must be configured.
+
+To implement the A/B switching, Rugix Ctrl uses three EFI variables from `systemd-boot`'s loader namespace (`4a67b082-0a4c-41cf-b6c7-440b29bb8c4f`):
+
+- `LoaderEntryDefault`: The default boot entry. Read by `get_default` and written by `commit` (via `bootctl set-default`).
+- `LoaderEntryOneShot`: A one-shot boot entry for the next boot only. Written by `set_try_next` (via `bootctl set-oneshot`). After booting, `systemd-boot` clears this variable, falling back to the default entry on subsequent boots.
+- `LoaderEntrySelected`: Set by `systemd-boot` at boot time to indicate which entry was actually booted. This variable is immutable for the lifetime of the session and is read by `get_active` to determine the currently active boot group.
+
+The one-shot mechanism provides the fallback behavior required for safe A/B updates: if the new system fails to boot and commit, the next boot will automatically fall back to the previous default entry.
+If `LoaderEntryDefault` does not match any configured entry (or is not set), the boot flow falls back to the first configured entry.
+
 ### Custom
 
 `type = "custom"`
@@ -195,25 +226,6 @@ Custom boot flows can be used to realize a variety of different update setups an
 If you need anything specific, [contact us for commercial support](mailto:hello@silitics.com?subject=Custom%20Boot%20Flow).
 
 :::
-
-### Systemd Boot
-
-:::warning
-**Support for Systemd Boot is not implemented yet.**
-:::
-
-```
-1: EFI       FAT32
-2: system-a
-3: system-b
-```
-
-Support for Systemd Boot would use the [Boot Loader Interface](https://systemd.io/BOOT_LOADER_INTERFACE/) for A/B updates by writing to the following EFI variables:
-
-- `LoaderEntryDefault-4a67b082-0a4c-41cf-b6c7-440b29bb8c4f` (default entry)
-- `LoaderEntryOneShot-4a67b082-0a4c-41cf-b6c7-440b29bb8c4f` (oneshot entry)
-
-In contrast to the other boot flows there would be no separate boot partitions.
 
 ## RAUC-compatible Boot Flows
 

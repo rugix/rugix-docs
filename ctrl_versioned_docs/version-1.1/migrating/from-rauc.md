@@ -2,12 +2,12 @@
 
 :::warning
 
-**Some of the functionality described here is still in development and not fully mature and battle-tested yet.**
+**The functionality described here has not been battle-tested yet.**
 
 :::
 
 RAUC supports U-Boot, GRUB, Barebox, and EFI.
-**At the time of writing, Rugix Ctrl only supports migrating from U-Boot and GRUB.**
+**Rugix Ctrl only supports migrating from U-Boot and GRUB.**
 Furthermore, Rugix Ctrl only supports installing updates to block devices.
 Raw flash devices requiring UBI are not supported yet.
 If you need support for any of the above, please [open an issue](https://github.com/rugix/rugix/issues/new/choose) or [reach out for commercial support](mailto:hello@silitics.com?subject=Migrating%20to%20Rugix%20Ctrl).
