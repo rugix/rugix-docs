@@ -110,17 +110,18 @@ Mender and OSTree focus exclusively on A/B updates. Mender can be extended via [
 
 To implement atomic system updates, update tools need to interface with a bootloader to effectuate the switching between versions (or the recovery system).
 
-|               | Mender | RAUC | SWUpdate | OSTree | Rugix Ctrl |
-| ------------: | :----: | :--: | :------: | :----: | :--------: |
-|        U-Boot |   ✅   |  ✅  |    ✅    |   ✅   |     ✅     |
-|          GRUB |   ✅   |  ✅  |    ✅    |   ✅   |     ✅     |
-|       Barebox |   ❌   |  ✅  |    ❌    |   ❌   |     ❌     |
-| Tryboot (RPi) |   ❌   |  ❌  |    ❌    |   ❌   |     ✅     |
-|    UAPI (BLS) |   ❌   |  ❌  |    ❌    |   ✅   |     ❌     |
-|           EFI |   ❌   |  ✅  |    ❌    |   ❌   |     ❌     |
-|        Custom |   ❌   |  ✅  |    ✅    |   ❌   |     ✅     |
+|                                    | Mender | RAUC | SWUpdate | OSTree | Rugix Ctrl |
+| ---------------------------------: | :----: | :--: | :------: | :----: | :--------: |
+|                             U-Boot |   ✅   |  ✅  |    ✅    |   ✅   |     ✅     |
+|                               GRUB |   ✅   |  ✅  |    ✅    |   ✅   |     ✅     |
+| systemd-boot[^systemd-boot-update] |   ❌   |  ❌  |    ❌    |   ❌   |     ✅     |
+|                            Barebox |   ❌   |  ✅  |    ❌    |   ❌   |     ❌     |
+|                      Tryboot (RPi) |   ❌   |  ❌  |    ❌    |   ❌   |     ✅     |
+|                         UAPI (BLS) |   ❌   |  ❌  |    ❌    |   ✅   |     ❌     |
+|                                EFI |   ❌   |  ✅  |    ❌    |   ❌   |     ❌     |
+|                             Custom |   ❌   |  ✅  |    ✅    |   ❌   |     ✅     |
 
-RAUC has the broadest built-in bootloader support, including [Barebox](https://www.barebox.org/) (which is maintained by the same company, Pengutronix) and EFI. Rugix Ctrl is the only tool supporting Raspberry Pi's Tryboot mechanism, which is the official way to implement A/B updates on Raspberry Pi hardware. OSTree is the only tool with built-in support for the [UAPI Boot Loader Specification](https://uapi-group.org/specifications/specs/boot_loader_specification/). RAUC and Rugix Ctrl support custom bootloader integrations, as does SWUpdate through its handler system. This allows them to be adapted to any bootloader through custom integrations.
+RAUC and Rugix Ctrl have the broadest built-in bootloader support. RAUC covers [Barebox](https://www.barebox.org/) (which is maintained by the same company, Pengutronix) and EFI. Rugix Ctrl is the only tool supporting Raspberry Pi's Tryboot mechanism, which is the official way to implement A/B updates on Raspberry Pi hardware, and the only tool with built-in support for systemd-boot. OSTree is the only tool with built-in support for the [UAPI Boot Loader Specification](https://uapi-group.org/specifications/specs/boot_loader_specification/). RAUC and Rugix Ctrl support custom bootloader integrations, as does SWUpdate through its handler system. This allows them to be adapted to any bootloader through custom integrations.
 
 RAUC and Mender both implement their own ways of interfacing with GRUB and U-Boot to effectuate atomic switching and rollback. Notably, Rugix Ctrl is the only tool that provides [bootloader integration compatible with other tools](/docs/ctrl/migrating/). It provides both Mender and RAUC-compatible boot flows that enable (a) the usage of existing board integrations of the other tools and (b) safe migrations in the field without reflashing.
 
@@ -145,6 +146,8 @@ Delta updates are critical for bandwidth-constrained deployments and devices on 
 - **Rugix Ctrl** is the only tool that natively supports both dynamic block-based diffing with content-defined chunking and static delta compression (via Xdelta). Content-defined chunking is particularly valuable because it handles insertions and layout shifts more gracefully than fixed-size block diffing, producing smaller deltas across a wider range of update scenarios.
 
 As [our benchmarks on two years of real updates according to different cadences](./2025-07-15-efficient-delta-updates.mdx) have shown, Rugix Ctrl's delta update support is best-in-class across the board.[^rugix-delta-bias] Its dynamic delta updates outperform RAUC's adaptive updates due to the use of content-defined chunking and the low overhead as the same block index is used for cryptographic verification and delta updates. RAUC via Casync and SWUpdate via Casync or Zchunk can provide similar results as Rugix Ctrl for dynamic delta updates but require additional integration work.
+
+[^systemd-boot-update]: Added March 2026 (Rugix 1.1).
 
 [^rugix-delta-bias]: We may be biased here and invite you to do your own benchmarking. We have used two years worth of real system updates, not synthetic data. We have published the tools and data required to reproduce our benchmarks.
 

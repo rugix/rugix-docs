@@ -3,7 +3,6 @@ slug: 2026-03-23-rugix-apps
 title: "Reliable Application Updates for Edge Devices with Rugix Apps"
 authors: koehlma
 tags: [rugix, ota, embedded linux, edge, docker]
-draft: true
 ---
 
 Today, with the release of Rugix Ctrl 1.1, we are introducing **Rugix Apps**, a new mechanism for deploying and managing application workloads on embedded Linux devices.
