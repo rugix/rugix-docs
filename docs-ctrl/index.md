@@ -30,7 +30,7 @@ Rugix Ctrl addresses these challenges by ensuring atomic updates, on-device vali
 By utilizing Rugix Ctrl, you can rest assured that your devices remain reliable, secure, and up-to-date, **allowing you to focus on delivering value to your users**.
 
 These challenges apply equally to system-level updates (replacing the entire root filesystem) and application-level updates (deploying individual workloads like Docker Compose stacks or binaries).
-Rugix Ctrl handles both: its core mechanism provides atomic [system updates](./over-the-air-updates.mdx) with rollback, while [Rugix Apps](./application-updates/) extends it with first-class lifecycle management for application workloads, including versioning, crash recovery, and persistent state per application.
+Rugix Ctrl handles both: its core mechanism provides atomic [system updates](./over-the-air-updates.mdx) with rollback, while [Rugix Apps](./application-updates/index.md) extends it with first-class lifecycle management for application workloads, including versioning, crash recovery, and persistent state per application.
 
 ## High-Level Overview
 
