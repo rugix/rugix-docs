@@ -178,7 +178,7 @@ rugix-ctrl apps rollback iot-gateway
 
 ## Conclusion
 
-With Rugix Apps, Rugix Ctrl handles both system updates and application updates. Both use the same bundle format, the same CLI, and the same verification model. You maintain one base system image for your entire fleet and compose the right set of workloads per device, customer, or site. Platform and application teams ship on their own schedules, independently.
+With Rugix Apps, Rugix Ctrl now handles application updates and lifecycle management in addition to system updates. Both use the same bundle format, the same CLI, and the same verification model. You maintain one base system image for your entire fleet and compose the right set of workloads per device, customer, or site. Platform and application teams ship on their own schedules, independently.
 
 The feature is modular: it works with or without Rugix system updates, state management, or Bakery. The pluggable orchestrator mechanism supports Docker Compose, systemd-managed binaries, and arbitrary workloads via shell scripts. And because app bundles build on the same format as system updates, you get [delta updates](/blog/efficient-delta-updates), [cryptographic verification](/docs/ctrl/signed-updates), streaming installation, and compression without any extra effort.
 
