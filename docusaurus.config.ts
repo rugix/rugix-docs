@@ -145,6 +145,10 @@ const config: Config = {
               label: "Discord",
               href: "https://discord.gg/cZ8wP9jNsn",
             },
+            {
+              label: "Discourse",
+              href: "https://community.silitics.com/",
+            }
           ],
         },
         {
