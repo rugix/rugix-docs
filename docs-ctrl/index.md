@@ -55,16 +55,13 @@ Update bundles contain the actual data required to install an update, like files
 You find pre-built binaries of these tools on [the Releases page of Rugix's Git repository](https://github.com/rugix/rugix/releases/).
 
 :::tip
-The easiest way to use Rugix Ctrl is with [Rugix Bakery](/docs/bakery/), a flexible and user-friendly build system for bespoke Linux distributions developed by the Rugix Project.
-With Rugix Bakery, it is straightforward to integrate Rugix Ctrl into your system.
-Furthermore, Rugix Bakery also includes `rugix-bundler` and can directly create update bundles for Rugix Ctrl.
+Rugix Ctrl can be integrated with [Rugix Bakery](/docs/bakery/) or [Yocto](./advanced/yocto-integration.md), both of which are fully supported.
+If you have no prior experience with Linux and embedded devices, the easiest way to get started is with Rugix Bakery.
 :::
 
 The following documentation focuses on the concepts behind Rugix Ctrl and its usage.
-For the most part, it will assume that you already have a working integration of Rugix Ctrl into your system, which you get out-of-the-box when you use Rugix Bakery to build the system.
+For the most part, it will assume that you already have a working integration of Rugix Ctrl into your system, which you get out-of-the-box when you use Rugix Bakery or the Yocto integration.
 Among other things, the section [Advanced Topics](./advanced/) of this documentation covers how Rugix Ctrl can be integrated into and adapted for other build systems and setups.
-Note that while being developed together, Rugix Ctrl can also be used completely independently of Rugix Bakery.
-For commercial customers, Silitics, [the company behind Rugix](/open-source-commitment), offers a [Yocto](https://www.yoctoproject.org/) integration.
 
 ## Comparison to Other Solutions
 

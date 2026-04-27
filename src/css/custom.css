@@ -67,6 +67,13 @@ code.type-name {
   margin-left: 6pt;
 }
 
+.docusaurus-mermaid-container {
+  text-align: center;
+}
+.docusaurus-mermaid-container svg {
+  margin: 0 auto;
+}
+
 sup {
   vertical-align: top;
   position: relative;
