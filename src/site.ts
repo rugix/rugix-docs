@@ -20,6 +20,7 @@ export const brand: Brand = {
   locale: "en",
   themeColor: { dark: "#0b0d12", light: "#fafafa" },
   titleTemplate: "%s — Rugix",
+  plausible: { domain: "rugix.org" },
   banner: {
     id: "2026-rugix-apps",
     message: "📣 Introducing Rugix Apps: Reliable Application Updates for Edge Devices",

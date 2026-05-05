@@ -31,13 +31,13 @@ importers:
         version: 6.7.2
       '@silitics/astro-docs':
         specifier: ^0.1.1
-        version: 0.1.1(@silitics/astro-theme@0.1.2(astro@5.18.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.3)(typescript@5.9.3)(yaml@2.8.4))(tailwindcss@4.2.4))(astro@5.18.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.3)(typescript@5.9.3)(yaml@2.8.4))
+        version: 0.1.1(@silitics/astro-theme@0.2.0(astro@5.18.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.3)(typescript@5.9.3)(yaml@2.8.4))(tailwindcss@4.2.4))(astro@5.18.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.3)(typescript@5.9.3)(yaml@2.8.4))
       '@silitics/astro-schema-viewer':
         specifier: ^0.1.1
-        version: 0.1.1(@silitics/astro-theme@0.1.2(astro@5.18.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.3)(typescript@5.9.3)(yaml@2.8.4))(tailwindcss@4.2.4))(astro@5.18.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.3)(typescript@5.9.3)(yaml@2.8.4))
+        version: 0.1.1(@silitics/astro-theme@0.2.0(astro@5.18.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.3)(typescript@5.9.3)(yaml@2.8.4))(tailwindcss@4.2.4))(astro@5.18.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.3)(typescript@5.9.3)(yaml@2.8.4))
       '@silitics/astro-theme':
-        specifier: ^0.1.2
-        version: 0.1.2(astro@5.18.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.3)(typescript@5.9.3)(yaml@2.8.4))(tailwindcss@4.2.4)
+        specifier: ^0.2.0
+        version: 0.2.0(astro@5.18.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.3)(typescript@5.9.3)(yaml@2.8.4))(tailwindcss@4.2.4)
       '@tailwindcss/vite':
         specifier: ^4.1.4
         version: 4.2.4(vite@6.4.2(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(yaml@2.8.4))
@@ -877,8 +877,8 @@ packages:
       '@silitics/astro-theme': ^0.1.1
       astro: ^5.0.0
 
-  '@silitics/astro-theme@0.1.2':
-    resolution: {integrity: sha512-yZOZ+oijU6B5chErGydws1EphmzJ0I631ahkpd3/77CEkwUDSbtozA0blX3nA1YNRcWR3EoXDSO0ZV8cPeri+g==}
+  '@silitics/astro-theme@0.2.0':
+    resolution: {integrity: sha512-ujQTyCpA2t7cIGf2JTktwqdMZEXJfQ+JA9xAVHVjjUaMjKawKQwf7qiaEGl11emiBBT8k5/JcEshW5JjGjnFtQ==}
     peerDependencies:
       astro: ^5.0.0
       tailwindcss: ^4.0.0
@@ -3518,21 +3518,21 @@ snapshots:
 
   '@shikijs/vscode-textmate@10.0.2': {}
 
-  '@silitics/astro-docs@0.1.1(@silitics/astro-theme@0.1.2(astro@5.18.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.3)(typescript@5.9.3)(yaml@2.8.4))(tailwindcss@4.2.4))(astro@5.18.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.3)(typescript@5.9.3)(yaml@2.8.4))':
+  '@silitics/astro-docs@0.1.1(@silitics/astro-theme@0.2.0(astro@5.18.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.3)(typescript@5.9.3)(yaml@2.8.4))(tailwindcss@4.2.4))(astro@5.18.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.3)(typescript@5.9.3)(yaml@2.8.4))':
     dependencies:
       '@fortawesome/fontawesome-svg-core': 6.7.2
       '@fortawesome/free-solid-svg-icons': 6.7.2
-      '@silitics/astro-theme': 0.1.2(astro@5.18.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.3)(typescript@5.9.3)(yaml@2.8.4))(tailwindcss@4.2.4)
+      '@silitics/astro-theme': 0.2.0(astro@5.18.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.3)(typescript@5.9.3)(yaml@2.8.4))(tailwindcss@4.2.4)
       astro: 5.18.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.3)(typescript@5.9.3)(yaml@2.8.4)
 
-  '@silitics/astro-schema-viewer@0.1.1(@silitics/astro-theme@0.1.2(astro@5.18.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.3)(typescript@5.9.3)(yaml@2.8.4))(tailwindcss@4.2.4))(astro@5.18.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.3)(typescript@5.9.3)(yaml@2.8.4))':
+  '@silitics/astro-schema-viewer@0.1.1(@silitics/astro-theme@0.2.0(astro@5.18.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.3)(typescript@5.9.3)(yaml@2.8.4))(tailwindcss@4.2.4))(astro@5.18.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.3)(typescript@5.9.3)(yaml@2.8.4))':
     dependencies:
       '@fortawesome/fontawesome-svg-core': 6.7.2
       '@fortawesome/free-solid-svg-icons': 6.7.2
-      '@silitics/astro-theme': 0.1.2(astro@5.18.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.3)(typescript@5.9.3)(yaml@2.8.4))(tailwindcss@4.2.4)
+      '@silitics/astro-theme': 0.2.0(astro@5.18.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.3)(typescript@5.9.3)(yaml@2.8.4))(tailwindcss@4.2.4)
       astro: 5.18.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.3)(typescript@5.9.3)(yaml@2.8.4)
 
-  '@silitics/astro-theme@0.1.2(astro@5.18.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.3)(typescript@5.9.3)(yaml@2.8.4))(tailwindcss@4.2.4)':
+  '@silitics/astro-theme@0.2.0(astro@5.18.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.3)(typescript@5.9.3)(yaml@2.8.4))(tailwindcss@4.2.4)':
     dependencies:
       '@fontsource-variable/ibm-plex-sans': 5.2.8
       '@fontsource-variable/jetbrains-mono': 5.2.8
