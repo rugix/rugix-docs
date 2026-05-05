@@ -1,0 +1,46 @@
+---
+import { getCollection, render } from "astro:content";
+import { ArticleLayout } from "@silitics/astro-theme";
+import { DocsToc } from "@silitics/astro-docs";
+import SiteFooter from "../../layouts/SiteFooter.astro";
+import BlogSidebar from "../../components/BlogSidebar.astro";
+import { brand, nav, headerActions } from "../../site.ts";
+import { KOEHLMA, dateFromId, slugFromEntry } from "../../lib/blog.ts";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("blog");
+  return posts
+    .filter((p) => !p.data.draft)
+    .map((post) => ({
+      params: { slug: slugFromEntry(post) },
+      props: { post },
+    }));
+}
+
+const { post } = Astro.props;
+const { Content, headings } = await render(post);
+
+const date = post.data.date ?? dateFromId(post.id);
+const frontmatter = {
+  title: post.data.title,
+  description: post.data.description,
+  date,
+  tags: post.data.tags,
+  // Single author across the upstream blog; everything is "koehlma".
+  author: KOEHLMA,
+};
+---
+
+<ArticleLayout
+  brand={brand}
+  nav={nav}
+  actions={headerActions}
+  frontmatter={frontmatter}
+  backHref="/blog"
+  backLabel="Back to blog"
+>
+  <Content />
+  <BlogSidebar slot="sidebar" currentSlug={slugFromEntry(post)} />
+  <DocsToc slot="toc" headings={headings} />
+  <SiteFooter slot="footer" />
+</ArticleLayout>

@@ -1,0 +1,7 @@
+/*
+ * Pulls in the shared theme + docs styles. Imported once by every page
+ * layout so the design system loads in a predictable order.
+ */
+@import "@silitics/astro-theme/styles.css";
+@import "@silitics/astro-docs/styles.css";
+@import "@silitics/astro-schema-viewer/styles.css";

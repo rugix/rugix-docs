@@ -1,0 +1,57 @@
+---
+/*
+ * Rugix Bakery default-version docs (1.0) at `/docs/bakery/<slug>`.
+ */
+import { getCollection, render } from "astro:content";
+import { DocsLayout, titleize } from "@silitics/astro-docs";
+import SiteFooter from "../../../layouts/SiteFooter.astro";
+import {
+  brand,
+  nav,
+  headerActions,
+  getBakeryDocsConfig,
+} from "../../../site.ts";
+
+export async function getStaticPaths() {
+  const entries = await getCollection("docs-bakery");
+  return entries
+    .filter((entry) => !entry.data.draft)
+    .filter((entry) => entry.id === "1.0" || entry.id.startsWith("1.0/"))
+    .map((entry) => {
+      const slug = entry.id === "1.0" ? "" : entry.id.slice("1.0/".length);
+      return {
+        params: { slug: slug || undefined },
+        props: { entry, pageSlug: slug },
+      };
+    });
+}
+
+const DEFAULT_VERSION = "1.0";
+const { entry, pageSlug } = Astro.props;
+const docsConfig = await getBakeryDocsConfig();
+const { Content, headings } = await render(entry);
+const explicitTitle = entry.data.title;
+const title =
+  explicitTitle ??
+  headings[0]?.text ??
+  (pageSlug ? titleize(pageSlug.split("/").at(-1)!) : "Rugix Bakery");
+const editExt = entry.filePath?.endsWith(".mdx") ? "mdx" : "md";
+---
+
+<DocsLayout
+  brand={brand}
+  nav={nav}
+  actions={headerActions}
+  config={docsConfig}
+  versionSlug={DEFAULT_VERSION}
+  pageSlug={pageSlug}
+  title={title}
+  description={entry.data.description}
+  headings={headings}
+  basePath="/docs/bakery/"
+  bodyTitle={!!explicitTitle}
+  editExt={editExt}
+>
+  <Content />
+  <SiteFooter slot="footer" />
+</DocsLayout>

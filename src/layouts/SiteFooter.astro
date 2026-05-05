@@ -1,0 +1,38 @@
+---
+/*
+ * Footer wrapper for the Rugix example. Mounts the kit's `Footer` and
+ * drops a theme toggle into the bottom slot so visitors can flip between
+ * dark and light from any page without having to scroll back to the
+ * header.
+ */
+import {
+  Footer,
+  ThemeToggle,
+  MermaidScript,
+  CodeCopyScript,
+} from "@silitics/astro-theme";
+import { brand, footerColumns, socials } from "../site.ts";
+
+/*
+ * Swap the kit's default copy: the made-with line lives where the
+ * footer renders the "copyright" slot (left), and the actual
+ * "© Silitics GmbH" line goes on the right via `legalNote`. The theme
+ * toggle joins the right column through the `bottom` slot.
+ */
+const year = new Date().getUTCFullYear();
+---
+
+<Footer
+  brand={brand}
+  columns={footerColumns}
+  socials={socials}
+  copyrightHTML='Made with ♥ for OSS by <a href="https://silitics.com" rel="noopener">Silitics</a>'
+  legalNoteHTML={`© ${year} Silitics GmbH`}
+>
+  <div slot="brand-extras" class="flex items-center gap-3">
+    <span class="text-content-subtle text-sm">Theme</span>
+    <ThemeToggle />
+  </div>
+</Footer>
+<MermaidScript securityLevel="loose" />
+<CodeCopyScript />

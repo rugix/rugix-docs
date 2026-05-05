@@ -1,0 +1,113 @@
+---
+/*
+ * Right-rail sidebar for blog post pages. Lists every published post
+ * (newest first), highlighting the active one. Mirrors the
+ * `blogSidebarTitle: "All Posts"` rail from the upstream Docusaurus
+ * site. Assemble it in the page route and pass via the
+ * `<ArticleLayout>` `sidebar` slot.
+ */
+import { getCollection } from "astro:content";
+import { dateFromId, slugFromEntry } from "../lib/blog.ts";
+
+interface Props {
+  /** Slug (without `/blog/` prefix) of the post being viewed. */
+  currentSlug: string;
+  /** Optional override for the sidebar heading. */
+  title?: string;
+}
+
+const { currentSlug, title = "All Posts" } = Astro.props;
+
+const posts = await getCollection("blog");
+const sorted = posts
+  .filter((p) => !p.data.draft)
+  .map((p) => ({
+    title: p.data.title ?? slugFromEntry(p),
+    slug: slugFromEntry(p),
+    date: p.data.date ?? dateFromId(p.id),
+  }))
+  .sort((a, b) => b.date.getTime() - a.date.getTime());
+---
+
+<nav class="blog-sidebar" aria-label="Blog index">
+  <p class="blog-sidebar-label">{title}</p>
+  <ul>
+    {
+      sorted.map((p) => (
+        <li>
+          <a
+            href={`/blog/${p.slug}`}
+            class:list={["blog-sidebar-link", p.slug === currentSlug && "is-active"]}
+            aria-current={p.slug === currentSlug ? "page" : undefined}
+          >
+            <span class="blog-sidebar-date">
+              {p.date.toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+              })}
+            </span>
+            <span class="blog-sidebar-title">{p.title}</span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</nav>
+
+<style is:global>
+  .blog-sidebar {
+    font-size: 0.85rem;
+  }
+  .blog-sidebar-label {
+    margin: 0 0 0.75rem;
+    color: var(--theme-content-subtle);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .blog-sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+  }
+  .blog-sidebar-link {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    padding: 0.45rem 0.6rem;
+    border-radius: var(--radius-sm);
+    border-left: 2px solid transparent;
+    color: var(--theme-content-muted);
+    line-height: 1.35;
+    text-decoration: none;
+    transition:
+      background 0.15s,
+      color 0.15s,
+      border-color 0.15s;
+  }
+  .blog-sidebar-link:hover {
+    color: var(--theme-content);
+    background: var(--theme-surface-2);
+  }
+  .blog-sidebar-link.is-active {
+    color: var(--theme-primary);
+    background: var(--theme-primary-muted);
+    border-left-color: var(--theme-primary);
+    font-weight: 500;
+  }
+  .blog-sidebar-date {
+    color: var(--theme-content-subtle);
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .blog-sidebar-title {
+    color: inherit;
+  }
+</style>

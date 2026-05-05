@@ -15,26 +15,29 @@ jobs:
       group: ${{ github.workflow }}-${{ github.ref }}
     steps:
       - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
         with:
-          submodules: true
+          version: 9
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 24
-          cache: npm
+          cache: pnpm
 
       - name: Install Dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Build Website
-        run: npm run build
+        run: pnpm build
 
       - name: Deploy
         if: github.ref == 'refs/heads/main'
         uses: silitics/actions/deploy-site@main
         with:
           domain: rugix.org
-          source-dir: build
+          source-dir: dist
           s3-access-key: ${{ vars.SILITICS_SITES_ACCESS_KEY }}
           s3-secret-key: ${{ secrets.SILITICS_SITES_SECRET_KEY }}

@@ -1,0 +1,22 @@
+[tools]
+node = "latest"
+pnpm = "latest"
+
+[hooks]
+postinstall = "pnpm install"
+
+[tasks.dev]
+description = "Run the dev server."
+run = "pnpm dev"
+
+[tasks.build]
+description = "Build the static site into dist/."
+run = "pnpm build"
+
+[tasks.check]
+description = "Run astro check (type / content collection validation)."
+run = "pnpm check"
+
+[tasks.format]
+description = "Format the repository."
+run = "pnpm fmt"

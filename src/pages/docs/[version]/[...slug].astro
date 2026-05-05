@@ -1,0 +1,62 @@
+---
+/*
+ * Archived umbrella Rugix docs versions (`0.8.14`, `0.7.5`, `0.6`),
+ * mounted at `/docs/<version>/<slug>`. The default `latest` version is
+ * served by the sibling `[...slug].astro` (no version segment).
+ */
+import { getCollection, render } from "astro:content";
+import { DocsLayout, titleize } from "@silitics/astro-docs";
+import SiteFooter from "../../../layouts/SiteFooter.astro";
+import {
+  brand,
+  nav,
+  headerActions,
+  getRugixDocsConfig,
+} from "../../../site.ts";
+
+export async function getStaticPaths() {
+  const ARCHIVED = new Set(["0.8.14", "0.7.5", "0.6"]);
+  const entries = await getCollection("docs-rugix");
+  return entries
+    .filter((entry) => !entry.data.draft)
+    .map((entry) => {
+      const segments = entry.id.split("/");
+      const version = segments[0];
+      if (!ARCHIVED.has(version)) return null;
+      const slug = segments.slice(1).join("/");
+      return {
+        params: { version, slug: slug || undefined },
+        props: { entry, versionSlug: version, pageSlug: slug },
+      };
+    })
+    .filter((p): p is NonNullable<typeof p> => p !== null);
+}
+
+const { entry, versionSlug, pageSlug } = Astro.props;
+const docsConfig = await getRugixDocsConfig();
+const { Content, headings } = await render(entry);
+const explicitTitle = entry.data.title;
+const title =
+  explicitTitle ??
+  headings[0]?.text ??
+  (pageSlug ? titleize(pageSlug.split("/").at(-1)!) : "Documentation");
+const editExt = entry.filePath?.endsWith(".mdx") ? "mdx" : "md";
+---
+
+<DocsLayout
+  brand={brand}
+  nav={nav}
+  actions={headerActions}
+  config={docsConfig}
+  versionSlug={versionSlug}
+  pageSlug={pageSlug}
+  title={title}
+  description={entry.data.description}
+  headings={headings}
+  basePath="/docs/"
+  bodyTitle={!!explicitTitle}
+  editExt={editExt}
+>
+  <Content />
+  <SiteFooter slot="footer" />
+</DocsLayout>

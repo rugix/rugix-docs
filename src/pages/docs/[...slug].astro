@@ -1,0 +1,65 @@
+---
+/*
+ * Default version (Latest) of the umbrella Rugix docs, mounted at
+ * `/docs/<slug>` with no version segment so historical links survive.
+ * The versioned route at `[version]/[...slug].astro` handles archived
+ * versions.
+ */
+import { getCollection, render } from "astro:content";
+import { DocsLayout, titleize } from "@silitics/astro-docs";
+import SiteFooter from "../../layouts/SiteFooter.astro";
+import {
+  brand,
+  nav,
+  headerActions,
+  getRugixDocsConfig,
+} from "../../site.ts";
+
+export async function getStaticPaths() {
+  const entries = await getCollection("docs-rugix");
+  return entries
+    .filter((entry) => !entry.data.draft)
+    .filter((entry) => entry.id.startsWith("latest/"))
+    .map((entry) => {
+      const slug = entry.id.slice("latest/".length);
+      return {
+        params: { slug },
+        props: { entry, pageSlug: slug },
+      };
+    });
+}
+
+const { entry, pageSlug } = Astro.props;
+const docsConfig = await getRugixDocsConfig();
+const { Content, headings } = await render(entry);
+/*
+ * Rugix's source frontmatter rarely sets `title` — the rendered `# H1`
+ * inside the markdown is the page title. Fall back to the first heading
+ * for `<title>` so the meta tag is correct, and disable the layout's
+ * own body H1 so we don't render the slug above the actual heading.
+ */
+const explicitTitle = entry.data.title;
+const title =
+  explicitTitle ??
+  headings[0]?.text ??
+  (pageSlug ? titleize(pageSlug.split("/").at(-1)!) : "Documentation");
+const editExt = entry.filePath?.endsWith(".mdx") ? "mdx" : "md";
+---
+
+<DocsLayout
+  brand={brand}
+  nav={nav}
+  actions={headerActions}
+  config={docsConfig}
+  versionSlug="latest"
+  pageSlug={pageSlug}
+  title={title}
+  description={entry.data.description}
+  headings={headings}
+  basePath="/docs/"
+  bodyTitle={!!explicitTitle}
+  editExt={editExt}
+>
+  <Content />
+  <SiteFooter slot="footer" />
+</DocsLayout>

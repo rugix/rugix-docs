@@ -1,0 +1,192 @@
+---
+import { getCollection } from "astro:content";
+import { marked } from "marked";
+import {
+  BaseLayout,
+  Section,
+  Badge,
+  FaIcon,
+} from "@silitics/astro-theme";
+import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import SiteFooter from "../../layouts/SiteFooter.astro";
+import BlogSidebar from "../../components/BlogSidebar.astro";
+import { brand, nav, headerActions } from "../../site.ts";
+import { dateFromId, slugFromEntry, teaserFor } from "../../lib/blog.ts";
+
+/*
+ * Pre-render every post's teaser to HTML at build time so the blog
+ * index can paste it via `set:html`. Using `marked` here (rather than
+ * the full Astro markdown pipeline) keeps the teaser surface light —
+ * the index is a card grid, not a content page, and we don't want code
+ * fences / mermaid / etc. running through Shiki here anyway.
+ */
+const posts = await getCollection("blog");
+const sorted = posts
+  .filter((p) => !p.data.draft)
+  .map((p) => {
+    const teaser = teaserFor(p);
+    return {
+      post: p,
+      date: p.data.date ?? dateFromId(p.id),
+      teaserHtml: teaser ? marked.parse(teaser, { async: false }) : null,
+    };
+  })
+  .sort((a, b) => b.date.getTime() - a.date.getTime());
+---
+
+<BaseLayout
+  title="Blog"
+  description="Updates, releases, and engineering posts from the Rugix project."
+  brand={brand}
+  nav={nav}
+  actions={headerActions}
+>
+  <Section background="hero" padding="compact">
+    <div slot="decoration" class="bg-grid-fade absolute inset-0" aria-hidden="true"></div>
+    <div class="relative mx-auto max-w-3xl text-center">
+      <h1 class="font-display text-4xl font-bold md:text-5xl">Blog</h1>
+      <p class="text-content-muted mt-4 text-lg">
+        Releases, deep-dives, and the occasional opinion piece.
+      </p>
+    </div>
+  </Section>
+
+  <div class="mx-auto flex w-full max-w-7xl flex-col gap-10 px-4 pt-8 pb-16 md:pb-24 lg:flex-row lg:px-6">
+    <aside class="lg:sticky lg:top-20 lg:max-h-[calc(100dvh-6rem)] lg:w-60 lg:shrink-0 lg:self-start lg:overflow-y-auto">
+      <BlogSidebar currentSlug="" />
+    </aside>
+    <ul class="flex max-w-3xl flex-1 flex-col gap-6">
+      {
+        sorted.map(({ post, date, teaserHtml }) => {
+          const href = `/blog/${slugFromEntry(post)}`;
+          const tags = post.data.tags ?? [];
+          return (
+            <li>
+              {/*
+               * Stretched-link card. The teaser markdown contains its
+               * own `<a>` tags (links to other posts, e.g. "delta
+               * updates"); wrapping the whole card in an `<a>` would
+               * nest anchors, which the browser auto-closes mid-card
+               * and visibly fragments the layout. Instead we render
+               * the title as the only anchor and let `::after` on it
+               * blanket the card so the entire surface is clickable.
+               */}
+              <article class="card group relative p-6">
+                <div class="text-content-subtle font-mono text-xs tracking-wider uppercase">
+                  <time datetime={date.toISOString()}>
+                    {date.toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </time>
+                </div>
+                <h2 class="font-display mt-2 text-2xl font-semibold">
+                  <a
+                    href={href}
+                    class="text-content group-hover:text-primary stretched-link transition-colors no-underline"
+                  >
+                    {post.data.title}
+                  </a>
+                </h2>
+                {teaserHtml && (
+                  <div
+                    class="blog-teaser text-content-muted mt-2 text-sm leading-relaxed"
+                    set:html={teaserHtml}
+                  />
+                )}
+                {tags.length > 0 && (
+                  <div class="mt-4 flex flex-wrap gap-2">
+                    {tags.map((tag: string) => (
+                      <Badge>{tag}</Badge>
+                    ))}
+                  </div>
+                )}
+                <span class="text-primary mt-4 inline-flex items-center gap-2 text-sm font-medium">
+                  Read post <FaIcon icon={faArrowRight} class="text-xs" />
+                </span>
+              </article>
+            </li>
+          );
+        })
+      }
+    </ul>
+  </div>
+
+  <SiteFooter slot="footer" />
+</BaseLayout>
+
+<style is:global>
+  /*
+   * Stretched-link pattern. The title link gets a transparent
+   * `::after` that blankets the card so the entire surface is
+   * clickable. Inner teaser links bump to a higher z-index so they
+   * stay clickable on top of the overlay; everything else (text,
+   * badges, "Read post" row) is purely visual and lets clicks fall
+   * through to the overlay.
+   */
+  .stretched-link::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    border-radius: inherit;
+  }
+  .blog-teaser a,
+  .blog-teaser a:hover {
+    position: relative;
+    z-index: 2;
+  }
+
+  /*
+   * Teaser markdown lives inside a card — keep styling minimal so the
+   * card itself is the only visible "box". No code-chip borders, no
+   * blockquote borders, no fenced-block surfaces. Inline emphasis,
+   * links, and code render with subtle weight only.
+   */
+  .blog-teaser {
+    color: inherit;
+    line-height: 1.6;
+  }
+  .blog-teaser p {
+    margin: 0 0 0.5rem;
+  }
+  .blog-teaser p:last-child {
+    margin-bottom: 0;
+  }
+  .blog-teaser a {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .blog-teaser strong {
+    color: var(--theme-content);
+    font-weight: 600;
+  }
+  .blog-teaser em {
+    font-style: italic;
+  }
+  .blog-teaser code {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    background: transparent;
+    border: 0;
+    padding: 0;
+  }
+  /* Hide block-level elements entirely — teasers should be inline-only. */
+  .blog-teaser pre,
+  .blog-teaser blockquote,
+  .blog-teaser table,
+  .blog-teaser hr,
+  .blog-teaser h1,
+  .blog-teaser h2,
+  .blog-teaser h3,
+  .blog-teaser h4,
+  .blog-teaser h5,
+  .blog-teaser h6,
+  .blog-teaser img,
+  .blog-teaser ul,
+  .blog-teaser ol {
+    display: none;
+  }
+</style>
