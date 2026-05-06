@@ -2,6 +2,9 @@
 
 ---
 
+import { SchemaViewer } from "@silitics/astro-schema-viewer";
+import LayerSchema from "../../../../schemas/rugix-bakery-layer.schema.json";
+
 # Layers
 
 Layers are defined by _layer configuration files_ `<layer name>.toml` in the `layers` directory. As described in the [introduction](./index), a layer is built by executing recipes. For a given layer, the respective layer configuration file specifies the recipes to be executed as well as an optional parent layer that should be used as a base. Here is an example taken from the [Debian template](https://github.com/rugix/rugix-bakery/tree/main/container/templates/debian-grub-efi):
@@ -87,10 +90,7 @@ Recipes may depend on other recipes and as such will pull in their dependencies 
 
 For reference, here is the complete schema for layer configuration files:
 
-> _Schema viewer omitted in this port — see the source repo for the JSON schema._
-    ),
-  }}
-/>
+<SchemaViewer schema={LayerSchema} />
 
 You will find the most recent version of this schema [on GitHub](https://github.com/rugix/rugix-bakery/blob/main/schemas/rugix-bakery-layer.schema.json).
 

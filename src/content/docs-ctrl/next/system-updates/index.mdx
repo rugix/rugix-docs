@@ -1,20 +1,25 @@
 ---
-
+title: System Updates
+order: 20
 ---
 
 import { SchemaViewer } from "@silitics/astro-schema-viewer";
-import OutputSchema from "../../../schemas/rugix-ctrl-output-info.schema.json";
+import OutputSchema from "../../../../schemas/rugix-ctrl-output-info.schema.json";
 
-# Over-the-Air Updates
+# System Updates
 
-Rugix Ctrl's core functionality is the safe installation of _over-the-air_ (OTA) system updates.
+Rugix Ctrl's core functionality is the safe installation of _over-the-air_ (OTA) **system updates** — atomic replacements of an entire root filesystem (and optionally the boot partition) with rollback if anything goes wrong.
 
-**A/B Update Scheme.** A typical Rugix Ctrl setup uses an _A/B update scheme_ with redundant system partitions (A and B).
+For lifecycle-managed application workloads (Docker Compose stacks, systemd services, custom scripts), see [Application Updates](../application-updates/) instead.
+
+## A/B Update Scheme
+
+A typical Rugix Ctrl setup uses an _A/B update scheme_ with redundant system partitions (A and B).
 When an update is available, it is installed on the inactive partition (e.g., if the device is currently using partition A, the update is installed on partition B).
 This allows the device to temporarily switch to the updated partition upon reboot, ensuring a seamless and fail-safe update process as the previous partition remains untouched and can be reverted to in case of any issues.
 After on-device validation of the update, the update is then committed by permanently switching to the now active partition as the default boot partition.
-This approach drastically reduces the likelihood of bricking devices in the field due to corrupted or incompatible software and failed or incomplete updates, thereby avoiding any related repair and maintenance costs.
-In addition, it has the following advantages:
+This drastically reduces the likelihood of bricking devices in the field due to corrupted or incompatible software and failed or incomplete updates.
+In addition, A/B updates have the following advantages:
 
 - OTA updates can almost completely run in the background, without adversely affecting any users of a device.
   The only service interruption is caused, when the device reboots into the new version.
@@ -23,31 +28,30 @@ In addition, it has the following advantages:
 
 [^rollback]: This requires support by your application.
 
-**Other Update Schemes.** We generally recommend using an A/B update scheme due to the advantages stated above.
+**Other update schemes.** We generally recommend using an A/B update scheme due to the advantages stated above.
 For cases where an A/B update scheme is not the right choice, Rugix Ctrl can flexibly be configured for other update schemes, for instance, an asymmetric setup with a recovery partition or a setup with more than two redundant system partitions.
-To configure Rugix Ctrl for such custom use cases, please have a look at the [System Configuration](./advanced/system-configuration) section of this documentation.
+See [System Configuration](./system-configuration) for the slot and boot-group model that supports these layouts.
 
-**Bootloader Integration.** To commit and switch between systems, Rugix Ctrl needs to integrate with the bootloader of the system.
-Rugix Ctrl offers ready-made integrations with popular bootloaders.
-Currently, it provides integrations for:
+## Bootloader Integration
 
-- [U-Boot](https://docs.u-boot.org/en/latest/) (popular on single board computers, GPL-2.0)
-- [Grub](https://www.gnu.org/software/grub/) (well-established standard option, GPL-3.0)
-- [Raspberry Pi's `tryboot` Mechanism](https://www.raspberrypi.com/documentation/computers/config_txt.html#example-update-flow-for-ab-booting)
+To commit and switch between systems, Rugix Ctrl needs to integrate with the bootloader of the system.
+Rugix Ctrl ships ready-made [boot flows](./boot-flows) for U-Boot, GRUB, `systemd-boot`, and Raspberry Pi's `tryboot` mechanism, plus RAUC- and Mender-compatible flows for [in-field migration](../migrating/).
 
 :::tip
 When building a system with Rugix Bakery for a generic or specific target, you will get a system with a bootloader integration for A/B OTA updates out-of-the-box. In that case, no further configuration is necessary and you do not have to worry about how the bootloader integration works.
-If you want your own integration, check out the [documentation on boot flows](./advanced/boot-flows).
+If you want your own integration, see [Boot Flows](./boot-flows).
 :::
 
-**Typical Partition Layout.** A typical partition layout of a Rugix system following the A/B update scheme comprises six partitions:
+## Typical Partition Layout
+
+A typical partition layout of a Rugix system following the A/B update scheme comprises six partitions:
 
 - Partition 1: Contains the bootloader configuration for switching between the A and B system.
 - Partition 2: Contains boot data, such as the Linux kernel, for the A system.
 - Partition 3: Contains boot data, such as the Linux kernel, for the B system.
 - Partition 4: Contains the root filesystem of the A system.
 - Partition 5: Contains the root filesystem of the B system.
-- Partition 6: Contains any persistent data and state (see [State Management](./state-management)).
+- Partition 6: Contains any persistent data and state (see [State Management](../state-management/)).
 
 We also refer to Partition 1 as the _config partition_ and to Partition 6 as the _data partition_.
 
@@ -63,10 +67,10 @@ You will find the most recent version of this schema [on GitHub](https://github.
 
 ## Installing an Update
 
-Updates are delivered to devices in the form of _update bundles_.
+Updates are delivered to devices in the form of [update bundles](../update-bundles).
 Update bundles are installed with the following command:[^non-a-b]
 
-[^non-a-b]: The following commands assume that you use a traditional A/B update scheme. If you use a non-A/B update scheme, the commands will require you to explicitly specify the [boot group](./advanced/system-configuration).
+[^non-a-b]: The following commands assume that you use a traditional A/B update scheme. If you use a non-A/B update scheme, the commands will require you to explicitly specify the [boot group](./system-configuration).
 
 ```shell
 rugix-ctrl update install <update bundle>
@@ -129,22 +133,22 @@ When using the `--reboot no` flag, a reboot to the inactive, _spare_ system[^spa
 rugix-ctrl system reboot --spare
 ```
 
-You can also _defer_ the reboot with `--reboot deferred` (only for A/B setups, requires [State Management](./state-management)).
+You can also _defer_ the reboot with `--reboot deferred` (only for A/B setups, requires [State Management](../state-management/)).
 If you use that flag, Rugix Ctrl will set a flag and automatically boot into the new version the next time the system is booted.
 This allows users to shut down the system normally while remembering the update and automatically booting into it the next time the system boots.
 
 ### Cryptographic Bundle Verification
 
 Bundle verification is **mandatory by default**.
-When installing an update, Rugix Ctrl requires either a valid [embedded signature](./signed-updates) or a bundle hash (via `--bundle-hash`).
+When installing an update, Rugix Ctrl requires either a valid [embedded signature](../signed-updates) or a bundle hash (via `--bundle-hash`).
 If neither can be established, the installation will be refused.
 
 To verify the integrity of an update bundle using a hash, use the `--bundle-hash <hash>` option.
 This option takes a hash of the bundle header, which is then used to ensure the integrity of the bundle, preventing any manipulated data from ever being written.
 
-For signature-based verification, Rugix Ctrl supports [embedded CMS signatures](./signed-updates) in update bundles.
+For signature-based verification, Rugix Ctrl supports [embedded CMS signatures](../signed-updates) in update bundles.
 Root certificates for verification can be configured in `/etc/rugix/ctrl.toml` or provided via the `--root-cert` CLI option.
-See [Signed Updates](./signed-updates) for details on signing bundles and configuring signature verification.
+See [Signed Updates](../signed-updates) and the [reference](../reference/signed-updates) for full details.
 
 ### Installing Images
 
@@ -188,7 +192,7 @@ This recipe will install a system service that commits the currently booted syst
 Note that this also means that it will commit an old version if booted into, for instance, when performing a rollback (see below).
 
 :::tip
-Use a [_pre-commit hook_](./hooks#system-update-hooks) to ensure that a commit is only possible when the system is in proper working order.
+Use a [_pre-commit hook_](../hooks#system-update-hooks) to ensure that a commit is only possible when the system is in proper working order.
 :::
 
 ## Performing a Rollback

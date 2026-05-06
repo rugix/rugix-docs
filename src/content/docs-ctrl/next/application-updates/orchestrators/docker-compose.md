@@ -44,7 +44,7 @@ This command:
 1. Generates the `app.toml` manifest with `orchestrator = "docker-compose"`.
 2. Pulls the container images referenced in the compose file for the specified platform.
 3. Saves the images as a tarball so the bundle is fully self-contained.
-4. Packages everything into a [Rugix Bundle](../../advanced/update-bundles).
+4. Packages everything into a [Rugix Bundle](../../update-bundles).
 
 **Options:**
 

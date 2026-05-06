@@ -2,6 +2,9 @@
 
 ---
 
+import { SchemaViewer } from "@silitics/astro-schema-viewer";
+import ConfigSchema from "../../../../schemas/rugix-ctrl-bootstrapping.schema.json";
+
 # Bootstrapping
 
 During the production and provisioning of devices, a standard image is usually flashed onto each device. This image is identical across all devices to maintain consistency and simplify the provisioning process. After flashing the image, each device is then typically booted for the first time as part of an end-of-line configuration and quality assurance testing procedure. This initial boot process can also be used for setting up and initializing device-specific configurations, a process to which we refer as _bootstrapping_.
@@ -99,9 +102,6 @@ type = "none"
 
 For reference, here is the complete schema for the bootstrapping configuration file:
 
-> _Schema viewer omitted in this port — see the source repo for the JSON schema._
-    ),
-  }}
-/>
+<SchemaViewer schema={ConfigSchema} />
 
 You will find the most recent version of this schema [on GitHub](https://github.com/rugix/rugix/blob/main/schemas/rugix-ctrl-bootstrapping.schema.json).

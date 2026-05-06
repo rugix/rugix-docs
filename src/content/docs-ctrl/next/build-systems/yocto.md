@@ -1,8 +1,9 @@
 ---
-
+title: Yocto
+order: 30
 ---
 
-# Yocto Integration
+# Yocto
 
 We provide open-source [Yocto](https://www.yoctoproject.org/) layers for integrating Rugix Ctrl into a custom, Yocto-based Linux distribution tailored to your embedded device.
 The yocto layers are [available here](https://github.com/silitics/meta-rugix/tree/main).
@@ -13,12 +14,12 @@ The `meta-rugix-core` layer provides the `rugix-ctrl` recipes for installing Rug
 
 ## Bootstrapping Configuration
 
-The `meta-rugix-core` layer provides the `rugix-bootstrapping-conf` recipe for installing a custom [`bootstrapping.toml` configuration file](../bootstrapping).
+The `meta-rugix-core` layer provides the `rugix-bootstrapping-conf` recipe for installing a custom [`bootstrapping.toml` configuration file](../state-management/bootstrapping).
 You can extend this recipe to replace the default bootstrapping configuration.
 
 ## Building Update Bundles
 
-The `meta-rugix-core` layer provides the `rugix-bundle` class for building [Rugix update bundles](./update-bundles).
+The `meta-rugix-core` layer provides the `rugix-bundle` class for building [Rugix update bundles](../update-bundles).
 The class assumes that you build partitioned images using [WIC](https://docs.yoctoproject.org/5.0.8/dev-manual/wic.html) and allows you to include individual partitions as update payloads.
 
 Here's an example for a typical A/B setup with redundant boot and system partitions:

@@ -1,23 +1,21 @@
 ---
-
+title: Update Bundles Reference
+order: 10
 ---
 
 import { SchemaViewer } from "@silitics/astro-schema-viewer";
 import ConfigSchema from "../../../../schemas/rugix-bundle-manifest.schema.json";
 
-# Update Bundles
+# Update Bundles Reference
 
-Updates are delivered to devices in the form of _update bundles_.
+This page documents the bundle format in detail: payload model, the `rugix-bundler` CLI, block encoding, deduplication, and the full manifest schema. For an introduction, start with [Update Bundles](../update-bundles).
 
-Rugix update bundles are based on a format specifically engineered for **efficient and secure** over-the-air updates.
-The format provides **built-in support for cryptographic integrity checks, compression, and best-in-class delta updates**.
-
-## Introduction
+## Payload Model
 
 An update bundle is a single file that may contain multiple update _payloads_.
-Typically, for each payload, the update bundle specifies a slot (see [System Configuration: Slots and Boot Groups](./system-configuration#update-slots)) to which the payload should be installed.
+Typically, for each payload, the update bundle specifies a slot (see [System Configuration: Slots and Boot Groups](../system-updates/system-configuration#update-slots)) to which the payload should be installed.
 
-Before we continue, let's define a few terms:
+A few terms to keep apart:
 
 - _Slot Data_: Data that will exist in a slot after a successful update.
 - _Payload File_: Single file corresponding to a payload in an update bundle.
@@ -25,9 +23,8 @@ Before we continue, let's define a few terms:
 
 For instance, if a slot corresponds to a block device, then the slot data _and_ payload file may be a filesystem image.
 However, if a slot corresponds to a directory, then the slot data is the content of this directory and the payload file may be a Tar archive of the directory's contents.
-Now, the payload data is derived from the payload file.
-For instance, the payload file may be compressed before being stored in an update bundle.
-While the payload file must be reconstructible from the update bundle alone, e.g., by decompressing the payload data stored in the bundle, the slot data may or may not be reconstructible from the bundle alone.
+The payload data, in turn, is derived from the payload file — for instance, the payload file may be compressed before being stored in an update bundle.
+While the payload file must be reconstructible from the update bundle alone, the slot data may or may not be reconstructible from the bundle alone.
 
 These considerations give rise to the following transformations:
 
@@ -46,7 +43,7 @@ When the update bundle is installed, the payload file is _unpacked_ and then _in
 
 Note that Rugix Ctrl implements streaming updates, i.e., the unpacking step will not reconstruct the entire payload file but instead stream it to the installation step in pieces as the update bundle is read, e.g., over the network.
 
-### Update Types
+## Update Types
 
 Update bundles can be built for two _types_ of updates:
 
@@ -56,7 +53,7 @@ Update bundles can be built for two _types_ of updates:
 For full system updates, a boot group must be provided to `rugix-ctrl` as an installation target (if there are more than two boot groups).
 For incremental system updates, a boot group can be provided but it does not have to be.
 
-## Bundle Creation
+## Building a Bundle
 
 To work with bundles, you can use Rugix Bundler (`rugix-bundler`).
 You can download pre-built binaries from [the Releases page of Rugix's Git repository](https://github.com/rugix/rugix/releases/).
@@ -68,7 +65,7 @@ Rugix Bundler offers a subcommand for creating a bundle from a _bundle directory
 rugix-bundler bundle <bundle directory> <bundle path.rugixb>
 ```
 
-A bundle directory is a directory with the following structure:
+A bundle directory has the following structure:
 
 - `rugix-bundle.toml`: Rugix bundle manifest.
 - `payloads/`: Directory containing the payload files.
@@ -76,6 +73,8 @@ A bundle directory is a directory with the following structure:
 :::tip
 Rugix Bakery will generate bundles with good default settings so you do not have to care about the details.
 :::
+
+### Bundle Manifest
 
 Here is an example of a bundle manifest:
 
@@ -119,13 +118,12 @@ When installing an update bundle, you can use `--bundle-hash <hash>` where `<has
 rugix-bundler hash <bundle path.rugixb>
 ```
 
-Note that this is not a hash over the entire bundle but just the bundle's header.
-The header of the bundle, in turn, contains hashes of the payload headers as well as of the payloads themselves.
-Combined these hashes form a [Merkle tree](https://en.wikipedia.org/wiki/Merkle_tree).
+This is not a hash over the entire bundle but just the bundle's header.
+The header, in turn, contains hashes of the payload headers as well as of the payloads themselves, forming a [Merkle tree](https://en.wikipedia.org/wiki/Merkle_tree).
 That way, by providing the hash of the root, Rugix Ctrl can verify different parts of the bundle individually as they are read.
 
-Bundle verification is mandatory by default. Either a valid [embedded signature](../signed-updates) or a bundle hash must be provided.
-See [Signed Updates](../signed-updates) for details on configuring signature-based verification.
+Bundle verification is mandatory by default. Either a valid [embedded signature](./signed-updates) or a bundle hash must be provided.
+See the [Signed Updates reference](./signed-updates) for details on configuring signature-based verification.
 
 ## Payload Delivery
 
@@ -157,9 +155,9 @@ The `execute` delivery mechanism is extremely flexible and can be used to delive
 
 ## Block Encoding
 
-The example given above specifies a _block encoding_ for each payload.
-A block encoding will add a _block index_ for the respective payload to the bundle.
-To this end, the payload file will first be divided into blocks.
+The example above specifies a _block encoding_ for each payload.
+A block encoding adds a _block index_ for the respective payload to the bundle.
+To this end, the payload file is first divided into blocks.
 In the examples above, we use the same algorithm as [Casync](https://github.com/systemd/casync) to divide the payload file.
 The block index is then a sequence of the hashes of these blocks:
 
@@ -193,7 +191,7 @@ Normally, we would write the payload file directly into the bundle.
 However, if we have a block index and block deduplication is enabled, then we only write blocks which we have not previously written, i.e., we use the block index to skip duplicate blocks of the payload file.
 When later reading the payload data from the bundle, we use the block index to restore the original payload file by reading any blocks that we already saw earlier from the slot where the payload is written to.
 
-Note that block deduplication requires two assumptions:
+Block deduplication requires two assumptions:
 First, the payload file must be written directly to the slot without any postprocessing.
 Second, we need random access on the slot.
 For these reasons, block deduplication is only compatible with `block` and `file` slots.
@@ -221,7 +219,7 @@ The process may then roughly look as follows:
                                 ╰───────────────╯
 ```
 
-Note that this is orthogonal to block deduplication.
+This is orthogonal to block deduplication.
 
 **Variable Block Sizes.**
 Blocks may have a variable or fixed size.

@@ -5,3 +5,297 @@
 @import "@silitics/astro-theme/styles.css";
 @import "@silitics/astro-docs/styles.css";
 @import "@silitics/astro-schema-viewer/styles.css";
+
+/*
+ * Prose reset. Apply `.prose-reset` to any wrapper that hosts a
+ * component nested inside a `.prose` container — calculators, plots,
+ * device cards, etc. — to suppress the typography rules the theme
+ * applies to descendants of `.prose` (heading margins, bullet lists,
+ * paragraph line-height, link underlines, …). Component CSS can then
+ * style children freely without fighting cascading prose styles.
+ *
+ * Tailwind's typography plugin's `not-prose` is NOT defined by this
+ * project's stylesheet, so it has no effect — use `prose-reset`.
+ *
+ * Specificity is `(0,1,1)` per selector. Component rules that need to
+ * win over the reset must be at least `(0,2,0)` (e.g. add a parent
+ * class to the selector).
+ */
+.prose-reset h1,
+.prose-reset h2,
+.prose-reset h3,
+.prose-reset h4,
+.prose-reset h5,
+.prose-reset h6 {
+  margin: 0;
+  font: inherit;
+  letter-spacing: normal;
+}
+.prose-reset p {
+  margin: 0;
+  line-height: inherit;
+}
+.prose-reset a {
+  color: inherit;
+  text-decoration: inherit;
+  text-underline-offset: initial;
+  transition: none;
+}
+.prose-reset ul,
+.prose-reset ol {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.prose-reset li {
+  margin: 0;
+  line-height: inherit;
+}
+.prose-reset blockquote {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: inherit;
+}
+.prose-reset code {
+  font-family: var(--font-mono);
+  background: none;
+  padding: 0;
+  border-radius: 0;
+}
+.prose-reset pre {
+  background: none;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  margin: 0;
+}
+.prose-reset pre code {
+  font-family: var(--font-mono);
+}
+.prose-reset hr {
+  border: 0;
+  margin: 0;
+}
+.prose-reset img {
+  border-radius: 0;
+  margin: 0;
+}
+
+/*
+ * Delta-update savings calculator. Used as a client island in the
+ * delta-updates docs page and the efficient-delta-updates blog post.
+ * Lives here (rather than as scoped CSS in the .tsx) so the React
+ * component itself stays framework-style-agnostic.
+ */
+.delta-savings-calculator {
+  margin: 1.75em 0;
+  padding: 1.25rem;
+  border: 1px solid var(--theme-divider);
+  border-radius: var(--radius-md, 0.6rem);
+  background: var(--theme-surface-1);
+  color: var(--theme-content);
+  font-size: 0.92rem;
+}
+
+.delta-savings-controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  gap: 0.85rem 1.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.delta-savings-control {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.88rem;
+}
+
+.delta-savings-control-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--theme-content-subtle);
+}
+
+.delta-savings-slider-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.delta-savings-slider-row input[type="range"] {
+  flex: 1 1 auto;
+  min-width: 0;
+  accent-color: var(--theme-primary);
+}
+
+.delta-savings-readout {
+  flex: none;
+  min-width: 6.5ch;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.85rem;
+  color: var(--theme-content);
+}
+
+.delta-savings-select {
+  padding: 0.35rem 0.6rem;
+  border: 1px solid var(--theme-divider);
+  border-radius: var(--radius-sm, 0.35rem);
+  background: var(--theme-surface-0);
+  color: var(--theme-content);
+  font-size: 0.9rem;
+}
+
+.delta-savings-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--theme-divider);
+  border-radius: var(--radius-sm, 0.4rem);
+}
+
+.delta-savings-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+.delta-savings-table thead th {
+  text-align: left;
+  padding: 0.55rem 0.85rem;
+  background: var(--theme-surface-2, var(--theme-surface-1));
+  border-bottom: 1px solid var(--theme-divider);
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--theme-content-subtle);
+}
+
+.delta-savings-table tbody td {
+  padding: 0.55rem 0.85rem;
+  border-bottom: 1px solid var(--theme-divider);
+}
+
+.delta-savings-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.delta-savings-num {
+  text-align: right !important;
+  font-variant-numeric: tabular-nums;
+  font-family: var(--font-mono, ui-monospace, monospace);
+}
+
+.delta-savings-baseline td {
+  color: var(--theme-content-subtle);
+  font-style: italic;
+}
+
+.delta-savings-savings {
+  font-weight: 600;
+  color: var(--theme-success, #16a34a);
+}
+
+.delta-savings-tools {
+  color: var(--theme-content-subtle);
+  font-size: 0.82rem;
+}
+
+.delta-savings-footnote {
+  margin: 0.85rem 0 0;
+  font-size: 0.78rem;
+  color: var(--theme-content-subtle);
+}
+
+/*
+ * Delta-update bar plots. Used in the efficient-delta-updates blog
+ * post via the `<PlotRollingUpdates>`, `<PlotTotalSizes>`, and
+ * `<PlotMajorUpdates>` client islands. The plot canvas needs an
+ * explicit height since chart.js's responsive mode collapses without
+ * a constraint inside flex/grid contexts.
+ */
+.delta-plot {
+  margin: 1.75em 0;
+  padding: 0.75rem 0.5rem 0.5rem;
+  border: 1px solid var(--theme-divider);
+  border-radius: var(--radius-md, 0.6rem);
+  background: var(--theme-surface-1);
+}
+
+.delta-plot-canvas {
+  position: relative;
+  width: 100%;
+  /* Chart.js needs a fixed height; sized for legibility without
+   * dominating the surrounding prose. */
+  height: clamp(220px, 32vw, 340px);
+}
+
+/*
+ * Supported-device cards. Used in the Bakery devices/index page to
+ * list the hardware tiers Rugix Bakery targets.
+ */
+.device-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
+  gap: 1rem;
+  margin: 1.25em 0;
+}
+
+.device-card {
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--theme-divider);
+  border-radius: var(--radius-md, 0.6rem);
+  background: var(--theme-surface-1);
+  color: var(--theme-content);
+}
+
+.device-card .device-card-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.55rem;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.device-card-name {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.device-card-tier {
+  flex: none;
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.device-card-archs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0 0 0.65rem;
+  padding: 0;
+  list-style: none;
+}
+
+.device-card-arch {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  background: var(--theme-surface-2, var(--theme-primary-muted));
+  color: var(--theme-content-subtle);
+}
+
+.device-card-target {
+  display: inline-block;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.78rem;
+  color: var(--theme-content-muted, var(--theme-content-subtle));
+}

@@ -2,6 +2,8 @@
 
 ---
 
+import DeltaSavingsCalculator from "../../../../components/DeltaSavingsCalculator.tsx";
+
 # Delta Updates
 
 Delta updates can **reduce the amount of data transferred and the time required to install a new version** by reusing locally available parts of the old version of a system. This is especially useful for devices on metered or bandwidth-constrained connections.
@@ -91,4 +93,4 @@ rugix-bundler simulator
 
 Based on [our benchmarks](/blog/efficient-delta-updates), we developed a savings calculator to help you estimate the cost savings achievable through different delta update techniques for different update cadences. The calculator is based on averages over two years of real-world updates.
 
-> _Interactive calculator omitted in this port._
+<DeltaSavingsCalculator client:only="react" />

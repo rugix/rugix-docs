@@ -2,6 +2,9 @@
 
 ---
 
+import { SchemaViewer } from "@silitics/astro-schema-viewer";
+import ConfigSchema from "../../../../../schemas/rugix-bundle-manifest.schema.json";
+
 # Update Bundles
 
 Updates are delivered to devices in the form of _update bundles_.
@@ -232,9 +235,6 @@ If blocks are variable size, then the true block size of unknown blocks becomes 
 
 For reference, here is the complete schema for bundle manifest files:
 
-> _Schema viewer omitted in this port — see the source repo for the JSON schema._
-    ),
-  }}
-/>
+<SchemaViewer schema={ConfigSchema} />
 
 You will find the most recent version of this schema [on GitHub](https://github.com/rugix/rugix/blob/main/schemas/rugix-bundle-manifest.schema.json).

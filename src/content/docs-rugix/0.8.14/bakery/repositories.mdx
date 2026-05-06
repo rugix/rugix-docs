@@ -2,6 +2,9 @@
 
 ---
 
+import { SchemaViewer } from "@silitics/astro-schema-viewer";
+import RepositorySchema from "../../../../schemas/rugix-bakery-repository.schema.json";
+
 # Repositories
 
 _Repositories_ provide reusable recipes and layers, facilitating straightforward sharing within the Rugix community. Instead of operating its own distribution infrastructure, an external Git repository or local directory within the project directory can be used as a repository. The builtin `core` repository is always implicitly available. Additional repositories can be included via the `repositories` section in the project configuration. For instance, the quick-start templates may include the `rugix-extra` repository with:
@@ -31,9 +34,6 @@ The structure of the repository follows the structure of projects, i.e., there a
 
 For reference, here is the complete schema for repository configuration files:
 
-> _Schema viewer omitted in this port — see the source repo for the JSON schema._
-    ),
-  }}
-/>
+<SchemaViewer schema={RepositorySchema} />
 
 You will find the most recent version of this schema [on GitHub](https://github.com/rugix/rugix-bakery/blob/main/schemas/rugix-bakery-repository.schema.json).

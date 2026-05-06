@@ -2,6 +2,9 @@
 
 ---
 
+import { SchemaViewer } from "@silitics/astro-schema-viewer";
+import RecipeSchema from "../../../../schemas/rugix-bakery-recipe.schema.json";
+
 # Recipes
 
 As part of the build process, recipes perform the actual work, creating and modifying build outputs. Each recipe consists of a sequence of _steps_ to be executed. Recipes are defined by directories in the `recipes` directory. Each recipe gets its own directory with a _recipe configuration_ file `recipe.toml` and a `steps` subdirectory defining the individual steps to be executed. The configuration file may specify a _description_, a _priority_, _dependencies_ of the recipe, and _parameters_.
@@ -184,9 +187,6 @@ For now, however, we recommend you simply build your own version of the Rugix Ba
 
 For reference, here is the complete schema for recipe configuration files:
 
-> _Schema viewer omitted in this port — see the source repo for the JSON schema._
-    ),
-  }}
-/>
+<SchemaViewer schema={RecipeSchema} />
 
 You will find the most recent version of this schema [on GitHub](https://github.com/rugix/rugix-bakery/blob/main/schemas/rugix-bakery-recipe.schema.json).

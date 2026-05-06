@@ -1,9 +1,10 @@
 ---
-
+title: Bootstrapping
+order: 20
 ---
 
 import { SchemaViewer } from "@silitics/astro-schema-viewer";
-import ConfigSchema from "../../../schemas/rugix-ctrl-bootstrapping.schema.json";
+import ConfigSchema from "../../../../schemas/rugix-ctrl-bootstrapping.schema.json";
 
 # Bootstrapping
 
@@ -17,7 +18,7 @@ The bootstrapping process can include a variety of steps such as:
 - Generating unique device identifiers and security certificates.
 - Customizing configurations to suit device-specific requirements.
 
-When [configured to run before the init system](./state-management), Rugix Ctrl can also carry out bootstrapping steps. For instance, unless configured otherwise, it will grow the partition table and initialize the data partition where the persistent state lives. Rugix Ctrl's bootstrapping process is flexible and you can adapt it to your specific needs by adding [bootstrapping hooks](./hooks#bootstrapping-hooks).
+When [configured to run before the init system](./), Rugix Ctrl can also carry out bootstrapping steps. For instance, unless configured otherwise, it will grow the partition table and initialize the data partition where the persistent state lives. Rugix Ctrl's bootstrapping process is flexible and you can adapt it to your specific needs by adding [bootstrapping hooks](../hooks#bootstrapping-hooks).
 Note that the bootstrapping process runs very early during the boot process before the init system because properly booting the system, in particular, with state management, requires the existence of a data partition, which may first need to be created.
 
 :::note[Info]

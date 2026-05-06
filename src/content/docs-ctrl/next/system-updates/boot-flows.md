@@ -1,5 +1,6 @@
 ---
-
+title: Boot Flows
+order: 40
 ---
 
 # Boot Flows
@@ -20,7 +21,7 @@ For compatibility with other OTA update solutions, Rugix Ctrl further provides t
 - `mender-grub`: Mender-compatible boot flow for GRUB (A/B updates without a dead men's switch).
 
 :::note
-Those boot flows allow [safe, in-the-field migrations to Rugix Ctrl from RAUC and Mender](../migrating/index), respectively.
+Those boot flows allow [safe, in-the-field migrations to Rugix Ctrl from RAUC and Mender](../migrating/), respectively.
 This allows users to take advantage of Rugix Ctrl's advanced features, such as highly-efficient static delta updates and streaming from arbitrary sources, in brownfield projects without having to re-provision their devices.
 Furthermore, it allows existing bootloader integrations for RAUC and Mender to be re-used with Rugix Ctrl, even in new projects.
 :::
@@ -32,7 +33,7 @@ In addition to the above generic boot flows, Rugix Ctrl also provides the follow
 
 If none of these boot flows fit your needs, you can also implement your own `custom` boot flow.
 
-Boot flows are configured through the [`boot-flow` section of the system configuration](../advanced/system-configuration).
+Boot flows are configured through the [`boot-flow` section of the system configuration](./system-configuration).
 If no boot flow is configured, Rugix Ctrl will try to detect it dynamically at runtime by inspecting the config partition (usually the first partition of the root disk):
 
 1. If a file `autoboot.txt` exists, then the boot flow is `rpi-tryboot`.

@@ -44,7 +44,7 @@ This command:
 1. Generates the `app.toml` manifest with `orchestrator = "binary"`.
 2. Packages the service unit template and any included files as an `app-archive` payload.
 3. Packages the binary as a separate `app-file` payload for optimal delta updates.
-4. Produces a [Rugix Bundle](../../advanced/update-bundles).
+4. Produces a [Rugix Bundle](../../update-bundles).
 
 **Options:**
 
@@ -88,4 +88,4 @@ The generation directory must contain:
 
 ## Boot-Time Restoration
 
-Since `/run/` is a tmpfs, systemd units installed there do not survive reboots. A oneshot service restores them on boot. See [Systemd Integration](../reference#systemd-integration) for details.
+Since `/run/` is a tmpfs, systemd units installed there do not survive reboots. A oneshot service restores them on boot. See [Systemd Integration](../../reference/application-updates#systemd-integration) for details.

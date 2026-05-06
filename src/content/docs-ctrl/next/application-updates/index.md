@@ -1,5 +1,6 @@
 ---
-
+title: Application Updates
+order: 30
 ---
 
 # Application Updates
@@ -41,7 +42,7 @@ Apps are packaged into bundles and installed with a single command:
 rugix-ctrl apps install my-app.rugixb
 ```
 
-This extracts the app's files into a new version, marks it as ready, and activates it (starts the workload). App bundles use the same [Rugix Bundle format](../advanced/update-bundles) as system updates, which means they benefit from delta updates, cryptographic verification, streaming installation, and compression.
+This extracts the app's files into a new version, marks it as ready, and activates it (starts the workload). App bundles use the same [Rugix Bundle format](../update-bundles) as system updates, which means they benefit from delta updates, cryptographic verification, streaming installation, and compression.
 
 Rugix Ctrl requires every bundle to be verified before installation. If your bundles are [signed](../signed-updates), verification happens automatically. Otherwise, pass the bundle hash produced by `rugix-bundler` to verify integrity:
 
@@ -108,7 +109,7 @@ Automatic crash recovery and systemd unit restoration require two systemd servic
 Without these services, apps using the `binary` orchestrator will not start after a reboot, and interrupted transitions (for any orchestrator) will not be recovered automatically.
 :::
 
-See the [Reference](./reference) for details on the crash recovery mechanism, storage layout, bundle format, and the full CLI reference.
+See the [Application Updates reference](../reference/application-updates) for details on the crash recovery mechanism, storage layout, bundle format, and the full CLI reference.
 
 ## Inspecting Apps
 

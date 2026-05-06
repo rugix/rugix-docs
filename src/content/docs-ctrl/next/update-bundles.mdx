@@ -1,0 +1,42 @@
+---
+title: Update Bundles
+order: 2
+---
+
+# Update Bundles
+
+Updates are delivered to devices in the form of _update bundles_.
+
+The same bundle format is used for both [system updates](./system-updates/) and [application updates](./application-updates/), so everything Rugix offers around bundles — [delta updates](./delta-updates), [signed updates](./signed-updates), streaming installation, compression, deduplication — applies uniformly to both.
+
+A bundle is a single file that contains one or more **payloads**. Each payload is a piece of data that Rugix Ctrl will deliver somewhere on the device:
+
+- A filesystem image written to a partition (a [system slot](./system-updates/system-configuration#update-slots)).
+- A file dropped at a specific path (typically for [application updates](./application-updates/)).
+- A tar archive extracted into a directory.
+- The input to a custom command (the most flexible delivery, e.g., to apply a script).
+
+A bundle's [manifest](./reference/update-bundles#bundle-manifest) declares its payloads, where each one goes, and how it is encoded.
+
+## Why a Custom Format
+
+The bundle format is engineered specifically for **efficient and secure** OTA updates:
+
+- **Cryptographic integrity is built in.** Every bundle has a Merkle-tree of hashes covering its header and payloads, so Rugix Ctrl can verify each block as it is read and never write untrusted data to disk. See [Signed Updates](./signed-updates) for the signature layer on top.
+- **Streaming is the default.** Bundles can be installed straight from stdin or HTTP without ever fully landing on the device. Combined with cryptographic verification per block, this lets Rugix Ctrl write directly to the target slot.
+- **Block-level deduplication.** Within a payload, identical blocks are stored only once. This shrinks bundles for free when the same data repeats inside a payload (common for filesystem images with sparse regions, padding, or repeated content).
+- **Delta updates ride on the same indices.** The block index that powers verification and deduplication is also what makes [dynamic delta updates](./delta-updates) possible.
+
+## Working With Bundles
+
+Bundles are built with [`rugix-bundler`](./reference/update-bundles#building-a-bundle) from a directory containing a manifest and the payload files. If you use [Rugix Bakery](./build-systems/rugix-bakery), bundles are generated for you with sensible defaults — you typically don't author manifests by hand.
+
+To install a bundle on a device:
+
+```shell
+rugix-ctrl update install <bundle-or-url>
+```
+
+For application bundles, use `rugix-ctrl apps install` instead. See [Application Updates](./application-updates/) for the apps-specific commands.
+
+For everything below the surface — the manifest schema, payload kinds, block encoding semantics, deduplication rules, and the `rugix-bundler` CLI — see the [Update Bundles reference](./reference/update-bundles).

@@ -23,12 +23,19 @@
     "@silitics/astro-theme": "^0.2.0",
     "@tailwindcss/vite": "^4.1.4",
     "astro": "^5.12.3",
+    "chart.js": "^4.5.1",
     "marked": "^18.0.3",
+    "react-chartjs-2": "^5.3.1",
     "tailwindcss": "^4.1.4",
     "typescript": "^5.8.3"
   },
   "devDependencies": {
-    "prettier": "^3.6.2"
+    "@astrojs/react": "^5.0.4",
+    "@types/react": "^18.3.28",
+    "@types/react-dom": "^18.3.7",
+    "prettier": "^3.6.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
   "engines": {
     "node": ">=20"

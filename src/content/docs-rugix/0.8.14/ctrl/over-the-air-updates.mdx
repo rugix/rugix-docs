@@ -2,6 +2,9 @@
 
 ---
 
+import { SchemaViewer } from "@silitics/astro-schema-viewer";
+import OutputSchema from "../../../../schemas/rugix-ctrl-output-info.schema.json";
+
 # Over-the-Air Updates
 
 Rugix Ctrl's core functionality is the safe installation of _over-the-air_ (OTA) system updates.
@@ -56,10 +59,7 @@ Note that this command will produce JSON output when piped into another program 
 You can use tools like [`jq`](https://jqlang.org/) to process the JSON output produced by Rugix Ctrl.
 As a reference, here is the full schema of the output of `rugix-ctrl system info`:
 
-> _Schema viewer omitted in this port — see the source repo for the JSON schema._
-    ),
-  }}
-/>
+<SchemaViewer schema={OutputSchema} />
 
 You will find the most recent version of this schema [on GitHub](https://github.com/rugix/rugix/blob/main/schemas/rugix-ctrl-output-info.schema.json).
 

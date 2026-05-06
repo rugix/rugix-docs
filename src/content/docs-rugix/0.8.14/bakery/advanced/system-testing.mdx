@@ -2,6 +2,9 @@
 
 ---
 
+import { SchemaViewer } from "@silitics/astro-schema-viewer";
+import TestSchema from "../../../../../schemas/rugix-bakery-test.schema.json";
+
 # System Testing
 
 Embedded Linux systems are inherently complex, with numerous interconnected components working together.
@@ -105,9 +108,6 @@ Tests can be run with the `test` command:
 
 For reference, here is the complete schema for test configuration files:
 
-> _Schema viewer omitted in this port — see the source repo for the JSON schema._
-    ),
-  }}
-/>
+<SchemaViewer schema={TestSchema} />
 
 You will find the most recent version of this schema [on GitHub](https://github.com/rugix/rugix-bakery/blob/main/schemas/rugix-bakery-test.schema.json).

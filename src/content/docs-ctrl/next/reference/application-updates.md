@@ -1,10 +1,11 @@
 ---
-
+title: Application Updates Reference
+order: 50
 ---
 
-# Reference
+# Application Updates Reference
 
-This page documents the technical internals of Rugix Apps: app and generation state machines, storage layout, bundle format, systemd integration, crash recovery, and the CLI reference.
+This page documents the technical internals of Rugix Apps: app and generation state machines, storage layout, bundle format, systemd integration, crash recovery, and the CLI reference. For an introduction, start with [Application Updates](../application-updates/).
 
 ## App State Machine
 
@@ -89,7 +90,7 @@ Key aspects:
 
 ## App Bundles
 
-App bundles use the same [Rugix Bundle format](../advanced/update-bundles) as system update bundles.
+App bundles use the same [Rugix Bundle format](./update-bundles) as system update bundles.
 The difference is in the payload type: instead of slot payloads that target partitions, app bundles contain **app payloads** that populate files within a generation directory.
 
 There are currently two app payload types:

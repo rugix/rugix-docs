@@ -71,7 +71,7 @@ This command:
 
 1. Generates the `app.toml` manifest with `orchestrator = "generic"`.
 2. Packages the orchestrator script and any included files as an `app-archive` payload.
-3. Produces a [Rugix Bundle](../../advanced/update-bundles).
+3. Produces a [Rugix Bundle](../../update-bundles).
 
 **Options:**
 
@@ -120,8 +120,8 @@ The `status` operation must print a JSON object to stdout:
 
 If the script exits with a non-zero status or produces invalid JSON, the status is reported as unknown.
 
-**Boot behavior after `stop`:** Entirely determined by the script. If the script simply kills a process, the process will not restart on boot unless the `activate` operation is re-run. Since Rugix only re-runs activation during [crash recovery](../reference#crash-recovery), a stopped workload typically stays stopped across reboots.
+**Boot behavior after `stop`:** Entirely determined by the script. If the script simply kills a process, the process will not restart on boot unless the `activate` operation is re-run. Since Rugix only re-runs activation during [crash recovery](../../reference/application-updates#crash-recovery), a stopped workload typically stays stopped across reboots.
 
 ## Idempotency and Recovery
 
-Scripts should be written to be **idempotent** and handle being called again after a partial execution without side effects. When an operation is re-run during [crash recovery](../reference#crash-recovery), the `RUGIX_APP_RECOVERY` environment variable is set to `"true"`. This allows scripts to take a different code path if needed (e.g., cleaning up partial state before retrying).
+Scripts should be written to be **idempotent** and handle being called again after a partial execution without side effects. When an operation is re-run during [crash recovery](../../reference/application-updates#crash-recovery), the `RUGIX_APP_RECOVERY` environment variable is set to `"true"`. This allows scripts to take a different code path if needed (e.g., cleaning up partial state before retrying).

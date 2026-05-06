@@ -1,10 +1,11 @@
 ---
-
+title: Migrating
+order: 60
 ---
 
 # Safely Migrating
 
-To facilitate **safe migrations of already deployed devices** from other OTA solutions, Rugix Ctrl provides [boot flows](../advanced/boot-flows) that are compatible with other OTA update solutions and that mimic the way those solutions interact with the bootloader to install updates.
+To facilitate **safe migrations of already deployed devices** from other OTA solutions, Rugix Ctrl provides [boot flows](../system-updates/boot-flows) that are compatible with other OTA update solutions and that mimic the way those solutions interact with the bootloader to install updates.
 This allows you to safely migrate in the field without reprovisioning your devices and without putting them at risk.
 Note that this section focuses on the core bootloader integration and partition switching.
 It does not cover any custom integrations that you may have implemented with an other OTA solution.

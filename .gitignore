@@ -4,6 +4,9 @@ dist
 .cache
 .DS_Store
 *.log
+
+# Scratch clones of upstream repos used for reference / git archeology.
+repos/
 .env
 .env.local
 .env.development.local

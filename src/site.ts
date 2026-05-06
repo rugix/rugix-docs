@@ -207,9 +207,28 @@ export const getCtrlDocsConfig = memoizeDocsConfig(
     ];
     return {
       versions: versions.map((v) => {
+        /*
+         * The `next` branch was restructured into thematic top-level
+         * sections (System Updates, Application Updates, …) plus a few
+         * cross-cutting concept pages at the root (Update Bundles,
+         * Hooks, …). The 1.1 branch keeps its historical flat layout.
+         */
+        const isNext = v.slug === "next";
         const auto = buildNav(all, {
           prefix: `${v.slug}/`,
-          rootGroupTitle: "Rugix Ctrl",
+          rootGroupTitle: isNext ? "Overview" : "Rugix Ctrl",
+          groupOrder: isNext
+            ? [
+                "",
+                "system-updates",
+                "application-updates",
+                "state-management",
+                "build-systems",
+                "migrating",
+                "fleet-management",
+                "reference",
+              ]
+            : undefined,
         });
         return {
           ...v,

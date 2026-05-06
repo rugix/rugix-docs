@@ -1,9 +1,10 @@
 ---
-
+title: State Management
+order: 40
 ---
 
 import { SchemaViewer } from "@silitics/astro-schema-viewer";
-import ConfigSchema from "../../../schemas/rugix-ctrl-state.schema.json";
+import ConfigSchema from "../../../../schemas/rugix-ctrl-state.schema.json";
 
 # State Management
 
@@ -70,6 +71,8 @@ To do all that, Rugix Ctrl cannot just run as another service in your system, in
 To this end, you must ensure that Rugix Ctrl runs as the init system, e.g., with the `init=/usr/bin/rugix-ctrl` Kernel commandline option.
 Typically, when using Rugix Bakery with a generic or specific target, this will be handled for you.
 :::
+
+The same early-init mechanism that brings up the overlay also runs [Bootstrapping](./bootstrapping) on first boot — growing the partition table, creating the data partition, and initializing the substrate that state management lives on.
 
 ## Selective Persistent State
 

@@ -5,6 +5,12 @@ authors: koehlma
 tags: [rugix, delta updates]
 ---
 
+import DeltaSavingsCalculator from "../../components/DeltaSavingsCalculator.tsx";
+import {
+  PlotRollingUpdates,
+  PlotTotalSizes,
+  PlotMajorUpdates,
+} from "../../components/DeltaPlots.tsx";
 
 Most modern OTA update solutions for embedded Linux support a form of _delta updates_. Delta updates can reduce the amount of data transferred and the time required to install a new version by reusing locally available parts of the old version of a system. This is especially useful for devices on metered or bandwidth-constrained connections. In this article, **we will survey the different delta update techniques implemented within popular OTA update tools, examine their tradeoffs, and present benchmarks that compare their efficiency on the basis of real-world update scenarios**.
 
@@ -135,13 +141,13 @@ We first look at minor updates. The metric we are considering is the ratio betwe
 
 Here are the results for different techniques for minor updates with different cadences:
 
-> _Interactive plot — see the original site for the rolling-update size chart._
+<PlotRollingUpdates client:only="react" />
 
 These values are obtained by taking the average over all minor updates for Debian Bookworm and Debian Bullseye, e.g., in case of monthly updates, they represent an average over 48 updates and in case of annual updates they represent an average over 4 updates. The red bar is always at 1.0, indicating the base line of a simple compression of the entire filesystem image. Compared to this baseline, delta updates can reduce the size by between 30% and 90%, depending on the cadence and technique.
 
 Before we look at the different techniques in detail, we observe that the higher the update cadence, the more effective delta updates become. This makes sense as each update contains less changes over the previous version, allowing for a larger portion of the update to be reused from the previous version. At the same time, however, updates are more frequent leading to a higher cost overall. This is evident from the next plot that shows the absolute accumulated download size per year:
 
-<PlotTotalSizes />
+<PlotTotalSizes client:only="react" />
 
 :::note[Info]
 These results show that the most effective way to minimize the overall cost is to lower the update cadence. Of course, if you need to ship new features or bug fixes frequently, you may not be able to get away with fewer updates. In that case, delta updates are especially effective.
@@ -169,7 +175,7 @@ Given the ratio between the file index size and the data size in case of updates
 
 Let's now turn to major upgrades. Major upgrades are not as frequent and typically contain a lot of significant changes. As for minor updates, we also conducted benchmarks for the different update cadences, but instead of updating within a Debian version in each step, we update from Debian Bullseye to Bookworm in each step and then average the results. This represents a major update being done with the specific cadence but at different points in time. Here are the results:
 
-> _Interactive plot — see the original site for the major-version delta chart._
+<PlotMajorUpdates client:only="react" />
 
 First of all, we observe that there is not much difference between the different cadences. This is because there are significant changes between both versions in any case.
 
@@ -181,7 +187,7 @@ So, using delta updates can actually be harmful for infrequent major updates wit
 
 Based on the results of our benchmarks, we developed a calculator that allows you to estimate the cost savings (over your entire fleet per year) that you may achieve by using different delta update techniques for minor updates compared to not using delta updates.
 
-> _Interactive calculator — see the original site._
+<DeltaSavingsCalculator client:only="react" />
 
 We use 0.09 USD as a default cost per GiB as this is the standard egress fee for AWS S3. The calculations are based on averages over all update scenarios for each schedule, respectively. The baseline against which savings are calculated assumes that the entire image is LZMA compressed. **Note that these are estimates only and the actual savings may vary depending on your specific scenario.**
 

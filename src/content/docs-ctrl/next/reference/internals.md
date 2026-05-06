@@ -1,3 +1,8 @@
+---
+title: Internals
+order: 90
+---
+
 # Rugix Ctrl's Internals
 
 :::warning
