@@ -30,8 +30,8 @@ importers:
         specifier: ^6.7.2
         version: 6.7.2
       '@silitics/astro-docs':
-        specifier: ^0.1.1
-        version: 0.1.1(@silitics/astro-theme@0.2.0(astro@5.18.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.3)(typescript@5.9.3)(yaml@2.8.4))(tailwindcss@4.2.4))(astro@5.18.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.3)(typescript@5.9.3)(yaml@2.8.4))
+        specifier: ^0.2.0
+        version: 0.2.0(@silitics/astro-theme@0.2.0(astro@5.18.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.3)(typescript@5.9.3)(yaml@2.8.4))(tailwindcss@4.2.4))(astro@5.18.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.3)(typescript@5.9.3)(yaml@2.8.4))
       '@silitics/astro-schema-viewer':
         specifier: ^0.1.1
         version: 0.1.1(@silitics/astro-theme@0.2.0(astro@5.18.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.3)(typescript@5.9.3)(yaml@2.8.4))(tailwindcss@4.2.4))(astro@5.18.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.3)(typescript@5.9.3)(yaml@2.8.4))
@@ -970,10 +970,10 @@ packages:
   '@shikijs/vscode-textmate@10.0.2':
     resolution: {integrity: sha512-83yeghZ2xxin3Nj8z1NMd/NCuca+gsYXswywDy5bHvwlWL8tpTQmzGeUuHd9FC3E/SBEMvzJRwWEOz5gGes9Qg==}
 
-  '@silitics/astro-docs@0.1.1':
-    resolution: {integrity: sha512-8BCMTwdrP/A5FnwqNJrHxwDNQFzug8Vx2Tvj1RCW8CbHESQNkat/3yMdZZFTzRXC5YEqJ1v6Tm1y7xTNPBZXEQ==}
+  '@silitics/astro-docs@0.2.0':
+    resolution: {integrity: sha512-lpEBVMzu7XtIrK//AK1zFGq/17ThnoeLYlcpaem4v/spmLV3cOMOgJRMCO14QotF0GLVB9Pbll7rVR5/5eyKag==}
     peerDependencies:
-      '@silitics/astro-theme': ^0.1.1
+      '@silitics/astro-theme': ^0.2.0
       astro: ^5.0.0
 
   '@silitics/astro-schema-viewer@0.1.1':
@@ -3912,7 +3912,7 @@ snapshots:
 
   '@shikijs/vscode-textmate@10.0.2': {}
 
-  '@silitics/astro-docs@0.1.1(@silitics/astro-theme@0.2.0(astro@5.18.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.3)(typescript@5.9.3)(yaml@2.8.4))(tailwindcss@4.2.4))(astro@5.18.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.3)(typescript@5.9.3)(yaml@2.8.4))':
+  '@silitics/astro-docs@0.2.0(@silitics/astro-theme@0.2.0(astro@5.18.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.3)(typescript@5.9.3)(yaml@2.8.4))(tailwindcss@4.2.4))(astro@5.18.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.3)(typescript@5.9.3)(yaml@2.8.4))':
     dependencies:
       '@fortawesome/fontawesome-svg-core': 6.7.2
       '@fortawesome/free-solid-svg-icons': 6.7.2
