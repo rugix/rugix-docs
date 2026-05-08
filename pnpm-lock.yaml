@@ -30,14 +30,14 @@ importers:
         specifier: ^6.7.2
         version: 6.7.2
       '@silitics/astro-docs':
-        specifier: ^0.2.0
-        version: 0.2.0(@silitics/astro-theme@0.2.0(astro@5.18.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.3)(typescript@5.9.3)(yaml@2.8.4))(tailwindcss@4.2.4))(astro@5.18.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.3)(typescript@5.9.3)(yaml@2.8.4))
+        specifier: ^0.3.0
+        version: 0.3.0(@silitics/astro-theme@0.3.0(astro@5.18.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.3)(typescript@5.9.3)(yaml@2.8.4))(tailwindcss@4.2.4))(astro@5.18.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.3)(typescript@5.9.3)(yaml@2.8.4))
       '@silitics/astro-schema-viewer':
-        specifier: ^0.1.1
-        version: 0.1.1(@silitics/astro-theme@0.2.0(astro@5.18.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.3)(typescript@5.9.3)(yaml@2.8.4))(tailwindcss@4.2.4))(astro@5.18.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.3)(typescript@5.9.3)(yaml@2.8.4))
-      '@silitics/astro-theme':
         specifier: ^0.2.0
-        version: 0.2.0(astro@5.18.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.3)(typescript@5.9.3)(yaml@2.8.4))(tailwindcss@4.2.4)
+        version: 0.2.0(@silitics/astro-theme@0.3.0(astro@5.18.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.3)(typescript@5.9.3)(yaml@2.8.4))(tailwindcss@4.2.4))(astro@5.18.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.3)(typescript@5.9.3)(yaml@2.8.4))
+      '@silitics/astro-theme':
+        specifier: ^0.3.0
+        version: 0.3.0(astro@5.18.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.3)(typescript@5.9.3)(yaml@2.8.4))(tailwindcss@4.2.4)
       '@tailwindcss/vite':
         specifier: ^4.1.4
         version: 4.2.4(vite@7.3.2(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(yaml@2.8.4))
@@ -612,8 +612,8 @@ packages:
   '@iconify/types@2.0.0':
     resolution: {integrity: sha512-+wluvCrRhXrhyOmRDJ3q8mux9JkKy5SJ/v8ol2tu4FVjyYvtEzkc/3pK15ET6RKg4b4w4BmTk1+gsCUhf21Ykg==}
 
-  '@iconify/utils@3.1.1':
-    resolution: {integrity: sha512-MwzoDtw9rO1x+qfgLTV/IVXsHDBqeYZoMIQC8SfxfYSlaSUG+oWiAcoiB1yajAda6mqblm4/1/w2E8tRu7a7Tw==}
+  '@iconify/utils@3.1.3':
+    resolution: {integrity: sha512-LPKOXPn/zV+zis1oOfGWogaXVpqUybF3ZS6SCZIsz8vg0ivVp9+fVqyYB7xq0aiST/VhUQYGO1qo6uoYSiEJqw==}
 
   '@img/colour@1.1.0':
     resolution: {integrity: sha512-Td76q7j57o/tLVdgS746cYARfSyxk8iEfRxewL9h4OMzYhbW4TAcppl0mT4eyqXddh6L/jwoM75mo7ixa/pCeQ==}
@@ -970,20 +970,20 @@ packages:
   '@shikijs/vscode-textmate@10.0.2':
     resolution: {integrity: sha512-83yeghZ2xxin3Nj8z1NMd/NCuca+gsYXswywDy5bHvwlWL8tpTQmzGeUuHd9FC3E/SBEMvzJRwWEOz5gGes9Qg==}
 
-  '@silitics/astro-docs@0.2.0':
-    resolution: {integrity: sha512-lpEBVMzu7XtIrK//AK1zFGq/17ThnoeLYlcpaem4v/spmLV3cOMOgJRMCO14QotF0GLVB9Pbll7rVR5/5eyKag==}
+  '@silitics/astro-docs@0.3.0':
+    resolution: {integrity: sha512-iOvluo42pohh3bIkOwE6dGpRAtozk0vy5pgf+PbxNtsWiZZNizW9Vg5vmx6lMHI64mrv7m354hwJRLlI56EHwQ==}
     peerDependencies:
-      '@silitics/astro-theme': ^0.2.0
+      '@silitics/astro-theme': ^0.3.0
       astro: ^5.0.0
 
-  '@silitics/astro-schema-viewer@0.1.1':
-    resolution: {integrity: sha512-eOyJqC4e2k+tT/04PHJgCbkQggkOJwwVRkC9sCF+9sxaDvj7y61jJNl+CBdNJ4pQzkULBQSJJb69eR+ZD4uYsg==}
+  '@silitics/astro-schema-viewer@0.2.0':
+    resolution: {integrity: sha512-7wKKwQvaqZfx/1b6R/KD356N0OjT08w8SL5sDsqFR5kRsWhfToHwSSv5e6n21yAlA1h90hT41vjWBT3a2rDhhA==}
     peerDependencies:
-      '@silitics/astro-theme': ^0.1.1
+      '@silitics/astro-theme': ^0.3.0
       astro: ^5.0.0
 
-  '@silitics/astro-theme@0.2.0':
-    resolution: {integrity: sha512-ujQTyCpA2t7cIGf2JTktwqdMZEXJfQ+JA9xAVHVjjUaMjKawKQwf7qiaEGl11emiBBT8k5/JcEshW5JjGjnFtQ==}
+  '@silitics/astro-theme@0.3.0':
+    resolution: {integrity: sha512-358GYveUPYgh1YA2Ce7xNW1oVu9WcBVk+2nBaeeybMsyX1M2wn7ApjTg4/AR8cIvTjZUGuRdlKW6iqsvCu5YPA==}
     peerDependencies:
       astro: ^5.0.0
       tailwindcss: ^4.0.0
@@ -1464,9 +1464,6 @@ packages:
 
   common-ancestor-path@1.0.1:
     resolution: {integrity: sha512-L3sHRo1pXXEqX8VU28kfgUY+YGsk09hPqZiZmLacNib6XNTCM8ubYeT7ryXQw8asB1sKgcU5lkB7ONug08aB8w==}
-
-  confbox@0.1.8:
-    resolution: {integrity: sha512-RMtmw0iFkeR4YV+fUOSucriAQNb9g8zFR52MWCtl+cCZOFRNL6zeB395vPzFhEjjn4fMxXudmELnl/KF/WrK6w==}
 
   convert-source-map@2.0.0:
     resolution: {integrity: sha512-Kvp459HrV2FEJ1CAsi1Ku+MY3kasH19TFykTz2xWmMeq6bk2NU3XXvfJ+Q61m0xktWwt+1HSYf3JZsTms3aRJg==}
@@ -2331,9 +2328,6 @@ packages:
   micromark@4.0.2:
     resolution: {integrity: sha512-zpe98Q6kvavpCr1NPVSCMebCKfD7CA2NqZ+rykeNhONIJBpc1tFKt9hucLGwha3jNTNI8lHpctWJWoimVF4PfA==}
 
-  mlly@1.8.2:
-    resolution: {integrity: sha512-d+ObxMQFmbt10sretNDytwt85VrbkhhUA/JBGm1MPaWJ65Cl4wOgLaB1NYvJSZ0Ef03MMEU/0xpPMXUIQ29UfA==}
-
   mrmime@2.0.1:
     resolution: {integrity: sha512-Y3wQdFg2Va6etvQ5I82yUhGdsKrcYox6p7FfL1LbK2J4V01F9TGlepTIhnK24t7koZibmg82KGglhA1XK5IsLQ==}
     engines: {node: '>=10'}
@@ -2418,9 +2412,6 @@ packages:
     resolution: {integrity: sha512-cbrerZV+6rvdQrrD+iGMcZFEiiSrbv9Tfdkvnusy6y0x0GKBXREFg/Y65GhIfm0tnLntThhzCnfKwp1WRjeCyQ==}
     engines: {node: '>=14.0.0'}
 
-  pathe@2.0.3:
-    resolution: {integrity: sha512-WUjGcAqP1gQacoQe+OBJsFA7Ld4DyXuUIjZ5cc75cLHvJ7dtNsTugphxIADwspS+AraAUePCKrSVtPLFj/F88w==}
-
   piccolore@0.1.3:
     resolution: {integrity: sha512-o8bTeDWjE086iwKrROaDf31K0qC/BENdm15/uH9usSC/uZjJOKb2YGiVHfLY4GhwsERiPI1jmwI2XrA7ACOxVw==}
 
@@ -2434,9 +2425,6 @@ packages:
   picomatch@4.0.4:
     resolution: {integrity: sha512-QP88BAKvMam/3NxH6vj2o21R6MjxZUAd6nlwAS/pnGvN9IVLocLHxGYIzFhg6fUQ+5th6P4dv4eW9jX3DSIj7A==}
     engines: {node: '>=12'}
-
-  pkg-types@1.3.1:
-    resolution: {integrity: sha512-/Jm5M4RvtBFVkKWRu2BLUTNP8/M2a+UwuAX+ae4770q1qVGtfjG+WTCupoZixokjmHiry8uI+dlY8KXYV5HVVQ==}
 
   points-on-curve@0.2.0:
     resolution: {integrity: sha512-0mYKnYYe9ZcqMCWhUjItv/oHjvgEsfKvnUTg8sAtnHr3GVy7rGkXCb6d5cSyqrWqL4k81b9CPg3urd+T7aop3A==}
@@ -3632,11 +3620,11 @@ snapshots:
 
   '@iconify/types@2.0.0': {}
 
-  '@iconify/utils@3.1.1':
+  '@iconify/utils@3.1.3':
     dependencies:
       '@antfu/install-pkg': 1.1.0
       '@iconify/types': 2.0.0
-      mlly: 1.8.2
+      import-meta-resolve: 4.2.0
 
   '@img/colour@1.1.0':
     optional: true
@@ -3912,21 +3900,21 @@ snapshots:
 
   '@shikijs/vscode-textmate@10.0.2': {}
 
-  '@silitics/astro-docs@0.2.0(@silitics/astro-theme@0.2.0(astro@5.18.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.3)(typescript@5.9.3)(yaml@2.8.4))(tailwindcss@4.2.4))(astro@5.18.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.3)(typescript@5.9.3)(yaml@2.8.4))':
+  '@silitics/astro-docs@0.3.0(@silitics/astro-theme@0.3.0(astro@5.18.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.3)(typescript@5.9.3)(yaml@2.8.4))(tailwindcss@4.2.4))(astro@5.18.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.3)(typescript@5.9.3)(yaml@2.8.4))':
     dependencies:
       '@fortawesome/fontawesome-svg-core': 6.7.2
       '@fortawesome/free-solid-svg-icons': 6.7.2
-      '@silitics/astro-theme': 0.2.0(astro@5.18.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.3)(typescript@5.9.3)(yaml@2.8.4))(tailwindcss@4.2.4)
+      '@silitics/astro-theme': 0.3.0(astro@5.18.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.3)(typescript@5.9.3)(yaml@2.8.4))(tailwindcss@4.2.4)
       astro: 5.18.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.3)(typescript@5.9.3)(yaml@2.8.4)
 
-  '@silitics/astro-schema-viewer@0.1.1(@silitics/astro-theme@0.2.0(astro@5.18.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.3)(typescript@5.9.3)(yaml@2.8.4))(tailwindcss@4.2.4))(astro@5.18.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.3)(typescript@5.9.3)(yaml@2.8.4))':
+  '@silitics/astro-schema-viewer@0.2.0(@silitics/astro-theme@0.3.0(astro@5.18.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.3)(typescript@5.9.3)(yaml@2.8.4))(tailwindcss@4.2.4))(astro@5.18.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.3)(typescript@5.9.3)(yaml@2.8.4))':
     dependencies:
       '@fortawesome/fontawesome-svg-core': 6.7.2
       '@fortawesome/free-solid-svg-icons': 6.7.2
-      '@silitics/astro-theme': 0.2.0(astro@5.18.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.3)(typescript@5.9.3)(yaml@2.8.4))(tailwindcss@4.2.4)
+      '@silitics/astro-theme': 0.3.0(astro@5.18.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.3)(typescript@5.9.3)(yaml@2.8.4))(tailwindcss@4.2.4)
       astro: 5.18.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.3)(typescript@5.9.3)(yaml@2.8.4)
 
-  '@silitics/astro-theme@0.2.0(astro@5.18.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.3)(typescript@5.9.3)(yaml@2.8.4))(tailwindcss@4.2.4)':
+  '@silitics/astro-theme@0.3.0(astro@5.18.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.3)(typescript@5.9.3)(yaml@2.8.4))(tailwindcss@4.2.4)':
     dependencies:
       '@fontsource-variable/ibm-plex-sans': 5.2.8
       '@fontsource-variable/jetbrains-mono': 5.2.8
@@ -4528,8 +4516,6 @@ snapshots:
   commander@8.3.0: {}
 
   common-ancestor-path@1.0.1: {}
-
-  confbox@0.1.8: {}
 
   convert-source-map@2.0.0: {}
 
@@ -5509,7 +5495,7 @@ snapshots:
   mermaid@11.14.0:
     dependencies:
       '@braintree/sanitize-url': 7.1.2
-      '@iconify/utils': 3.1.1
+      '@iconify/utils': 3.1.3
       '@mermaid-js/parser': 1.1.0
       '@types/d3': 7.4.3
       '@upsetjs/venn.js': 2.0.0
@@ -5804,13 +5790,6 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  mlly@1.8.2:
-    dependencies:
-      acorn: 8.16.0
-      pathe: 2.0.3
-      pkg-types: 1.3.1
-      ufo: 1.6.4
-
   mrmime@2.0.1: {}
 
   ms@2.1.3: {}
@@ -5895,8 +5874,6 @@ snapshots:
 
   path-expression-matcher@1.5.0: {}
 
-  pathe@2.0.3: {}
-
   piccolore@0.1.3: {}
 
   picocolors@1.1.1: {}
@@ -5904,12 +5881,6 @@ snapshots:
   picomatch@2.3.2: {}
 
   picomatch@4.0.4: {}
-
-  pkg-types@1.3.1:
-    dependencies:
-      confbox: 0.1.8
-      mlly: 1.8.2
-      pathe: 2.0.3
 
   points-on-curve@0.2.0: {}
 

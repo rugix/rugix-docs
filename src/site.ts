@@ -23,8 +23,8 @@ export const brand: Brand = {
   plausible: { domain: "rugix.org" },
   banner: {
     id: "2026-rugix-apps",
-    message: "📣 Introducing Rugix Apps: Reliable Application Updates for Edge Devices",
-    link: { label: "Read the announcement", href: "/blog/rugix-apps" },
+    messageHtml:
+      '<a href="/blog/2026-03-23-rugix-apps">📣 Introducing Rugix Apps: Reliable Application Updates for Edge Devices</a>',
     tone: "success",
     dismissible: true,
   },
@@ -164,15 +164,15 @@ export const getRugixDocsConfig = memoizeDocsConfig(
         const nav =
           v.slug === "latest"
             ? [
-                {
-                  title: "Tool Docs",
-                  links: [
-                    { title: "Rugix Ctrl", href: "/docs/ctrl" },
-                    { title: "Rugix Bakery", href: "/docs/bakery" },
-                  ],
-                },
-                ...auto,
-              ]
+              {
+                title: "Tool Docs",
+                links: [
+                  { title: "Rugix Ctrl", href: "/docs/ctrl" },
+                  { title: "Rugix Bakery", href: "/docs/bakery" },
+                ],
+              },
+              ...auto,
+            ]
             : auto;
         return { ...v, nav };
       }),
@@ -219,15 +219,15 @@ export const getCtrlDocsConfig = memoizeDocsConfig(
           rootGroupTitle: isNext ? "Overview" : "Rugix Ctrl",
           groupOrder: isNext
             ? [
-                "",
-                "system-updates",
-                "application-updates",
-                "state-management",
-                "build-systems",
-                "migrating",
-                "fleet-management",
-                "reference",
-              ]
+              "",
+              "system-updates",
+              "application-updates",
+              "state-management",
+              "build-systems",
+              "migrating",
+              "fleet-management",
+              "reference",
+            ]
             : undefined,
         });
         return {
