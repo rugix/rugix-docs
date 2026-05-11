@@ -7,7 +7,12 @@ postinstall = "pnpm install"
 
 [tasks.dev]
 description = "Run the dev server."
-run = "pnpm dev"
+run = """
+if command -v sandboxctl >/dev/null 2>&1; then
+  sandboxctl process port publish 4322 --protocol http --label "rugix-docs dev"
+fi
+pnpm exec astro dev --host 127.0.0.1 --port 4322
+"""
 
 [tasks.build]
 description = "Build the static site into dist/."
