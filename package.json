@@ -11,8 +11,8 @@
     "fmt": "prettier --write \"**/*.{ts,tsx,md,mdx,js,json,css,astro}\""
   },
   "dependencies": {
-    "@astrojs/check": "^0.9.4",
-    "@astrojs/mdx": "^4.3.14",
+    "@astrojs/check": "0.9.9",
+    "@astrojs/mdx": "^5.0.4",
     "@astrojs/rss": "^4.0.18",
     "@astrojs/sitemap": "^3.7.2",
     "@fortawesome/fontawesome-svg-core": "^6.7.2",
@@ -22,7 +22,7 @@
     "@silitics/astro-schema-viewer": "^0.2.0",
     "@silitics/astro-theme": "^0.3.0",
     "@tailwindcss/vite": "^4.1.4",
-    "astro": "^5.12.3",
+    "astro": "^6.3.1",
     "chart.js": "^4.5.1",
     "marked": "^18.0.3",
     "react-chartjs-2": "^5.3.1",
