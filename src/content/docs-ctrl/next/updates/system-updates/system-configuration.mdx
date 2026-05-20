@@ -1,0 +1,167 @@
+---
+title: System Configuration
+order: 20
+---
+
+import { SidexViewer } from "@silitics/astro-sidex-viewer";
+import "@silitics/astro-sidex-viewer/styles.css";
+import rugixCtrlIr from "../../../../../schemas/rugix-ctrl-ir.json";
+
+Rugix Ctrl needs an accurate picture of how a device is laid out before it can update it. That picture is the device's _system configuration_, and it lives in a single file, `/etc/rugix/system.toml`.[^bakery]
+
+[^bakery]: If you build your system with Rugix Bakery for a generic or specific target, a working `system.toml` is generated for you and Rugix Ctrl picks it up automatically. You only need to write the configuration by hand when these defaults do not fit your device.
+
+## Key Concepts
+
+An update has to go somewhere specific on the device, and the device has to be able to boot the result. `system.toml` describes the layout that makes both possible.
+
+A _slot_ is a named update target. When Rugix Ctrl installs a bundle, each of its payloads is written to the slot it is addressed to. A slot is usually a partition holding one part of the system, such as the kernel or the root filesystem, but it can also be a file, or a custom handler that installs the update data.
+
+A complete operating system normally spans several slots, for instance a kernel slot and a root filesystem slot. The slots that form one such system are gathered into a _boot group_. The familiar A/B layout is simply a device with two boot groups: an update is written into the slots of one group while the device keeps running the other, and a reboot switches between them (see [System Updates](./)).
+
+Carrying out that switch is the bootloader's job, and bootloaders differ from device to device. A _boot flow_ is the integration that lets Rugix Ctrl drive one particular bootloader, so that it can select which boot group to start and switch between them.
+
+## Config and Data Partitions
+
+In addition to slots, Rugix Ctrl recognizes two optional partitions with a fixed role. The _config partition_ holds data shared across all versions of the system, most importantly the bootloader's configuration, and is left untouched by updates. The _data partition_ holds persistent state, such as user and application data, that has to survive updates; it is the foundation for [state management](../../state-management/).
+
+By default, Rugix Ctrl locates both partitions on its own: it takes the first partition of the device's _root device_[^root-device] as the config partition, and the sixth (on a GPT partition table) or seventh (on an MBR one) as the data partition. A device that follows this conventional layout needs no `config-partition` or `data-partition` section at all.
+
+[^root-device]: Precisely, the root device is the parent block device of whatever is mounted at `/`, or at Rugix Ctrl's system partition mount point `/run/rugix/mounts/system` when that is present.
+
+When a device's layout differs from this, declare the partitions explicitly in the `config-partition` and `data-partition` sections of `system.toml`. Each is identified either by `device`, the path to a block device, or by `partition`, a partition number on the root device:
+
+```toml title="/etc/rugix/system.toml"
+#:schema https://raw.githubusercontent.com/rugix/rugix/refs/heads/main/schemas/rugix-ctrl-system.schema.json
+
+[config-partition]
+# The config partition is the block device `/dev/sda1`.
+device = "/dev/sda1"
+
+[data-partition]
+# The data partition is the seventh partition of the root device.
+partition = 7
+```
+
+A partition can be marked absent with `disabled = true`. The config partition is required for most boot flows and for [bootstrapping](../../state-management/bootstrapping); the data partition is required for [state management](../../state-management/).
+
+When state management is enabled, Rugix Ctrl mounts the partitions for you:
+
+- `/run/rugix/mounts/config`: the config partition, usually read-only.
+- `/run/rugix/mounts/data`: the data partition, read-write.
+- `/run/rugix/mounts/system`: the running system partition, read-only.
+
+Without state management, Rugix Ctrl does not mount them; mount them yourself, and use the `path` setting to tell Rugix Ctrl where each one is.
+
+Beyond a plain partition, the data partition can be placed under a _driver_ that manages its filesystem, including at-rest encryption. See [Data Partition Driver](../../state-management/#data-partition-driver).
+
+## Update Slots
+
+A _slot_ is declared under `slots.<name>`, where `<name>` is a name you choose. Every slot has a `type`:
+
+- `block`: a block device, typically a partition. This is the usual slot for system updates.
+- `file`: a single regular file.
+- `custom`: a slot whose update logic you provide yourself.
+
+### Block Slots
+
+A `block` slot is a block device, specified by `device` (a path such as `/dev/sda2`) or `partition` (a partition number on the root device). A typical slot definition for an A/B device with separate boot partitions may look as follows:
+
+```toml title="/etc/rugix/system.toml"
+#:schema https://raw.githubusercontent.com/rugix/rugix/refs/heads/main/schemas/rugix-ctrl-system.schema.json
+
+[slots.boot-a]
+type = "block"
+device = "/dev/sda2"
+immutable = true
+
+[slots.boot-b]
+type = "block"
+device = "/dev/sda3"
+immutable = true
+
+[slots.system-a]
+type = "block"
+partition = 4
+immutable = true
+
+[slots.system-b]
+type = "block"
+partition = 5
+immutable = true
+```
+
+`immutable = true` declares that the slot's contents only ever change through a Rugix Ctrl update.
+
+### File Slots
+
+A `file` slot is a single regular file, given by an absolute `path`:
+
+```toml
+[slots.my-file]
+type = "file"
+path = "/run/rugix/mounts/data/my-file"
+```
+
+A file slot is only as durable as the file behind it: if the path is not preserved across reboots, the slot's contents are lost when the device restarts. File slots therefore usually point at a file on the data partition or in the state directory, or are paired with a [state management](../../state-management/) configuration that persists the file. Like block slots, file slots accept `immutable`.
+
+A file slot is written in place: Rugix Ctrl truncates the existing file and overwrites it as the update streams in, rather than replacing it atomically. An interrupted install therefore leaves the file partially written. If atomic replacement matters, use a custom slot whose handler writes to a temporary file and renames it into place.
+
+To update a whole directory rather than a single file, use a custom slot with a tar archive as its payload and extract it.[^no-directory-slots]
+
+[^no-directory-slots]: There are two reasons why there are no native directory slots: First, we want to keep things simple within Rugix Ctrl and directory slots can trivially be implemented with custom handlers. Second, in contrast to directories, files are more directly usable for dynamic delta updates by computing an index over them. That's why we support them natively.
+
+### Custom Slots
+
+A `custom` slot hands the update payload to a command of your choosing. Rugix Ctrl streams the payload to the command on standard input, and the command, given by `handler`, decides what to do with it. For example, to extract a tar archive into a directory:
+
+```toml
+[slots.app-data]
+type = "custom"
+handler = ["tar", "xf", "-", "-C", "/run/rugix/mounts/data/app/my-app-data"]
+```
+
+Because Rugix Ctrl does not control how a custom handler writes the payload, custom slots cannot use block deduplication (see [Update Bundles](../update-bundles)).
+
+## Boot Groups
+
+A _boot group_ gathers slots into one bootable system. It is declared under `boot-groups.<name>`, and its `slots` setting maps _aliases_ to slot names:
+
+```toml
+[boot-groups.a]
+slots = { boot = "boot-a", system = "system-a" }
+
+[boot-groups.b]
+slots = { boot = "boot-b", system = "system-b" }
+```
+
+An update is always installed into one boot group. Each of its payloads names a target slot, either directly or through an alias such as `boot` or `system` that Rugix Ctrl resolves against the chosen boot group. Because both groups above expose the same aliases, the same bundle installs correctly into either one.
+
+Choose the target boot group with the `--boot-group` option of `rugix-ctrl update install`. If it is omitted and the device has exactly two boot groups, Rugix Ctrl installs to the inactive one automatically. The slots of the currently booted boot group are _active_, and Rugix Ctrl never installs over an active slot.
+
+## Boot Flow
+
+A _boot flow_ is the integration between Rugix Ctrl and a particular bootloader. It is configured in the `boot-flow` section, whose `type` selects the integration:
+
+```toml
+[boot-flow]
+type = "grub"
+```
+
+Rugix Ctrl ships boot flows for the common bootloaders:
+
+- `uboot`: U-Boot (A/B setups only).
+- `grub`: GRUB, using grubenv files on the config partition (A/B setups only).
+- `systemd-boot`: [systemd-boot](https://www.freedesktop.org/wiki/Software/systemd/systemd-boot/), using EFI variables (A/B setups only).
+
+For drop-in compatibility with other OTA solutions, it also ships RAUC- and Mender-compatible flows (`rauc-uboot`, `rauc-grub`, `mender-uboot`, `mender-grub`), and for Raspberry Pi devices, flows built on U-Boot or the `tryboot` mechanism (`rpi-uboot`, `rpi-tryboot`). When none of these fit, a [`custom`](./boot-flows#custom) boot flow integrates with any bootloader through a script of your own.
+
+The [Boot Flows](./boot-flows) section documents each boot flow in detail, including the settings that some of them take.
+
+## Configuration Reference
+
+For the complete set of options, here is the full schema for `system.toml`:
+
+<SidexViewer ir={rugixCtrlIr} type="system.SystemConfig" initialDepth={1} />
+
+The schema is defined in [`system.sidex`](https://github.com/rugix/rugix/blob/main/crates/apps/rugix-ctrl/schemas/system.sidex).

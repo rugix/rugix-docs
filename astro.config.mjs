@@ -7,52 +7,109 @@ import sitemap from "@astrojs/sitemap";
 import { markdownConfig } from "@silitics/astro-theme/markdown";
 
 /*
- * Redirects for the Rugix Ctrl `next` docs, which were restructured
- * around thematic sections (System Updates, Application Updates,
- * State Management, Build Systems, Migrating, Reference) plus a few
- * cross-cutting concept pages at the root (Update Bundles, Hooks,
- * Delta Updates, Signed Updates).
+ * Redirects for the Rugix Ctrl `next` docs. The `next` branch is
+ * organized around Rugix Ctrl's capabilities: an Overview (the
+ * introduction), the OTA Updates, Application Management, and
+ * State Management sections, an Integration section (build systems,
+ * fleet management, migration), and a Reference section. These
+ * redirects keep older `next` URLs, including those from earlier
+ * layouts, resolving to their current location.
  *
  * The released `1.1` branch keeps its historical layout and is not
  * affected.
  */
 const ctrlNextRedirects = {
-  // The docs root is now the introduction page (the auto-built sidebar
-  // doesn't surface root index entries, so we make it a real top-level
-  // page instead and redirect the bare URL to it).
+  // The docs root redirects to the introduction page.
   "/docs/ctrl/next": "/docs/ctrl/next/introduction",
 
-  // Old top-level pages that moved into thematic sections.
-  // Note: `state-management` itself is unchanged (it became its own
-  // directory with an index page, but the URL still resolves the same
-  // way), so no redirect is needed for it.
-  "/docs/ctrl/next/over-the-air-updates":
-    "/docs/ctrl/next/system-updates/",
+  // The Core Concepts page was dissolved: the bundle, delta, and
+  // signing concepts were inlined into the OTA Updates section, and
+  // hooks moved to the new Reference section.
+  "/docs/ctrl/next/core-concepts": "/docs/ctrl/next/updates/update-bundles",
+  "/docs/ctrl/next/update-bundles": "/docs/ctrl/next/updates/update-bundles",
+  "/docs/ctrl/next/delta-updates": "/docs/ctrl/next/updates/delta-updates",
+  "/docs/ctrl/next/signed-updates": "/docs/ctrl/next/updates/signed-updates",
+  "/docs/ctrl/next/hooks": "/docs/ctrl/next/reference/hooks",
+
+  // System updates moved into the OTA Updates section.
+  "/docs/ctrl/next/system-updates":
+    "/docs/ctrl/next/updates/system-updates/",
+  "/docs/ctrl/next/system-updates/boot-flows":
+    "/docs/ctrl/next/updates/system-updates/boot-flows",
+  "/docs/ctrl/next/system-updates/system-configuration":
+    "/docs/ctrl/next/updates/system-updates/system-configuration",
+
+  // Application Updates became the Application Management section.
+  "/docs/ctrl/next/application-updates":
+    "/docs/ctrl/next/application-management/",
+  "/docs/ctrl/next/application-updates/orchestrators":
+    "/docs/ctrl/next/application-management/orchestrators/",
+  "/docs/ctrl/next/application-updates/orchestrators/docker-compose":
+    "/docs/ctrl/next/application-management/orchestrators/docker-compose",
+  "/docs/ctrl/next/application-updates/orchestrators/binary":
+    "/docs/ctrl/next/application-management/orchestrators/binary",
+  "/docs/ctrl/next/application-updates/orchestrators/generic":
+    "/docs/ctrl/next/application-management/orchestrators/generic",
+
+  // Build systems, fleet management, and migration moved into the
+  // Integration section.
+  "/docs/ctrl/next/build-systems":
+    "/docs/ctrl/next/integration/build-systems/",
+  "/docs/ctrl/next/build-systems/rugix-bakery":
+    "/docs/ctrl/next/integration/build-systems/rugix-bakery",
+  "/docs/ctrl/next/build-systems/yocto":
+    "/docs/ctrl/next/integration/build-systems/yocto",
+  "/docs/ctrl/next/build-systems/others":
+    "/docs/ctrl/next/integration/build-systems/others",
+  "/docs/ctrl/next/fleet-management":
+    "/docs/ctrl/next/integration/fleet-management/",
+  "/docs/ctrl/next/fleet-management/integrations":
+    "/docs/ctrl/next/integration/fleet-management/integrations",
+  "/docs/ctrl/next/migrating":
+    "/docs/ctrl/next/integration/migrating/",
+  "/docs/ctrl/next/migrating/from-rauc":
+    "/docs/ctrl/next/integration/migrating/from-rauc",
+  "/docs/ctrl/next/migrating/from-mender":
+    "/docs/ctrl/next/integration/migrating/from-mender",
+
+  // An earlier `reference/` section was dissolved; most pages moved
+  // next to the capability they document. The current Reference
+  // section holds only cross-cutting material such as hooks, and its
+  // own routes are real pages that need no redirects here.
+  "/docs/ctrl/next/reference/update-bundles":
+    "/docs/ctrl/next/updates/update-bundles",
+  "/docs/ctrl/next/reference/delta-updates":
+    "/docs/ctrl/next/updates/delta-updates",
+  "/docs/ctrl/next/reference/signed-updates":
+    "/docs/ctrl/next/updates/signed-updates",
+  "/docs/ctrl/next/reference/application-updates":
+    "/docs/ctrl/next/application-management/internals",
+  "/docs/ctrl/next/reference/filesystem-hierarchy":
+    "/docs/ctrl/next/state-management/filesystem-hierarchy",
+  "/docs/ctrl/next/reference/internals": "/docs/ctrl/next/introduction",
+
+  // Bootstrapping lives under State Management.
   "/docs/ctrl/next/bootstrapping":
     "/docs/ctrl/next/state-management/bootstrapping",
 
-  // Old `advanced/*` (the bucket no longer exists).
-  "/docs/ctrl/next/advanced": "/docs/ctrl/next/reference/",
+  // Even older `over-the-air-updates`, `advanced/*`, and `internals/*`
+  // layout.
+  "/docs/ctrl/next/over-the-air-updates":
+    "/docs/ctrl/next/updates/system-updates/",
+  "/docs/ctrl/next/advanced": "/docs/ctrl/next/introduction",
   "/docs/ctrl/next/advanced/boot-flows":
-    "/docs/ctrl/next/system-updates/boot-flows",
+    "/docs/ctrl/next/updates/system-updates/boot-flows",
   "/docs/ctrl/next/advanced/system-configuration":
-    "/docs/ctrl/next/system-updates/system-configuration",
+    "/docs/ctrl/next/updates/system-updates/system-configuration",
   "/docs/ctrl/next/advanced/update-bundles":
-    "/docs/ctrl/next/update-bundles",
+    "/docs/ctrl/next/updates/update-bundles",
   "/docs/ctrl/next/advanced/fleet-management":
-    "/docs/ctrl/next/fleet-management/",
+    "/docs/ctrl/next/integration/fleet-management/",
   "/docs/ctrl/next/advanced/yocto-integration":
-    "/docs/ctrl/next/build-systems/yocto",
-
-  // Old `internals/*` → `reference/*`.
-  "/docs/ctrl/next/internals": "/docs/ctrl/next/reference/internals",
+    "/docs/ctrl/next/integration/build-systems/yocto",
+  "/docs/ctrl/next/internals": "/docs/ctrl/next/introduction",
   "/docs/ctrl/next/internals/filesystem-hierarchy":
-    "/docs/ctrl/next/reference/filesystem-hierarchy",
-
-  // Application Updates: the deep `reference` page moved into the
-  // shared `reference/` section.
-  "/docs/ctrl/next/application-updates/reference":
-    "/docs/ctrl/next/reference/application-updates",
+    "/docs/ctrl/next/state-management/filesystem-hierarchy",
 };
 
 export default defineConfig({

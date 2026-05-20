@@ -1,0 +1,90 @@
+---
+/**
+ * Renders a directory tree from a structured prop. Static markup, no
+ * client-side JavaScript.
+ *
+ * Usage in MDX:
+ *
+ *   import FileTree from "../../../../components/FileTree.astro";
+ *
+ *   <FileTree
+ *     entries={[
+ *       { name: "rugix-bundle.toml", note: "the bundle manifest" },
+ *       { name: "payloads/", note: "the payload files", children: [
+ *         { name: "system.ext4" },
+ *       ]},
+ *     ]}
+ *   />
+ *
+ * A trailing `/` on a name, or the presence of `children`, marks an
+ * entry as a directory.
+ */
+
+export interface TreeEntry {
+  /** File or directory name. A trailing `/` marks a directory. */
+  name: string;
+  /** Optional short description shown next to the entry. */
+  note?: string;
+  /** Nested entries. Their presence also marks this entry as a directory. */
+  children?: TreeEntry[];
+}
+
+interface Props {
+  /** Optional label for the tree root, e.g. the top-level directory. */
+  root?: string;
+  /** Top-level entries of the tree. */
+  entries: TreeEntry[];
+  /** Internal: set on recursive calls that render a nested list. */
+  nested?: boolean;
+  /** Internal: whether the rendered list draws connector guides. */
+  guides?: boolean;
+}
+
+const { root, entries, nested = false, guides = false } = Astro.props;
+
+const Self = Astro.self;
+
+const isDir = (entry: TreeEntry): boolean =>
+  entry.name.endsWith("/") || (entry.children?.length ?? 0) > 0;
+
+const folderIcon = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1.75 4.5c0-.69.56-1.25 1.25-1.25h3.04c.33 0 .65.13.88.37l.99.99c.24.23.55.37.88.37h4.21c.69 0 1.25.56 1.25 1.25v5.5c0 .69-.56 1.25-1.25 1.25H3c-.69 0-1.25-.56-1.25-1.25z"/></svg>`;
+
+const fileIcon = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.75 2.75c0-.55.45-1 1-1H9l4 4v7.5c0 .55-.45 1-1 1H4.75c-.55 0-1-.45-1-1z"/><path d="M9 1.75V5c0 .55.45 1 1 1h3.25"/></svg>`;
+---
+
+{
+  nested ? (
+    <ul class:list={["file-tree-list", guides && "file-tree-guides"]}>
+      {entries.map((entry) => {
+        const dir = isDir(entry);
+        return (
+          <li class="file-tree-item">
+            <span class:list={["file-tree-entry", dir ? "is-dir" : "is-file"]}>
+              <span
+                class="file-tree-icon"
+                set:html={dir ? folderIcon : fileIcon}
+              />
+              <span class="file-tree-name">{entry.name}</span>
+              {entry.note && (
+                <span class="file-tree-note">({entry.note})</span>
+              )}
+            </span>
+            {entry.children?.length ? (
+              <Self entries={entry.children} nested guides />
+            ) : null}
+          </li>
+        );
+      })}
+    </ul>
+  ) : (
+    <div class="file-tree prose-reset">
+      {root && (
+        <div class="file-tree-root">
+          <span class="file-tree-icon" set:html={folderIcon} />
+          <span class="file-tree-name">{root}</span>
+        </div>
+      )}
+      <Self entries={entries} nested guides={Boolean(root)} />
+    </div>
+  )
+}

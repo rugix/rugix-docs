@@ -1,0 +1,270 @@
+---
+title: Update Bundles
+order: 10
+---
+
+import { SidexViewer } from "@silitics/astro-sidex-viewer";
+import "@silitics/astro-sidex-viewer/styles.css";
+import rugixBundleIr from "../../../../schemas/rugix-bundle-ir.json";
+import FileTree from "../../../../components/FileTree.astro";
+
+Updates are delivered to devices in the form of _update bundles_.
+
+The same bundle format carries [system updates](./system-updates/), [incremental updates](./incremental-updates), and [application updates](../application-management/), so everything Rugix Ctrl offers around bundles ([delta updates](./delta-updates), [signed updates](./signed-updates), streaming installation, compression, deduplication) applies uniformly to all of them.
+
+A bundle is a single file that contains one or more update **payloads**. Each payload is a piece of data that Rugix Ctrl delivers somewhere on the device:
+
+- A filesystem image written to a partition (a [system slot](./system-updates/system-configuration#update-slots)).
+- A file or tar archive placed into an [application's](../application-management/) files.
+- The input piped to a custom command (the most flexible delivery, e.g., to apply a script).
+
+A bundle's [manifest](#building-a-bundle) declares its payloads, where each one goes, and how it is encoded.
+
+## Why a Custom Format
+
+The bundle format is engineered specifically for **efficient and secure** OTA updates:
+
+- **Cryptographic integrity is built in.** Every bundle is covered by a tree of hashes over its header, payloads, and individual blocks, so Rugix Ctrl can verify each block as it is read and never write untrusted data to disk or an installation script. See [Signed Updates](./signed-updates) for the signature layer on top.
+- **Streaming is the default.** Bundles can be installed straight from stdin or HTTP, and combined with cryptographic verification per block, Rugix Ctrl writes each block directly to its target slot instead of staging the whole bundle on disk first. Writing the payload once, rather than downloading, unpacking, and then installing it, makes updates faster and reduces flash wear. It also needs no scratch space, so a device that is low on free storage, or has none to spare, can still be updated.
+- **Block-level deduplication.** Within a payload, identical blocks are stored only once. This shrinks bundles for free when the same data repeats inside a payload (common for filesystem images with sparse regions, padding, or repeated content).
+- **Delta updates ride on the same indices.** The block index that powers verification and deduplication is also what makes [dynamic delta updates](./delta-updates) possible.
+
+Two further properties keep the format dependable as a device's software evolves over its years in the field. It is designed for **forward and backward compatibility**, so the Rugix Ctrl on a device and the Rugix Bundler that built a bundle need not be the same version: newer devices can install older bundles, and bundles built with a newer Bundler remain installable on older devices.
+
+## Building a Bundle
+
+Bundles are built with Rugix Bundler (`rugix-bundler`). You can download pre-built binaries from [the Releases page](https://github.com/rugix/rugix/releases/), and if you use Rugix Bakery, `./run-bakery bundler` runs it for you.
+
+:::tip
+If you build your system with [Rugix Bakery](../integration/build-systems/rugix-bakery) or the [`meta-rugix` Yocto layers](../integration/build-systems/yocto), update bundles are generated for you with sensible defaults, so you rarely need to assemble one by hand.
+:::
+
+A bundle is built from a _bundle directory_: a manifest together with the payload files it references.
+
+As an example, consider a full [system update](./system-updates/) for a device with two partitions to update, a boot partition and a root filesystem partition. An update bundle for such a device holds a filesystem image for each partition, in addition to the `rugix-bundle.toml` manifest:
+
+<FileTree
+  entries={[
+    { name: "rugix-bundle.toml", note: "the bundle manifest" },
+    {
+      name: "payloads/",
+      note: "the payload files referenced by the manifest",
+      children: [{ name: "boot.vfat" }, { name: "system.ext4" }],
+    },
+  ]}
+/>
+
+The manifest declares one payload per image, `boot.vfat` for the `boot` slot and `system.ext4` for the `system` slot, each with its own [block encoding](#block-encoding):
+
+```toml
+#:schema https://raw.githubusercontent.com/rugix/rugix/refs/heads/main/schemas/rugix-bundle-manifest.schema.json
+
+update-type = "full"
+
+hash-algorithm = "sha512-256"
+
+[[payloads]]
+filename = "boot.vfat"
+[payloads.delivery]
+type = "slot"
+slot = "boot"
+[payloads.block-encoding]
+hash-algorithm = "sha512-256"
+chunker = "casync-64"
+compression = { type = "xz", level = 9 }
+deduplication = true
+
+[[payloads]]
+filename = "system.ext4"
+[payloads.delivery]
+type = "slot"
+slot = "system"
+[payloads.block-encoding]
+hash-algorithm = "sha512-256"
+chunker = "casync-64"
+compression = { type = "xz", level = 9 }
+deduplication = true
+```
+
+Rugix Bundler then packs the directory into a single bundle file:
+
+```shell
+rugix-bundler bundle BUNDLE_DIR OUTPUT.rugixb
+```
+
+:::info
+Without a `block-encoding`, Rugix Ctrl isn't able to verify individual blocks of an update and will thus refuse installation. **Always add a `block-encoding` to every payload.**
+:::
+
+## Installing a Bundle
+
+Rugix Ctrl installs bundles on the device with `rugix-ctrl update install`[^app-install] from any of three sources.
+
+[^app-install]: App bundles ride on the same bundle format but are installed with `rugix-ctrl apps install` instead; see [Application Management](../application-management/).
+
+**Local file.**
+A bundle stored on the device or on external storage such as a thumb drive:
+
+```shell
+rugix-ctrl update install BUNDLE.rugixb
+```
+
+**Standard input.**
+A bundle streamed in on stdin, selected by passing `-` in place of a path. This fits a bundle piped from another process, such as one uploaded through a web UI:
+
+```shell
+curl URL | rugix-ctrl update install -
+```
+
+**HTTP.**
+A bundle at a URL, which Rugix Ctrl fetches itself:
+
+```shell
+rugix-ctrl update install URL
+```
+
+Rugix Ctrl uses HTTP range queries to dynamically fetch blocks that aren't already available locally (dynamic delta updates) as well as to automatically resume updates, if the connection drops mid-download. The retry count and backoff for these reconnects can be tuned via `--http-max-retries`, `--http-retry-initial-backoff`, and `--http-retry-max-backoff`. Range queries can also be disabled entirely with `--disable-range-queries` as a fallback for servers that don't support them.
+
+The stdin and HTTP forms are _streaming_ installs: Rugix Ctrl writes each block straight to its target as it arrives, rather than staging the whole bundle on the device first.
+
+Every install uses streaming **verification** of the bundle. Rugix Ctrl aborts the install as soon as it reads a block that it cannot verify. A bundle is verified in one of two ways:
+
+- By a valid [embedded signature](./signed-updates), checked against a root certificate configured on the device.
+- By its **bundle hash**, passed to the install command with `--bundle-hash HASH`.
+
+The bundle hash is the hash of the bundle's header. Because the header transitively covers every payload and block (see [Bundle Integrity](#bundle-integrity)), this single value is enough for Rugix Ctrl to verify the entire bundle as it streams in, before any untrusted data is written. Obtain it from a trusted copy of the bundle:
+
+```shell
+rugix-bundler hash BUNDLE.rugixb
+```
+
+Pass it into the install command with the `--bundle-hash` option:
+
+```shell
+rugix-ctrl update install --bundle-hash HASH BUNDLE.rugixb
+```
+
+Use the bundle hash when you control the distribution channel end to end, such as bundles your own backend pushes to the device. For untrusted channels, prefer signed bundles; see [Signed Updates](./signed-updates) for how to configure signature verification on devices.
+
+:::danger
+You can skip bundle verification with `--insecure-skip-bundle-verification`. **Never use this option for updates in production.**
+:::
+
+## Reference
+
+The rest of this page is reference material on the bundle format: the kinds of update a bundle can carry, how payloads are delivered, how they are encoded into blocks, how a bundle's integrity is structured, and the full manifest schema.
+
+### Update Types
+
+The `update-type` field in the manifest selects which kind of update a bundle delivers:
+
+- `full`: For [system updates](./system-updates/) that involve the bootloader, such as A/B updates.
+- `incremental`: For [incremental updates](./incremental-updates) that do not involve the bootloader.
+
+Each kind is covered in detail in its own section.
+
+### Payload Delivery
+
+Each payload specifies a _delivery mechanism_. There are two types:
+
+- `type = "slot"`: The payload is installed to a slot.
+- `type = "execute"`: The payload is piped via stdin to a command that Rugix Ctrl executes.
+
+For example, to run a Bash script:
+
+```toml
+[[payloads]]
+filename = "update-script.sh"
+[payloads.delivery]
+type = "execute"
+handler = ["/bin/bash", "-"]
+[payloads.block-encoding]
+hash-algorithm = "sha512-256"
+chunker = "fixed-64"
+```
+
+The `execute` mechanism is the most flexible delivery type.
+
+### Block Encoding
+
+A block encoding adds a _block index_ for that payload to the bundle.
+To build the index, the payload file is first divided into blocks; the `casync-64` chunker in the examples splits it the same way [Casync](https://github.com/systemd/casync) does.
+The block index is then the sequence of hashes of those blocks:
+
+```
+Payload File        Block Index
+
+Block 0             Hash 0
+Block 1             Hash 1
+Block 2             Hash 2
+
+   •                  •
+   •                  •
+   •                  •
+
+Block N             Hash N
+```
+
+The block encoding has three main purposes:
+
+1. Cryptographic verification of individual blocks.
+2. Deduplication of blocks that occur multiple times in a payload file.
+3. Dynamic delta updates.
+
+**Cryptographic Verification.**
+When unpacking a payload, Rugix Ctrl uses the block index to verify each block individually, establishing trust in its contents before that block is written to disk or fed to an installation command.
+This is what makes streaming installation safe: no untrusted input ever reaches the tools that run during installation, so a vulnerability in one of them cannot be exploited through a bundle.
+
+**Block Deduplication.**
+Without deduplication, the payload file is written into the bundle as-is.
+With a block index and `deduplication = true`, the bundle instead stores each distinct block only once: the block index identifies blocks that repeat within the payload, and the repeats are skipped.
+To read the payload back, Rugix Ctrl uses the block index to restore the original file, reading any already-seen block from the slot it was written to rather than from the bundle.
+
+Block deduplication has two requirements.
+First, the payload must be written directly to the slot, with no postprocessing (piped through another tool).
+Second, the slot must support random access.
+Only `block` and `file` slots meet both, so deduplication is not compatible with `custom` slots; installing a deduplicated payload to a `custom` slot aborts the update.
+
+**Dynamic Delta Updates.**
+The block index lets Rugix Ctrl fetch only the blocks it does not already have on the device, skipping the rest of the payload data.
+This can cut data transfer down to just the parts of the update that actually changed.
+The process roughly looks as follows:
+
+```
+╭────────────────╮
+│ Payload Header │ ─────────────────────┐
+│                │                      ▼
+│                │             ╔══════════════════╗                     ╭──────╮
+│  Payload Data  │ ◀─────────▶ ║ Adaptive Fetcher ║ ──────────────────▶ │ Slot │
+╰────────────────╯  read/skip  ╚══════════════════╝        write        ╰──────╯
+                                        ▲            (read/write/seek)
+                                        │ read/seek
+                                        ▼
+                                ╭───────────────╮
+                                │ Local Storage │
+                                ╰───────────────╯
+```
+
+Delta updates are orthogonal to block deduplication.
+
+**Variable Block Sizes.**
+Blocks may have a variable or fixed size.
+With variable-size blocks, for example when a rolling hash divides the payload file (as Casync does), the bundle also contains a _size index_.
+
+**Block Compression.**
+Blocks can also be compressed individually, reducing bundle size while still allowing delta updates and block-wise verification.
+Compression always requires a size index, because even fixed-size blocks compress to different sizes: the size index then stores the sizes of the compressed blocks, while the block index stores the hashes of the uncompressed blocks.
+Hashing the uncompressed blocks is what lets already-present blocks be skipped.
+With variable-size blocks, the true size of an unknown block is known only after decompression.
+
+### Bundle Integrity
+
+Every block of a bundle carries a cryptographic hash and is verified before use, so a streaming install never writes untrusted data. These hashes form a [Merkle tree](https://en.wikipedia.org/wiki/Merkle_tree): the bundle's header contains hashes of the payload headers and payloads, which in turn cover the individual blocks. Verifying the single root hash, the hash of the header, is therefore enough to trust every part of the bundle as it is read. That root hash is the [bundle hash](#installing-a-bundle) used to verify an install, and the manifest's `hash-algorithm` property selects the algorithm used to compute it.
+
+### Configuration Reference
+
+Here is the complete schema for the bundle manifest:
+
+<SidexViewer ir={rugixBundleIr} type="manifest.BundleManifest" initialDepth={1} />
+
+The schema is defined in [`manifest.sidex`](https://github.com/rugix/rugix/blob/main/crates/libs/rugix-bundle/schemas/manifest.sidex).

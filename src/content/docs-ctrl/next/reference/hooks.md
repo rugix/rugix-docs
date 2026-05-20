@@ -1,66 +1,61 @@
 ---
-title: Hooks Reference
-order: 40
+title: Hooks
+order: 2
 ---
 
-# Hooks Reference
+_Hooks_ provide a powerful mechanism to inject custom behavior at various stages of Rugix Ctrl's operation.
 
-The full operation × stage matrix, plus environment details for hooks running before the init system. For an introduction, start with [Hooks](../hooks).
+A hook is just an executable script. Rugix Ctrl runs it at a well-defined point (before installing an update, after committing one, before bootstrapping the device, before resetting state) and reacts to its exit code. You use hooks to enforce custom checks, kick off migrations, drive external systems, or generally extend the lifecycle without forking Rugix Ctrl.
 
-## System Update Hooks
+Hooks are cross-cutting: they fire during update installation and commits, during [bootstrapping](../state-management/bootstrapping) and [state resets](../state-management/), and on every boot.
 
-For the installation of updates, the stages of `update-install` hooks are:
+## How Hooks Are Organized
 
-- `pre-update`: Runs directly before installing an update.
-- `progress`: Runs periodically while installing an update.
-- `post-update`: Runs directly after installing an update (before rebooting).
+Hooks live under `/etc/rugix/hooks`, organized by **operation** and **stage**:
 
-When running the `update-install/progress` hook, the progress of the update as a percentage is provided in the environment variable `RUGIX_UPDATE_PROGRESS`, including fractional digits.
-Any outputs of such hooks are discarded and any errors will merely result in a warning, i.e., will not abort the update process.
-Such hooks are only intended to report update progress to users and are thus not considered mission critical.
-**There is neither a guarantee on the frequency with which such hooks run nor that they run at all.**
-In particular, such hooks will **not** run when streaming an update from an arbitrary source.
+```
+/etc/rugix/hooks/
+├── bootstrap/
+│   ├── prepare/
+│   ├── pre-layout/
+│   └── post-layout/
+├── system-commit/
+│   ├── pre-commit/
+│   └── post-commit/
+└── ...
+```
 
-For committing to an update or rollback, the stages of `system-commit` hooks are:
+Each operation gets its own directory. Each stage of that operation gets a sub-directory. Files inside a stage directory are the hook scripts. Filenames follow the pattern `<rank>-<name>`, for example `10-check_system_health.sh`. **Lower ranks run earlier**, so use rank to control the order when you have multiple hooks for the same stage.
 
-- `pre-commit`: Runs directly before a commit.
-- `post-commit`: Runs directly after a commit.
+Hooks receive the operation name as `$1` and the stage as `$2`. You can either branch on those (handy if you symlink the same script into several stages) or ignore them and rely on the path. **A hook should do nothing for unknown arguments**; operations and stages may be added in future versions.
 
-You can use these hooks, e.g., to prepare and trigger state migrations, if you are not using Rugix Ctrl's [State Management](../state-management/) feature.
+## Example: Pre-Commit Health Check
 
-## State Management Hooks
+A common use case: refuse to commit an update unless the SSH server is up.
 
-For factory resets, the stages of `state-reset` hooks are:
+```bash title="/etc/rugix/hooks/system-commit/pre-commit/10-check_system_health.sh"
+#!/bin/bash
 
-- `prepare`: Runs before initiating the reset and rebooting the system.
-- `pre-reset`: Runs directly before a factory reset during boot (reset can still be aborted).
-- `post-reset`: Runs directly after a factory reset during boot.
+if systemctl is-active --quiet sshd; then
+  echo "Service sshd is running."
+else
+  echo "Error: Service sshd is not running."
+  exit 1
+fi
+```
 
-As explained in the section on [State Management](../state-management/), the state management functionality runs very early during the boot process, before even the init system.
-For the stages running during boot, you can assume the following environment:
+The non-zero exit code from this script aborts the commit. The previous version stays the default; the next reboot rolls back.
 
-- `/` is mounted read-only to the respective root filesystem.
-- `/sys`, `/proc`, and `/dev` are mounted.
-- `/run` is mounted to a temporary, in-memory filesystem and will be passed through to the final system.
-  If you need to communicate anything to processes after the bootstrapping process, place it in `/run`.
+:::tip
+Some checks make sense outside Rugix Ctrl too, but a hook is the only way to make them **always** run, no matter how the operation was triggered.
+:::
 
-In addition, the config partition is mounted read-only (usually at `/run/rugix/mounts/config`).
+## Failure Semantics
 
-## Bootstrapping Hooks
+When a hook exits non-zero, the operation is typically aborted right there. A failing `system-commit/pre-commit` hook prevents the commit. A hook that runs _after_ the commit cannot un-commit it; the operation already happened.
 
-For [bootstrapping](../state-management/bootstrapping), the stages of `bootstrap` hooks are:
+The `update-install/progress` hook is best-effort: errors only log a warning, and it isn't guaranteed to run (it doesn't run at all when streaming an update from an arbitrary source). The `boot` hooks are best-effort too.
 
-- `prepare`: Runs after mounting the config partition and determining that the system should be bootstrapped.
-- `pre-layout`: Runs directly before applying the system partition layout.
-- `post-layout`: Runs directly after applying the system partition layout.
+## Which Hooks Are Available
 
-All stages run during the boot process and the same environment considerations as for [State Management Hooks](#state-management-hooks) apply.
-
-## Boot Hooks
-
-During the boot process, the following `boot` hooks are invoked:
-
-- `pre-init`: Runs early before the system is initialized.
-- `post-init`: Runs after the system has been initialized.
-
-When `post-init` runs, everything has been set up and Rugix Ctrl is going to hand over control to the actual init system, e.g., Systemd.
+The hooks you can install depend on the operation, and each set is documented with the capability it belongs to: update and commit hooks with [System Updates](../updates/system-updates/), state-reset hooks with [State Management](../state-management/), and bootstrap and boot hooks with [Bootstrapping](../state-management/bootstrapping).

@@ -2,7 +2,7 @@ import "./styles/site.css";
 
 import { getCollection } from "astro:content";
 import type { Brand, NavItem, FooterColumn, SocialLink } from "@silitics/astro-theme";
-import type { DocsConfig } from "@silitics/astro-docs";
+import type { DocsConfig, DocSet } from "@silitics/astro-docs";
 import { buildNav, memoizeDocsConfig } from "@silitics/astro-docs";
 import {
   faGithub,
@@ -34,7 +34,7 @@ export const nav: NavItem[] = [
   {
     label: "Docs",
     children: [
-      { label: "Overview", href: "/docs/getting-started" },
+      { label: "General", href: "/docs/getting-started" },
       { label: "Rugix Ctrl", href: "/docs/ctrl" },
       { label: "Rugix Bakery", href: "/docs/bakery" },
     ],
@@ -109,6 +109,24 @@ export const socials: SocialLink[] = [
 const REPO_EDIT_BASE =
   "https://github.com/rugix/rugix-docs/edit/main/src/content";
 
+/*
+ * Peer doc sets surfaced as a pill row at the top of every docs
+ * sidebar. The set whose `href` matches the active `basePath` is shown
+ * as current. Replaces the per-config "Other Docs" / "Tool Docs"
+ * sidebar groups that previously did this job inline.
+ */
+const docSets: DocSet[] = [
+  /*
+   * The general docs do not ship a `/docs/index` page, so the General
+   * pill points at `/docs/getting-started`. The `basePath` field keeps
+   * active-state matching aligned with `DocsLayout`'s `basePath="/docs/"`
+   * for every umbrella page.
+   */
+  { label: "General", href: "/docs/getting-started", basePath: "/docs/" },
+  { label: "Rugix Ctrl", href: "/docs/ctrl/" },
+  { label: "Rugix Bakery", href: "/docs/bakery/" },
+];
+
 /**
  * Umbrella Rugix docs at `/docs/`. The default version (`latest`) is
  * mounted at the root (`pathPrefix: "/docs/"`) so historical links like
@@ -150,32 +168,19 @@ export const getRugixDocsConfig = memoizeDocsConfig(
       },
     ];
     return {
-      versions: versions.map((v) => {
-        const auto = buildNav(all, {
+      docSets,
+      versions: versions.map((v) => ({
+        ...v,
+        nav: buildNav(all, {
           prefix: `${v.slug}/`,
-          rootGroupTitle: "Overview",
-        });
-        /*
-         * For the latest umbrella docs, surface the sibling Ctrl /
-         * Bakery doc sets directly in the left rail so readers always
-         * have a one-click path between them. Older versions skip it
-         * — those archives don't have matching ctrl/bakery splits.
-         */
-        const nav =
-          v.slug === "latest"
-            ? [
-              {
-                title: "Tool Docs",
-                links: [
-                  { title: "Rugix Ctrl", href: "/docs/ctrl" },
-                  { title: "Rugix Bakery", href: "/docs/bakery" },
-                ],
-              },
-              ...auto,
-            ]
-            : auto;
-        return { ...v, nav };
-      }),
+          /*
+           * "Essentials" covers the mixed root-level pages (Getting
+           * Started, Production Checklist, The Rugix Project,
+           * Upgrading from v0.8) without stuttering with any of them.
+           */
+          rootGroupTitle: "Essentials",
+        }),
+      })),
     };
   },
 );
@@ -206,42 +211,35 @@ export const getCtrlDocsConfig = memoizeDocsConfig(
       },
     ];
     return {
+      docSets,
       versions: versions.map((v) => {
         /*
-         * The `next` branch was restructured into thematic top-level
-         * sections (System Updates, Application Updates, …) plus a few
-         * cross-cutting concept pages at the root (Update Bundles,
-         * Hooks, …). The 1.1 branch keeps its historical flat layout.
+         * The `next` branch is organized around Rugix Ctrl's
+         * capabilities: a Get Started group (the Introduction page),
+         * the three capability sections (OTA Updates, Application
+         * Management, State Management), an Integration section
+         * (build systems, fleet management, migration), and a
+         * Reference section for cross-cutting material. The 1.1
+         * branch keeps its historical flat layout under a
+         * "Rugix Ctrl" root group.
          */
         const isNext = v.slug === "next";
-        const auto = buildNav(all, {
-          prefix: `${v.slug}/`,
-          rootGroupTitle: isNext ? "Overview" : "Rugix Ctrl",
-          groupOrder: isNext
-            ? [
-              "",
-              "system-updates",
-              "application-updates",
-              "state-management",
-              "build-systems",
-              "migrating",
-              "fleet-management",
-              "reference",
-            ]
-            : undefined,
-        });
         return {
           ...v,
-          nav: [
-            {
-              title: "Other Docs",
-              links: [
-                { title: "Overview", href: "/docs/getting-started", icon: "←" },
-                { title: "Rugix Bakery", href: "/docs/bakery" },
-              ],
-            },
-            ...auto,
-          ],
+          nav: buildNav(all, {
+            prefix: `${v.slug}/`,
+            rootGroupTitle: isNext ? "Get Started" : "Rugix Ctrl",
+            groupOrder: isNext
+              ? [
+                "",
+                "updates",
+                "application-management",
+                "state-management",
+                "integration",
+                "reference",
+              ]
+              : undefined,
+          }),
         };
       }),
     };
@@ -272,25 +270,14 @@ export const getBakeryDocsConfig = memoizeDocsConfig(
       },
     ];
     return {
-      versions: versions.map((v) => {
-        const auto = buildNav(all, {
+      docSets,
+      versions: versions.map((v) => ({
+        ...v,
+        nav: buildNav(all, {
           prefix: `${v.slug}/`,
           rootGroupTitle: "Rugix Bakery",
-        });
-        return {
-          ...v,
-          nav: [
-            {
-              title: "Other Docs",
-              links: [
-                { title: "Overview", href: "/docs/getting-started", icon: "←" },
-                { title: "Rugix Ctrl", href: "/docs/ctrl" },
-              ],
-            },
-            ...auto,
-          ],
-        };
-      }),
+        }),
+      })),
     };
   },
 );

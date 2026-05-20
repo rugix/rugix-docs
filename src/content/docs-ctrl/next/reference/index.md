@@ -1,21 +1,8 @@
 ---
 title: Reference
-order: 80
+order: 1
 ---
 
-# Reference
+Reference material that applies across Rugix Ctrl's capabilities rather than to a single one.
 
-In-depth reference material for the cross-cutting parts of Rugix Ctrl. Each page is paired with an introductory page in the main navigation; the reference is where the schema, CLI, and edge cases live.
-
-| Topic | Concept | Reference |
-| --- | --- | --- |
-| Update Bundles | [Update Bundles](../update-bundles) | [Update Bundles Reference](./update-bundles) |
-| Delta Updates | [Delta Updates](../delta-updates) | [Delta Updates Reference](./delta-updates) |
-| Signed Updates | [Signed Updates](../signed-updates) | [Signed Updates Reference](./signed-updates) |
-| Hooks | [Hooks](../hooks) | [Hooks Reference](./hooks) |
-| Application Updates | [Application Updates](../application-updates/) | [Application Updates Reference](./application-updates) |
-
-Plus two reference-only pages:
-
-- [Filesystem Hierarchy](./filesystem-hierarchy) — directories used by Rugix Ctrl.
-- [Internals](./internals) — implementation notes you should not rely on.
+- **[Hooks](./hooks)** let you inject custom behavior at well-defined points in Rugix Ctrl's operation: before installing an update, after committing one, during bootstrapping, on a state reset, or on every boot.

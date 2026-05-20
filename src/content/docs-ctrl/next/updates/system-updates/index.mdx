@@ -1,0 +1,190 @@
+---
+title: System Updates
+order: 20
+---
+
+import { SidexViewer } from "@silitics/astro-sidex-viewer";
+import "@silitics/astro-sidex-viewer/styles.css";
+import rugixCtrlIr from "../../../../../schemas/rugix-ctrl-ir.json";
+
+A _system update_ replaces a device's entire operating system in one step: the whole root filesystem, and optionally the boot partition along with it. Installing such updates safely, over the air (OTA) and with nobody in front of the device, is Rugix Ctrl's core job.
+
+For a device in the field, running `apt upgrade` and hoping for the best will not cut it. A package manager mutates the running system in place, one package at a time. If power is lost or the network drops partway through, the device is left in a half-updated state that may not even boot, with no clean way back to the version that worked. On a developer's laptop that might cost an afternoon; on a fleet of remote devices it costs a truck roll, or hardware shipped back to the manufacturer.
+
+A system update therefore has to be _atomic_, reversible, and verified before any of it is trusted. This section covers what can go wrong, how Rugix Ctrl is built to prevent it, and how you install and manage system updates with Rugix Ctrl in practice.
+
+:::tip
+For installing and updating individual application workloads (Docker Compose stacks, systemd services, custom scripts) independently of the base system, see [Application Management](../../application-management/) instead.
+:::
+
+## Why System Updates Are Hard to Get Right
+
+Remote updates come with a handful of well-understood challenges, and a mechanism that does not address every one of them will eventually brick a device.
+
+**Interruption.**
+An update can be cut off partway through: power is lost, the network drops, the device is switched off. If the update was being written in place, the system is left part old and part new, and may no longer boot. A safe update has to be _atomic_, applying either completely or not at all, with the running system kept intact until the new one is ready.
+
+**Environment mismatch.**
+However carefully an update is tested beforehand, the production environment might be hard to reproduce exactly, and an update can still turn out to be incompatible with a particular device or its configuration. An update therefore has to be _validated on the device_ and rolled back automatically to the previous, known-good version if that validation fails.
+
+**State and data loss.**
+Devices accumulate state that has to survive an update, such as user settings and application data, while stale configuration left over from the old version must not be allowed to quietly corrupt the new one. Handling this safely calls for deliberate [state management](../../state-management/).
+
+**Tampering.**
+The update channel is itself an attack surface. A manipulated update that installs successfully hands an attacker control of the device and a foothold on the network behind it. Every update has to be _verified as genuine_ before it is installed.
+
+Rugix Ctrl is built to address all four: updates are atomic, validated on the device with automatic rollback, and cryptographically verified, and persistent state is kept safe by Rugix Ctrl's separate state management. The rest of this section explains how.
+
+## How System Updates Work
+
+Rugix Ctrl's system updates rest on a few connected ideas: a device typically keeps two complete copies of the system, an update is installed onto a copy that is not running, and it becomes permanent only once it has proven itself.
+
+### The A/B Update Scheme
+
+In a typical Rugix Ctrl setup, a device carries two complete, independent copies of the system, the **A** and **B** systems, on redundant partitions. At any moment one of them is _active_, the system the device is running, and the other is the _spare_.
+
+An update is always installed onto the spare, never onto the running system. The active system is left completely untouched, so however the installation goes, the device still has a known-good system to fall back to. The device adopts the updated system only after it has been installed and checked.
+
+This arrangement has two further benefits. Because the update is written while the device keeps running normally, installation causes no downtime; the only interruption is the reboot into the new version, which takes no longer than any other reboot and can be timed to suit the user. And because the previous version remains on the spare, rolling back to it stays possible even after the update has been adopted.[^rollback]
+
+[^rollback]: This requires support by your application.
+
+**Other layouts.**
+An A/B scheme is the recommended default, but not the only option. Rugix Ctrl's underlying model is built from _slots_ and _boot groups_, which can equally describe an asymmetric setup with a dedicated recovery system, or more than two redundant systems. See [System Configuration](./system-configuration) for that model.
+
+### The Two-Stage Update Process
+
+Installing an update is only the first half of the story. Rugix Ctrl deliberately splits an update into two stages, so that a new system has to prove itself before it is trusted for good.
+
+**Stage one: install and reboot.**
+The update is written to the spare system, and the device reboots into it. The new system is now running, but only _provisionally_: unless the update is committed, the next reboot returns to the old system.
+
+**Stage two: validate and commit.**
+While the new system is running, you (or an automated health check) confirm that it works as expected. _Committing_ the update then makes it the permanent default. If the check fails, or the new system never boots far enough to commit, the device falls back to the old system on its own at the next reboot. A broken update reverts itself, with no intervention and no truck roll.
+
+A **rollback** is this same machinery used deliberately. Even after an update has been committed, the previous version is still intact on the spare, so you can go back to it: boot into the spare and commit. This is distinct from the automatic fallback above; the fallback reverts an update that was never committed, while a rollback reverts one that already was.
+
+The commands for each stage are covered under [Installing and Managing Updates](#installing-and-managing-updates).
+
+### Bootloader Integration
+
+Switching between the A and B systems, and falling back when an update fails to come up, is ultimately the bootloader's responsibility. Rugix Ctrl drives the bootloader through a _boot flow_: a ready-made integration for a particular bootloader.
+
+Boot flows ship for U-Boot, GRUB, `systemd-boot`, and Raspberry Pi's `tryboot` mechanism, alongside RAUC- and Mender-compatible flows for [migrating existing devices](../../integration/migrating/) to Rugix Ctrl.
+
+:::tip
+When you build a system with Rugix Bakery for a generic or specific target, it comes with a working A/B bootloader integration out of the box; no configuration is needed and you do not have to think about how it works.
+:::
+
+### Partition Layout
+
+Putting the pieces together, a typical Rugix system following the A/B scheme has six partitions:
+
+- **Partition 1**: the _config partition_, holding the bootloader and the configuration that selects between the A and B system.
+- **Partition 2**: boot data (kernel, DTBs, …) for the A system.
+- **Partition 3**: boot data (kernel, DTBs, …) for the B system.
+- **Partition 4**: the root filesystem of the A system.
+- **Partition 5**: the root filesystem of the B system.
+- **Partition 6**: the _data partition_, holding persistent data and state that is preserved across updates (see [State Management](../../state-management/)).
+
+Partitions 2 through 5 are the two redundant systems; an update rewrites the spare boot and root partitions while the active pair keeps the device running.
+
+## Installing and Managing Updates
+
+With that model in mind, here is how you install, commit, and roll back updates in practice.
+
+### Installing an Update
+
+A system update is delivered as an [update bundle](../update-bundles) and installed with `rugix-ctrl update install`.[^non-a-b] See [Installing a Bundle](../update-bundles#installing-a-bundle) for the install command itself, the three ways to provide a bundle (local file, stdin, or HTTP), and how bundles are verified.
+
+[^non-a-b]: On a traditional A/B update scheme, no boot group needs to be given. On a non-A/B scheme, `rugix-ctrl update install` requires you to specify the [boot group](./system-configuration) explicitly.
+
+By default, installing an update writes it to the spare system and immediately reboots into it, carrying out [stage one](#the-two-stage-update-process) in a single command.
+
+### Controlling Reboots
+
+By default, Rugix Ctrl reboots the device as soon as an update is installed, switching straight to the new system. When you would rather decide the timing yourself, for example to install in the background and switch over only once a user confirms, `rugix-ctrl update install` accepts a `--reboot` option that controls what happens once the update is written:
+
+- `--reboot yes` reboots into the new system immediately. This is the default.
+- `--reboot no` does nothing further: the update sits on the spare system while the device keeps running the old one.
+- `--reboot set` tells the bootloader to boot into the new system on the next restart, without rebooting now (might not survive a hard power cycle).
+- `--reboot deferred` has Rugix Ctrl itself record the pending switch and carry it out on the next boot. It is only available for A/B setups and requires [state management](../../state-management/).
+
+For example, to install an update in the background, without rebooting:
+
+```shell
+rugix-ctrl update install --reboot no BUNDLE.rugixb
+```
+
+After a `--reboot no` install, you can switch to the freshly installed system with:
+
+```shell
+rugix-ctrl system reboot --spare
+```
+
+With `--reboot set` or `--reboot deferred`, the switch instead happens on its own the next time the device restarts for any reason: a user can simply shut the device down as normal, and it comes up on the new version.
+
+### Committing an Update
+
+Once you have rebooted into the new system and confirmed that it is healthy, make the update permanent by committing it:
+
+```shell
+rugix-ctrl system commit
+```
+
+`commit` always makes the _currently booted_ system the default, so it has to be run from within the updated system. Making the inactive system the default is intentionally not possible, since that would be an easy way to break a device.[^inactive-default]
+
+[^inactive-default]: At least with the `rugix-ctrl` command line tool.
+
+When to commit is up to your update workflow. If you use Rugix Bakery, you can use the `core/rugix-auto-commit` recipe to install a service that commits the running system automatically during boot. Be aware that this commits whatever system it boots into, including an old version booted during a rollback.
+
+:::tip
+Use a [pre-commit hook](#hooks) to ensure that only a healthy system can be committed.
+:::
+
+### Rolling Back
+
+To roll back an update that has already been committed, boot into the spare system, which still holds the previous version, and commit it. First:
+
+```shell
+rugix-ctrl system reboot --spare
+```
+
+Then, once the device has rebooted into the previous version:
+
+```shell
+rugix-ctrl system commit
+```
+
+This is the deliberate rollback described under [The Two-Stage Update Process](#the-two-stage-update-process). An update that fails _before_ being committed reverts on its own and needs none of these steps.
+
+### Inspecting the System State
+
+To see the current state of the system, including which system is active and which is spare, run:
+
+```shell
+rugix-ctrl system info
+```
+
+The command prints JSON. The full schema of its output is:
+
+<SidexViewer ir={rugixCtrlIr} type="output.SystemInfoOutput" initialDepth={1} />
+
+The schema is defined in [`output.sidex`](https://github.com/rugix/rugix/blob/main/crates/apps/rugix-ctrl/schemas/output.sidex).
+
+### Hooks
+
+[Hooks](../../reference/hooks) let you run custom scripts at defined points of an update. Two hook operations apply to system updates. For installing an update, the stages of `update-install` hooks are:
+
+- `pre-update`: Runs directly before installing an update.
+- `progress`: Runs periodically while installing an update.
+- `post-update`: Runs directly after installing an update, before rebooting.
+
+When the `update-install/progress` hook runs, the update progress as a percentage (including fractional digits) is provided in the environment variable `RUGIX_UPDATE_PROGRESS`. Output of the progress hook is discarded and any error merely logs a warning; it does not abort the update. The progress hook only reports progress and is not mission critical. **There is no guarantee on how often it runs, or that it runs at all.** In particular, it does not run when streaming an update from an arbitrary source.
+
+For committing an update or a rollback, the stages of `system-commit` hooks are:
+
+- `pre-commit`: Runs directly before a commit.
+- `post-commit`: Runs directly after a commit.
+
+You can use these, for example, to prepare and trigger state migrations if you are not using Rugix Ctrl's [state management](../../state-management/).

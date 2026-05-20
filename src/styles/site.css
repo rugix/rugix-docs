@@ -299,3 +299,117 @@
   font-size: 0.78rem;
   color: var(--theme-content-muted, var(--theme-content-subtle));
 }
+
+/*
+ * Directory tree. Rendered by `FileTree.astro` from a structured prop
+ * to show directory layouts (bundle directories, hook folders, ...).
+ * Static markup, no client island.
+ */
+.file-tree {
+  /* Horizontal step added per nesting level. */
+  --ft-indent: 1.5em;
+  /* X-offset of the vertical guide line; aligned with an icon's centre. */
+  --ft-guide: 0.52em;
+  /* Height of a single entry row; the elbow connects at its centre. */
+  --ft-row: 1.9em;
+  --ft-line: var(--theme-divider);
+
+  margin: 1.5em 0;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid var(--theme-divider);
+  border-radius: var(--radius-md, 0.6rem);
+  background: var(--theme-surface-1);
+  font-size: 0.85rem;
+  overflow-x: auto;
+}
+
+.file-tree-root {
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
+  height: var(--ft-row);
+  color: var(--theme-content);
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-weight: 600;
+}
+
+.file-tree-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.file-tree-item {
+  position: relative;
+}
+
+/* An entry row: icon, name, and an optional note. */
+.file-tree-entry {
+  display: flex;
+  align-items: center;
+  gap: 0.45em;
+  height: var(--ft-row);
+  white-space: nowrap;
+}
+
+.file-tree-icon {
+  display: inline-flex;
+  flex: none;
+  color: var(--theme-content-subtle);
+}
+
+.file-tree-icon svg {
+  width: 1.05em;
+  height: 1.05em;
+  display: block;
+}
+
+.file-tree-entry.is-dir .file-tree-icon {
+  color: var(--theme-primary);
+}
+
+.file-tree-name {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  color: var(--theme-content-muted);
+}
+
+.file-tree-entry.is-dir .file-tree-name {
+  color: var(--theme-content);
+  font-weight: 600;
+}
+
+.file-tree-note {
+  color: var(--theme-content-subtle);
+}
+
+/* Connector guides, drawn only on lists flagged with `.file-tree-guides`. */
+.file-tree-guides > .file-tree-item {
+  padding-left: var(--ft-indent);
+}
+
+/* Elbow: a rounded corner joining the vertical guide to the entry. */
+.file-tree-guides > .file-tree-item::before {
+  content: "";
+  position: absolute;
+  left: var(--ft-guide);
+  top: 0;
+  width: calc(var(--ft-indent) - var(--ft-guide));
+  height: calc(var(--ft-row) / 2);
+  border-left: 1px solid var(--ft-line);
+  border-bottom: 1px solid var(--ft-line);
+  border-bottom-left-radius: 6px;
+}
+
+/* Continuation of the vertical guide past the elbow, down to siblings. */
+.file-tree-guides > .file-tree-item::after {
+  content: "";
+  position: absolute;
+  left: var(--ft-guide);
+  top: calc(var(--ft-row) / 2);
+  bottom: 0;
+  border-left: 1px solid var(--ft-line);
+}
+
+.file-tree-guides > .file-tree-item:last-child::after {
+  display: none;
+}

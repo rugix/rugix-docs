@@ -1,12 +1,11 @@
 ---
 title: Bootstrapping
-order: 20
+order: 10
 ---
 
-import { SchemaViewer } from "@silitics/astro-schema-viewer";
-import ConfigSchema from "../../../../schemas/rugix-ctrl-bootstrapping.schema.json";
-
-# Bootstrapping
+import { SidexViewer } from "@silitics/astro-sidex-viewer";
+import "@silitics/astro-sidex-viewer/styles.css";
+import rugixCtrlIr from "../../../../schemas/rugix-ctrl-ir.json";
 
 During the production and provisioning of devices, a standard image is usually flashed onto each device. This image is identical across all devices to maintain consistency and simplify the provisioning process. After flashing the image, each device is then typically booted for the first time as part of an end-of-line configuration and quality assurance testing procedure. This initial boot process can also be used for setting up and initializing device-specific configurations, a process to which we refer as _bootstrapping_.
 
@@ -18,14 +17,15 @@ The bootstrapping process can include a variety of steps such as:
 - Generating unique device identifiers and security certificates.
 - Customizing configurations to suit device-specific requirements.
 
-When [configured to run before the init system](./), Rugix Ctrl can also carry out bootstrapping steps. For instance, unless configured otherwise, it will grow the partition table and initialize the data partition where the persistent state lives. Rugix Ctrl's bootstrapping process is flexible and you can adapt it to your specific needs by adding [bootstrapping hooks](../hooks#bootstrapping-hooks).
-Note that the bootstrapping process runs very early during the boot process before the init system because properly booting the system, in particular, with state management, requires the existence of a data partition, which may first need to be created.
+When [configured to run before the init system](./), Rugix Ctrl carries out bootstrapping itself. By default, it grows the partition table and creates the data partition that state management lives on; you can extend it with [bootstrapping hooks](#hooks). Bootstrapping runs this early because the rest of the boot, state management in particular, depends on the data partition existing.
 
 :::note[Info]
-The bootstrapping process is configured in the `/etc/rugix/bootstrapping.toml` configuration file. It requires a config partition to be configured and present. The config partition must contain a file `/.rugix/bootstrap` to trigger the bootstrapping process. Rugix Ctrl also accepts the marker at `/rugix/bootstrap` (without the leading dot) for environments where dotfiles are inconvenient to ship — most notably wic's `bootimg-partition` plugin, whose `mcopy` invocation skips dotfiles in the FAT root. Whichever marker is found is deleted after the bootstrapping process to ensure that it does not run again.[^bootstrap-in-production]
+Bootstrapping is configured in `/etc/rugix/bootstrapping.toml` and requires a config partition. To trigger it, place a marker file `/.rugix/bootstrap` on the config partition;[^marker-filename] Rugix Ctrl deletes the marker once bootstrapping completes so it does not run again.[^bootstrap-in-production]
 :::
 
-[^bootstrap-in-production]: Note that a malicious actor may be able to create this file on a production device and then trigger the bootstrapping process, even if secure boot and other security measures are in place. This may pose a security risk. In those cases, it is recommended to use a user-defined `prepare` bootstrapping hook that will check whether the device should be bootstrapped using some other source, such as one-time-programmable memory, and abort the process based on the outcome of that check.
+[^marker-filename]: Rugix Ctrl also accepts the marker at `/rugix/bootstrap` (without the leading dot) for environments where dotfiles are inconvenient to ship, most notably wic's `bootimg-partition` plugin, whose `mcopy` invocation skips dotfiles in the FAT root.
+
+[^bootstrap-in-production]: A malicious actor with write access to the config partition could re-arm bootstrapping on a production device, even with secure boot in place. To mitigate this, install a `prepare` bootstrapping hook that gates the process on an independent signal (e.g., a flag in one-time-programmable memory) and aborts if it should not run.
 
 ## System Layout
 
@@ -38,12 +38,6 @@ If you want to increase the size of the system partition of the default layout, 
 :::
 
 ### Custom Layouts
-
-:::warning
-Custom system layouts are experimental.
-**We may introduce breaking changes to the configuration format in minor versions.**
-If you just want to change the size of the system partition, use the [default layout](#default-layout).
-:::
 
 Rugix Ctrl supports MBR (DOS) partition tables and GPT partition tables. Here are two example layouts:
 
@@ -84,7 +78,7 @@ Rugix Ctrl will only create new partitions that do not already exist and grow pa
 
 For a typical system, you would use one of the layouts above. As a shortcut, the `type` of the layout can be set to `default`. In that case, only a `system-size` needs to be configured. Rugix Ctrl will then automatically create a matching partition table based on the type of table it finds on the root disk and the configured system size. Here is an example:
 
-```toml title="bootstrapping.toml"
+```toml title="/etc/rugix/bootstrapping.toml"
 [layout]
 type = "default"
 system-size = "4GiB"
@@ -94,14 +88,40 @@ system-size = "4GiB"
 
 If you do not want Rugix Ctrl to create any partitions, simply set the layout's `type` to `none`:
 
-```toml title="bootstrapping.toml"
+```toml title="/etc/rugix/bootstrapping.toml"
 [layout]
 type = "none"
 ```
 
+## Hooks
+
+[Hooks](../reference/hooks) let you adapt the bootstrapping and boot process.
+
+For bootstrapping, the stages of `bootstrap` hooks are:
+
+- `prepare`: Runs after mounting the config partition and determining that the system should be bootstrapped.
+- `pre-layout`: Runs directly before applying the system partition layout.
+- `post-layout`: Runs directly after applying the system partition layout.
+
+For the boot process itself, the `boot` hooks are:
+
+- `pre-init`: Runs early, before the system is initialized.
+- `post-init`: Runs after the system has been initialized, just before Rugix Ctrl hands control to the actual init system, such as systemd.
+
+A failure in a `boot` hook is logged but does not abort the boot.
+
+All of these stages run during boot, before the init system. For hooks running that early, you can assume the following environment:
+
+- `/` is mounted read-only to the respective root filesystem.
+- `/sys`, `/proc`, and `/dev` are mounted.
+- `/run` is mounted to a temporary, in-memory filesystem and is passed through to the final system. If you need to communicate something to processes that run after boot, place it in `/run`.
+
+In addition, the config partition is mounted read-only, usually at `/run/rugix/mounts/config`.
+
 ## Configuration Reference
 
-For reference, here is the complete schema for the bootstrapping configuration file:
+Here is the complete schema for the bootstrapping configuration file:
 
-<SchemaViewer schema={ConfigSchema} />
-You will find the most recent version of this schema [on GitHub](https://github.com/rugix/rugix/blob/main/schemas/rugix-ctrl-bootstrapping.schema.json).
+<SidexViewer ir={rugixCtrlIr} type="bootstrapping.BootstrappingConfig" initialDepth={1} />
+
+The schema is defined in [`bootstrapping.sidex`](https://github.com/rugix/rugix/blob/main/crates/apps/rugix-ctrl/schemas/bootstrapping.sidex).

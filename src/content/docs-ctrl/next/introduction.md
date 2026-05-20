@@ -3,66 +3,48 @@ title: Introduction
 order: 1
 ---
 
-# Rugix Ctrl
+:::tip
+**New to Rugix or to embedded Linux?** Check out the [Getting Started guide](/docs/getting-started). It walks you through building a Debian image with Rugix Bakery, flashing it to a Raspberry Pi or VM, and installing an OTA update end-to-end in under 30 minutes.
+:::
 
-_Rugix Ctrl_ is a powerful tool for robust over-the-air updates and system state management.
-It mitigates the risks associated with remote software updates in the field, **enabling you to ship the latest updates to your users with confidence**.
+_Rugix Ctrl_ is a tool for **robust and secure over-the-air (OTA) updates** on embedded Linux devices, with **optional application and state management**.
 
-To set the stage, let's first focus on the things that could go wrong and the ideal features and properties of an update solution.
+Building robust and secure embedded devices is harder than it should be, with each project assembling the same safeguards from scratch. Rugix Ctrl is designed to make it simpler, turning best practices for system updates, application workloads, and system state into capabilities you adopt off the shelf, without trading robustness for simplicity.
 
-1. **Interrupted Updates:** If something interrupts the update process, such as an unplanned power outage, a partially installed update may leave the system in an inoperable state.
-   Therefore, a robust update solution must be _atomic_, ensuring that updates are either installed completely or not at all, always leaving the system in an operational state, no matter what happens.
+## The Challenges of Maintaining Devices in the Field
 
-2. **Uncertain Production Environment:** While extensive testing should be done prior to deploying any updates, replicating the exact production environment and conditions can be difficult.
-   An update that turns out to be incompatible with the particularities of the production environment under difficult to replicate conditions may leave the system in an inoperable state.
-   Therefore, a robust update solution must have the possibility for _on-device validation and rollback_ of updates.
-   If any problems are detected with an update on a particular device, a rollback to the previous, known-good version should be automatically triggered.
+Embedded devices typically keep evolving once they ship: there are new features to deliver, security vulnerabilities to patch, performance to improve, and bugs to fix. Over-the-air updates are how you keep a deployed fleet current, secure, and improving without sending anyone into the field. But once devices are out there, **an update gone wrong is expensive**: a bricked unit can mean a truck roll or a trip back to the manufacturer, plus costly downtime. The update mechanism is also an attack surface: a manipulated update can hand an attacker a foothold on the device and the wider network it's attached to. Rugix Ctrl is built to guard against both, so you can update your software without putting your fleet at risk.
 
-3. **Data Loss and Accidental State:** Whenever an update is installed, the existing state of a system must be handled carefully to ensure that no data is lost.
-   For instance, user settings and data stored on the device must be preserved.
-   At the same time, a system must be safeguarded against corruption by _accidental state_ that should not be kept, such as configuration files incompatible with the new version.
-   Therefore, a robust update solution must provide reliable _state management_ mechanisms.
+Keeping the base system updated is only part of the job. Applications often evolve with a different cadence than the base system, and different devices in a fleet often need different workloads on top of it. Deploying and updating them independently lets you keep a single base image across the fleet and vary only the workloads on top, instead of reshipping the whole system for every change. Devices also accumulate state, which cuts both ways: user data has to survive every update, while configuration drift and stray files must not be allowed to quietly break the running system or the updates that follow.
 
-4. **Cyber Attacks:** A malicious actor may try to compromise a device by installing a manipulated update.
-   If they succeed and gain access, they can use the device to further infiltrate the network it is attached to, gaining wide-spread access that can quickly lead to huge damages extending far beyond the functionality of the original device.
-   Therefore, an update solution must provide mechanisms to prevent manipulated updates from being installed.
+## What Rugix Ctrl Does
 
-Rugix Ctrl addresses these challenges by ensuring atomic updates, on-device validation with rollback capabilities, reliable state management, and protection against malicious updates.
-By utilizing Rugix Ctrl, you can rest assured that your devices remain reliable, secure, and up-to-date, **allowing you to focus on delivering value to your users**.
+Rugix Ctrl addresses these challenges with `rugix-ctrl`, a single, self-contained binary on the device. It provides three capabilities, one primary and two optional:
 
-## How It's Built
+- **[OTA Updates](./updates/)** (primary). Robust and secure over-the-air updates of the system. A full system update replaces the whole OS atomically and rolls back automatically on failure; an incremental update installs individual payloads. Both transfer only what changed via delta updates, and every update is signature-verified before installation.
+- **[Application management](./application-management/)** (optional). Install, update, roll back, and remove individual app workloads such as Docker Compose stacks or systemd services, independently of the base system. Deployments are atomic and crash-safe, each app keeps its own version history and persistent data, and a failed update rolls back automatically.
+- **[State management](./state-management/)** (optional). Keep the system in a known-good state: a read-only system partition layered with a writable overlay that resets on reboot, selective persistence for state that must survive updates, and off-the-shelf factory reset.
 
-Rugix Ctrl ships as two binaries:
+The two optional capabilities are independent of the primary update functionality and of each other. Leave them out and Rugix Ctrl is purely an update engine, with no extra partitions, services, or behavior to account for. Turn them on and you gain application lifecycle management and a controlled, known-good system state.
 
-- `rugix-ctrl` runs on the device. It installs updates, manages system state, and (optionally) takes over as the early-init process to set up a writable overlay before your real init system starts.
-- `rugix-bundler` runs on your build machine. It packages payloads into update bundles and signs them.
+## What Rugix Ctrl Doesn't Do
 
-Pre-built binaries are available [on the Releases page](https://github.com/rugix/rugix/releases/).
+Rugix Ctrl covers a broad slice of the OTA update problem, but it is deliberately not an all-in-one platform. A few things are intentionally left out of scope:
 
-Rugix Ctrl is **build-system agnostic** — it integrates with [Rugix Bakery](./build-systems/rugix-bakery), [Yocto](./build-systems/yocto), or [your own pipeline](./build-systems/others). And it is **fleet-manager agnostic** — it doesn't talk to a backend itself, leaving update delivery to whichever [fleet management](./fleet-management) solution fits your product.
+- **It is not a fleet manager.** Rugix Ctrl does not talk to a backend, schedule rollouts, or provide a dashboard. It exposes a uniform installation interface and leaves orchestration to a [fleet manager](./integration/fleet-management/), your own UI, or a bundle handed over on a thumb drive.
+- **It is not a build system.** Rugix Ctrl does not build your OS image or application artifacts. It installs update bundles produced by a [build system](./integration/build-systems/rugix-bakery), whether that's Rugix Bakery, Yocto, Buildroot, Nix, or some other pipeline.
+- **It is not a bootloader.** Rugix Ctrl drives the bootloader to switch between slots, but it does not replace it. You still need a supported bootloader such as U-Boot, GRUB, `systemd-boot`, or Raspberry Pi's `tryboot`, wired up through a [boot flow](./updates/system-updates/boot-flows).
 
-## Core Concepts
+This is what keeps Rugix Ctrl composable: it owns updates (and optionally applications and state) but stays decoupled from the rest of the OTA stack. In particular, it does not lock you into a particular fleet manager, so you are free to use whatever fits best.
 
-A handful of concepts run through everything Rugix Ctrl does. Skim these before diving into a specific section.
+## Why Rugix Ctrl?
 
-**[Update Bundles](./update-bundles)** are the format Rugix Ctrl uses to ship updates. The same bundle format carries [system updates](./system-updates/), [application updates](./application-updates/), boot data, custom payloads — anything you'd want to push to a device. Bundles are streaming-friendly, content-addressable, and verifiable per-block.
+Choosing an update solution is a long-term commitment: embedded devices stay in the field for years, and the mechanism you pick today is how you will ship software to them for their entire lifetime. Here is why Rugix Ctrl is a solid choice for that commitment:
 
-**[Delta Updates](./delta-updates)** ride on top of bundles. Rugix is the only open-source OTA tool with first-class support for both _dynamic_ deltas (server doesn't have to know anything; the device fetches only the missing blocks) and _static_ deltas (pre-computed patches between specific versions, for the bandwidth-constrained case).
+- **A state-of-the-art update engine.** For most new embedded Linux projects, Rugix Ctrl is the strongest OTA update engine available today, with best-in-class delta updates, the only memory-safe implementation among the widely used engines, and secure-by-default verification. We have published a [detailed, head-to-head comparison of Mender, RAUC, SWUpdate, OSTree, and Rugix Ctrl](/blog/2026-02-28-ota-update-engines-compared) that lays out the full reasoning.
+- **More than an update engine.** Operating a fleet involves more than shipping system updates: workloads evolve on their own cadence, and devices accumulate state. Rugix Ctrl handles both with ready-made, optional application and state management; with any other update engine, those are capabilities you build and maintain yourself.
+- **Built for the long haul.** Rugix Ctrl is open source under permissive licenses, proven at scale, and actively developed. Where it does not yet cover a need, we are committed to closing the gap, so it stays a dependable foundation for the full lifetime of your devices.
 
-**[Signed Updates](./signed-updates)** make bundle verification mandatory. Either an embedded CMS signature against a configured root certificate, or a known bundle hash. Nothing untrusted ever lands on disk.
+## Where to Start
 
-**[Hooks](./hooks)** let you inject custom behavior at any lifecycle stage — before installing an update, before committing it, on first boot, on factory reset. Hooks are how you wire Rugix Ctrl into application-specific health checks, migrations, and custom workflows.
-
-## Use Cases
-
-**[System Updates](./system-updates/)** are Rugix Ctrl's headline feature: atomic A/B replacement of the root filesystem with rollback. The device boots into the inactive partition, you validate, you commit. Failed updates fall back automatically.
-
-**[Application Updates](./application-updates/)** (Rugix Apps, currently experimental) extends the same machinery to lifecycle-managed application workloads — Docker Compose stacks, systemd-managed binaries, anything orchestrated by a script. Versioned generations, automatic rollback on failed activation, persistent per-app state.
-
-**[State Management](./state-management/)** turns your root filesystem into a read-only base with a writable overlay. Bind mounts persist exactly the directories you declare; everything else is discarded on reboot. Factory reset is a single command. [Bootstrapping](./state-management/bootstrapping) runs first-boot setup — partition growth, data partition init, device-specific provisioning.
-
-## Comparison to Other Solutions
-
-If you are evaluating Rugix Ctrl against other open-source OTA update engines for embedded Linux, we have published a [comprehensive comparison of Mender, RAUC, SWUpdate, OSTree, and Rugix Ctrl](/blog/2026-02-28-ota-update-engines-compared) covering update strategies, bootloader support, delta updates, security, and backend integration.
-
-If you're already running Mender or RAUC in the field, Rugix Ctrl can take over via [bootloader-compatible boot flows](./migrating/) — no reflashing required.
+Start with the [OTA Updates](./updates/) section, the heart of Rugix Ctrl. Its [Update Bundles](./updates/update-bundles) page introduces the format that every part of Rugix Ctrl relies on, so it makes a good first read. From there, explore [Application Management](./application-management/) and [State Management](./state-management/), or jump straight to the [Getting Started guide](/docs/getting-started) to learn by doing.
