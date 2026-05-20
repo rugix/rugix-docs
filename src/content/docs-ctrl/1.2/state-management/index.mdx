@@ -1,0 +1,224 @@
+---
+title: State Management
+order: 1
+---
+
+import { SidexViewer } from "@silitics/astro-sidex-viewer";
+import "@silitics/astro-sidex-viewer/styles.css";
+import rugixCtrlIr from "../../../../schemas/rugix-ctrl-ir.json";
+
+Rugix Ctrl ships an optional state management layer that solves two problems for long-lived embedded systems: keeping a known set of state across updates and reboots, and preventing everything else from quietly drifting from a known-good baseline. It runs the root filesystem as a writable overlay on top of a read-only system partition, and lets you declare exactly which files and directories should persist on a separate data partition. Writes that you did not declare are discarded on reboot, so the system always boots back to the same baseline.
+
+State management is independent of [OTA updates](../updates/); you can use Rugix Ctrl's update mechanism without it (see [Disabling State Management](#disabling-state-management) below).
+
+The following diagram visualizes the idea:
+
+```
+           ╭─────────────────────────────────────────────────────────────╮
+           │                  Writable Root Filesystem                   │
+           ╰─────────────────────────────────────────────────────────────╯
+                          ▲                               ▲
+                          │ reads                         │ reads/writes
+                          │                               ▼
+           ╭──────────────────────────────╮  ╭───────────────────────────╮
+Storage    │  Read-Only System Partition  │  │  Writable Data Partition  │
+           ╰──────────────────────────────╯  ╰───────────────────────────╯
+```
+
+If you have used Docker, this is essentially the same shape: an ephemeral root with explicit bind mounts for the data you care about (databases, application data, user settings). The difference is that your system still runs as usual; there is no container runtime, only a virtual root filesystem.
+
+The arrangement has three practical consequences:
+
+- **Writable root, immutable system partition.** Tools that expect `/etc` and `/var` to be writable continue to work as they normally would, while the system partition itself stays in a known-good state. Power loss and runtime bugs cannot corrupt it.
+- **No accidental state.** Anything written to the root that you did not declare is discarded on the next boot, so problems caused by ad-hoc changes do not linger. It also surfaces missing persistence declarations early, before an update silently drops data.
+- **Built-in factory reset.** Because Rugix Ctrl owns the data partition, `rugix-ctrl state reset` is enough to return a device to defaults.
+
+The overlay is configurable. It can be kept across reboots, kept only in memory, or disabled entirely (in which case the root filesystem stays read-only and only the declared bind mounts are writable).
+
+:::warning
+Because state management sets up the root filesystem, `rugix-ctrl` must run as the system's init, e.g., via the `init=/usr/bin/rugix-ctrl` kernel command-line option. It performs early setup and then hands control to the real init system (such as systemd) inside the virtual root. Rugix Bakery's generic and specific targets configure this for you.
+:::
+
+The same early-init mechanism that brings up the overlay also runs [Bootstrapping](./bootstrapping) on first boot: growing the partition table, creating the data partition, and initializing the substrate that state management lives on.
+
+## Selective Persistent State
+
+State that should persist through updates and reboots is declared in _state configuration_ files under `/etc/rugix/state`. For example, to persist the root user's home directory:
+
+```toml title="/etc/rugix/state/root-home.toml"
+#:schema https://raw.githubusercontent.com/rugix/rugix/refs/heads/main/schemas/rugix-ctrl-state.schema.json
+
+[[persist]]
+directory = "/root"
+```
+
+Rugix Ctrl bind-mounts `/root` to a backing directory on the data partition (in this case, `/run/rugix/state/persist/root`). `/run/rugix/state` is the managed state root: it survives updates and reboots, and applications can write directly to `/run/rugix/state/app` to keep their own data there without setting up an additional bind mount.
+
+:::tip
+When using Rugix Bakery, you can simply install state configuration files for your application with custom recipes.
+Have a look at the [`core/persist-root-home`](https://github.com/rugix/rugix-bakery/tree/main/container/repositories/core/recipes/persist-root-home) recipe as an example that installs the configuration stated above.
+:::
+
+Note that you can put multiple `[[persist]]` sections into a single file and also use a section with `file = "/path/to/file"` to persist a file instead of a directory.
+You will find the full schema for these configuration files below.
+
+### Factory Reset
+
+As the state is managed by Rugix Ctrl, a factory reset is simply done with:
+
+```shell
+rugix-ctrl state reset
+```
+
+This command will reboot the system and throw away any state replacing it with factory defaults.
+These factory defaults are taken from the system partition.
+Persisted directories and files are initially copied from the system partition, if they exist.
+
+## Overlay Configuration
+
+By default, the overlay is discarded to prevent accidental state from corrupting the system and to give you an early indication that not all necessary state is declared.
+You can, however, make the overlay persistent with the following configuration:
+
+```toml title="/etc/rugix/state.toml"
+#:schema https://raw.githubusercontent.com/rugix/rugix/refs/heads/main/schemas/rugix-ctrl-state.schema.json
+
+overlay = "persist"
+```
+
+:::danger
+Enabling persistency of the overlay, while convenient for certain use cases, requires careful consideration.
+Note that there is a separate overlay per boot group and that the overlay will be overwritten when an update is installed to the respective boot group.
+Indiscriminate persistency can easily lead to system corruption due to accidental state or data loss during updates.
+**We strongly recommend selectively persisting state as described above to avoid potential issues.**
+:::
+
+Note that a persistent overlay that may exist when an update is installed to a system is deleted prior to installing the update.
+To avoid the overlay from being discarded, use the `--keep-overlay` option when installing the update with `rugix-ctrl update`.
+Please be aware that this may lead to incompatibilities between the overlay and the freshly installed system.
+
+For **development or debugging purposes**, you can also force persistency of the overlay at runtime.
+To this end, run:
+
+```shell
+rugix-ctrl state overlay force-persist true
+```
+
+To disable forced persistence of the overlay, run:
+
+```shell
+rugix-ctrl state overlay force-persist false
+```
+
+Note that this will discard the overlay and thereby any modifications which have been made with persistency set to `true`.
+
+In addition to persisting the overlay, the `overlay` option can also be set to the following values:
+
+- `discard`: Discards the overlay on each boot (default setting).
+- `in-memory`: Puts the overlay in the main memory instead of on the data partition.
+- `disabled`: Disables the overlay completely.
+
+## Data Partition Driver
+
+:::danger
+The data partition driver is a **new, unstable feature**.
+**Do not deploy it to production.**
+Its configuration format is expected to change, including in breaking ways, in upcoming releases, and it is documented here as a preview only.
+:::
+
+By default, the data partition is a plain Ext4 filesystem that Rugix Ctrl creates during [bootstrapping](./bootstrapping) and mounts on every boot.
+A _data partition driver_ takes over that lifecycle and can extend it, most notably with at-rest encryption.
+A driver is responsible for three operations:
+
+- **Format:** initialize a fresh partition at bootstrap time, including any encryption layer and the filesystem.
+- **Mount:** make the partition available at its mount point on every boot.
+- **Wipe:** render the existing contents unrecoverable and leave a fresh, mountable partition. This is what an encrypting driver uses to back a [factory reset](#factory-reset): it rotates the master key so the old ciphertext can never be decrypted again, rather than overwriting the whole partition. The plain driver discards and reformats.
+
+The driver is part of the system configuration: it is set in the `driver` subsection of `data-partition` in `/etc/rugix/system.toml` (see [System Configuration](../updates/system-updates/system-configuration)), with the `type` setting selecting one of the following.
+
+### Plain Ext4
+
+`type = "plaintext-ext4"` is an unencrypted Ext4 filesystem, the same as the default when no driver is configured. Setting it explicitly lets you pass a filesystem `label` and `additional-options` for `mkfs`:
+
+```toml
+[data-partition.driver]
+type = "plaintext-ext4"
+label = "data"
+```
+
+### Passphrase Encryption
+
+`type = "luks2-passphrase"` is a LUKS2-encrypted Ext4 filesystem, unlocked with a passphrase read from `passphrase-file`:
+
+```toml
+[data-partition.driver]
+type = "luks2-passphrase"
+passphrase-file = "/etc/rugix/luks-data.key"
+label = "data-encrypted"
+mapper-name = "rugix-data"
+```
+
+:::danger
+This is **not** a stand-alone production encryption mode. If the passphrase file sits on the unencrypted root filesystem, anyone with physical access can read it straight off the flash and unlock the volume. It is meant for testing, or for passphrases delivered out of band that are never persisted on the device. For real at-rest encryption, bind the key to hardware with `luks2-tpm2`.
+:::
+
+### TPM 2.0 Encryption
+
+`type = "luks2-tpm2"` is a LUKS2-encrypted Ext4 filesystem whose key is sealed by a TPM 2.0 device, so no passphrase is ever stored on the device. When the partition is formatted, Rugix Ctrl enrolls the TPM and removes the temporary passphrase slot; on every boot, the TPM unseals the key directly from the LUKS2 header.
+
+```toml
+[data-partition.driver]
+type = "luks2-tpm2"
+device = "auto"
+pcrs = [7]
+label = "data-tpm"
+mapper-name = "rugix-data"
+```
+
+The `pcrs` setting selects which TPM Platform Configuration Registers the key is bound to. PCR 7 reflects the Secure Boot policy and stays stable across kernel, initramfs, and bootloader updates. Binding to more registers tightens the policy but requires re-sealing the key whenever a system update changes them.
+
+### Custom Driver
+
+`type = "custom"` delegates the lifecycle to your own scripts. A `mount-script` is required; `format-script` and `wipe-script` are optional:
+
+```toml
+[data-partition.driver]
+type = "custom"
+format-script = "/usr/lib/rugix/data-format"
+mount-script = "/usr/lib/rugix/data-mount"
+wipe-script = "/usr/lib/rugix/data-wipe"
+```
+
+The [system configuration reference](../updates/system-updates/system-configuration#configuration-reference) lists every option each driver accepts.
+
+## Disabling State Management
+
+If you do not want to use the state management feature, do not configure your system to run `rugix-ctrl` as the init system.
+To disable only the writable overlay, use the `disabled` setting as described above.
+
+:::note
+Disabling state management is currently not supported on systems built with Rugix Bakery for generic or specific targets.
+:::
+
+## Hooks
+
+[Hooks](../reference/hooks) let you run custom scripts around a factory reset. For factory resets, the stages of `state-reset` hooks are:
+
+- `prepare`: Runs before initiating the reset and rebooting the system.
+- `pre-reset`: Runs directly before the reset during boot, while it can still be aborted.
+- `post-reset`: Runs directly after the reset during boot.
+
+The `pre-reset` and `post-reset` stages run during boot, before the init system. For hooks running that early, you can assume the following environment:
+
+- `/` is mounted read-only to the respective root filesystem.
+- `/sys`, `/proc`, and `/dev` are mounted.
+- `/run` is mounted to a temporary, in-memory filesystem and is passed through to the final system. If you need to communicate something to processes that run after boot, place it in `/run`.
+
+In addition, the config partition is mounted read-only, usually at `/run/rugix/mounts/config`.
+
+## Configuration Reference
+
+Here is the complete schema for state configuration files:
+
+<SidexViewer ir={rugixCtrlIr} type="state.StateConfig" initialDepth={1} />
+
+The schema is defined in [`state.sidex`](https://github.com/rugix/rugix/blob/main/crates/apps/rugix-ctrl/schemas/state.sidex).

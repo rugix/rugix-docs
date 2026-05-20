@@ -186,21 +186,26 @@ export const getRugixDocsConfig = memoizeDocsConfig(
 );
 
 /**
- * Rugix Ctrl docs at `/docs/ctrl/`. The released `1.1` line is the
- * default and lives at `/docs/ctrl/`; the rolling `next` branch lives at
- * `/docs/ctrl/next/`.
+ * Rugix Ctrl docs at `/docs/ctrl/`. The released `1.2` line is the
+ * default and lives at `/docs/ctrl/`; the rolling `next` branch lives
+ * at `/docs/ctrl/next/`. The docs are organized around Rugix Ctrl's
+ * capabilities: a Get Started group (the Introduction page), the
+ * three capability sections (OTA Updates, Application Management,
+ * State Management), an Integration section (build systems, fleet
+ * management, migration), and a Reference section for cross-cutting
+ * material.
  */
 export const getCtrlDocsConfig = memoizeDocsConfig(
   async (): Promise<DocsConfig> => {
     const all = await getCollection("docs-ctrl");
     const versions = [
       {
-        slug: "1.1",
-        label: "1.1",
+        slug: "1.2",
+        label: "1.2",
         status: "current" as const,
         default: true,
         pathPrefix: "/docs/ctrl/",
-        editBaseUrl: `${REPO_EDIT_BASE}/docs-ctrl/1.1`,
+        editBaseUrl: `${REPO_EDIT_BASE}/docs-ctrl/1.2`,
       },
       {
         slug: "next",
@@ -212,36 +217,21 @@ export const getCtrlDocsConfig = memoizeDocsConfig(
     ];
     return {
       docSets,
-      versions: versions.map((v) => {
-        /*
-         * The `next` branch is organized around Rugix Ctrl's
-         * capabilities: a Get Started group (the Introduction page),
-         * the three capability sections (OTA Updates, Application
-         * Management, State Management), an Integration section
-         * (build systems, fleet management, migration), and a
-         * Reference section for cross-cutting material. The 1.1
-         * branch keeps its historical flat layout under a
-         * "Rugix Ctrl" root group.
-         */
-        const isNext = v.slug === "next";
-        return {
-          ...v,
-          nav: buildNav(all, {
-            prefix: `${v.slug}/`,
-            rootGroupTitle: isNext ? "Get Started" : "Rugix Ctrl",
-            groupOrder: isNext
-              ? [
-                "",
-                "updates",
-                "application-management",
-                "state-management",
-                "integration",
-                "reference",
-              ]
-              : undefined,
-          }),
-        };
-      }),
+      versions: versions.map((v) => ({
+        ...v,
+        nav: buildNav(all, {
+          prefix: `${v.slug}/`,
+          rootGroupTitle: "Get Started",
+          groupOrder: [
+            "",
+            "updates",
+            "application-management",
+            "state-management",
+            "integration",
+            "reference",
+          ],
+        }),
+      })),
     };
   },
 );

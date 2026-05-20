@@ -7,109 +7,61 @@ import sitemap from "@astrojs/sitemap";
 import { markdownConfig } from "@silitics/astro-theme/markdown";
 
 /*
- * Redirects for the Rugix Ctrl `next` docs. The `next` branch is
- * organized around Rugix Ctrl's capabilities: an Overview (the
- * introduction), the OTA Updates, Application Management, and
- * State Management sections, an Integration section (build systems,
- * fleet management, migration), and a Reference section. These
- * redirects keep older `next` URLs, including those from earlier
- * layouts, resolving to their current location.
- *
- * The released `1.1` branch keeps its historical layout and is not
- * affected.
+ * Redirects from the 1.1 flat layout (which lived at the same
+ * `/docs/ctrl/` root) to the 1.2 capability-based layout. Rugix Ctrl
+ * 1.2 is now the default at `/docs/ctrl/`, organized into OTA
+ * Updates, Application Management, State Management, Integration,
+ * and Reference sections.
  */
-const ctrlNextRedirects = {
-  // The docs root redirects to the introduction page.
-  "/docs/ctrl/next": "/docs/ctrl/next/introduction",
+const ctrlRedirects = {
+  // 1.1 root → introduction.
+  "/docs/ctrl": "/docs/ctrl/introduction",
 
-  // The Core Concepts page was dissolved: the bundle, delta, and
-  // signing concepts were inlined into the OTA Updates section, and
-  // hooks moved to the new Reference section.
-  "/docs/ctrl/next/core-concepts": "/docs/ctrl/next/updates/update-bundles",
-  "/docs/ctrl/next/update-bundles": "/docs/ctrl/next/updates/update-bundles",
-  "/docs/ctrl/next/delta-updates": "/docs/ctrl/next/updates/delta-updates",
-  "/docs/ctrl/next/signed-updates": "/docs/ctrl/next/updates/signed-updates",
-  "/docs/ctrl/next/hooks": "/docs/ctrl/next/reference/hooks",
+  // Cross-cutting concept pages now live under the OTA Updates and
+  // Reference sections.
+  "/docs/ctrl/delta-updates": "/docs/ctrl/updates/delta-updates",
+  "/docs/ctrl/signed-updates": "/docs/ctrl/updates/signed-updates",
+  "/docs/ctrl/over-the-air-updates": "/docs/ctrl/updates/system-updates/",
+  "/docs/ctrl/hooks": "/docs/ctrl/reference/hooks",
+  "/docs/ctrl/bootstrapping": "/docs/ctrl/state-management/bootstrapping",
 
-  // System updates moved into the OTA Updates section.
-  "/docs/ctrl/next/system-updates":
-    "/docs/ctrl/next/updates/system-updates/",
-  "/docs/ctrl/next/system-updates/boot-flows":
-    "/docs/ctrl/next/updates/system-updates/boot-flows",
-  "/docs/ctrl/next/system-updates/system-configuration":
-    "/docs/ctrl/next/updates/system-updates/system-configuration",
+  // Application Updates became Application Management.
+  "/docs/ctrl/application-updates": "/docs/ctrl/application-management/",
+  "/docs/ctrl/application-updates/reference":
+    "/docs/ctrl/application-management/internals",
+  "/docs/ctrl/application-updates/orchestrators":
+    "/docs/ctrl/application-management/orchestrators/",
+  "/docs/ctrl/application-updates/orchestrators/docker-compose":
+    "/docs/ctrl/application-management/orchestrators/docker-compose",
+  "/docs/ctrl/application-updates/orchestrators/binary":
+    "/docs/ctrl/application-management/orchestrators/binary",
+  "/docs/ctrl/application-updates/orchestrators/generic":
+    "/docs/ctrl/application-management/orchestrators/generic",
 
-  // Application Updates became the Application Management section.
-  "/docs/ctrl/next/application-updates":
-    "/docs/ctrl/next/application-management/",
-  "/docs/ctrl/next/application-updates/orchestrators":
-    "/docs/ctrl/next/application-management/orchestrators/",
-  "/docs/ctrl/next/application-updates/orchestrators/docker-compose":
-    "/docs/ctrl/next/application-management/orchestrators/docker-compose",
-  "/docs/ctrl/next/application-updates/orchestrators/binary":
-    "/docs/ctrl/next/application-management/orchestrators/binary",
-  "/docs/ctrl/next/application-updates/orchestrators/generic":
-    "/docs/ctrl/next/application-management/orchestrators/generic",
+  // Migration guides moved into the Integration section.
+  "/docs/ctrl/migrating": "/docs/ctrl/integration/migrating/",
+  "/docs/ctrl/migrating/from-rauc":
+    "/docs/ctrl/integration/migrating/from-rauc",
+  "/docs/ctrl/migrating/from-mender":
+    "/docs/ctrl/integration/migrating/from-mender",
 
-  // Build systems, fleet management, and migration moved into the
-  // Integration section.
-  "/docs/ctrl/next/build-systems":
-    "/docs/ctrl/next/integration/build-systems/",
-  "/docs/ctrl/next/build-systems/rugix-bakery":
-    "/docs/ctrl/next/integration/build-systems/rugix-bakery",
-  "/docs/ctrl/next/build-systems/yocto":
-    "/docs/ctrl/next/integration/build-systems/yocto",
-  "/docs/ctrl/next/build-systems/others":
-    "/docs/ctrl/next/integration/build-systems/others",
-  "/docs/ctrl/next/fleet-management":
-    "/docs/ctrl/next/integration/fleet-management/",
-  "/docs/ctrl/next/fleet-management/integrations":
-    "/docs/ctrl/next/integration/fleet-management/integrations",
-  "/docs/ctrl/next/migrating":
-    "/docs/ctrl/next/integration/migrating/",
-  "/docs/ctrl/next/migrating/from-rauc":
-    "/docs/ctrl/next/integration/migrating/from-rauc",
-  "/docs/ctrl/next/migrating/from-mender":
-    "/docs/ctrl/next/integration/migrating/from-mender",
+  // The `advanced/` bucket was dissolved; pages moved next to the
+  // capability they document.
+  "/docs/ctrl/advanced": "/docs/ctrl/introduction",
+  "/docs/ctrl/advanced/boot-flows":
+    "/docs/ctrl/updates/system-updates/boot-flows",
+  "/docs/ctrl/advanced/system-configuration":
+    "/docs/ctrl/updates/system-updates/system-configuration",
+  "/docs/ctrl/advanced/update-bundles": "/docs/ctrl/updates/update-bundles",
+  "/docs/ctrl/advanced/fleet-management":
+    "/docs/ctrl/integration/fleet-management/",
+  "/docs/ctrl/advanced/yocto-integration":
+    "/docs/ctrl/integration/build-systems/yocto",
 
-  // An earlier `reference/` section was dissolved; most pages moved
-  // next to the capability they document. The current Reference
-  // section holds only cross-cutting material such as hooks, and its
-  // own routes are real pages that need no redirects here.
-  "/docs/ctrl/next/reference/update-bundles":
-    "/docs/ctrl/next/updates/update-bundles",
-  "/docs/ctrl/next/reference/delta-updates":
-    "/docs/ctrl/next/updates/delta-updates",
-  "/docs/ctrl/next/reference/signed-updates":
-    "/docs/ctrl/next/updates/signed-updates",
-  "/docs/ctrl/next/reference/application-updates":
-    "/docs/ctrl/next/application-management/internals",
-  "/docs/ctrl/next/reference/filesystem-hierarchy":
-    "/docs/ctrl/next/state-management/filesystem-hierarchy",
-  "/docs/ctrl/next/reference/internals": "/docs/ctrl/next/introduction",
-
-  // Bootstrapping lives under State Management.
-  "/docs/ctrl/next/bootstrapping":
-    "/docs/ctrl/next/state-management/bootstrapping",
-
-  // Even older `over-the-air-updates`, `advanced/*`, and `internals/*`
-  // layout.
-  "/docs/ctrl/next/over-the-air-updates":
-    "/docs/ctrl/next/updates/system-updates/",
-  "/docs/ctrl/next/advanced": "/docs/ctrl/next/introduction",
-  "/docs/ctrl/next/advanced/boot-flows":
-    "/docs/ctrl/next/updates/system-updates/boot-flows",
-  "/docs/ctrl/next/advanced/system-configuration":
-    "/docs/ctrl/next/updates/system-updates/system-configuration",
-  "/docs/ctrl/next/advanced/update-bundles":
-    "/docs/ctrl/next/updates/update-bundles",
-  "/docs/ctrl/next/advanced/fleet-management":
-    "/docs/ctrl/next/integration/fleet-management/",
-  "/docs/ctrl/next/advanced/yocto-integration":
-    "/docs/ctrl/next/integration/build-systems/yocto",
-  "/docs/ctrl/next/internals": "/docs/ctrl/next/introduction",
-  "/docs/ctrl/next/internals/filesystem-hierarchy":
-    "/docs/ctrl/next/state-management/filesystem-hierarchy",
+  // `internals/` moved into State Management.
+  "/docs/ctrl/internals": "/docs/ctrl/introduction",
+  "/docs/ctrl/internals/filesystem-hierarchy":
+    "/docs/ctrl/state-management/filesystem-hierarchy",
 };
 
 export default defineConfig({
@@ -131,5 +83,5 @@ export default defineConfig({
   },
   integrations: [react(), mdx(), sitemap()],
   markdown: markdownConfig(),
-  redirects: ctrlNextRedirects,
+  redirects: ctrlRedirects,
 });

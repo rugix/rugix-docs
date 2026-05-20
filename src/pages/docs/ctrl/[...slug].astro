@@ -1,7 +1,6 @@
 ---
 /*
- * Rugix Ctrl default-version docs (1.1) at `/docs/ctrl/<slug>`. The
- * `next/[...slug].astro` sibling handles the rolling Next branch.
+ * Rugix Ctrl default-version docs (1.2) at `/docs/ctrl/<slug>`.
  */
 import { getCollection, render } from "astro:content";
 import { DocsLayout, titleize } from "@silitics/astro-docs";
@@ -17,9 +16,9 @@ export async function getStaticPaths() {
   const entries = await getCollection("docs-ctrl");
   return entries
     .filter((entry) => !entry.data.draft)
-    .filter((entry) => entry.id === "1.1" || entry.id.startsWith("1.1/"))
+    .filter((entry) => entry.id === "1.2" || entry.id.startsWith("1.2/"))
     .map((entry) => {
-      const slug = entry.id === "1.1" ? "" : entry.id.slice("1.1/".length);
+      const slug = entry.id === "1.2" ? "" : entry.id.slice("1.2/".length);
       return {
         params: { slug: slug || undefined },
         props: { entry, pageSlug: slug },
@@ -27,7 +26,7 @@ export async function getStaticPaths() {
     });
 }
 
-const DEFAULT_VERSION = "1.1";
+const DEFAULT_VERSION = "1.2";
 const { entry, pageSlug } = Astro.props;
 const docsConfig = await getCtrlDocsConfig();
 const { Content, headings } = await render(entry);
