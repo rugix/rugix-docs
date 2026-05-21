@@ -4,8 +4,8 @@
 
 # SBOM Generation
 
-Rugix Bakery will, by default, generate an [SPDX SBOM](https://spdx.dev/) for your system using information from the package manager.
-The SBOM is placed in the system output directory and is named `sbom.spdx.json`.
+Rugix Bakery will, by default, generate both an [SPDX](https://spdx.dev/) and a [CycloneDX](https://cyclonedx.org/) SBOM for your system using information from the package manager.
+The SBOMs are placed in the system output directory and are named `sbom.spdx.json` and `sbom.cdx.json`, respectively.
 An SBOM is a crucial centerpiece of a robust strategy to identify vulnerabilities in a product.
 You can use off-the-shelf vulnerability scanner and monitoring tools, such as [Grype](https://github.com/anchore/grype), to analyze the SBOMs of your system for vulnerabilities and then ship timely updates to all affected devices.
 

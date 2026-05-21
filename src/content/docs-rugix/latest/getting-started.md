@@ -9,10 +9,12 @@ For this guide, you will be using two of these tools: _Rugix Bakery_, a flexible
 While designed to work seamlessly together, you can also **use Rugix Ctrl without Rugix Bakery** and vice versa.
 
 With Rugix, our mission is clear: **Simplify the development of embedded Linux devices.**
-This quickstart guide will take you through the steps required to build a production-ready, customized variant of [Debian](https://www.debian.org) with over-the-air update support, which you can readily run on any EFI-compatible system or deploy on a Raspberry Pi.
+This quickstart guide will take you through the steps required to build a production-ready, customized variant of [Debian](https://www.debian.org)[^debian-base] with over-the-air update support, which you can readily run on any EFI-compatible system or deploy on a Raspberry Pi.
 You will also install an update to your system running in a VM or on a Raspberry Pi.
 End-to-end this guide should take less than 30 minutes to complete, even if you have no prior experience with embedded Linux.
 So, let's get started and unlock the potential of Rugix for your embedded projects!
+
+[^debian-base]: The Debian base is produced by the [`debian-bootstrap`](https://github.com/rugix/rugix-bakery/tree/main/container/repositories/core/recipes/debian-bootstrap) recipe, which yields a minimal Debian system. Device-specific setup (kernel, bootloader, etc.) is added by recipes such as [`rpi-debian-setup`](https://github.com/rugix/rugix-bakery/tree/main/container/repositories/core/recipes/rpi-debian-setup). Rugix Bakery intentionally installs only what a given use case requires, keeping images small and the attack surface low. To inspect exactly what ended up in a built image, look at the [SPDX and CycloneDX SBOMs](/docs/bakery/sbom-generation) that Rugix Bakery emits alongside each system.
 
 If you want to get started with Rugix Ctrl and Yocto instead of Rugix Bakery, check out [Rugix's Yocto layers](https://github.com/silitics/meta-rugix/tree/main).
 
@@ -55,12 +57,14 @@ This will allow you to build Linux distributions for a huge variety of different
 
 ## Initializing the Project
 
-Rugix Bakery comes with a set of project templates to help you get started quickly.
+Rugix Bakery comes with a set of project templates to help you get started quickly.[^browse-templates]
 You can list the available templates with:
 
 ```shell
 ./run-bakery init
 ```
+
+[^browse-templates]: You can also browse the templates on GitHub at [`rugix/rugix-bakery/container/templates`](https://github.com/rugix/rugix-bakery/tree/main/container/templates) without installing Rugix Bakery.
 
 For this guide, we are using the `quickstart-guide` template.
 To initialize the project with this template run:
@@ -74,8 +78,10 @@ The file `rugix-bakery.toml` is the _project configuration_ file.
 It contains a set of _system declarations_ for which you can build artifacts, like system images.
 The template specifies multiple systems as it gives you the option to build images for different devices.
 In addition, there are two directories `recipes` and `layers`.
-A _recipe_ describes additions and modifications that should be made to a system being build and a _layer_ combines multiple recipes.
+A _recipe_ describes additions and modifications that should be made to a system being build and a _layer_ combines multiple recipes.[^core-layers]
 Let's now make some changes and customize our Debian variant.
+
+[^core-layers]: The `customized` layer and the `customized-*` systems in this template live in your project (in `layers/` and `rugix-bakery.toml`) and are yours to define. Rugix Bakery itself ships a set of [core layers](https://github.com/rugix/rugix-bakery/tree/main/container/repositories/core/layers) and [core recipes](https://github.com/rugix/rugix-bakery/tree/main/container/repositories/core/recipes) you can build on top of.
 
 ## System Customization
 
