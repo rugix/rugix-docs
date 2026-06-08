@@ -23,6 +23,19 @@ export function slugFromEntry(entry: CollectionEntry<"blog">): string {
 }
 
 /**
+ * Converts a blog tag into the URL slug used by Docusaurus-style tag
+ * archive pages, e.g. `embedded linux` becomes `embedded-linux`.
+ */
+export function tagSlug(tag: string): string {
+  return tag.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+}
+
+/** Returns the public archive URL for a blog tag. */
+export function tagHref(tag: string): string {
+  return `/blog/tags/${tagSlug(tag)}`;
+}
+
+/**
  * The single hard-coded author for the ported rugix-docs blog. Keeps the
  * port self-contained without copying the upstream `authors.yml` file.
  */
