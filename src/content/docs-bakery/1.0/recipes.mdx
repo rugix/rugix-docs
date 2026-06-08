@@ -1,9 +1,8 @@
 ---
-
 ---
 
-import { SchemaViewer } from "@silitics/astro-schema-viewer";
-import RecipeSchema from "../../../schemas/rugix-bakery-recipe.schema.json";
+import { SchemaViewer } from "@silitics/astro-schema-viewer"
+import RecipeSchema from "../../../schemas/rugix-bakery-recipe.schema.json"
 
 # Recipes
 
@@ -40,7 +39,7 @@ parameter_name = { default = "a default value" }
 other_parameter = {}  # Required parameter without a default value.
 ```
 
-Parameter values are provided by layer configurations in the `parameters` section. For the details, we refer back to the [layers section](./layers) of this documentation. Layer configurations must provide values for all parameters that do not have a default.
+Parameter values are provided by layer configurations in the `parameters` section. For the details, we refer back to the [layers section](/docs/bakery/layers) of this documentation. Layer configurations must provide values for all parameters that do not have a default.
 
 Parameter values are exposed to a recipe's steps (see below) via environment variables of the form `RECIPE_PARAM_<PARAM_NAME>`. So, in case of our example, `RECIPE_PARAM_PARAMETER_NAME` and `RECIPE_PARAM_OTHER_PARAMETER`.
 
@@ -174,7 +173,7 @@ RUGIX_CONTEXT_DIR=".." RUGIX_BAKERY_IMAGE="custom-image" ./run-bakery
 ```
 
 As a result, the root directory of your repository will be available as the context directory (see environment variables above).
-For caching, you can rely on Rugix Bakery's [layer cache](./advanced/caching), rebuilding a layer only if certain files changed (which can be in the context directory).
+For caching, you can rely on Rugix Bakery's [layer cache](/docs/bakery/advanced/caching), rebuilding a layer only if certain files changed (which can be in the context directory).
 In addition, you can also use the global Rugix Bakery cache exposed via the `RUGIX_CACHE_DIR` environment variable.
 
 :::note
@@ -188,4 +187,5 @@ For now, however, we recommend you simply build your own version of the Rugix Ba
 For reference, here is the complete schema for recipe configuration files:
 
 <SchemaViewer schema={RecipeSchema} />
-You will find the most recent version of this schema [on GitHub](https://github.com/rugix/rugix-bakery/blob/main/schemas/rugix-bakery-recipe.schema.json).
+You will find the most recent version of this schema [on
+GitHub](https://github.com/rugix/rugix-bakery/blob/main/schemas/rugix-bakery-recipe.schema.json).

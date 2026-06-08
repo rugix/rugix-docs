@@ -17,7 +17,7 @@ import {
 export async function getStaticPaths() {
   const ARCHIVED = new Set(["0.8.14", "0.7.5", "0.6"]);
   const entries = await getCollection("docs-rugix");
-  return entries
+  const paths = entries
     .filter((entry) => !entry.data.draft)
     .map((entry) => {
       const segments = entry.id.split("/");
@@ -30,6 +30,16 @@ export async function getStaticPaths() {
       };
     })
     .filter((p): p is NonNullable<typeof p> => p !== null);
+  for (const version of ARCHIVED) {
+    const gettingStarted = entries.find((entry) => entry.id === `${version}/getting-started`);
+    if (gettingStarted !== undefined && !gettingStarted.data.draft) {
+      paths.push({
+        params: { version, slug: undefined },
+        props: { entry: gettingStarted, versionSlug: version, pageSlug: "" },
+      });
+    }
+  }
+  return paths;
 }
 
 const { entry, versionSlug, pageSlug } = Astro.props;

@@ -1,8 +1,7 @@
 ---
-
 ---
 
-import DeltaSavingsCalculator from "../../../../components/DeltaSavingsCalculator.tsx";
+import DeltaSavingsCalculator from "../../../../components/DeltaSavingsCalculator.tsx"
 
 # Delta Updates
 
@@ -29,7 +28,7 @@ rugix-ctrl slots create-index boot-a casync-64 sha512-256
 rugix-ctrl slots create-index system-a casync-64 sha512-256
 ```
 
-You can read more about block indices in the [advanced section on Update Bundles](./advanced/update-bundles).
+You can read more about block indices in the [advanced section on Update Bundles](/docs/0.8.14/ctrl/advanced/update-bundles).
 The update bundles built with Rugix Bakery use the parameters `casync-64` and `sha512-256` by default.
 If you want to use dynamic delta updates right now, just create the indices before installing the update bundle via HTTP.
 If the currently active system is A, then create an index for `system-a` and `boot-a`.
@@ -59,7 +58,7 @@ rugix-ctrl update install "$URL"
 
 ## Static Delta Updates
 
-Rugix's static delta updates require the pre-computation of explicit *patches* to go from the old version to the new version. This is done with Rugix Bundler's `delta` subcommand, which takes the old and the new update bundle and computes a patch bundle:
+Rugix's static delta updates require the pre-computation of explicit _patches_ to go from the old version to the new version. This is done with Rugix Bundler's `delta` subcommand, which takes the old and the new update bundle and computes a patch bundle:
 
 ```shell
 rugix-bundler delta <old> <new> <patch>
@@ -79,7 +78,6 @@ You can either track versions yourself (outside Rugix) to target updates for spe
 
 Static delta updates currently only work after the first update has been installed, as this is when the slot database is populated. There is currently no build-in way to initialize the slot database prior to the first update.
 
-
 ## Update Simulator
 
 In case you are wondering what the impact of delta updates would be on your specific update scenarios, you can use the update simulator build into Rugix Bundler to estimate the efficiency of different delta update techniques. For details about the different techniques, we refer to our [blog post on Efficient Delta Updates](/blog/efficient-delta-updates). The simulator is available through the subcommand:
@@ -87,7 +85,6 @@ In case you are wondering what the impact of delta updates would be on your spec
 ```shell
 rugix-bundler simulator
 ```
-
 
 ## Cost Savings Calculator
 

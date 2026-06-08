@@ -1,5 +1,4 @@
 ---
-
 ---
 
 # Rugix Bakery
@@ -17,7 +16,7 @@ While inherently flexible and not tied to any specific distribution, Rugix Baker
 
 Typically, Rugix Bakery is used to build _full system images_ and Rugix Ctrl _update bundles_ for OTA system updates.
 System images generally contain a complete Linux root filesystem, a Linux kernel, and other, additional files required for booting a system.
-For [supported devices](./devices/index), Rugix Bakery can build bootable images that are ready to be flashed onto a device out of the box.
+For [supported devices](/docs/bakery/devices/), Rugix Bakery can build bootable images that are ready to be flashed onto a device out of the box.
 
 Rugix Bakery allows you to define multiple _systems_ in a single _project_.
 You can share build configurations between systems and build different _build artifacts_, such as system images, update bundles, individual filesystems, documentation, and a _software bill of materials_ (SBOM) for each system.
@@ -75,7 +74,6 @@ While Rugix Bakery can be used to build applications from source as part of the 
 It is completely fine to use Rugix Bakery as a final phase of a larger build pipeline, building binaries and other parts of your application with external tools and then injecting them into a Rugix Bakery build.
 That being said, you can write recipes and build your entire application from source to image with Rugix Bakery.
 
-
 ## Setup and Installation
 
 Rugix Bakery is distributed as a Docker image (for `arm64` and `amd64`), ensuring a reproducible build environment that includes all the required tools and libraries.
@@ -92,7 +90,7 @@ To start a fresh project, create an empty directory and then run:
 
 ```shell
 curl -sfSO https://raw.githubusercontent.com/rugix/rugix/v0.8/bakery/run-bakery && chmod +x ./run-bakery
-````
+```
 
 This command will download the `run-bakery` shell script from Rugix's GitHub repository and make it executable.
 You can then run Rugix Bakery with `./run-bakery`.
@@ -230,5 +228,5 @@ This does not mean that we don't believe in reusing existing technologies, but i
 That being said, we think that Rugix Bakery leads to a smoother development experience, especially when paired with Rugix Ctrl, than using Edi – but, that may very well be down to personal preference and familiarity with Ansible.
 If you prefer hard technical facts instead, here you are:
 While Rugix Bakery can spawn your system in a VM with a single command and even run automated system tests on it, Edi can build containers, a feature which we currently lack.
-Edi's reference support for over-the-air updates reuses the Mender client [which lacks certain features, like dynamic delta updates, that you may want and get with Rugix Ctrl](/docs/ctrl/#comparison-to-other-solutions) and its integration in Rugix Bakery.
+Edi's reference support for over-the-air updates reuses the Mender client [which lacks certain features, like dynamic delta updates, that you may want and get with Rugix Ctrl](/blog/2026-02-28-ota-update-engines-compared) and its integration in Rugix Bakery.
 Edi is also limited to Debian, while Rugix Bakery is independent of any specific distribution and also supports Alpine Linux and Raspberry Pi OS.

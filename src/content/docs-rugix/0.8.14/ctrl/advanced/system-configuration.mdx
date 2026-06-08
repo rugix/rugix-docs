@@ -1,9 +1,8 @@
 ---
-
 ---
 
-import { SchemaViewer } from "@silitics/astro-schema-viewer";
-import ConfigSchema from "../../../../../schemas/rugix-ctrl-system.schema.json";
+import { SchemaViewer } from "@silitics/astro-schema-viewer"
+import ConfigSchema from "../../../../../schemas/rugix-ctrl-system.schema.json"
 
 # System Configuration
 
@@ -129,7 +128,7 @@ Here is an example to extract a Tar archive to a specific directory:
 handler = ["tar", "xf", "-", "-C", "/run/rugix/mounts/data/app/my-app-data"]
 ```
 
-Note that custom slots are incompatible with block deduplication of the update payload (see [Update Bundles](./update-bundles)).
+Note that custom slots are incompatible with block deduplication of the update payload (see [Update Bundles](/docs/0.8.14/ctrl/advanced/update-bundles)).
 
 ## Boot Groups
 
@@ -168,7 +167,7 @@ Currently, Rugix supports the following boot flow types:
 - `tryboot`: Uses [Raspberry Pi's `tryboot` Mechanism](https://www.raspberrypi.com/documentation/computers/config_txt.html#example-update-flow-for-ab-booting) (A/B setups only).
 - `custom`: Flexible integration based on an external script/program.
 
-For further details on boot flows, we refer to the [Boot Flows](./boot-flows) section.
+For further details on boot flows, we refer to the [Boot Flows](/docs/0.8.14/ctrl/advanced/boot-flows) section.
 
 ## Configuration Reference
 

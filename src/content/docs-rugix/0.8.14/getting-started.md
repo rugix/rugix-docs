@@ -1,5 +1,4 @@
 ---
-
 ---
 
 # Getting Started 🚀
@@ -100,7 +99,7 @@ Congratulations! You made your first customizations. 🎉
 :::note[Info]
 As you may have noticed by now, Rugix Bakery adopts a declarative approach: You declaratively define the system you want to build by combining recipes to layers and configuring them based on your needs and requirements.
 If you are able to write a `Dockerfile` for your application or configure a system with a shell, you should find it easy to write custom recipes for your application.
-For further details, [check out the documentation on Rugix Bakery](./bakery/).
+For further details, [check out the documentation on Rugix Bakery](/docs/0.8.14/bakery/).
 :::
 
 ## Building an Image
@@ -214,7 +213,7 @@ rugix-ctrl system commit
 
 The update is now complete!
 
-For further details regarding the update process, [check out Rugix Ctrl's documentation](./ctrl/).
+For further details regarding the update process, [check out Rugix Ctrl's documentation](/docs/0.8.14/ctrl/).
 
 ## Conclusion
 
@@ -223,8 +222,8 @@ You have successfully set up Rugix Bakery, customized your Debian-based system, 
 Rugix is designed to simplify the development of embedded Linux devices, making it easier for you to innovate and deploy reliable systems.
 
 While this guide has covered the basics, there's more to learn and explore.
-We encourage you to dive deeper into both [Rugix Bakery's](./bakery/) and [Rugix Ctrl's documentation](./ctrl/) to discover additional functionalities and best practices.
-In particular, you should read the section on [State Management](./ctrl/state-management) to understand why any changes that you make to a running system may be lost after a reboot.[^state-management]
+We encourage you to dive deeper into both [Rugix Bakery's](/docs/0.8.14/bakery/) and [Rugix Ctrl's documentation](/docs/0.8.14/ctrl/) to discover additional functionalities and best practices.
+In particular, you should read the section on [State Management](/docs/0.8.14/ctrl/state-management) to understand why any changes that you make to a running system may be lost after a reboot.[^state-management]
 
 [^state-management]: This may be surprising at first, but we consider it a feature that with Rugix the systems you build will typically be immutable and you have to be explicit about the state of the system you want to persist through updates and reboots.
 
@@ -235,5 +234,5 @@ Happy building! 🚀
 As a next step, you can follow the [Nexigon quickstart guide for Rugix](https://docs.nexigon.dev/rugix/getting-started?utm_source=rugix.org&utm_campaign=rugix-quickstart-guide) to onboard your device and connect it to Nexigon.
 Nexigon is developed by the creators of Rugix as a complementary commercial offering to support the development and maintenance of Rugix as an open-source project.
 Neither Nexigon nor Rugix are bound to each other and you can use Nexigon without Rugix or vice versa.
-**Rugix [supports a variety of fleet management solutions](./ctrl/advanced/fleet-management) and gives you the freedom to choose the one that best fits your needs.**
+**Rugix [supports a variety of fleet management solutions](/docs/0.8.14/ctrl/advanced/fleet-management) and gives you the freedom to choose the one that best fits your needs.**
 :::

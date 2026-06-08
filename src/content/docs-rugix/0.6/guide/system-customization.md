@@ -1,5 +1,4 @@
 ---
-
 ---
 
 # System Customization
@@ -48,7 +47,7 @@ Among other things, this enables semantic versioning of recipes and layers.
 
 A recipe describes modifications to be done to the system.
 Rugpi Bakery comes with a set of [core recipes](https://github.com/rugix/rugix/tree/main/repositories/core/recipes) which you can use.
-Additional guides and recipes for reoccurring problems are also described in the [Rugpi Cookbook](../cookbook).
+Additional guides and recipes for reoccurring problems are also described in the [Rugpi Cookbook](/docs/0.6/cookbook).
 
 Each recipe has its own directory with a `recipe.toml` configuration file.
 Recipes may have a `description`, a `priority`, and `dependencies`.

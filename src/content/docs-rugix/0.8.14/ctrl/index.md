@@ -48,7 +48,7 @@ Update bundles contain the actual data required to install an update, like files
 You find pre-built binaries of these tools on [the Releases page of Rugix's Git repository](https://github.com/rugix/rugix/releases/).
 
 :::tip
-The easiest way to use Rugix Ctrl is with [Rugix Bakery](../bakery/index), a flexible and user-friendly build system for bespoke Linux distributions developed by the Rugix Project.
+The easiest way to use Rugix Ctrl is with [Rugix Bakery](/docs/0.8.14/bakery/), a flexible and user-friendly build system for bespoke Linux distributions developed by the Rugix Project.
 With Rugix Bakery, it is straightforward to integrate Rugix Ctrl into your system.
 Furthermore, Rugix Bakery also includes `rugix-bundler` and can directly create update bundles for Rugix Ctrl.
 :::

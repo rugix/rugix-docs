@@ -7,7 +7,7 @@
 Mender supports two bootloaders, U-Boot and GRUB.
 Rugix Ctrl implements two Mender-compatible boot flows, `mender-uboot` and `mender-grub`, which are compatible with Mender's U-Boot and GRUB integration, respectively.
 
-Migrating from Mender to Rugix Ctrl requires a custom [system configuration file](../advanced/system-configuration) which specifies the correct Mender-compatible boot flow, boot groups, and slots.
+Migrating from Mender to Rugix Ctrl requires a custom [system configuration file](/docs/0.8.14/ctrl/advanced/system-configuration) which specifies the correct Mender-compatible boot flow, boot groups, and slots.
 Here is an example for GRUB with the default Mender boot partitions:
 
 ```toml title="/etc/rugix/system.toml"
@@ -35,7 +35,7 @@ partition = 3
 ```
 
 This is all that is required to enable Rugix Ctrl to take over update installation from Mender.
-Any custom integrations such as state scripts need to be adapted to work with Rugix Ctrl, e.g., by using [hooks](../hooks).
+Any custom integrations such as state scripts need to be adapted to work with Rugix Ctrl, e.g., by using [hooks](/docs/0.8.14/ctrl/hooks).
 Furthermore, if you want to use Rugix's state management functionality, there needs to be a migration of the data partition to the structure required by Rugix. In this case, you also need to set `boot-dir` to `/run/mounts/rugix/config`, as this is where Rugix's state management functionality will mount the config partition (first partition) with the Grub environment files to.
 The required configuration options for `mender-uboot` are analogous.
 

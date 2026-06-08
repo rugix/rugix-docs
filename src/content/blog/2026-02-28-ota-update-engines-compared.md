@@ -23,7 +23,7 @@ We consider the following open-source update engines, which we believe to be the
 
 While there are other approaches, such as [Ubuntu Core's Snap-based updates](https://web.archive.org/web/20260219060617/https://ubuntu.com/core), [Balena's vertically-integrated container-based OS](https://web.archive.org/web/20260222082546/https://www.balena.io/), or [Foundries.io's `aktualizr-lite`](https://github.com/foundriesio/aktualizr-lite), those are bound to their own specific ecosystems. In contrast, the tools we look at can all be used more or less independently without adopting a specific ecosystem.
 
-We also limit our scope to the on-device update engine itself, i.e., the software that installs updates, verifies integrity, and manages rollback. There is a recent trend where vendors couple their update engine to a specific fleet management backend, creating a lock-in effect. Given the long lifetime of embedded devices, [we believe it's important to cleanly decouple those layers](./2026-02-16-vendor-lock-in). That said, we will discuss how flexibly each engine integrates with _different_ backends, including custom distribution infrastructure.
+We also limit our scope to the on-device update engine itself, i.e., the software that installs updates, verifies integrity, and manages rollback. There is a recent trend where vendors couple their update engine to a specific fleet management backend, creating a lock-in effect. Given the long lifetime of embedded devices, [we believe it's important to cleanly decouple those layers](/blog/vendor-lock-in-in-embedded-linux). That said, we will discuss how flexibly each engine integrates with _different_ backends, including custom distribution infrastructure.
 
 We compare these engines along several dimensions: update strategy support, bootloader support, delta updates, security, and update delivery and backend integration.
 
@@ -137,7 +137,7 @@ RAUC and Mender both implement their own ways of interfacing with GRUB and U-Boo
 \* Requires integration with external tools (Zchunk, Casync, rdiff).<br/>
 \*\* Only available in commercial versions.
 
-Delta updates are critical for bandwidth-constrained deployments and devices on metered connections. We published a [comprehensive study of different delta update techniques with reproducible benchmarks](./2025-07-15-efficient-delta-updates) in an earlier article. We refer to this article for an in-depth comparison and only provide a summary here.
+Delta updates are critical for bandwidth-constrained deployments and devices on metered connections. We published a [comprehensive study of different delta update techniques with reproducible benchmarks](/blog/efficient-delta-updates) in an earlier article. We refer to this article for an in-depth comparison and only provide a summary here.
 
 - **Mender** supports delta compression via Xdelta but only in its commercial tiers, making it unavailable for open-source users.
 - **RAUC** provides native block-based diffing through its [adaptive update mechanism](https://rauc.readthedocs.io/en/latest/advanced.html#adaptive-updates) using a fixed block size of 4 KiB. Content-defined chunking is available through Casync integration but requires an external tool and setup effort.
@@ -145,7 +145,7 @@ Delta updates are critical for bandwidth-constrained deployments and devices on 
 - **OSTree** supports file-level diffing natively for dynamic pulls and pre-computed static deltas for offline scenarios. Its file-level granularity avoids the "noise" inherent in block-level diffing of filesystem images, where minor changes to file metadata or layout can cause large portions of the image to differ at the block level.
 - **Rugix Ctrl** is the only tool that natively supports both dynamic block-based diffing with content-defined chunking and static delta compression (via Xdelta). Content-defined chunking is particularly valuable because it handles insertions and layout shifts more gracefully than fixed-size block diffing, producing smaller deltas across a wider range of update scenarios.
 
-As [our benchmarks on two years of real updates according to different cadences](./2025-07-15-efficient-delta-updates) have shown, Rugix Ctrl's delta update support is best-in-class across the board.[^rugix-delta-bias] Its dynamic delta updates outperform RAUC's adaptive updates due to the use of content-defined chunking and the low overhead as the same block index is used for cryptographic verification and delta updates. RAUC via Casync and SWUpdate via Casync or Zchunk can provide similar results as Rugix Ctrl for dynamic delta updates but require additional integration work.
+As [our benchmarks on two years of real updates according to different cadences](/blog/efficient-delta-updates) have shown, Rugix Ctrl's delta update support is best-in-class across the board.[^rugix-delta-bias] Its dynamic delta updates outperform RAUC's adaptive updates due to the use of content-defined chunking and the low overhead as the same block index is used for cryptographic verification and delta updates. RAUC via Casync and SWUpdate via Casync or Zchunk can provide similar results as Rugix Ctrl for dynamic delta updates but require additional integration work.
 
 [^systemd-boot-update]: Added March 2026 (Rugix 1.1).
 

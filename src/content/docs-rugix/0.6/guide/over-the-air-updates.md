@@ -1,27 +1,25 @@
 ---
-
 ---
 
 # Over-the-Air Updates
 
-Rugpi supports robust *over-the-air* (OTA) updates with rollback support to the previous version.
+Rugpi supports robust _over-the-air_ (OTA) updates with rollback support to the previous version.
 OTA updates comprise the full system including firmware files and the boot configuration.
 Rugpi uses an A/B approach ensuring that a working copy of the previous version is always kept.
 This approach drastically reduces the likelihood of bricking devices in the field due to corrupted software caused by a failed or incomplete update, thereby reducing any related support effort.
 In addition, it has the following advantages:
 
 - OTA updates can almost completely run in the background, without adversely affecting any users of a device.
-The only service interruption is caused, when the device reboots into the new version.
-Rebooting to finalize an update can happen at the discretion of users and, if all goes well, does not take longer than any normal reboot, minimizing any inconveniences.
+  The only service interruption is caused, when the device reboots into the new version.
+  Rebooting to finalize an update can happen at the discretion of users and, if all goes well, does not take longer than any normal reboot, minimizing any inconveniences.
 - As the previous version is kept, a rollback to the old version is possible if users experience any problems with the new version.[^1]
 
 [^1]: This requires application support.
 
-
 ### A/B Update Scheme
 
 The A/B update scheme uses two sets of system and boot partitions, the A set and the B set.
-We call the currently booted set *hot set* and to the other *cold set*.
+We call the currently booted set _hot set_ and to the other _cold set_.
 The usual partition layout of a Rugpi installation comprises seven partitions:
 
 - Partition 1: Contains the bootloader configuration for switching between the A and B set.
@@ -30,10 +28,10 @@ The usual partition layout of a Rugpi installation comprises seven partitions:
 - Partition 4: The extended MBR for the additional partitions.
 - Partition 5: The root partition of the A set.
 - Partition 6: The root partition of the B set.
-- Partition 7: Contains any persistent state (see [State Management](./state-management)).
+- Partition 7: Contains any persistent state (see [State Management](/docs/0.6/guide/state-management)).
 
 The bootloader configuration specifies the default set of partitions.
-We call the other, non-default set, the *spare set*.
+We call the other, non-default set, the _spare set_.
 An update is only possible if the hot set is also the default set.
 That way, if anything goes wrong while installing the update, the system will boot into the previous known-good version by default.
 The Rugpi update mechanism installs the update to the cold spare set of partitions.
@@ -61,7 +59,7 @@ When using the `--no-reboot` flag, a reboot to the cold spare can later be trigg
 rugpi-ctrl system reboot --spare
 ```
 
-Note that a persistent overlay that may exist for the spare partition is deleted prior to installing the update  (see [State Management](./state-management)).
+Note that a persistent overlay that may exist for the spare partition is deleted prior to installing the update (see [State Management](/docs/0.6/guide/state-management)).
 To avoid the overlay from being discarded, use the `--keep-overlay` option when installing the update.
 Please be aware that this may lead to incompatibilities between the overlay and the freshly installed system.
 
@@ -82,7 +80,6 @@ wget -q -t 0 -O - <url to the image> | rugpi-ctrl update install -
 ```
 
 to retry downloading indefinitely. For further details, we refer to the manpage of `wget`.
-
 
 Streaming an image is faster because the data only has to be written to the SD card once.
 Furthermore, it has the advantage that the image does not take up precious space on the data partition during the installation.

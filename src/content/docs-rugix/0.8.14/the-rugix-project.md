@@ -1,5 +1,4 @@
 ---
-
 ---
 
 # The Rugix Project
@@ -21,5 +20,5 @@ If you want to learn more about the story and business case behind Rugix, please
 
 For a comparison of Rugix's tools to other solutions, check out the documentation of the respective tool:
 
-- [Rugix Ctrl: Comparison to Other Solutions](./ctrl/index#comparison-to-other-solutions)
-- [Rugix Bakery: Comparison to Other Solutions](./bakery/index#comparison-to-other-solutions)
+- [Rugix Ctrl: Comparison to Other Solutions](/docs/0.8.14/ctrl#comparison-to-other-solutions)
+- [Rugix Bakery: Comparison to Other Solutions](/docs/0.8.14/bakery#comparison-to-other-solutions)

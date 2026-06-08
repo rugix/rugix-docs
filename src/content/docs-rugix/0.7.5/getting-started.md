@@ -1,5 +1,4 @@
 ---
-
 ---
 
 # Getting Started 🚀
@@ -10,8 +9,7 @@ This image will contain Rugpi Ctrl for managing a system's state and for install
 
 You can build images locally or with a CI/CD system like GitHub Actions.
 Here, we go through the process of building images locally.
-For details about running Rugpi Bakery with a CI/CD system, checkout the [user guide's section on CI/CD Integration](./guide/ci-cd-integration).
-
+For details about running Rugpi Bakery with a CI/CD system, checkout the [user guide's section on CI/CD Integration](/docs/0.7.5/guide/ci-cd-integration).
 
 ## Setup and Installation
 
@@ -47,7 +45,6 @@ docker run --privileged --rm tonistiigi/binfmt --install all
 
 This will allow you to build images for a huge variety of different architectures.
 
-
 ## Initializing the Project
 
 To build an image, you first need to create a few configurations files in the project directory.
@@ -78,8 +75,7 @@ Instead, if you want a Debian image bootable on any EFI-compatible system, use t
 
 Note that a project is not limited to a specific device or family of devices.
 By configuring Rugpi Bakery appropriately, you can also build images based on Raspberry Pi OS and Debian, all while sharing parts of the build process.
-Such setups are, however, beyond the scope of this quick start guide and we refer to the [user guide's section on System Customization](./guide/system-customization) for details.
-
+Such setups are, however, beyond the scope of this quick start guide and we refer to the [user guide's section on System Customization](/docs/0.7.5/guide/system-customization) for details.
 
 ## Building an Image
 
@@ -121,4 +117,4 @@ For instance, it will typically automatically repartition the storage medium and
 
 Feel free to explore the template and modify it according to your needs. 🚀
 
-To learn how to apply your own customizations, continue reading the [user guide](./guide).
+To learn how to apply your own customizations, continue reading the [user guide](/docs/0.7.5/guide).

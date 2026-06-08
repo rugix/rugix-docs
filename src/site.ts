@@ -1,14 +1,24 @@
-import "./styles/site.css";
+import "./styles/site.css"
 
-import { getCollection } from "astro:content";
-import type { Brand, NavItem, FooterColumn, SocialLink } from "@silitics/astro-theme";
-import type { DocsConfig, DocSet } from "@silitics/astro-docs";
-import { buildNav, memoizeDocsConfig } from "@silitics/astro-docs";
+import { getCollection } from "astro:content"
+import type {
+  Brand,
+  NavItem,
+  FooterColumn,
+  SocialLink,
+} from "@silitics/astro-theme"
+import type {
+  DocsConfig,
+  DocSet,
+  DocsNavGroup,
+  DocsNavLink,
+} from "@silitics/astro-docs"
+import { buildNav, memoizeDocsConfig } from "@silitics/astro-docs"
 import {
   faGithub,
   faDiscord,
   faDiscourse,
-} from "@fortawesome/free-brands-svg-icons";
+} from "@fortawesome/free-brands-svg-icons"
 
 export const brand: Brand = {
   name: "Rugix",
@@ -28,7 +38,7 @@ export const brand: Brand = {
     tone: "success",
     dismissible: true,
   },
-};
+}
 
 export const nav: NavItem[] = [
   {
@@ -42,7 +52,7 @@ export const nav: NavItem[] = [
   { label: "Blog", href: "/blog" },
   { label: "Fleet Management", href: "/fleet-management" },
   { label: "Cyber Resilience Act", href: "/cyber-resilience-act" },
-];
+]
 
 export const headerActions: NavItem[] = [
   {
@@ -51,7 +61,7 @@ export const headerActions: NavItem[] = [
     external: true,
     icon: faGithub,
   },
-];
+]
 
 export const footerColumns: FooterColumn[] = [
   {
@@ -66,9 +76,21 @@ export const footerColumns: FooterColumn[] = [
     title: "Community",
     links: [
       { label: "Blog", href: "/blog" },
-      { label: "GitHub", href: "https://github.com/rugix/rugix", external: true },
-      { label: "Discord", href: "https://discord.gg/cZ8wP9jNsn", external: true },
-      { label: "Discourse", href: "https://community.silitics.com/", external: true },
+      {
+        label: "GitHub",
+        href: "https://github.com/rugix/rugix",
+        external: true,
+      },
+      {
+        label: "Discord",
+        href: "https://discord.gg/cZ8wP9jNsn",
+        external: true,
+      },
+      {
+        label: "Discourse",
+        href: "https://community.silitics.com/",
+        external: true,
+      },
     ],
   },
   {
@@ -83,22 +105,34 @@ export const footerColumns: FooterColumn[] = [
   {
     title: "Legal",
     links: [
-      { label: "Privacy Policy", href: "https://silitics.com/privacy-policy", external: true },
+      {
+        label: "Privacy Policy",
+        href: "https://silitics.com/privacy-policy",
+        external: true,
+      },
       {
         label: "Security Policy",
         href: "https://github.com/rugix/rugix/blob/main/SECURITY.md",
         external: true,
       },
-      { label: "Imprint", href: "https://silitics.com/impressum", external: true },
+      {
+        label: "Imprint",
+        href: "https://silitics.com/impressum",
+        external: true,
+      },
     ],
   },
-];
+]
 
 export const socials: SocialLink[] = [
   { label: "GitHub", href: "https://github.com/rugix/rugix", icon: faGithub },
   { label: "Discord", href: "https://discord.gg/cZ8wP9jNsn", icon: faDiscord },
-  { label: "Discourse", href: "https://community.silitics.com/", icon: faDiscourse },
-];
+  {
+    label: "Discourse",
+    href: "https://community.silitics.com/",
+    icon: faDiscourse,
+  },
+]
 
 /*
  * Edit-this-page URLs point at this repo's `src/content/<collection>/
@@ -107,7 +141,7 @@ export const socials: SocialLink[] = [
  * `<pageSlug>.<ext>`.
  */
 const REPO_EDIT_BASE =
-  "https://github.com/rugix/rugix-docs/edit/main/src/content";
+  "https://github.com/rugix/rugix-docs/edit/main/src/content"
 
 /*
  * Peer doc sets surfaced as a pill row at the top of every docs
@@ -125,7 +159,7 @@ const docSets: DocSet[] = [
   { label: "General", href: "/docs/getting-started", basePath: "/docs/" },
   { label: "Rugix Ctrl", href: "/docs/ctrl/" },
   { label: "Rugix Bakery", href: "/docs/bakery/" },
-];
+]
 
 /**
  * Umbrella Rugix docs at `/docs/`. The default version (`latest`) is
@@ -135,7 +169,7 @@ const docSets: DocSet[] = [
  */
 export const getRugixDocsConfig = memoizeDocsConfig(
   async (): Promise<DocsConfig> => {
-    const all = await getCollection("docs-rugix");
+    const all = await getCollection("docs-rugix")
     const versions = [
       {
         slug: "latest",
@@ -166,7 +200,7 @@ export const getRugixDocsConfig = memoizeDocsConfig(
         pathPrefix: "/docs/0.6/",
         editBaseUrl: `${REPO_EDIT_BASE}/docs-rugix/0.6`,
       },
-    ];
+    ]
     return {
       docSets,
       versions: versions.map((v) => ({
@@ -181,9 +215,9 @@ export const getRugixDocsConfig = memoizeDocsConfig(
           rootGroupTitle: "Essentials",
         }),
       })),
-    };
+    }
   },
-);
+)
 
 /**
  * Rugix Ctrl docs at `/docs/ctrl/`. The released `1.2` line is the
@@ -197,7 +231,7 @@ export const getRugixDocsConfig = memoizeDocsConfig(
  */
 export const getCtrlDocsConfig = memoizeDocsConfig(
   async (): Promise<DocsConfig> => {
-    const all = await getCollection("docs-ctrl");
+    const all = await getCollection("docs-ctrl")
     const versions = [
       {
         slug: "1.2",
@@ -214,34 +248,38 @@ export const getCtrlDocsConfig = memoizeDocsConfig(
         pathPrefix: "/docs/ctrl/next/",
         editBaseUrl: `${REPO_EDIT_BASE}/docs-ctrl/next`,
       },
-    ];
+    ]
     return {
       docSets,
       versions: versions.map((v) => ({
         ...v,
-        nav: buildNav(all, {
-          prefix: `${v.slug}/`,
-          rootGroupTitle: "Get Started",
-          groupOrder: [
-            "",
-            "updates",
-            "application-management",
-            "state-management",
-            "integration",
-            "reference",
-          ],
-        }),
+        nav: withHrefForSlug(
+          buildNav(all, {
+            prefix: `${v.slug}/`,
+            rootGroupTitle: "Get Started",
+            groupOrder: [
+              "",
+              "updates",
+              "application-management",
+              "state-management",
+              "integration",
+              "reference",
+            ],
+          }),
+          "introduction",
+          v.pathPrefix,
+        ),
       })),
-    };
+    }
   },
-);
+)
 
 /**
  * Rugix Bakery docs at `/docs/bakery/`. Mirrors the Ctrl layout.
  */
 export const getBakeryDocsConfig = memoizeDocsConfig(
   async (): Promise<DocsConfig> => {
-    const all = await getCollection("docs-bakery");
+    const all = await getCollection("docs-bakery")
     const versions = [
       {
         slug: "1.0",
@@ -258,16 +296,57 @@ export const getBakeryDocsConfig = memoizeDocsConfig(
         pathPrefix: "/docs/bakery/next/",
         editBaseUrl: `${REPO_EDIT_BASE}/docs-bakery/next`,
       },
-    ];
+    ]
     return {
       docSets,
       versions: versions.map((v) => ({
         ...v,
-        nav: buildNav(all, {
-          prefix: `${v.slug}/`,
-          rootGroupTitle: "Rugix Bakery",
-        }),
+        nav: withRootLink(
+          buildNav(all, {
+            prefix: `${v.slug}/`,
+            rootGroupTitle: "Rugix Bakery",
+          }),
+          "Rugix Bakery",
+          { title: "Introduction", slug: "introduction", href: v.pathPrefix },
+        ),
       })),
-    };
+    }
   },
-);
+)
+
+function withRootLink(
+  nav: DocsNavGroup[],
+  groupTitle: string,
+  link: DocsNavLink,
+): DocsNavGroup[] {
+  const [first, ...rest] = nav
+  if (first?.title === groupTitle) {
+    return [{ ...first, links: [link, ...first.links] }, ...rest]
+  }
+  return [{ title: groupTitle, links: [link] }, ...nav]
+}
+
+function withHrefForSlug(
+  nav: DocsNavGroup[],
+  slug: string,
+  href: string,
+): DocsNavGroup[] {
+  return nav.map((group) => ({
+    ...group,
+    links: group.links.map((link) => withHrefForSlugInLink(link, slug, href)),
+  }))
+}
+
+function withHrefForSlugInLink(
+  link: DocsNavLink,
+  slug: string,
+  href: string,
+): DocsNavLink {
+  return {
+    ...link,
+    href: link.slug === slug ? href : link.href,
+    children: link.children?.map((child) =>
+      withHrefForSlugInLink(child, slug, href),
+    ),
+  }
+}

@@ -1,5 +1,4 @@
 ---
-
 ---
 
 # The Rugix Project
@@ -21,5 +20,5 @@ If you want to learn more about how we think about open source as a business, re
 
 For a comparison of Rugix's tools to other solutions, check out the documentation of the respective tool:
 
-- [Rugix Ctrl: Comparison to Other Solutions](/docs/ctrl/#comparison-to-other-solutions)
+- [Rugix Ctrl: Comparison to Other Solutions](/blog/2026-02-28-ota-update-engines-compared)
 - [Rugix Bakery: Comparison to Other Solutions](/docs/bakery/#comparison-to-other-solutions)

@@ -1,5 +1,4 @@
 ---
-
 ---
 
 # Upgrading from v0.7
@@ -12,8 +11,8 @@ Generally, you need to replace “Rugpi” with “Rugix” everywhere (includin
 
 #### Rugix Ctrl
 
-- The overlay configuration has been moved into [`/etc/rugix/state.toml`](./ctrl/state-management#overlay-configuration).
-- The system size configuration has been moved into [`/etc/rugix/bootstrapping.toml`](./ctrl/bootstrapping#default-layout).
+- The overlay configuration has been moved into [`/etc/rugix/state.toml`](/docs/0.8.14/ctrl/state-management#overlay-configuration).
+- The system size configuration has been moved into [`/etc/rugix/bootstrapping.toml`](/docs/0.8.14/ctrl/bootstrapping#default-layout).
 - The output of `rugix-ctrl system info` has changed. If you integrate with Rugix Ctrl, use the new JSON output.
 - Updates should now be delivered as Rugix update bundles instead of system images.
 - The deprecated option `--stream` of `rugpi-ctrl update install` has been removed.

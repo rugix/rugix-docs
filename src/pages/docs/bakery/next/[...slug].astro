@@ -21,7 +21,7 @@ export async function getStaticPaths() {
       const slug = entry.id === "next" ? "" : entry.id.slice("next/".length);
       return {
         params: { slug: slug || undefined },
-        props: { entry, pageSlug: slug },
+        props: { entry, pageSlug: slug || "introduction" },
       };
     });
 }
@@ -36,6 +36,10 @@ const title =
   headings[0]?.text ??
   (pageSlug ? titleize(pageSlug.split("/").at(-1)!) : "Rugix Bakery");
 const editExt = entry.filePath?.endsWith(".mdx") ? "mdx" : "md";
+const editBaseUrl = docsConfig.versions.find(
+  (v) => v.slug === VERSION,
+)?.editBaseUrl;
+const editUrl = `${editBaseUrl}/index.${editExt}`;
 ---
 
 <DocsLayout
@@ -50,6 +54,7 @@ const editExt = entry.filePath?.endsWith(".mdx") ? "mdx" : "md";
   headings={headings}
   basePath="/docs/bakery/"
   bodyTitle={!!explicitTitle}
+  editUrl={entry.id === VERSION ? editUrl : undefined}
   editExt={editExt}
 >
   <Content />

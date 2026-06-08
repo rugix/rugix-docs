@@ -14,9 +14,10 @@ import {
 
 export async function getStaticPaths() {
   const entries = await getCollection("docs-ctrl");
-  return entries
+  const paths = entries
     .filter((entry) => !entry.data.draft)
     .filter((entry) => entry.id === "1.2" || entry.id.startsWith("1.2/"))
+    .filter((entry) => entry.id !== "1.2/introduction")
     .map((entry) => {
       const slug = entry.id === "1.2" ? "" : entry.id.slice("1.2/".length);
       return {
@@ -24,6 +25,14 @@ export async function getStaticPaths() {
         props: { entry, pageSlug: slug },
       };
     });
+  const introduction = entries.find((entry) => entry.id === "1.2/introduction");
+  if (introduction !== undefined && !introduction.data.draft) {
+    paths.push({
+      params: { slug: undefined },
+      props: { entry: introduction, pageSlug: "introduction" },
+    });
+  }
+  return paths;
 }
 
 const DEFAULT_VERSION = "1.2";

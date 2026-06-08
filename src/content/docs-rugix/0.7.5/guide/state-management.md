@@ -1,5 +1,4 @@
 ---
-
 ---
 
 # State Management
@@ -112,7 +111,7 @@ rugpi-ctrl state switch <profile name>
 Should a device hang in a boot loop or otherwise malfunction because of corrupted state, a hardware reset button may be a convenient way for users to reset a system in the field, without requiring an expensive service technician to come out or sending the device to a repair center.
 For this purpose, Rugpi Ctrl can be configured to check whether a reset button connected to one of the GPIO pins of the Raspberry Pi is pressed.
 If this is the case and the button is hold for a specific amount of time, a factory reset can be automatically performed with the option to preserve the corrupted state for later (remote) recovery.
-Likewise, another button could be programmed to initiate a reboot to the spare system (see [Over-the-Air Updates](./over-the-air-updates)), increasing the resiliency even further.
+Likewise, another button could be programmed to initiate a reboot to the spare system (see [Over-the-Air Updates](/docs/0.7.5/guide/over-the-air-updates)), increasing the resiliency even further.
 
 ## Implementation Details
 

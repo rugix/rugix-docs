@@ -1,5 +1,4 @@
 ---
-
 ---
 
 # Systems
@@ -52,7 +51,7 @@ Targets typically support a whole family of devices and are categorized into _ge
 
 The target for a system is set by the `target` property in the system declaration.
 
-For supported devices and the required targets, checkout the documentation on [Supported Devices](./devices/index).
+For supported devices and the required targets, checkout the documentation on [Supported Devices](/docs/0.8.14/bakery/devices/).
 
 Currently, Rugix Bakery supports the following targets:
 
@@ -103,4 +102,4 @@ Supported filesystems:
 - `ext4`: [Ext4 Filesystem](https://en.wikipedia.org/wiki/Ext4)
 - `fat32`: [FAT32 Filesystem](https://en.wikipedia.org/wiki/File_Allocation_Table)
 
-The image layout is specified in the `image.layout` section. For details, we refer to the [project configuration reference](./projects#project-configuration).
+The image layout is specified in the `image.layout` section. For details, we refer to the [project configuration reference](/docs/0.8.14/bakery/projects#project-configuration).

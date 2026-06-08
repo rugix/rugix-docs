@@ -1,5 +1,4 @@
 ---
-
 ---
 
 # Getting Started 🚀
@@ -61,7 +60,7 @@ For instance, to build an image for Raspberry Pi 4 including the necessary firmw
 ./run-bakery bake image pi4 build/image-pi4.img
 ```
 
-The images specified in the template use the `customized` *layer* defined in `layers/customized.toml`.
+The images specified in the template use the `customized` _layer_ defined in `layers/customized.toml`.
 A layer specifies the base system and the modification which should be done to it.
 
 When you build an image, internally, Rugpi Bakery does the following steps:
@@ -78,20 +77,20 @@ When you build an image, internally, Rugpi Bakery does the following steps:
    They simply contain an URL of the base image to use.
 
 2. Next, the recipes defined in the layer are applied.
-   A *recipe* describes modifications to be made to the system.
+   A _recipe_ describes modifications to be made to the system.
    For instance, the `core/ssh` recipe enables SSH.
    Recipes can have parameters.
    For instance, the `root_authorized_keys` parameter of the `core/ssh` recipe sets `authorized_keys` for the `root` user.
    To be able to login as `root` via SSH later, you should replace the existing key with your public key.
    In addition to the builtin recipes, you can supply your own recipes.
    In case of the template, the `hello-world` recipe in the `recipes` directory installs a static website which is served by Nginx.
-   For further information about recipes, checkout the [user guide's section on System Customization](./guide/system-customization).
+   For further information about recipes, checkout the [user guide's section on System Customization](/docs/0.6/guide/system-customization).
 
 3. Finally, after applying all customizations, an image is produced.
    The resulting image is ready to be written to an SD card, e.g., using Raspberry Pi Imager.
    Note that you cannot use Raspberry Pi Imager to apply any configurations like passwords or WiFi settings.
    The template also defines images for other boards than Raspberry Pi 4.
-   For further images, we refer to the `rugpi-bakery.toml` configuration file and the [Supported Boards](./guide/supported-boards) section of the user guide.
+   For further images, we refer to the `rugpi-bakery.toml` configuration file and the [Supported Boards](/docs/0.6/guide/supported-boards) section of the user guide.
 
 On the first boot, Rugpi Ctrl will repartition the SD card and then boot into the actual system.
 Once the system is running, you should be able to visit the static website via the system's IP address and connect via SSH.
@@ -99,5 +98,5 @@ Once the system is running, you should be able to visit the static website via t
 Congratulations! You built your first image with Rugpi Bakery. 🙌
 
 Feel free, to change the website in `recipes/hello-world/html` and experiment with the recipes.
-As a next step, we recommend reading the [user guide](./guide).
+As a next step, we recommend reading the [user guide](/docs/0.6/guide).
 It covers all the details on system customization, state management, and over-the-air updates.

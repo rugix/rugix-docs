@@ -1,5 +1,4 @@
 ---
-
 ---
 
 # Hooks
@@ -41,7 +40,6 @@ Note that it is also fine to ignore the first two arguments and assume that a ho
 
 In the following, we document the available hooks.
 
-
 ## System Update Hooks
 
 For the installation of updates, the stages of `update-install` hooks are:
@@ -61,8 +59,7 @@ For committing to an update or rollback, the stages of `system-commit` hooks are
 - `pre-commit`: Runs directly before a commit.
 - `post-commit`: Runs directly after a commit.
 
-You can use these hooks, e.g., to prepare and trigger state migrations, if you are not using Rugix Ctrl's [State Management](./state-management) feature.
-
+You can use these hooks, e.g., to prepare and trigger state migrations, if you are not using Rugix Ctrl's [State Management](/docs/0.8.14/ctrl/state-management) feature.
 
 ## State Management Hooks
 
@@ -72,13 +69,13 @@ For factory resets, the stages of `state-reset` hooks are:
 - `pre-reset`: Runs directly before a factory reset during boot (reset can still be aborted).
 - `post-reset`: Runs directly after a factory reset during boot.
 
-As explained in the section on [State Management](./state-management), the state management functionality runs very early during the boot process, before even the init system.
+As explained in the section on [State Management](/docs/0.8.14/ctrl/state-management), the state management functionality runs very early during the boot process, before even the init system.
 For the stages running during boot, you can assume the following environment:
 
 - `/` is mounted read-only to the respective root filesystem.
 - `/sys`, `/proc`, and `/dev` are mounted.
 - `/run` is mounted to a temporary, in-memory filesystem and will be passed through to the final system.
-If you need to communicate anything to processes after the bootstrapping process, place it in `/run`.
+  If you need to communicate anything to processes after the bootstrapping process, place it in `/run`.
 
 In addition, the config partition is mounted read-only (usually at `/run/rugix/mounts/config`).
 

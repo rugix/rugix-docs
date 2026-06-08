@@ -1,9 +1,8 @@
 ---
-
 ---
 
-import { SchemaViewer } from "@silitics/astro-schema-viewer";
-import OutputSchema from "../../../../schemas/rugix-ctrl-output-info.schema.json";
+import { SchemaViewer } from "@silitics/astro-schema-viewer"
+import OutputSchema from "../../../../schemas/rugix-ctrl-output-info.schema.json"
 
 # Over-the-Air Updates
 
@@ -25,7 +24,7 @@ In addition, it has the following advantages:
 
 **Other Update Schemes.** We generally recommend using an A/B update scheme due to the advantages stated above.
 For cases where an A/B update scheme is not the right choice, Rugix Ctrl can flexibly be configured for other update schemes, for instance, an asymmetric setup with a recovery partition or a setup with more than two redundant system partitions.
-To configure Rugix Ctrl for such custom use cases, please have a look at the [System Configuration](./advanced/system-configuration) section of this documentation.
+To configure Rugix Ctrl for such custom use cases, please have a look at the [System Configuration](/docs/0.8.14/ctrl/advanced/system-configuration) section of this documentation.
 
 **Bootloader Integration.** To commit and switch between systems, Rugix Ctrl needs to integrate with the bootloader of the system.
 Rugix Ctrl offers ready-made integrations with popular bootloaders.
@@ -37,7 +36,7 @@ Currently, it provides integrations for:
 
 :::tip
 When building a system with Rugix Bakery for a generic or specific target, you will get a system with a bootloader integration for A/B OTA updates out-of-the-box. In that case, no further configuration is necessary and you do not have to worry about how the bootloader integration works.
-If you want your own integration, check out the [documentation on boot flows](./advanced/boot-flows).
+If you want your own integration, check out the [documentation on boot flows](/docs/0.8.14/ctrl/advanced/boot-flows).
 :::
 
 **Typical Partition Layout.** A typical partition layout of a Rugix system following the A/B update scheme comprises six partitions:
@@ -47,7 +46,7 @@ If you want your own integration, check out the [documentation on boot flows](./
 - Partition 3: Contains boot data, such as the Linux kernel, for the B system.
 - Partition 4: Contains the root filesystem of the A system.
 - Partition 5: Contains the root filesystem of the B system.
-- Partition 6: Contains any persistent data and state (see [State Management](./state-management)).
+- Partition 6: Contains any persistent data and state (see [State Management](/docs/0.8.14/ctrl/state-management)).
 
 We also refer to Partition 1 as the _config partition_ and to Partition 6 as the _data partition_.
 
@@ -68,7 +67,7 @@ You will find the most recent version of this schema [on GitHub](https://github.
 Updates are delivered to devices in the form of _update bundles_.
 Update bundles are installed with the following command:[^non-a-b]
 
-[^non-a-b]: The following commands assume that you use a traditional A/B update scheme. If you use a non-A/B update scheme, the commands will require you to explicitly specify the [boot group](./advanced/system-configuration).
+[^non-a-b]: The following commands assume that you use a traditional A/B update scheme. If you use a non-A/B update scheme, the commands will require you to explicitly specify the [boot group](/docs/0.8.14/ctrl/advanced/system-configuration).
 
 ```shell
 rugix-ctrl update install <update bundle>
@@ -131,7 +130,7 @@ When using the `--reboot no` flag, a reboot to the inactive, _spare_ system[^spa
 rugix-ctrl system reboot --spare
 ```
 
-You can also _defer_ the reboot with `--reboot deferred` (only for A/B setups, requires [State Management](./state-management)).
+You can also _defer_ the reboot with `--reboot deferred` (only for A/B setups, requires [State Management](/docs/0.8.14/ctrl/state-management)).
 If you use that flag, Rugix Ctrl will set a flag and automatically boot into the new version the next time the system is booted.
 This allows users to shut down the system normally while remembering the update and automatically booting into it the next time the system boots.
 
@@ -188,7 +187,7 @@ This recipe will install a system service that commits the currently booted syst
 Note that this also means that it will commit an old version if booted into, for instance, when performing a rollback (see below).
 
 :::tip
-Use a [_pre-commit hook_](./hooks#system-update-hooks) to ensure that a commit is only possible when the system is in proper working order.
+Use a [_pre-commit hook_](/docs/0.8.14/ctrl/hooks#system-update-hooks) to ensure that a commit is only possible when the system is in proper working order.
 :::
 
 ## Performing a Rollback

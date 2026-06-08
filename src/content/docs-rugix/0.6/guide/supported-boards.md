@@ -1,5 +1,4 @@
 ---
-
 ---
 
 # Supported Boards
@@ -54,7 +53,7 @@ Note that after the first boot, the automatic update will be disabled, i.e., you
 
 ### Other Boards
 
-For other boards than Pi 5, Pi 4, Pi 400, and CM 4, you must enable the U-Boot [boot flow](../internals/boot-flows) for the image:
+For other boards than Pi 5, Pi 4, Pi 400, and CM 4, you must enable the U-Boot [boot flow](/docs/0.6/internals/boot-flows) for the image:
 
 ```toml
 boot_flow = "u-boot"

@@ -17,16 +17,24 @@ import {
 
 export async function getStaticPaths() {
   const entries = await getCollection("docs-rugix");
-  return entries
+  const paths = entries
     .filter((entry) => !entry.data.draft)
     .filter((entry) => entry.id.startsWith("latest/"))
     .map((entry) => {
       const slug = entry.id.slice("latest/".length);
       return {
-        params: { slug },
+        params: { slug: slug || undefined },
         props: { entry, pageSlug: slug },
       };
     });
+  const gettingStarted = entries.find((entry) => entry.id === "latest/getting-started");
+  if (gettingStarted !== undefined && !gettingStarted.data.draft) {
+    paths.push({
+      params: { slug: undefined },
+      props: { entry: gettingStarted, pageSlug: "" },
+    });
+  }
+  return paths;
 }
 
 const { entry, pageSlug } = Astro.props;
