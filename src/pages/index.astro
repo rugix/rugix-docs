@@ -52,7 +52,7 @@ const stories = [
     img: "/img/umbrel-pro.jpg",
     alt: "Umbrel Pro device",
     name: "Umbrel",
-    body: `<a href="https://umbrel.com/">Umbrel</a> is a personal home cloud platform that lets anyone self-host their files, media, and applications with tens of thousands of installations worldwide. Umbrel chose Rugix for <a href="https://umbrel.com/umbrelos">umbrelOS</a>, powering devices like the recently launched <a href="https://umbrel.com/umbrel-pro">Umbrel Pro</a>, their premium home cloud server. Rugix was chosen for its robustness, builtin state management with clean factory resets, and highly efficient delta updates.`,
+    body: `<a href="https://umbrel.com/">Umbrel</a> is a personal home cloud platform that lets anyone self-host their files, media, and applications with tens of thousands of installations worldwide. Umbrel chose Rugix as the foundation for <a href="https://umbrel.com/umbrelos">umbrelOS</a>, powering devices like the recently launched <a href="https://umbrel.com/umbrel-pro">Umbrel Pro</a>, their premium home cloud server. Rugix was chosen for its robustness, builtin state management with clean factory resets, and highly efficient delta updates.`,
   },
   {
     img: "/img/echecker-testbench.jpg",
@@ -64,7 +64,7 @@ const stories = [
     img: "/img/enmo-battery-brain.webp",
     alt: "BatteryBrain device",
     name: "BatteryBrain",
-    body: `"At Enmo, we use Rugix for our product, BatteryBrain — a device optimizing battery systems based on spot prices, battery health, production inputs, and electricity markets. Rugix has been essential in bringing BatteryBrain to a production-ready state as quickly and efficiently as possible. It has simplified the creation of a custom Raspberry Pi image and enabled seamless over-the-air (OTA) updates."`,
+    body: `"At Enmo, we use Rugix for our product, BatteryBrain, a device optimizing battery systems based on spot prices, battery health, production inputs, and electricity markets. Rugix has been essential in bringing BatteryBrain to a production-ready state as quickly and efficiently as possible. It has simplified the creation of a custom Raspberry Pi image and enabled seamless over-the-air (OTA) updates."`,
     quote: "David Lekve, CTO at enmo",
   },
 ];
@@ -73,8 +73,8 @@ const tools = [
   {
     href: "/docs/ctrl",
     title: "Rugix Ctrl",
-    blurb: "On-device update engine.",
-    body: "Atomic A/B system updates with automatic rollback, delta updates, cryptographic verification, and robust state management. Integrates with different fleet management solutions. Optionally, deploy and manage application workloads with Rugix Apps.",
+    blurb: "On-device lifecycle engine.",
+    body: "Atomic A/B system updates with automatic rollback, delta updates, signed and verified updates, and robust state management. Integrates with different fleet management solutions. Optionally, deploy and manage application workloads with Rugix Apps.",
   },
   {
     href: "/docs/bakery",
@@ -83,11 +83,38 @@ const tools = [
     body: "Build custom Linux distributions in days, not months. Based on Debian or Alpine Linux. Container-based reproducible builds, multiple system variants, integrated testing with VM support, and SBOM generation. OTA updates powered by Rugix Ctrl.",
   },
 ];
+
+const proofPoints = [
+  "System Updates",
+  "App Management",
+  "Declarative State",
+  "Delta Delivery",
+  "Factory Resets",
+  "No Lock-In",
+];
+
+const valueProps = [
+  {
+    label: "Robust and Secure Updates",
+    title: "Update with confidence.",
+    body: "Deploy verified system and app updates that are bandwidth-efficient and able to roll back automatically when something goes wrong.",
+  },
+  {
+    label: "State Management",
+    title: "Prevent drift.",
+    body: "Keep the running system immutable and persist only the state you declare, so devices stay predictable instead of accumulating unintended drift.",
+  },
+  {
+    label: "Cyber-Resilience",
+    title: "Maintain trust.",
+    body: "Signed updates and mandatory verification keep device changes under your control, so systems can stay trustworthy over their lifetime.",
+  },
+];
 ---
 
 <BaseLayout
-  title="Over-the-Air Updates for Embedded Linux"
-  description="Deploy updates with confidence. Never brick a device. 100% open-source, atomic updates, delta compression, cryptographic verification."
+  title="Rugix: OTA Updates, Apps, and State for Embedded Linux"
+  description="Rugix provides an open-source on-device foundation for OTA system updates, apps, and state, without tying your product to a build system or cloud backend."
   brand={brand}
   nav={nav}
   actions={headerActions}
@@ -98,37 +125,52 @@ const tools = [
       <h1
         class="font-display text-balance text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl"
       >
-        Over-the-Air Updates for{" "}
-        <span class="text-gradient">Embedded Linux</span>
+        The <span class="text-gradient">Open Lifecycle Layer</span> for{" "}
+        Embedded Linux
       </h1>
       <p
         class="text-content mx-auto mt-6 max-w-2xl text-lg leading-relaxed md:text-xl"
       >
-        <strong>Deploy updates with confidence. Never brick a device.</strong>
+        Rugix provides an open-source on-device foundation for updates, apps,
+        and state, without tying your product to a build system or cloud
+        backend.
       </p>
-      <p class="text-content-muted mx-auto mt-3 max-w-2xl text-base md:text-lg">
-        100% open-source. Atomic updates. Delta compression. Cryptographic
-        verification.
-      </p>
+      <div
+        class="text-content-muted mx-auto mt-4 flex max-w-3xl flex-wrap items-center justify-center gap-x-2 gap-y-2 text-sm md:text-base"
+        aria-label="Rugix capabilities and benefits"
+      >
+        {
+          proofPoints.map((point, index) => (
+            <span class="inline-flex items-center gap-2">
+              {index > 0 && (
+                <span class="text-content-subtle hidden sm:inline" aria-hidden="true">
+                  ·
+                </span>
+              )}
+              <span>{point}</span>
+            </span>
+          ))
+        }
+      </div>
       <div class="mt-10 flex flex-wrap items-center justify-center gap-3">
         <Button href="/docs/getting-started">
           <FaIcon icon={faRocket} />
-          From Zero to OTA Update in 30 Minutes
+          Get Started in 30 Minutes
         </Button>
-        <Button variant="secondary" href="/blog">
-          Read the blog
+        <Button variant="secondary" href="/docs/ctrl">
+          Explore the Docs
         </Button>
       </div>
     </div>
   </Section>
 
-  <Section background="none" padding="default" class="!pt-8 md:!pt-12">
+  <Section background="section" padding="default" class="!pt-8 md:!pt-12">
     <div class="mx-auto max-w-2xl text-center">
       <h2 class="font-display text-3xl font-bold md:text-4xl">
         Two Tools. One Goal.
       </h2>
       <p class="text-content-muted mt-4 text-lg">
-        Robust and secure updates without the complexity.
+        Build and maintain production-ready Linux devices at scale.
       </p>
     </div>
     <div class="mx-auto mt-12 grid max-w-5xl gap-6 md:grid-cols-2">
@@ -148,11 +190,39 @@ const tools = [
         ))
       }
     </div>
-    <p class="text-content-muted mx-auto mt-10 max-w-2xl text-center text-sm leading-relaxed">
-      Rugix Ctrl runs on your device and installs updates. Rugix Bakery builds
-      the system images. Use both together for a complete solution, or
-      integrate Rugix Ctrl into your existing Yocto or Buildroot workflow.
+    <p class="text-content-muted mx-auto mt-10 max-w-xl text-center text-sm leading-relaxed">
+      Rugix Ctrl runs on your device and manages system updates, apps, and
+      state. Rugix Bakery builds the system images. Use both together for a
+      complete solution, or integrate Rugix Ctrl into your existing Yocto or
+      Buildroot workflow.
     </p>
+  </Section>
+
+  <Section background="none" padding="default">
+    <div class="mx-auto max-w-2xl text-center">
+      <h2 class="font-display text-3xl font-bold md:text-4xl">
+        Ready for the Field, Not Just the Lab.
+      </h2>
+      <p class="text-content-muted mt-4 text-lg">
+        Reliable device maintenance is essential for production, but hard to
+        get right. Rugix provides the on-device foundation for system updates,
+        app management, and state, so your team can focus on the product
+        instead of reinventing lifecycle plumbing.
+      </p>
+    </div>
+    <div class="mx-auto mt-12 grid max-w-5xl gap-6 md:grid-cols-3">
+      {
+        valueProps.map((prop) => (
+          <div class="card flex flex-col gap-4 p-6">
+            <p class="text-primary text-xs font-semibold tracking-wide uppercase">
+              {prop.label}
+            </p>
+            <h3 class="font-display text-xl font-semibold">{prop.title}</h3>
+            <p class="text-content-muted text-sm leading-relaxed">{prop.body}</p>
+          </div>
+        ))
+      }
+    </div>
   </Section>
 
   <Section background="section" padding="default">
@@ -258,19 +328,19 @@ const tools = [
   <Section background="cta" padding="default">
     <div class="mx-auto max-w-2xl text-center">
       <h2 class="font-display text-3xl font-bold md:text-4xl">
-        Ship updates without fear.
+        Start Using Rugix Today.
       </h2>
       <p class="text-content-muted mt-4 text-lg">
-        Drop Rugix into your project today. The first OTA update is 30 minutes
-        away.
+        Try the full Rugix workflow in under 30 minutes: build, boot, and
+        update.
       </p>
       <div class="mt-8 flex flex-wrap justify-center gap-3">
         <Button href="/docs/getting-started">
-          Get started
+          Get Started
           <FaIcon icon={faArrowRight} />
         </Button>
         <Button variant="secondary" href="/commercial-support">
-          Commercial support
+          Commercial Support
         </Button>
       </div>
     </div>
