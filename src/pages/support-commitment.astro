@@ -1,0 +1,127 @@
+---
+import MarketingLayout from "../layouts/MarketingLayout.astro";
+---
+
+<MarketingLayout
+  title="Support Commitment"
+  description="Support tiers and support expectations for Rugix core components, integrations, and examples."
+>
+  <h1>Support Commitment</h1>
+
+  <p>
+    Rugix is an open-source project developed by
+    <a href="https://silitics.com">Silitics</a>. We want people building
+    with Rugix to feel supported and to have a clear, honest picture of where
+    we can help. We do our best to answer questions, investigate reproducible
+    bugs, fix issues in maintained components, and keep the documentation
+    useful.
+  </p>
+
+  <p>
+    Rugix also spans core tools, integrations, examples, and experiments. The
+    tiers below give us shared vocabulary for repositories and packages, so
+    users and maintainers know what kind of support to expect without every
+    README needing a long explanation.
+  </p>
+
+  <h2>Support Tiers</h2>
+  <p>
+    Repositories and packages may reference one of these tiers. If a
+    repository, package, feature, or document says something more specific,
+    follow that more specific guidance. Commercial support or an enterprise
+    subscription may provide different response times or maintenance
+    commitments.
+  </p>
+
+  <h3 id="tier-core">Tier 1: Core</h3>
+  <p>
+    These are the parts of Rugix we actively stand behind: Rugix Ctrl, Rugix
+    Bakery, Rugix Bundler, official release artifacts, and documentation for
+    supported Rugix releases. We aim to investigate reproducible bugs,
+    security issues, regressions, and documentation problems within the
+    documented scope of the project. Work is prioritized by severity, impact,
+    available maintainer time, and project scope.
+  </p>
+
+  <h3 id="tier-maintained-integration">Tier 2: Maintained Integration</h3>
+  <p>
+    These are Rugix-side integrations with third-party software, services,
+    platforms, or APIs that we try to keep usable for supported Rugix
+    releases. We can help with the Rugix integration code and documentation,
+    but not with the third-party product itself. If an upstream product or API
+    changes, we update the integration when practical.
+  </p>
+
+  <h3 id="tier-example-integration">Tier 3: Example Integration</h3>
+  <p>
+    These are starting points: example integrations, example repositories,
+    templates, demo projects, and tutorial code. They are meant to help users
+    learn and bootstrap their own work. Many depend on specific hardware,
+    cloud services, vendor accounts, or test setups that we may not own or
+    have continuous access to. We may publish examples that were tested with
+    borrowed, remote, or otherwise limited access to the relevant setup, but
+    support and issue investigation are necessarily limited when we cannot
+    reproduce problems ourselves.
+  </p>
+
+  <h3 id="tier-experimental">Tier 4: Experimental</h3>
+  <p>
+    These are experiments, prototypes, proof-of-concept tools, and
+    exploratory integrations. They may change, break, or be removed. If an
+    experiment becomes something we want users to rely on, we will promote it
+    to another support tier.
+  </p>
+
+  <h3 id="tier-archived">Tier 5: Archived</h3>
+  <p>
+    These are older or unsupported projects kept around for historical
+    reference. They can still be useful, but they should not be the basis for
+    new production deployments unless you are prepared to maintain them
+    yourself or have a separate commercial support agreement.
+  </p>
+
+  <p>
+    To reference a tier from a repository, use the tier name and link to the
+    corresponding anchor on this page, for example
+    <a href="/support-commitment#tier-core">Tier 1: Core</a> or
+    <a href="/support-commitment#tier-example-integration">Tier 3: Example
+    Integration</a>.
+  </p>
+
+  <h2>Public Support</h2>
+  <p>
+    Public support happens through project channels such as GitHub issues,
+    discussions, and community forums. We are usually most effective when an
+    issue includes the Rugix version, the relevant repository, logs or error
+    messages, and a small reproducible example where possible.
+  </p>
+
+  <p>
+    In public channels, we can help triage bugs, clarify documented behavior,
+    review small examples, and point users in the right direction. We cannot
+    promise response times there, and larger work such as production incident
+    handling, private debugging, product-specific system design, custom board
+    bring-up, custom distribution maintenance, or third-party service support
+    needs a separate arrangement.
+  </p>
+
+  <h2>Security Issues</h2>
+  <p>
+    Please report security vulnerabilities according to the
+    <a href="https://github.com/rugix/rugix/blob/main/SECURITY.md">Rugix
+    security policy</a>. Security issues in core Rugix components are handled
+    with priority. Security issues in third-party software or services should
+    also be reported to the relevant upstream project or vendor.
+  </p>
+
+  <h2>Commercial Support</h2>
+  <p>
+    Companies that need defined response times, production support, long-term
+    maintenance, architecture reviews, custom integrations, or support for
+    product-specific deployments can use
+    <a href="/commercial-support">commercial support</a>. Commercial support
+    can cover work that is outside the default public support scope. For
+    questions about this policy or commercial support options, contact
+    <a href="mailto:contact@silitics.com">contact@silitics.com</a>.
+  </p>
+</MarketingLayout>

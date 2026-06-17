@@ -99,6 +99,7 @@ export const footerColumns: FooterColumn[] = [
       { label: "Fleet Management", href: "/fleet-management" },
       { label: "Cyber Resilience Act", href: "/cyber-resilience-act" },
       { label: "Commercial Support", href: "/commercial-support" },
+      { label: "Support Commitment", href: "/support-commitment" },
       { label: "Open Source Commitment", href: "/open-source-commitment" },
     ],
   },
@@ -115,6 +116,7 @@ export const footerColumns: FooterColumn[] = [
         href: "https://github.com/rugix/rugix/blob/main/SECURITY.md",
         external: true,
       },
+      { label: "Trademark Policy", href: "/legal/trademark-policy" },
       {
         label: "Imprint",
         href: "https://silitics.com/impressum",

@@ -21,7 +21,7 @@ const { title, description } = Astro.props;
   <div class="relative">
     <div class="bg-grid-fade absolute inset-0 h-96 opacity-50" aria-hidden="true"></div>
     <div class="relative mx-auto max-w-3xl px-4 py-16 md:py-24 lg:px-6">
-      <article class="article-prose">
+      <article class="article-prose marketing-prose">
         <slot />
       </article>
     </div>
@@ -29,3 +29,14 @@ const { title, description } = Astro.props;
 
   <SiteFooter slot="footer" />
 </BaseLayout>
+
+<style is:global>
+  .marketing-prose h1 {
+    margin: 0 0 1.25rem;
+    font-family: var(--font-display);
+    font-size: clamp(2.25rem, 2rem + 1vw, 3rem);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: 0;
+  }
+</style>
