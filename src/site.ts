@@ -47,6 +47,7 @@ export const nav: NavItem[] = [
       { label: "General", href: "/docs/getting-started" },
       { label: "Rugix Ctrl", href: "/docs/ctrl" },
       { label: "Rugix Bakery", href: "/docs/bakery" },
+      { label: "Rugix Admin", href: "/docs/admin" },
     ],
   },
   { label: "Blog", href: "/blog" },
@@ -70,6 +71,7 @@ export const footerColumns: FooterColumn[] = [
       { label: "Getting Started", href: "/docs/getting-started" },
       { label: "Rugix Ctrl", href: "/docs/ctrl" },
       { label: "Rugix Bakery", href: "/docs/bakery" },
+      { label: "Rugix Admin", href: "/docs/admin" },
     ],
   },
   {
@@ -161,6 +163,7 @@ const docSets: DocSet[] = [
   { label: "General", href: "/docs/getting-started", basePath: "/docs/" },
   { label: "Rugix Ctrl", href: "/docs/ctrl/" },
   { label: "Rugix Bakery", href: "/docs/bakery/" },
+  { label: "Rugix Admin", href: "/docs/admin/" },
 ]
 
 /**
@@ -309,6 +312,40 @@ export const getBakeryDocsConfig = memoizeDocsConfig(
             rootGroupTitle: "Rugix Bakery",
           }),
           "Rugix Bakery",
+          { title: "Introduction", slug: "introduction", href: v.pathPrefix },
+        ),
+      })),
+    }
+  },
+)
+
+/**
+ * Rugix Admin docs at `/docs/admin/`. For now this only has a rolling
+ * `next` version, mounted as the default docs set path.
+ */
+export const getAdminDocsConfig = memoizeDocsConfig(
+  async (): Promise<DocsConfig> => {
+    const all = await getCollection("docs-admin")
+    const versions = [
+      {
+        slug: "next",
+        label: "Next",
+        status: "preview" as const,
+        default: true,
+        pathPrefix: "/docs/admin/",
+        editBaseUrl: `${REPO_EDIT_BASE}/docs-admin/next`,
+      },
+    ]
+    return {
+      docSets,
+      versions: versions.map((v) => ({
+        ...v,
+        nav: withRootLink(
+          buildNav(all, {
+            prefix: `${v.slug}/`,
+            rootGroupTitle: "Rugix Admin",
+          }),
+          "Rugix Admin",
           { title: "Introduction", slug: "introduction", href: v.pathPrefix },
         ),
       })),

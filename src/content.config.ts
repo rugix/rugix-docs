@@ -79,9 +79,19 @@ const docsBakery = defineCollection({
   schema: portedDocsSchema,
 });
 
+const docsAdmin = defineCollection({
+  loader: glob({
+    pattern: "**/*.{md,mdx}",
+    base: "./src/content/docs-admin",
+    generateId: preservePathId,
+  }),
+  schema: portedDocsSchema,
+});
+
 export const collections = {
   blog,
   "docs-rugix": docsRugix,
   "docs-ctrl": docsCtrl,
   "docs-bakery": docsBakery,
+  "docs-admin": docsAdmin,
 };
