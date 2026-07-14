@@ -24,6 +24,8 @@ const date = post.data.date ?? dateFromId(post.id);
 const frontmatter = {
   title: post.data.title,
   description: post.data.description,
+  heroImage: post.data.heroImage,
+  heroImageAlt: post.data.heroImageAlt,
   date,
   tags: post.data.tags,
   // Single author across the upstream blog; everything is "koehlma".

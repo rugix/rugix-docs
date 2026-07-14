@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="526" viewBox="0 0 1200 526" role="img" aria-labelledby="title description">
+  <title id="title">The A/B OTA update process</title>
+  <desc id="description">Four steps show a known-good system A, installation to system B, a one-shot tryboot request, and provisional boot of B. A healthy candidate is committed, while a failed candidate automatically falls back to A.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#111722"/>
+      <stop offset="0.58" stop-color="#0b0d12"/>
+      <stop offset="1" stop-color="#07101a"/>
+    </linearGradient>
+    <linearGradient id="cyanCard" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0f202d"/>
+      <stop offset="1" stop-color="#0c151e"/>
+    </linearGradient>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
+      <path d="M32 0H0V32" fill="none" stroke="#7dd3fc" stroke-opacity="0.045"/>
+    </pattern>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="170%">
+      <feDropShadow dx="0" dy="9" stdDeviation="12" flood-color="#000" flood-opacity="0.42"/>
+    </filter>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10Z" fill="#38bdf8"/>
+    </marker>
+    <marker id="arrowGreen" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10Z" fill="#34d399"/>
+    </marker>
+    <marker id="arrowAmber" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10Z" fill="#fbbf24"/>
+    </marker>
+  </defs>
+
+  <rect width="1200" height="526" rx="22" fill="url(#background)"/>
+  <rect width="1200" height="526" rx="22" fill="url(#grid)"/>
+  <circle cx="1090" cy="50" r="190" fill="#0ea5e9" opacity="0.035"/>
+
+  <g transform="translate(0 -150)">
+  <g fill="none" stroke="#38bdf8" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow)">
+    <path d="M300 286H328"/>
+    <path d="M583 286H611"/>
+    <path d="M866 286H894"/>
+  </g>
+
+  <g font-family="IBM Plex Sans, sans-serif" filter="url(#shadow)">
+    <g transform="translate(50 176)">
+      <rect width="250" height="220" rx="20" fill="url(#cyanCard)" stroke="#2a465a"/>
+      <circle cx="28" cy="28" r="15" fill="#0ea5e9"/>
+      <text x="28" y="33" text-anchor="middle" fill="#fff" font-size="14" font-weight="700">1</text>
+      <text x="52" y="34" fill="#b8e6fe" font-size="14" font-weight="700" letter-spacing="0.9">KNOWN-GOOD STATE</text>
+      <g transform="translate(18 64)">
+        <rect width="214" height="58" rx="12" fill="#0ea5e9" fill-opacity="0.16" stroke="#38bdf8"/>
+        <circle cx="25" cy="29" r="8" fill="#34d399"/>
+        <text x="45" y="26" fill="#eef9ff" font-size="17" font-weight="700">System A</text>
+        <text x="45" y="45" fill="#83c9e9" font-size="12">running · default</text>
+      </g>
+      <g transform="translate(18 133)">
+        <rect width="214" height="58" rx="12" fill="#111923" stroke="#31485b"/>
+        <circle cx="25" cy="29" r="8" fill="#607386"/>
+        <text x="45" y="26" fill="#d7e2ec" font-size="17" font-weight="700">System B</text>
+        <text x="45" y="45" fill="#8294a5" font-size="12">inactive · spare</text>
+      </g>
+    </g>
+
+    <g transform="translate(333 176)">
+      <rect width="250" height="220" rx="20" fill="url(#cyanCard)" stroke="#2a465a"/>
+      <circle cx="28" cy="28" r="15" fill="#0ea5e9"/>
+      <text x="28" y="33" text-anchor="middle" fill="#fff" font-size="14" font-weight="700">2</text>
+      <text x="52" y="34" fill="#b8e6fe" font-size="14" font-weight="700" letter-spacing="0.9">INSTALL UPDATE</text>
+      <g transform="translate(18 64)">
+        <rect width="214" height="58" rx="12" fill="#0ea5e9" fill-opacity="0.1" stroke="#2b6380"/>
+        <path d="M17 30h16M25 22v16" stroke="#38bdf8" stroke-width="2" stroke-linecap="round"/>
+        <text x="45" y="26" fill="#eef9ff" font-size="17" font-weight="700">A keeps running</text>
+        <text x="45" y="45" fill="#83c9e9" font-size="12">never modified</text>
+      </g>
+      <g transform="translate(18 133)">
+        <rect width="214" height="58" rx="12" fill="#0ea5e9" fill-opacity="0.16" stroke="#38bdf8" stroke-dasharray="5 4"/>
+        <path d="M25 18v20M18 31l7 7 7-7" fill="none" stroke="#7dd3fc" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        <text x="45" y="26" fill="#eef9ff" font-size="17" font-weight="700">Write complete B</text>
+        <text x="45" y="45" fill="#83c9e9" font-size="12">kernel + root filesystem</text>
+      </g>
+    </g>
+
+    <g transform="translate(616 176)">
+      <rect width="250" height="220" rx="20" fill="url(#cyanCard)" stroke="#2a465a"/>
+      <circle cx="28" cy="28" r="15" fill="#0ea5e9"/>
+      <text x="28" y="33" text-anchor="middle" fill="#fff" font-size="14" font-weight="700">3</text>
+      <text x="52" y="34" fill="#b8e6fe" font-size="14" font-weight="700" letter-spacing="0.9">REQUEST TRYBOOT</text>
+      <g transform="translate(53 66)">
+        <rect width="144" height="98" rx="17" fill="#101b25" stroke="#38bdf8"/>
+        <g stroke="#31516a" stroke-width="3">
+          <path d="M20-6v6M44-6v6M68-6v6M92-6v6M116-6v6"/>
+          <path d="M20 98v6M44 98v6M68 98v6M92 98v6M116 98v6"/>
+        </g>
+        <circle cx="72" cy="39" r="20" fill="#0ea5e9" fill-opacity="0.16" stroke="#38bdf8"/>
+        <path d="M72 27v13l9 5" fill="none" stroke="#7dd3fc" stroke-width="2.5" stroke-linecap="round"/>
+        <text x="72" y="82" text-anchor="middle" fill="#e7f6fd" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="700">ONE-SHOT FLAG</text>
+      </g>
+      <text x="125" y="188" text-anchor="middle" fill="#829fb2" font-size="12">A is still the default</text>
+    </g>
+
+    <g transform="translate(899 176)">
+      <rect width="250" height="220" rx="20" fill="url(#cyanCard)" stroke="#2a465a"/>
+      <circle cx="28" cy="28" r="15" fill="#0ea5e9"/>
+      <text x="28" y="33" text-anchor="middle" fill="#fff" font-size="14" font-weight="700">4</text>
+      <text x="52" y="34" fill="#b8e6fe" font-size="14" font-weight="700" letter-spacing="0.9">BOOT CANDIDATE B</text>
+      <circle cx="125" cy="105" r="54" fill="#0ea5e9" fill-opacity="0.14" stroke="#38bdf8" stroke-width="2"/>
+      <text x="125" y="100" text-anchor="middle" fill="#f7fbff" font-size="32" font-weight="700">B</text>
+      <text x="125" y="122" text-anchor="middle" fill="#7dd3fc" font-size="11" font-weight="700" letter-spacing="1">PROVISIONAL</text>
+      <path d="M78 170h94" stroke="#27465b" stroke-width="7" stroke-linecap="round"/>
+      <path d="M78 170h58" stroke="#38bdf8" stroke-width="7" stroke-linecap="round"/>
+      <text x="125" y="197" text-anchor="middle" fill="#93a8b9" font-size="12">boot + health checks</text>
+    </g>
+  </g>
+
+  <path d="M1024 396V451" fill="none" stroke="#527083" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="1024" cy="459" r="8" fill="#0b0d12" stroke="#7b94a7" stroke-width="3"/>
+
+  <path d="M1016 464C940 488 845 490 741 490V516" fill="none" stroke="#fbbf24" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrowAmber)"/>
+  <path d="M1024 467V516" fill="none" stroke="#34d399" stroke-width="3" stroke-linecap="round" marker-end="url(#arrowGreen)"/>
+
+  <rect x="838" y="476" width="112" height="27" rx="13.5" fill="#29200d" stroke="#fbbf24" stroke-opacity="0.55"/>
+  <text x="894" y="494" text-anchor="middle" fill="#fcd34d" font-family="IBM Plex Sans, sans-serif" font-size="11" font-weight="700" letter-spacing="1">FAILS OR HANGS</text>
+  <rect x="1058" y="476" width="82" height="27" rx="13.5" fill="#0d2822" stroke="#34d399" stroke-opacity="0.6"/>
+  <text x="1099" y="494" text-anchor="middle" fill="#6ee7b7" font-family="IBM Plex Sans, sans-serif" font-size="11" font-weight="700" letter-spacing="1">HEALTHY</text>
+
+  <g transform="translate(616 520)" font-family="IBM Plex Sans, sans-serif" filter="url(#shadow)">
+    <rect width="250" height="130" rx="19" fill="#211b0f" stroke="#fbbf24" stroke-opacity="0.65"/>
+    <circle cx="38" cy="42" r="20" fill="#f59e0b" fill-opacity="0.14" stroke="#fbbf24"/>
+    <path d="M48 42a10 10 0 10-3 7M48 34v8h-8" fill="none" stroke="#fcd34d" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="70" y="38" fill="#fff5d8" font-size="18" font-weight="700">Reboot</text>
+    <text x="70" y="60" fill="#d6b96d" font-size="13">Flag is already cleared</text>
+    <rect x="25" y="86" width="200" height="24" rx="12" fill="#f59e0b" fill-opacity="0.1"/>
+    <text x="125" y="102" text-anchor="middle" fill="#fcd34d" font-family="IBM Plex Sans, sans-serif" font-size="11" font-weight="700" letter-spacing="0.8">FALL BACK TO A</text>
+  </g>
+
+  <g transform="translate(899 520)" font-family="IBM Plex Sans, sans-serif" filter="url(#shadow)">
+    <rect width="250" height="130" rx="19" fill="#0e1c1b" stroke="#34d399" stroke-opacity="0.7"/>
+    <circle cx="38" cy="42" r="20" fill="#34d399" fill-opacity="0.15" stroke="#34d399"/>
+    <path d="M29 42l6 6 13-14" fill="none" stroke="#6ee7b7" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="70" y="38" fill="#dffbf1" font-size="18" font-weight="700">Commit B</text>
+    <text x="70" y="60" fill="#83cdb1" font-size="13">Make B the new default</text>
+    <rect x="25" y="86" width="200" height="24" rx="12" fill="#34d399" fill-opacity="0.1"/>
+    <text x="125" y="102" text-anchor="middle" fill="#6ee7b7" font-family="IBM Plex Sans, sans-serif" font-size="11" font-weight="700" letter-spacing="0.8">UPDATE COMPLETE</text>
+  </g>
+
+  <path d="M616 626H217C194 626 175 607 175 584V402" fill="none" stroke="#fbbf24" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="8 9" marker-end="url(#arrowAmber)" opacity="0.8"/>
+  <text x="416" y="616" text-anchor="middle" fill="#caa84e" font-family="IBM Plex Sans, sans-serif" font-size="12" font-weight="700" letter-spacing="1">AUTOMATIC LOCAL ROLLBACK</text>
+
+  </g>
+</svg>
