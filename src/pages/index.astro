@@ -73,48 +73,54 @@ const tools = [
   {
     href: "/docs/ctrl",
     title: "Rugix Ctrl",
-    blurb: "On-device lifecycle engine.",
-    body: "Atomic A/B system updates with automatic rollback, delta updates, signed and verified updates, and robust state management. Integrates with different fleet management solutions. Optionally, deploy and manage application workloads with Rugix Apps.",
+    blurb: "Manage the device lifecycle.",
+    body: "Provides atomic system and application updates, automatic rollback, efficient delta delivery, signature verification, and flexible management of persistent state. Integrates with various fleet management solutions.",
   },
   {
     href: "/docs/bakery",
     title: "Rugix Bakery",
-    blurb: "Custom Linux build system.",
-    body: "Build custom Linux distributions in days, not months. Based on Debian or Alpine Linux. Container-based reproducible builds, multiple system variants, integrated testing with VM support, and SBOM generation. OTA updates powered by Rugix Ctrl.",
+    blurb: "Build custom Linux systems.",
+    body: "Builds production-ready distributions based on Debian, Alpine Linux, and Raspberry Pi OS, with reproducible container-based builds, system variants, VM testing, SBOMs, and OTA updates powered by Rugix Ctrl.",
+  },
+  {
+    href: "/docs/admin",
+    title: "Rugix Admin",
+    blurb: "Operate devices locally.",
+    body: "Provides a lightweight, browser-based interface for inspecting system status, installing updates, managing application workloads, and diagnosing individual devices during development, demos, and field service.",
   },
 ];
 
 const proofPoints = [
   "System Updates",
-  "App Management",
-  "Declarative State",
+  "Application Updates",
+  "Persistent State",
   "Delta Delivery",
-  "Factory Resets",
+  "Secure Updates",
   "No Lock-In",
 ];
 
 const valueProps = [
   {
-    label: "Robust and Secure Updates",
-    title: "Update with confidence.",
-    body: "Deploy verified system and app updates that are bandwidth-efficient and able to roll back automatically when something goes wrong.",
+    label: "Reliable Updates",
+    title: "Update with confidence",
+    body: "Deploy signed system and application updates atomically, with automatic rollback and compatibility checks.",
   },
   {
     label: "State Management",
-    title: "Prevent drift.",
-    body: "Keep the running system immutable and persist only the state you declare, so devices stay predictable instead of accumulating unintended drift.",
+    title: "Keep devices predictable",
+    body: "Separate persistent state from replaceable software for clean updates, controlled factory resets, and less drift.",
   },
   {
-    label: "Cyber-Resilience",
-    title: "Maintain trust.",
-    body: "Signed updates and mandatory verification keep device changes under your control, so systems can stay trustworthy over their lifetime.",
+    label: "No Vendor Lock-In",
+    title: "Keep your options open",
+    body: "Use your preferred build system, boot process, and fleet management platform without being locked into a vendor.",
   },
 ];
 ---
 
 <BaseLayout
-  title="Rugix: OTA Updates, Apps, and State for Embedded Linux"
-  description="Rugix provides an open-source on-device foundation for OTA system updates, apps, and state, without tying your product to a build system or cloud backend."
+  title="Rugix: The Open Lifecycle Layer for Embedded Linux"
+  description="Rugix provides an open-source foundation for building and maintaining robust Linux-powered products, from development to production, without tying you to a build system or cloud backend."
   brand={brand}
   nav={nav}
   actions={headerActions}
@@ -167,13 +173,13 @@ const valueProps = [
   <Section background="section" padding="default" class="!pt-8 md:!pt-12">
     <div class="mx-auto max-w-2xl text-center">
       <h2 class="font-display text-3xl font-bold md:text-4xl">
-        Two Tools. One Goal.
+        The Rugix Toolkit
       </h2>
       <p class="text-content-muted mt-4 text-lg">
-        Build and maintain production-ready Linux devices at scale.
+        Build, deploy, and operate production-ready Linux devices.
       </p>
     </div>
-    <div class="mx-auto mt-12 grid max-w-5xl gap-6 md:grid-cols-2">
+    <div class="mx-auto mt-12 grid max-w-6xl gap-6 md:grid-cols-3">
       {
         tools.map((tool) => (
           <a
@@ -183,7 +189,7 @@ const valueProps = [
             <h3 class="font-display text-xl font-semibold">{tool.title}</h3>
             <p class="text-content text-sm font-semibold">{tool.blurb}</p>
             <p class="text-content-muted text-sm leading-relaxed">{tool.body}</p>
-            <span class="text-primary inline-flex items-center gap-2 text-sm font-medium">
+            <span class="text-primary mt-auto inline-flex items-center gap-2 pt-2 text-sm font-medium">
               Learn more <FaIcon icon={faArrowRight} class="text-xs" />
             </span>
           </a>
@@ -191,23 +197,22 @@ const valueProps = [
       }
     </div>
     <p class="text-content-muted mx-auto mt-10 max-w-xl text-center text-sm leading-relaxed">
-      Rugix Ctrl runs on your device and manages system updates, apps, and
-      state. Rugix Bakery builds the system images. Use both together for a
-      complete solution, or integrate Rugix Ctrl into your existing Yocto or
-      Buildroot workflow.
+      Use the complete toolkit, or adopt Rugix Ctrl independently. It works
+      with Yocto, Buildroot, other Linux build systems, and a variety of fleet
+      management solutions.
     </p>
   </Section>
 
   <Section background="none" padding="default">
     <div class="mx-auto max-w-2xl text-center">
       <h2 class="font-display text-3xl font-bold md:text-4xl">
-        Ready for the Field, Not Just the Lab.
+        Ready for the Field, Not Just the Lab
       </h2>
       <p class="text-content-muted mt-4 text-lg">
-        Reliable device maintenance is essential for production, but hard to
-        get right. Rugix provides the on-device foundation for system updates,
-        app management, and state, so your team can focus on the product
-        instead of reinventing lifecycle plumbing.
+        Maintaining devices reliably is hard. Rugix provides the on-device
+        foundation for system updates, application lifecycle management, and
+        persistent state, so your team can focus on the product instead of
+        reinventing lifecycle plumbing.
       </p>
     </div>
     <div class="mx-auto mt-12 grid max-w-5xl gap-6 md:grid-cols-3">
@@ -270,7 +275,7 @@ const valueProps = [
       }
     </style>
     <div class="mx-auto mt-12 grid max-w-5xl gap-6 md:grid-cols-3">
-      <blockquote class="card flex flex-col gap-4 p-6 italic">
+      <blockquote class="card flex flex-col justify-center gap-4 p-6 italic">
         <p class="text-content leading-relaxed">
           "When you ship OTA updates to tens of thousands of devices in
           people's homes, you need rock-solid reliability. Rugix delivers
@@ -280,7 +285,7 @@ const valueProps = [
           Luke Childs, CTO at <Link href="https://umbrel.com/" external>Umbrel</Link>
         </footer>
       </blockquote>
-      <blockquote class="card flex flex-col gap-4 p-6 italic">
+      <blockquote class="card flex flex-col justify-center gap-4 p-6 italic">
         <p class="text-content leading-relaxed">
           "If you're not using Rugix, you're making things harder than they
           need to be."
@@ -289,7 +294,7 @@ const valueProps = [
           David Lekve, CTO at <Link href="https://enmo.ai" external>enmo</Link>
         </footer>
       </blockquote>
-      <blockquote class="card flex flex-col gap-4 p-6 italic">
+      <blockquote class="card flex flex-col justify-center gap-4 p-6 italic">
         <p class="text-content leading-relaxed">
           "Rugix is thoughtfully designed, fast to get started with, and
           flexible in all the right ways. It's the tool suite for embedded
