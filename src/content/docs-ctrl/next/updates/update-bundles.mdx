@@ -51,6 +51,11 @@ As an example, consider a full [system update](../system-updates/) for a device 
       note: "the payload files referenced by the manifest",
       children: [{ name: "boot.vfat" }, { name: "system.ext4" }],
     },
+    {
+      name: "components/",
+      note: "optional compatibility metadata embedded into the bundle header",
+      children: [{ name: "system.toml" }],
+    },
   ]}
 />
 
@@ -91,6 +96,8 @@ Rugix Bundler then packs the directory into a single bundle file:
 ```shell
 rugix-bundler bundle BUNDLE_DIR OUTPUT.rugixb
 ```
+
+If the bundle directory contains a top-level `components/` directory, Rugix Bundler embeds those `.toml` or `.json` component declarations into the bundle header. Rugix Ctrl uses them for [compatibility checks](./compatibility) before installing system or app updates.
 
 :::info
 Without a `block-encoding`, Rugix Ctrl isn't able to verify individual blocks of an update and will thus refuse installation. **Always add a `block-encoding` to every payload.**
@@ -149,6 +156,8 @@ Use the bundle hash when you control the distribution channel end to end, such a
 :::danger
 You can skip bundle verification with `--insecure-skip-bundle-verification`. **Never use this option for updates in production.**
 :::
+
+If a bundle declares components, Rugix Ctrl checks the candidate component set before installation. This can be bypassed with `--skip-compatibility-check` as an explicit operational override. See [Compatibility Checks](./compatibility) for the component format and check behavior.
 
 ## Reference
 

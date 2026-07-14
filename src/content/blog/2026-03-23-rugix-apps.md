@@ -43,7 +43,7 @@ Rugix Apps extends Rugix Ctrl with first-class application lifecycle management.
 
 **Cryptographic verification.** Application bundles are verified using the same signature mechanism as system updates. Rugix Ctrl [requires bundle verification by default](/blog/releases/1.0), so every application deployed to your devices is cryptographically authenticated.
 
-**Efficient delta updates.** Application bundles use the same [bundle format](/docs/ctrl/advanced/update-bundles) as system updates, which means they benefit from Rugix's [highly-efficient delta update capabilities](/blog/efficient-delta-updates). Delta compression and block-level diffing ensure that the device only needs to download what has actually changed.
+**Efficient delta updates.** Application bundles use the same [bundle format](/docs/ctrl/updates/update-bundles) as system updates, which means they benefit from Rugix's [highly-efficient delta update capabilities](/blog/efficient-delta-updates). Delta compression and block-level diffing ensure that the device only needs to download what has actually changed.
 
 Application workloads are diverse: Docker Compose stacks, standalone binaries, custom daemons. Rather than prescribing a single model, Rugix Apps is built on a pluggable orchestrator mechanism. Built-in orchestrators cover Docker Compose and single binaries. For anything else, a generic orchestrator lets users provide simple scripts for starting, stopping, and checking the workload. The scripts only handle the workload-specific logic; Rugix Apps takes care of versioning, atomicity, rollback, and crash recovery around them. Orchestrators can plug into the system's service manager for process supervision and boot-time startup, with systemd supported out of the box.
 
@@ -118,11 +118,13 @@ rugix-bundler apps pack docker-compose \
 This single command:
 
 1. Generates the app manifest with `orchestrator = "docker-compose"`.
-2. Pulls the container images referenced in the compose file for the specified platform.
-3. Saves the images as a tarball so the bundle is fully self-contained.
-4. Packages everything into a [Rugix Bundle](/docs/ctrl/advanced/update-bundles).
+2. Copies registry images referenced in the compose file for the specified platform.
+3. Builds any services with Compose `build:` entries using Podman by default.
+4. Saves each bundled image as a tarball so the bundle is fully self-contained.
+5. Rewrites the packaged Compose file to Rugix-owned bundle-local image tags with `pull_policy: never`.
+6. Packages everything into a [Rugix Bundle](/docs/ctrl/updates/update-bundles).
 
-The `--pull` flag ensures the images are fetched before saving. The `--platform` flag targets the device architecture. The `--include` flag adds extra files (here, the Mosquitto configuration) to the bundle. If your devices pull images from a container registry at runtime, pass `--disable-image-bundling` to skip bundling the images and keep the bundle small. Rugix Bundler will also automatically pin the included images based on their digest. If you don't want that use `--disable-pinning`.
+The `--platform` flag targets the device architecture. The `--include` flag adds extra files (here, the Mosquitto configuration) to the bundle. If your Compose file contains `build:` entries, they are built with Podman by default; use `--builder docker` to build with Docker instead. If your devices pull images from a container registry at runtime, pass `--disable-image-bundling` to skip bundling the images and keep the bundle small. To keep the original Compose `image:` references in the packaged file, pass `--disable-pinning`; the images are still bundled under those original references.
 
 Rugix Bundler will output a bundle hash of the following form:
 
@@ -138,7 +140,7 @@ Transfer the bundle to the device and install it:
 rugix-ctrl apps install --bundle-hash <hash> iot-gateway-v1.rugixb
 ```
 
-This extracts the payloads into a new version, marks it complete, and activates it, which loads the container images with `docker image load` and runs `docker compose up -d`. Mosquitto is now listening on port 1883 and Node-RED is accessible on port 1880.
+This extracts the payloads into a new generation, marks it complete, and activates it, which loads the container images with `docker image load` and runs `docker compose up -d --wait`. Mosquitto is now listening on port 1883 and Node-RED is accessible on port 1880.
 
 You can verify the app is running with:
 
@@ -146,15 +148,15 @@ You can verify the app is running with:
 rugix-ctrl apps list
 ```
 
-**What if something goes wrong?** If activation fails (e.g., a container fails to start), and a previous version exists, Rugix Apps automatically rolls back to it. If the device loses power mid-installation, the incomplete version is never marked as ready. On the next boot, crash recovery detects any interrupted transitions and replays them. In either case, the device converges to a working state without manual intervention.
+**What if something goes wrong?** If activation fails (e.g., a container fails to start), and a previous generation exists, Rugix Apps automatically rolls back to it. If the device loses power mid-installation, the incomplete generation is never marked as ready. On the next boot, crash recovery detects any interrupted transitions and replays them. In either case, the device converges to a working state without manual intervention.
 
 :::note
-Automatic crash recovery and systemd unit restoration require [systemd services](https://github.com/rugix/rugix/tree/main/crates/apps/rugix-ctrl/assets) to be installed on the device. See the [reference documentation](/docs/ctrl/application-updates/reference#crash-recovery) for details.
+Automatic crash recovery and systemd unit restoration require [systemd services](https://github.com/rugix/rugix/tree/main/crates/apps/rugix-ctrl/assets) to be installed on the device. See the [reference documentation](/docs/ctrl/application-management/internals#crash-recovery) for details.
 :::
 
 ### Step 4: Update
 
-To ship a new version, update the compose file, pack a new bundle, and install it:
+To ship a new generation, update the compose file, pack a new bundle, and install it:
 
 ```shell
 rugix-bundler apps pack docker-compose \
@@ -170,7 +172,7 @@ rugix-bundler apps pack docker-compose \
 rugix-ctrl apps install --bundle-hash <hash> iot-gateway-v2.rugixb
 ```
 
-Rugix Ctrl deactivates the old version (`docker compose down`), loads the new images, and activates the new version (`docker compose up -d`). The previous version remains on disk, so rolling back is a single command:
+Rugix Ctrl deactivates the old generation (`docker compose down`), loads the new images, and activates the new generation (`docker compose up -d --wait`). The previous generation remains on disk, so rolling back is a single command:
 
 ```shell
 rugix-ctrl apps rollback iot-gateway
@@ -180,9 +182,9 @@ rugix-ctrl apps rollback iot-gateway
 
 With Rugix Apps, Rugix Ctrl now handles application updates and lifecycle management in addition to system updates. Both use the same bundle format, the same CLI, and the same verification model. You maintain one base system image for your entire fleet and compose the right set of workloads per device, customer, or site. Platform and application teams ship on their own schedules, independently.
 
-The feature is modular: it works with or without Rugix system updates, state management, or Bakery. The pluggable orchestrator mechanism supports Docker Compose, systemd-managed binaries, and arbitrary workloads via shell scripts. And because app bundles build on the same format as system updates, you get [delta updates](/blog/efficient-delta-updates), [cryptographic verification](/docs/ctrl/signed-updates), streaming installation, and compression without any extra effort.
+The feature is modular: it works with or without Rugix system updates, state management, or Bakery. The pluggable orchestrator mechanism supports Docker Compose, systemd-managed binaries, and arbitrary workloads via shell scripts. And because app bundles build on the same format as system updates, you get [delta updates](/blog/efficient-delta-updates), [cryptographic verification](/docs/ctrl/updates/signed-updates), streaming installation, and compression without any extra effort.
 
-Rugix Apps is available as an experimental feature in Rugix Ctrl. Unlike the core system update mechanism, which has been battle-tested at scale, Rugix Apps is new and its interfaces may still change in future releases. Check out the [documentation](/docs/ctrl/application-updates/) for the full reference, including the complete CLI, all orchestrator options, and details on crash recovery and Systemd integration. We welcome feedback and contributions on [GitHub](https://github.com/rugix/rugix), and if you have questions, join our [Discord community](https://discord.gg/cZ8wP9jNsn).
+Rugix Apps is available as an experimental feature in Rugix Ctrl. Unlike the core system update mechanism, which has been battle-tested at scale, Rugix Apps is new and its interfaces may still change in future releases. Check out the [documentation](/docs/ctrl/application-management/) for the full reference, including the complete CLI, all orchestrator options, and details on crash recovery and systemd integration. We welcome feedback and contributions on [GitHub](https://github.com/rugix/rugix), and if you have questions, join our [Discord community](https://discord.gg/cZ8wP9jNsn).
 
 ---
 
