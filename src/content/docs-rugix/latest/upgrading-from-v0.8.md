@@ -1,5 +1,4 @@
 ---
-
 ---
 
 # Upgrading from v0.8
@@ -34,6 +33,14 @@ Rugix Bakery now uses rootless Podman by default to build images and update bund
 Make sure to delete the directories `.rugix` and `build` after the update. Those are then recreated by Rugix Bakery. This ensures that those directories have correct permissions and ownership as required for rootless Podman to work.
 :::
 
-The `rugix_admin` option of the `core/rugix-ctrl` recipe has been removed. You can now install Rugix Admin via the [`rugix-extra` repository](https://github.com/rugix/rugix-extra).
+The `rugix_admin` option of the `core/rugix-ctrl` recipe has been removed. You can now install Rugix Admin via the [`rugix-extra` repository](https://github.com/rugix/rugix-extra). Its `rugix-admin` recipe depends on the optional `core/rugix-ctrl-daemon` recipe, whose privileged operations are disabled by default. Enable only the operations required by your deployment:
+
+```toml
+[parameters."core/rugix-ctrl-daemon"]
+factory_reset = true
+system_commit = true
+system_reboot = true
+app_lifecycle = true
+```
 
 Rugix Bakery used to install the version of Rugix Ctrl bundled with the Rugix Bakery container image. Going forward, Rugix Bakery will now download and install Rugix Ctrl directly from GitHub releases (using Debian packages for Debian). This allows us to independently release new Rugix Ctrl versions without releasing new versions of Rugix Bakery. You don't have to do anything for this to take effect. If you want to pin your build to a specific version of Rugix Ctrl, you can use the `version` parameter of the `core/rugix-ctrl` recipe.
