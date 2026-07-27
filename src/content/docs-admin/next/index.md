@@ -26,7 +26,7 @@ Rugix Admin focuses on the operations that are useful on one device:
 - **Component compatibility.** Review scanned roots, loaded components, capabilities, claims, and consistency problems.
 - **Job tracking.** Follow queued and running operations with progress, status, and command output.
 
-Because Rugix Admin shells out to `rugix-ctrl`, the command-line tool remains the source of truth. The web UI reflects the same state and calls the same operations you can run manually over SSH.
+Because Rugix Admin shells out to `rugix-ctrl`, the command-line tool remains the source of truth. The installed HTTP service runs as an unprivileged user; Rugix Ctrl forwards its supported commands to the [privileged operation daemon](/docs/ctrl/next/reference/privileged-daemon) over a group-restricted Unix socket. The daemon configuration determines which destructive operation families Rugix Admin may request.
 
 ## What Rugix Admin Does Not Do
 
