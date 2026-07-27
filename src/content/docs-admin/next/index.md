@@ -36,4 +36,4 @@ Rugix Admin is deliberately not a fleet manager. It does not connect devices to 
 
 ## Where to Start
 
-Install and run Rugix Admin on the device next to `rugix-ctrl`, then open the configured service address in a browser. See [HTTP API](./http-api) for the current status of the internal HTTP API.
+Install and run Rugix Admin on the device next to `rugix-ctrl`, then open `http://<device-address>:7492/` in a browser. See [HTTP API](./http-api) for the current status of the internal HTTP API.
