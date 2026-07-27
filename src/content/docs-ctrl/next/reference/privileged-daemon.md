@@ -42,6 +42,20 @@ feature flags. Additional operation families are disabled by default:
 The daemon applies these checks before invoking the canonical local operation
 implementation.
 
+## Effective Policy
+
+Clients can query the policy enforced by the running daemon through Rugix
+Ctrl's public command-line interface:
+
+```sh
+rugix-ctrl daemon info --json
+```
+
+The output reports `dangerouslyInsecure` and the effective state of every
+optional operation family. The command queries the running daemon over its Unix
+socket, so clients do not need to read or interpret `daemon.toml` themselves.
+The socket protocol remains an internal implementation detail.
+
 ## Installation Security
 
 An unprivileged caller cannot select its own trust policy by default. The daemon
