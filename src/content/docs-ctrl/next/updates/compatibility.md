@@ -5,6 +5,8 @@ order: 35
 
 Compatibility checks let Rugix Ctrl reject an update before installation when the update is known to be incompatible with the device, the installed operating system, or active applications.
 
+Component compatibility checks are an **experimental feature**. The component model, declaration format, CLI, and checking behavior may change as we gain practical experience with deployments.
+
 The mechanism is based on **components**. A component describes one installed or candidate system component, app, runtime, hardware fact, or Rugix-provided fact. Components provide capabilities, claim exclusive resources, require capabilities, and may conflict with capabilities.
 
 ## Why It Matters
@@ -50,7 +52,7 @@ A component set is consistent when:
 
 Claims do not satisfy requirements. If another component should be able to depend on the resource or discover a service, publish a separate capability in `provides`.
 
-Selectors match by capability ID first. If a selector includes `version`, the matched capability must have a version satisfying that requirement. If a selector includes `value`, the matched capability must have exactly that value.
+Selectors match by capability ID first. A selector may include either `version` or `value`. A version selector requires a matching capability version, while a value selector requires an exact value match.
 
 ## Installed Component Sources
 
@@ -67,6 +69,8 @@ Rugix Ctrl currently loads components from:
 | `Synthetic` | `rugix:synthetic`                                     | Facts synthesized by Rugix Ctrl itself.                                          |
 
 Missing component roots are ignored. If a root exists but is not a directory, cannot be read, or contains an invalid component file, Rugix Ctrl reports an error.
+
+Component declarations reject unknown fields. Capabilities and selectors must not specify both `version` and `value`.
 
 Only active app generations contribute app-owned components. Inactive app generations do not affect compatibility checks.
 
