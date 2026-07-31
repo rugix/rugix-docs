@@ -7,7 +7,11 @@
  * `<ArticleLayout>` `sidebar` slot.
  */
 import { getCollection } from "astro:content";
-import { dateFromId, slugFromEntry } from "../lib/blog.ts";
+import {
+  dateFromId,
+  isBlogPostVisible,
+  slugFromEntry,
+} from "../lib/blog.ts";
 
 interface Props {
   /** Slug (without `/blog/` prefix) of the post being viewed. */
@@ -20,7 +24,7 @@ const { currentSlug, title = "All Posts" } = Astro.props;
 
 const posts = await getCollection("blog");
 const sorted = posts
-  .filter((p) => !p.data.draft)
+  .filter(isBlogPostVisible)
   .map((p) => ({
     title: p.data.title ?? slugFromEntry(p),
     slug: slugFromEntry(p),

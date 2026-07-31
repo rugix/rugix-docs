@@ -1,5 +1,10 @@
 import type { CollectionEntry } from "astro:content"
 
+/** Returns whether a blog post should be exposed by the current build. */
+export function isBlogPostVisible(entry: CollectionEntry<"blog">): boolean {
+  return import.meta.env.DEV || !entry.data.draft
+}
+
 /**
  * Pulls a `Date` out of a Docusaurus-style filename prefix, e.g.
  * `2025-07-15-efficient-delta-updates`. Falls back to "now" if the file

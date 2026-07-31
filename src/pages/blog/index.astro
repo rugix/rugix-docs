@@ -11,7 +11,13 @@ import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import SiteFooter from "../../layouts/SiteFooter.astro";
 import BlogSidebar from "../../components/BlogSidebar.astro";
 import { brand, nav, headerActions } from "../../site.ts";
-import { dateFromId, slugFromEntry, tagHref, teaserFor } from "../../lib/blog.ts";
+import {
+  dateFromId,
+  isBlogPostVisible,
+  slugFromEntry,
+  tagHref,
+  teaserFor,
+} from "../../lib/blog.ts";
 
 /*
  * Pre-render every post's teaser to HTML at build time so the blog
@@ -22,7 +28,7 @@ import { dateFromId, slugFromEntry, tagHref, teaserFor } from "../../lib/blog.ts
  */
 const posts = await getCollection("blog");
 const sorted = posts
-  .filter((p) => !p.data.draft)
+  .filter(isBlogPostVisible)
   .map((p) => {
     const teaser = teaserFor(p);
     return {

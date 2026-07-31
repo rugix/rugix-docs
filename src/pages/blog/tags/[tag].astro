@@ -13,6 +13,7 @@ import BlogSidebar from "../../../components/BlogSidebar.astro";
 import { brand, nav, headerActions } from "../../../site.ts";
 import {
   dateFromId,
+  isBlogPostVisible,
   slugFromEntry,
   tagHref,
   tagSlug,
@@ -23,7 +24,7 @@ export async function getStaticPaths() {
   const posts = await getCollection("blog");
   const tags = new Map<string, { label: string; posts: typeof posts }>();
 
-  for (const post of posts.filter((p) => !p.data.draft)) {
+  for (const post of posts.filter(isBlogPostVisible)) {
     for (const tag of post.data.tags ?? []) {
       const slug = tagSlug(tag);
       const group = tags.get(slug);

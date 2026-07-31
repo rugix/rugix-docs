@@ -5,12 +5,17 @@ import { DocsToc } from "@silitics/astro-docs";
 import SiteFooter from "../../layouts/SiteFooter.astro";
 import BlogSidebar from "../../components/BlogSidebar.astro";
 import { brand, nav, headerActions } from "../../site.ts";
-import { KOEHLMA, dateFromId, slugFromEntry } from "../../lib/blog.ts";
+import {
+  KOEHLMA,
+  dateFromId,
+  isBlogPostVisible,
+  slugFromEntry,
+} from "../../lib/blog.ts";
 
 export async function getStaticPaths() {
   const posts = await getCollection("blog");
   return posts
-    .filter((p) => !p.data.draft)
+    .filter(isBlogPostVisible)
     .map((post) => ({
       params: { slug: slugFromEntry(post) },
       props: { post },
