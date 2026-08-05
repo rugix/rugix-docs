@@ -29,7 +29,6 @@ Use `rugix-bundler` to package the application into an app bundle:
 
 ```shell
 rugix-bundler apps pack docker-compose \
-    --pull \
     --platform linux/arm64 \
     --app my-app \
     --include mosquitto.conf \
@@ -40,17 +39,44 @@ rugix-bundler apps pack docker-compose \
 This command:
 
 1. Generates the `app.toml` manifest with `orchestrator = "docker-compose"`.
-2. Pulls the container images referenced in the compose file for the specified platform.
-3. Saves the images as a tarball so the bundle is fully self-contained.
-4. Packages everything into a [Rugix Bundle](../../../updates/update-bundles).
+2. Copies registry images referenced in the compose file for the specified platform.
+3. Builds services with Compose `build:` entries using Podman by default.
+4. Saves each bundled image as a tarball so the bundle is fully self-contained.
+5. Rewrites the packaged Compose file to Rugix-owned bundle-local image tags with `pull_policy: never`.
+6. Packages everything into a [Rugix Bundle](../../../updates/update-bundles).
+
+Image bundling requires `skopeo` on the build machine. Services with Compose
+`build:` entries additionally require the selected builder (`podman` by default,
+or `docker` when using `--builder docker`).
 
 **Options:**
 
-- `--pull` ensures the latest images are fetched before saving.
+- `--pull` only affects services with Compose `build:` entries. It passes `--pull` to Podman/Docker so Dockerfile `FROM` images are refreshed before building the service image. Services that only declare `image:` are copied by Skopeo and are unaffected.
+- `--builder` selects the builder for Compose `build:` entries. The default is `podman`; use `--builder docker` to build with Docker instead.
 - `--platform` targets the device architecture (e.g., `linux/arm64`, `linux/amd64`).
 - `--include` adds extra files or directories to the bundle.
+- `--components` adds component TOML or JSON files and directories to the bundle's compatibility metadata.
+- `--health-check-timeout` writes the Docker Compose health-check timeout into `app.toml`. The default is 120 seconds; use `0` to disable waiting.
+- `--metadata-file` includes an app metadata JSON file as `app-meta.json`.
 - `--disable-image-bundling` skips bundling container images, useful when devices pull images from a registry at runtime.
-- `--disable-pinning` skips pinning bundled images.
+- `--disable-pinning` keeps the Compose `image:` references as-is instead of rewriting them to Rugix-owned content tags. Images are still bundled under those original references.
+
+By default, services with `build:` entries are built locally and services with
+only `image:` entries are copied from a registry. To bundle an image that
+already exists in local container storage, add an `x-rugix` extension to the
+service:
+
+```yaml
+services:
+  worker:
+    image: localhost/example/worker:dev
+    x-rugix:
+      image:
+        source: containers-storage # or docker-daemon
+```
+
+Use `x-rugix.image.ref` only when the local source reference differs from the
+Compose `image:` reference.
 
 ### 3. Install on the Device
 
@@ -58,7 +84,7 @@ This command:
 rugix-ctrl apps install --bundle-hash HASH my-app-v1.rugixb
 ```
 
-This extracts the payloads, loads the container images with `docker image load`, and runs `docker compose up -d`.
+This extracts the payloads, loads the container images with `docker image load`, and runs `docker compose up -d --wait`.
 
 ### 4. Update
 
@@ -68,7 +94,7 @@ Update the compose file or image tags, pack a new bundle, and install it:
 rugix-ctrl apps install --bundle-hash HASH my-app-v2.rugixb
 ```
 
-The old generation is deactivated (`docker compose down`), then the new generation is activated (`docker compose up -d`). The previous generation remains on disk for rollback.
+The old generation is deactivated (`docker compose down`), then the new generation is activated (`docker compose up -d --wait`). The previous generation remains on disk for rollback.
 
 ## Generation Directory
 

@@ -26,7 +26,7 @@ Rugix Admin focuses on the operations that are useful on one device:
 - **Component compatibility.** Review scanned roots, loaded components, capabilities, claims, and consistency problems.
 - **Job tracking.** Follow queued and running operations with progress, status, and command output.
 
-Because Rugix Admin shells out to `rugix-ctrl`, the command-line tool remains the source of truth. The installed HTTP service runs as an unprivileged user; Rugix Ctrl forwards its supported commands to the [privileged operation daemon](/docs/ctrl/next/reference/privileged-daemon) over a group-restricted Unix socket. Rugix Admin queries the daemon's effective policy and displays only the optional operation families it enables.
+Because Rugix Admin shells out to `rugix-ctrl`, the command-line tool remains the source of truth. The installed HTTP service runs as an unprivileged user; Rugix Ctrl forwards its supported commands to the [privileged operation daemon](/docs/ctrl/reference/privileged-daemon) over a group-restricted Unix socket. Rugix Admin queries the daemon's effective policy and displays only the optional operation families it enables.
 
 The daemon accepts signed system and application installations without an additional feature flag. Enabling `dangerously-insecure` in the daemon permits callers to bypass Rugix Ctrl's verification and compatibility checks; Rugix Admin displays a red development-only warning when that policy is active.
 

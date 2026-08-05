@@ -58,9 +58,14 @@ In addition, a boot flow may support the following operations:
 - `mark_good(group)`: Mark the given boot group as _good_.
 - `mark_bad(group)`: Mark the given boot group as _bad_.
 - `get_active()`: Get active boot group.
+- `capabilities()`: Report additional boot-flow capabilities.
 
 The `mark_good` and `mark_bad` operations are useful for implementing a dead man's switch, where the bootloader triggers a failover to another boot group after a certain number of failed boot attempts.
 Rugix Ctrl will **not** automatically mark boot groups as _good_ or _bad_, instead an external mechanism is required to monitor the system and trigger the marking through `rugix-ctrl boot`.
+
+The `capabilities` operation allows a boot flow to report optional behavior that Rugix Ctrl may rely on during boot.
+For now, the only capability is `userspaceFailureRecovery`, which indicates that the boot flow can recover from a failed userspace boot.
+If Rugix Ctrl initialization fails while the current system is already committed and this capability is not reported, Rugix Ctrl will execute the underlying init process anyway instead of stopping in its own init error path.
 
 :::note[Info]
 While a dead man's switch sounds like a great idea, it can also backfire.
@@ -209,11 +214,19 @@ We may also add further, optional operations, hence, your script should not do a
 Following these rules minimizes churn on your end.
 The boot flow is expected to produce JSON output on stdout.
 
-For now, all operations except `get_default` should simply return an empty JSON object on stdout and indicate success/failure, as usual, through the return code. The output of `get_default` is expected to have the following form:
+For now, all operations except `get_default`, `get_active`, and `capabilities` should simply return an empty JSON object on stdout and indicate success/failure, as usual, through the return code. The output of `get_default` and `get_active` is expected to have the following form:
 
 ```json
 { "group": "<name of the boot group>" }
 ```
+
+The optional `capabilities` operation takes no arguments and should return a JSON object with any supported capabilities:
+
+```json
+{ "userspaceFailureRecovery": true }
+```
+
+If `userspaceFailureRecovery` is unset or `false`, Rugix Ctrl assumes that the boot flow cannot recover from a userspace boot failure once the current system is committed.
 
 :::note[Info]
 Custom boot flows can be used to realize a variety of different update setups and integrate with bootloaders not natively supported by Rugix Ctrl.

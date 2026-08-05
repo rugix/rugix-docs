@@ -166,9 +166,14 @@ To see the current state of the system, including which system is active and whi
 rugix-ctrl system info
 ```
 
-The command prints JSON. The full schema of its output is:
+The command prints JSON. The following schema shows fields supported since Rugix Ctrl 1.2:
 
 <SidexViewer ir={rugixCtrlIr} type="output.SystemInfoOutput" initialDepth={1} />
+
+When state management falls back to in-memory state after an error, `state.status` remains `Error`.
+The error may include a human-readable `message` and an `ephemeral` flag indicating that changes
+may not persist. This keeps the status compatible with earlier Rugix Ctrl versions while providing
+details about the degraded state.
 
 The schema is defined in [`output.sidex`](https://github.com/rugix/rugix/blob/main/crates/apps/rugix-ctrl/schemas/output.sidex).
 

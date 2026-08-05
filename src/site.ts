@@ -225,7 +225,7 @@ export const getRugixDocsConfig = memoizeDocsConfig(
 )
 
 /**
- * Rugix Ctrl docs at `/docs/ctrl/`. The released `1.2` line is the
+ * Rugix Ctrl docs at `/docs/ctrl/`. The released `1.3` line is the
  * default and lives at `/docs/ctrl/`; the rolling `next` branch lives
  * at `/docs/ctrl/next/`. The docs are organized around Rugix Ctrl's
  * capabilities: a Get Started group (the Introduction page), the
@@ -239,12 +239,12 @@ export const getCtrlDocsConfig = memoizeDocsConfig(
     const all = await getCollection("docs-ctrl")
     const versions = [
       {
-        slug: "1.2",
-        label: "1.2",
+        slug: "1.3",
+        label: "1.3",
         status: "current" as const,
         default: true,
         pathPrefix: "/docs/ctrl/",
-        editBaseUrl: `${REPO_EDIT_BASE}/docs-ctrl/1.2`,
+        editBaseUrl: `${REPO_EDIT_BASE}/docs-ctrl/1.3`,
       },
       {
         slug: "next",

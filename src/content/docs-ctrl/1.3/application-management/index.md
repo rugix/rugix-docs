@@ -47,6 +47,8 @@ Rugix Ctrl requires every bundle to be verified before installation. If your bun
 rugix-ctrl apps install --bundle-hash HASH my-app.rugixb
 ```
 
+App bundles can also declare [compatibility metadata](../updates/compatibility) in the bundle's top-level `components/` directory. Rugix Ctrl checks that metadata before installation and persists it into the new app generation's `.rugix/components` directory. App commands that change the active component set, such as install, activate, deactivate, rollback, and remove, accept `--skip-compatibility-check` when you intentionally want to bypass that consistency check.
+
 For Docker Compose apps, `rugix-bundler` provides a dedicated packing command. See the [Docker Compose orchestrator](./orchestrators/docker-compose) page for details.
 
 ## Updating an App

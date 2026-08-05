@@ -1,6 +1,6 @@
 ---
 /*
- * Rugix Ctrl default-version docs (1.2) at `/docs/ctrl/<slug>`.
+ * Rugix Ctrl default-version docs (1.3) at `/docs/ctrl/<slug>`.
  */
 import { getCollection, render } from "astro:content";
 import { DocsLayout, titleize } from "@silitics/astro-docs";
@@ -16,16 +16,16 @@ export async function getStaticPaths() {
   const entries = await getCollection("docs-ctrl");
   const paths = entries
     .filter((entry) => !entry.data.draft)
-    .filter((entry) => entry.id === "1.2" || entry.id.startsWith("1.2/"))
-    .filter((entry) => entry.id !== "1.2/introduction")
+    .filter((entry) => entry.id === "1.3" || entry.id.startsWith("1.3/"))
+    .filter((entry) => entry.id !== "1.3/introduction")
     .map((entry) => {
-      const slug = entry.id === "1.2" ? "" : entry.id.slice("1.2/".length);
+      const slug = entry.id === "1.3" ? "" : entry.id.slice("1.3/".length);
       return {
         params: { slug: slug || undefined },
         props: { entry, pageSlug: slug },
       };
     });
-  const introduction = entries.find((entry) => entry.id === "1.2/introduction");
+  const introduction = entries.find((entry) => entry.id === "1.3/introduction");
   if (introduction !== undefined && !introduction.data.draft) {
     paths.push({
       params: { slug: undefined },
@@ -35,7 +35,7 @@ export async function getStaticPaths() {
   return paths;
 }
 
-const DEFAULT_VERSION = "1.2";
+const DEFAULT_VERSION = "1.3";
 const { entry, pageSlug } = Astro.props;
 const docsConfig = await getCtrlDocsConfig();
 const { Content, headings } = await render(entry);
