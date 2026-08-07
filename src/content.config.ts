@@ -1,6 +1,7 @@
-import { defineCollection, z } from "astro:content";
-import { glob } from "astro/loaders";
-import { articleSchema } from "@silitics/astro-theme/content";
+import { defineCollection } from "astro:content"
+import { glob } from "astro/loaders"
+import { z } from "astro/zod"
+import { articleSchema } from "@silitics/astro-theme/content"
 
 /*
  * Astro's default `generateId` slugifies path segments — which strips
@@ -10,7 +11,7 @@ import { articleSchema } from "@silitics/astro-theme/content";
  * cleanly to URLs.
  */
 const preservePathId = ({ entry }: { entry: string }) =>
-  entry.replace(/\.(md|mdx)$/, "").replace(/\/index$/, "");
+  entry.replace(/\.(md|mdx)$/, "").replace(/\/index$/, "")
 
 /*
  * Rugix's docs frontmatter is a strict subset of `docsSchema`, but the
@@ -26,7 +27,7 @@ const portedDocsSchema = z.object({
   draft: z.boolean().optional(),
   slug: z.string().optional(),
   tags: z.array(z.string()).optional(),
-});
+})
 
 /*
  * Likewise, the ported blog posts use Docusaurus frontmatter
@@ -36,12 +37,10 @@ const portedDocsSchema = z.object({
  */
 const portedBlogSchema = articleSchema().extend({
   author: z.string().optional(),
-  authors: z
-    .union([z.string(), z.array(z.string())])
-    .optional(),
+  authors: z.union([z.string(), z.array(z.string())]).optional(),
   slug: z.string().optional(),
   date: z.coerce.date().optional(),
-});
+})
 
 const blog = defineCollection({
   loader: glob({
@@ -50,7 +49,7 @@ const blog = defineCollection({
     generateId: preservePathId,
   }),
   schema: portedBlogSchema,
-});
+})
 
 const docsRugix = defineCollection({
   loader: glob({
@@ -59,7 +58,7 @@ const docsRugix = defineCollection({
     generateId: preservePathId,
   }),
   schema: portedDocsSchema,
-});
+})
 
 const docsCtrl = defineCollection({
   loader: glob({
@@ -68,7 +67,7 @@ const docsCtrl = defineCollection({
     generateId: preservePathId,
   }),
   schema: portedDocsSchema,
-});
+})
 
 const docsBakery = defineCollection({
   loader: glob({
@@ -77,7 +76,7 @@ const docsBakery = defineCollection({
     generateId: preservePathId,
   }),
   schema: portedDocsSchema,
-});
+})
 
 const docsAdmin = defineCollection({
   loader: glob({
@@ -86,7 +85,7 @@ const docsAdmin = defineCollection({
     generateId: preservePathId,
   }),
   schema: portedDocsSchema,
-});
+})
 
 export const collections = {
   blog,
@@ -94,4 +93,4 @@ export const collections = {
   "docs-ctrl": docsCtrl,
   "docs-bakery": docsBakery,
   "docs-admin": docsAdmin,
-};
+}
