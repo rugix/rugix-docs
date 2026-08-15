@@ -83,6 +83,84 @@
 }
 
 /*
+ * Theme-aware Rugix Admin browser frames. These rules live in the shared
+ * stylesheet because the component is used both by Astro pages and by MDX
+ * content rendered through the documentation collection.
+ */
+.browser-screenshot-caption {
+  pointer-events: none;
+  border-top: 1px solid var(--theme-divider-strong);
+  background: var(--theme-surface-2);
+  box-shadow: 0 -8px 24px oklch(0 0 0 / 0.14);
+}
+
+.browser-window-control {
+  display: block;
+  width: 0.75rem;
+  height: 0.75rem;
+  border: 1px solid oklch(0 0 0 / 0.18);
+  border-radius: 9999px;
+}
+
+.browser-window-close {
+  background: oklch(0.68 0.2 25);
+}
+
+.browser-window-minimize {
+  background: oklch(0.82 0.16 85);
+}
+
+.browser-window-maximize {
+  background: oklch(0.72 0.17 145);
+}
+
+.rugix-admin-screenshot {
+  width: 100%;
+  height: auto;
+}
+
+.prose .browser-frame .rugix-admin-screenshot {
+  margin: 0;
+  border-radius: 0;
+}
+
+.rugix-admin-screenshot-light {
+  display: none;
+}
+
+.rugix-admin-screenshot-dark {
+  display: block;
+}
+
+:root[data-theme="light"] .rugix-admin-screenshot-light {
+  display: block;
+}
+
+:root[data-theme="light"] .rugix-admin-screenshot-dark {
+  display: none;
+}
+
+:root[data-theme="dark"] .rugix-admin-screenshot-light {
+  display: none;
+}
+
+:root[data-theme="dark"] .rugix-admin-screenshot-dark {
+  display: block;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]):not([data-theme="light"])
+    .rugix-admin-screenshot-light {
+    display: block;
+  }
+
+  :root:not([data-theme="dark"]):not([data-theme="light"])
+    .rugix-admin-screenshot-dark {
+    display: none;
+  }
+}
+
+/*
  * Delta-update savings calculator. Used as a client island in the
  * delta-updates docs page and the efficient-delta-updates blog post.
  * Lives here (rather than as scoped CSS in the .tsx) so the React

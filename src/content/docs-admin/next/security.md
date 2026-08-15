@@ -1,95 +1,60 @@
 ---
-title: Security Model
-order: 2
+title: Secure Deployment
+description: Control access to Rugix Admin and deploy it safely.
+order: 4
 ---
 
-Rugix Admin is an administrative interface for a single device. Treat access to
-its web service as access to manage that device: the HTTP API does not
-authenticate clients, and every reachable client can request the operations
-that the device permits.
+Rugix Admin is an administrative interface without built-in authentication or
+TLS. Treat anyone who can reach it as a device operator: they can request every
+action that Rugix Ctrl permits.
 
-Rugix Admin limits the effect of those requests through process separation and
-the Rugix Ctrl daemon's policy. This protects privileged device operations from
-an unprivileged service, but it does not replace network access control.
+:::danger
+Do not expose Rugix Admin directly to the public Internet or another untrusted
+network.
+:::
 
-## Trust Boundaries
+## Control Network Access
 
-A request crosses three boundaries:
+Rugix Admin listens on the loopback interface by default. If operators need to
+connect from another machine, choose an exposure model that matches how the
+device will be operated:
 
-1. A browser calls Rugix Admin's HTTP API. The API has no built-in
-   authentication or transport encryption.
-2. Rugix Admin invokes `rugix-ctrl` as an unprivileged user. The installed
-   service receives access to the daemon socket through the `rugix-daemon`
-   system group.
-3. The privileged Rugix Ctrl daemon validates the request against its effective
-   policy before running the operation as root.
+- On a trusted management network, bind Rugix Admin to that network's interface
+  and restrict port `7492` with the device firewall.
+- For access through another service on the device, bind Rugix Admin to
+  loopback and place an authenticated TLS proxy in front of it.
+- For development and field service, connect through a local or otherwise
+  isolated network that is available only to the operator.
 
-The daemon is the authorization boundary. Hiding a control in the web interface
-is useful operator feedback, not a security control: a client can call the HTTP
-API directly, and the daemon must still reject operations that are not enabled.
-Rugix Admin queries the running daemon's effective policy instead of relying on
-a local copy of its configuration.
+Configure the listen address as described in
+[Configuration](../configuration#listen-address).
 
-Root users and processes that can access the daemon socket are outside this
-boundary. They can invoke Rugix Ctrl directly or request every operation allowed
-by the daemon.
+## Limit Available Actions
 
-## Privileged Operation Policy
+Rugix Admin presents the actions allowed by the Rugix Ctrl daemon. Enable only
+the actions required for the device's operational workflow. Do not rely on a
+hidden or disabled control in the browser as an access restriction.
 
-The daemon reads `/etc/rugix/daemon.toml`. Status queries and signed system or
-application installations are always available. Additional operation families
-are disabled by default and can be enabled independently:
+Configure and review the policy using Rugix Ctrl's
+[Privileged Operation Daemon](/docs/ctrl/reference/privileged-daemon)
+documentation. It is the authoritative reference for available operations,
+configuration, defaults, and local access to the daemon.
 
-| Setting         | Operations                                                                              |
-| --------------- | --------------------------------------------------------------------------------------- |
-| `factory-reset` | Reset persistent state.                                                                 |
-| `system-commit` | Commit the active system.                                                               |
-| `system-reboot` | Request explicit reboots and explicit update modes that reboot.                         |
-| `app-lifecycle` | Start, stop, activate, deactivate, roll back, remove, and garbage collect applications. |
+## Keep Update Verification Enforced
 
-Enable only the operation families required by the deployment. See the
-[Privileged Operation Daemon](/docs/ctrl/reference/privileged-daemon) reference
-for the complete configuration and the exact behavior of each setting.
+Rugix Admin displays a red security notice when Rugix Ctrl allows callers to
+override update verification and compatibility safeguards. This mode is useful
+for local development, but it must not be enabled on production devices.
 
-## Bundle Verification
+If an update fails verification or compatibility checks, correct the bundle,
+trust configuration, or compatibility metadata. Do not weaken the checks to
+make the installation proceed. Rugix Ctrl documents the relevant setting and
+its effect under
+[Installation Security](/docs/ctrl/reference/privileged-daemon#installation-security).
 
-In its default mode, the daemon controls the bundle trust policy. An
-unprivileged caller cannot provide its own root certificate, pin an explicit
-bundle hash, bypass signature verification, allow a missing block index, or
-skip compatibility checks. The daemon loads the configured certificate roots
-itself.
+## Protect Device Configuration
 
-Setting `dangerously-insecure = true` in `/etc/rugix/daemon.toml` admits those
-caller-controlled overrides. Rugix Admin then exposes the corresponding options
-and displays a red notice on every page. This mode is intended only for local
-development; it weakens the checks that separate an uploaded bundle from
-trusted, compatible software.
-
-Do not use `dangerously-insecure` to solve certificate or compatibility errors
-in production. Correct the bundle, trust configuration, or compatibility
-metadata instead.
-
-## Network Exposure
-
-Rugix Admin does not decide who may be an operator. It assumes that network
-reachability has already established that trust. The default installation
-listens on all interfaces and does not add firewall rules, so a client that can
-reach port `7492` can request every capability available to the service.
-
-For a production deployment:
-
-- Bind Rugix Admin to a trusted management interface or to loopback when only a
-  local proxy needs access.
-- Restrict port `7492` with the device firewall or an isolated management
-  network.
-- Put authenticated, encrypted access in front of Rugix Admin when operators
-  connect across an untrusted network.
-- Restrict membership of the `rugix-daemon` group to the intended service
-  accounts.
-- Keep `dangerously-insecure` disabled and enable only the required daemon
-  operation families.
-- Protect `/etc/rugix/admin.toml`, `/etc/rugix/daemon.toml`, and Rugix Ctrl's
-  trust configuration from unprivileged modification.
-
-The red insecure-mode notice should be treated as a deployment blocker outside
-development systems.
+Prevent unprivileged users and services from modifying Rugix Admin's listen
+configuration, the Rugix Ctrl daemon policy, or Rugix Ctrl's update trust
+configuration. Review these protections whenever the device image, network
+topology, or operator access model changes.

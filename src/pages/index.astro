@@ -7,6 +7,7 @@ import {
   FaIcon,
 } from "@silitics/astro-theme";
 import SiteFooter from "../layouts/SiteFooter.astro";
+import RugixAdminShowcase from "../components/RugixAdminShowcase.astro";
 import { faRocket, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import {
   brand,
@@ -14,36 +15,26 @@ import {
   headerActions,
 } from "../site.ts";
 
-/*
- * Partner logos. The `mono: true` flag marks logos that are pure
- * white-on-transparent and should be inverted under the light theme so
- * they remain readable. Colored / multi-tone logos pass `mono: false`
- * and stay as-is in both themes.
- */
 const partners = [
   {
     href: "https://umbrel.com/",
     src: "/img/third-party-logos/umbrel.svg",
     alt: "Umbrel, Inc.",
-    mono: true,
   },
   {
     href: "https://goaqa.com/",
     src: "/img/third-party-logos/aqa.png",
     alt: "Aqa Technologies, Inc.",
-    mono: true,
   },
   {
     href: "https://www.ebike-checker.de/en/",
     src: "/img/third-party-logos/echecker.svg",
     alt: "eChecker",
-    mono: true,
   },
   {
     href: "https://enmo.ai/",
     src: "/img/third-party-logos/enmo.webp",
     alt: "Enmo",
-    mono: true,
   },
 ];
 
@@ -85,36 +76,18 @@ const tools = [
   {
     href: "/docs/admin",
     title: "Rugix Admin",
-    blurb: "Operate devices locally.",
-    body: "Provides a lightweight, browser-based interface for inspecting system status, installing updates, managing application workloads, and diagnosing individual devices during development, demos, and field service.",
+    blurb: "Manage devices locally.",
+    body: "Provides a lightweight, browser-based interface for inspecting system status, installing updates, managing application workloads, and diagnosing individual devices. Ideal for development, demos, and field service.",
   },
 ];
 
 const proofPoints = [
   "System Updates",
-  "Application Updates",
+  "Application Workloads",
   "Persistent State",
   "Delta Delivery",
   "Secure Updates",
   "No Lock-In",
-];
-
-const valueProps = [
-  {
-    label: "Reliable Updates",
-    title: "Update with confidence",
-    body: "Deploy signed system and application updates atomically, with automatic rollback and compatibility checks.",
-  },
-  {
-    label: "State Management",
-    title: "Keep devices predictable",
-    body: "Separate persistent state from replaceable software for clean updates, controlled factory resets, and less drift.",
-  },
-  {
-    label: "No Vendor Lock-In",
-    title: "Keep your options open",
-    body: "Use your preferred build system, boot process, and fleet management platform without being locked into a vendor.",
-  },
 ];
 ---
 
@@ -125,11 +98,15 @@ const valueProps = [
   nav={nav}
   actions={headerActions}
 >
-  <Section background="hero" padding="hero">
+  <Section
+    background="hero"
+    padding="hero"
+    class="!pb-16 md:!pb-24"
+  >
     <div slot="decoration" class="bg-grid-fade absolute inset-0" aria-hidden="true"></div>
-    <div class="relative mx-auto max-w-3xl text-center">
+    <div class="relative mx-auto w-full max-w-7xl px-4 text-center sm:px-6 lg:px-8">
       <h1
-        class="font-display text-balance text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl"
+        class="font-display mx-auto max-w-3xl text-balance text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl"
       >
         The Open Lifecycle Layer for Embedded Linux
       </h1>
@@ -141,7 +118,7 @@ const valueProps = [
         backend.
       </p>
       <div
-        class="text-content-muted mx-auto mt-4 flex max-w-3xl flex-wrap items-center justify-center gap-x-2 gap-y-2 text-sm md:text-base"
+        class="text-content-muted mx-auto mt-4 flex w-full flex-wrap items-center justify-center gap-x-2 gap-y-2 text-sm md:text-base"
         aria-label="Rugix capabilities and benefits"
       >
         {
@@ -169,13 +146,81 @@ const valueProps = [
     </div>
   </Section>
 
-  <Section background="section" padding="default" class="!pt-8 md:!pt-12">
+  <section class="border-divider bg-surface-1 relative border-y py-8">
+    <div class="mx-auto max-w-7xl px-4 lg:px-6">
+      <div
+        class="flex flex-col items-center gap-8 md:flex-row md:justify-center md:gap-16"
+      >
+        <p
+          class="text-content-subtle text-sm font-medium tracking-wider uppercase"
+        >
+          Trusted by
+        </p>
+        <div
+          class="flex flex-wrap items-center justify-center gap-x-10 gap-y-6"
+        >
+          {
+            partners.map((partner) => (
+              <a
+                href={partner.href}
+                target="_blank"
+                rel="noopener"
+                class="trusted-logo opacity-70 transition-opacity hover:opacity-100"
+                aria-label={partner.alt}
+              >
+                <img
+                  src={partner.src}
+                  alt={partner.alt}
+                  class="max-h-6 max-w-36 object-contain"
+                />
+              </a>
+            ))
+          }
+          <span
+            class="text-content-subtle text-xs font-medium tracking-wider uppercase"
+          >
+            and many more
+          </span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <style is:global>
+    [data-theme="light"] .trusted-logo {
+      opacity: 0.72;
+    }
+
+    [data-theme="light"] .trusted-logo img {
+      filter: brightness(0) !important;
+    }
+
+    [data-theme="light"] .trusted-logo:hover {
+      opacity: 1;
+    }
+
+    @media (prefers-color-scheme: light) {
+      :root:not([data-theme="dark"]) .trusted-logo {
+        opacity: 0.72;
+      }
+
+      :root:not([data-theme="dark"]) .trusted-logo img {
+        filter: brightness(0) !important;
+      }
+
+      :root:not([data-theme="dark"]) .trusted-logo:hover {
+        opacity: 1;
+      }
+    }
+  </style>
+
+  <Section background="none" padding="default" class="!pt-16 md:!pt-24">
     <div class="mx-auto max-w-2xl text-center">
       <h2 class="font-display text-3xl font-bold md:text-4xl">
         The Rugix Toolkit
       </h2>
       <p class="text-content-muted mt-4 text-lg">
-        Build, deploy, and operate production-ready Linux devices.
+        Build, deploy, and operate production-ready Linux devices at scale.
       </p>
     </div>
     <div class="mx-auto mt-12 grid max-w-6xl gap-6 md:grid-cols-3">
@@ -202,77 +247,14 @@ const valueProps = [
     </p>
   </Section>
 
+  <RugixAdminShowcase />
+
   <Section background="none" padding="default">
-    <div class="mx-auto max-w-2xl text-center">
-      <h2 class="font-display text-3xl font-bold md:text-4xl">
-        Ready for the Field, Not Just the Lab
-      </h2>
-      <p class="text-content-muted mt-4 text-lg">
-        Maintaining devices reliably is hard. Rugix provides the on-device
-        foundation for system updates, application lifecycle management, and
-        persistent state, so your team can focus on the product instead of
-        reinventing lifecycle plumbing.
-      </p>
-    </div>
-    <div class="mx-auto mt-12 grid max-w-5xl gap-6 md:grid-cols-3">
-      {
-        valueProps.map((prop) => (
-          <div class="card flex flex-col gap-4 p-6">
-            <p class="text-primary text-xs font-semibold tracking-wide uppercase">
-              {prop.label}
-            </p>
-            <h3 class="font-display text-xl font-semibold">{prop.title}</h3>
-            <p class="text-content-muted text-sm leading-relaxed">{prop.body}</p>
-          </div>
-        ))
-      }
-    </div>
-  </Section>
-
-  <Section background="section" padding="default">
     <div class="mx-auto max-w-3xl text-center">
-      <h2 class="font-display text-3xl font-bold md:text-4xl">Trusted By</h2>
+      <h2 class="font-display text-3xl font-bold md:text-4xl">
+        What Our Users Say
+      </h2>
     </div>
-    <div class="mt-10 flex flex-wrap items-center justify-center gap-x-12 gap-y-6">
-      {
-        partners.map((p) => (
-          <a
-            href={p.href}
-            target="_blank"
-            rel="noopener"
-            class={p.mono ? "logo-mono" : ""}
-            aria-label={p.alt}
-          >
-            <img src={p.src} alt={p.alt} class="max-h-7" />
-          </a>
-        ))
-      }
-      <span class="text-content-subtle text-sm tracking-wider uppercase">
-        and many more
-      </span>
-    </div>
-
-    <style is:global>
-      /*
-       * Many partner logos are shipped as monochrome white-on-transparent
-       * SVGs. `brightness(0)` paints every non-transparent pixel black
-       * while leaving transparency intact, which is exactly what a
-       * white-on-light surface needs. Colored logos (PNG / WebP) skip
-       * the filter via the `mono: false` flag.
-       *
-       * The `!important` overrides Tailwind v4's default `filter:` chain
-       * (a list of `var(--tw-*)` fallbacks Tailwind injects on every
-       * filter consumer); without it our rule loses to Tailwind's reset.
-       */
-      [data-theme="light"] .logo-mono img {
-        filter: brightness(0) opacity(0.7) !important;
-      }
-      @media (prefers-color-scheme: light) {
-        :root:not([data-theme="dark"]) .logo-mono img {
-          filter: brightness(0) opacity(0.7) !important;
-        }
-      }
-    </style>
     <div class="mx-auto mt-12 grid max-w-5xl gap-6 md:grid-cols-3">
       <blockquote class="card flex flex-col justify-center gap-4 p-6 italic">
         <p class="text-content leading-relaxed">
@@ -306,7 +288,7 @@ const valueProps = [
     </div>
   </Section>
 
-  <Section background="none" padding="default">
+  <Section background="section" padding="default">
     <div class="mx-auto max-w-3xl text-center">
       <h2 class="font-display text-3xl font-bold md:text-4xl">Success Stories</h2>
     </div>

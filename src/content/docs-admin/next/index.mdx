@@ -1,0 +1,90 @@
+---
+title: Introduction
+description: Manage Rugix-powered devices through a local browser interface.
+order: 1
+---
+
+import BrowserFrame from "../../../components/BrowserFrame.astro"
+import appsDark from "../../../assets/rugix-admin/apps-dark.png"
+import appsLight from "../../../assets/rugix-admin/apps-light.png"
+import componentsDark from "../../../assets/rugix-admin/components-dark.png"
+import componentsLight from "../../../assets/rugix-admin/components-light.png"
+import systemDark from "../../../assets/rugix-admin/system-dark.png"
+import systemLight from "../../../assets/rugix-admin/system-light.png"
+
+:::tip
+**New to Rugix?** Start with the [Getting Started guide](/docs/getting-started).
+It walks through building a Rugix-powered system and deploying an update from
+start to finish.
+:::
+
+_Rugix Admin_ is a browser-based management interface for systems running
+[Rugix Ctrl](/docs/ctrl/). It provides direct access to the lifecycle operations
+of one device during development, demonstrations, diagnostics, and field
+service.
+
+Rugix Admin is not a fleet manager. It does not connect devices to a cloud
+backend, schedule staged rollouts, or retain fleet-wide history. Use it alongside
+the build system and [fleet-management solution](/fleet-management/) that fit
+your product.
+
+## System Updates and State
+
+The System view shows the active and default boot groups, system slots, stored
+hashes, and persistent-state status. From here, an operator can install a system
+update, commit the active system, reboot into a selected boot group, or reset
+persistent state. The available actions depend on the Rugix Ctrl daemon policy.
+
+<BrowserFrame
+  light={systemLight}
+  dark={systemDark}
+  alt="Rugix Admin System view showing a committed system with U-Boot, A/B boot and system slots, and persistent state on an MMC block device"
+  url="https://device.local/#/system"
+/>
+
+## Application Workloads
+
+The Apps view shows installed applications, their runtime and lifecycle status,
+and their deployment generations. Operators can install application bundles,
+change lifecycle state, roll back to a previous generation, remove applications,
+and clean up unused generations when the daemon policy permits those actions.
+
+<BrowserFrame
+  light={appsLight}
+  dark={appsDark}
+  alt="Rugix Admin Apps view showing installed application workloads and an expanded list of deployment generations"
+  url="https://device.local/#/apps"
+/>
+
+## Component Compatibility
+
+The Components view explains how the hardware, base operating system, runtimes,
+and applications fit together. It lists the capabilities each component
+provides, claims, and requires, and reports consistency problems without hiding
+the component metadata that caused them.
+
+<BrowserFrame
+  light={componentsLight}
+  dark={componentsDark}
+  alt="Rugix Admin Components view showing component capabilities and dependencies on hardware and edge-os"
+  url="https://device.local/#/components"
+/>
+
+## Architecture and Scope
+
+Rugix Admin is a self-contained service that embeds its frontend and invokes
+`rugix-ctrl` as an unprivileged user. Rugix Ctrl forwards supported operations
+to its privileged daemon over a group-restricted Unix socket. The daemon checks
+each request against its effective policy before performing privileged work.
+
+This separation limits what the web service can ask the device to do, but it
+does not authenticate browser clients or encrypt HTTP traffic. Review the
+[Secure Deployment](./security) before making the service reachable over a network.
+
+## Next Steps
+
+- [Install Rugix Admin](./installation).
+- [Configure Rugix Admin](./configuration).
+- [Review the secure deployment guidance](./security).
+- Consult the [HTTP API reference](./http-api) only if you need to inspect the
+  unstable interface used by the frontend.

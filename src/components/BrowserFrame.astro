@@ -1,0 +1,74 @@
+---
+import { Picture } from "astro:assets";
+import { FaIcon } from "@silitics/astro-theme";
+import { faLock } from "@fortawesome/free-solid-svg-icons";
+
+interface Props {
+  light: ImageMetadata;
+  dark: ImageMetadata;
+  alt: string;
+  url: string;
+  description?: string;
+}
+
+const { light, dark, alt, url, description } = Astro.props;
+
+const widths = [640, 960, 1280, 1920];
+const sizes =
+  "(min-width: 1280px) 1152px, (min-width: 768px) calc(100vw - 6rem), calc(100vw - 2rem)";
+---
+
+<div
+  class="browser-frame border-divider bg-surface-2 overflow-hidden rounded-xl border shadow-2xl"
+>
+  <div
+    class="border-divider bg-surface-1 grid grid-cols-[3.5rem_minmax(0,1fr)_3.5rem] items-center border-b px-3 py-2.5 sm:px-4"
+  >
+    <div class="flex shrink-0 items-center gap-1.5" aria-hidden="true">
+      <span class="browser-window-control browser-window-close"></span>
+      <span class="browser-window-control browser-window-minimize"></span>
+      <span class="browser-window-control browser-window-maximize"></span>
+    </div>
+    <div
+      class="border-divider bg-surface-0 text-content-muted mx-auto flex w-full max-w-xl min-w-0 items-center justify-center gap-2 rounded-full border px-3 py-1.5 font-mono text-xs shadow-inner"
+      aria-label={`Browser address: ${url}`}
+    >
+      <FaIcon icon={faLock} class="text-content-subtle shrink-0 text-[10px]" />
+      <span class="truncate">{url}</span>
+    </div>
+    <span aria-hidden="true"></span>
+  </div>
+  <div class="bg-surface-0 relative">
+    <Picture
+      src={light}
+      formats={["avif", "webp"]}
+      fallbackFormat="png"
+      widths={widths}
+      sizes={sizes}
+      alt={alt}
+      loading="lazy"
+      decoding="async"
+      class="rugix-admin-screenshot rugix-admin-screenshot-light"
+    />
+    <Picture
+      src={dark}
+      formats={["avif", "webp"]}
+      fallbackFormat="png"
+      widths={widths}
+      sizes={sizes}
+      alt={alt}
+      loading="lazy"
+      decoding="async"
+      class="rugix-admin-screenshot rugix-admin-screenshot-dark"
+    />
+    {
+      description && (
+        <div class="browser-screenshot-caption absolute inset-x-0 bottom-0">
+          <p class="text-content m-0 px-5 py-3 text-sm leading-6 sm:px-6">
+            {description}
+          </p>
+        </div>
+      )
+    }
+  </div>
+</div>

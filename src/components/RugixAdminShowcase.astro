@@ -1,0 +1,240 @@
+---
+import { FaIcon, Section } from "@silitics/astro-theme";
+import {
+  faChevronLeft,
+  faChevronRight,
+} from "@fortawesome/free-solid-svg-icons";
+import BrowserFrame from "./BrowserFrame.astro";
+
+import appsDark from "../assets/rugix-admin/apps-dark.png";
+import appsLight from "../assets/rugix-admin/apps-light.png";
+import componentsDark from "../assets/rugix-admin/components-dark.png";
+import componentsLight from "../assets/rugix-admin/components-light.png";
+import systemDark from "../assets/rugix-admin/system-dark.png";
+import systemLight from "../assets/rugix-admin/system-light.png";
+
+const screens = [
+  {
+    label: "System",
+    slug: "system",
+    url: "https://device.local/#/system",
+    light: systemLight,
+    dark: systemDark,
+    alt: "Rugix Admin System view showing a committed system with U-Boot, A/B boot and system slots, state management, and boot groups",
+    description:
+      "Rugix provides atomic, signature-verified system updates with on-device validation and automatic rollback, so failed updates do not strand devices in the field.",
+  },
+  {
+    label: "Apps",
+    slug: "apps",
+    url: "https://device.local/#/apps",
+    light: appsLight,
+    dark: appsDark,
+    alt: "Rugix Admin Apps view showing installed applications and application generations",
+    description:
+      "Rugix allows application workloads to evolve independently of the base system, with atomic, crash-safe deployments and instant rollback to previous generations.",
+  },
+  {
+    label: "Components",
+    slug: "components",
+    url: "https://device.local/#/components",
+    light: componentsLight,
+    dark: componentsDark,
+    alt: "Rugix Admin Components view showing component capabilities and dependencies on hardware and edge-os",
+    description:
+      "Rugix provides compatibility checks across hardware, the operating system, runtimes, and active applications, so unsuitable updates fail early.",
+  },
+];
+---
+
+<Section
+  background="section"
+  padding="default"
+  class="overflow-hidden"
+>
+  <div class="mx-auto max-w-2xl text-center">
+    <h2
+      id="rugix-admin-showcase-heading"
+      class="font-display text-3xl font-bold md:text-4xl"
+    >
+      Manage Devices with Rugix Admin
+    </h2>
+    <p class="text-content-muted mt-4 text-lg leading-relaxed">
+      Inspect system state, install updates, manage application workloads, and
+      understand component relationships in one focused interface.
+    </p>
+  </div>
+
+  <div
+    class="mx-auto mt-8 max-w-7xl"
+    data-rugix-admin-showcase
+    role="region"
+    aria-roledescription="carousel"
+    aria-labelledby="rugix-admin-showcase-heading"
+  >
+    <div
+      class="grid grid-cols-[2.5rem_minmax(0,1fr)_2.5rem] items-center gap-1 sm:gap-3"
+    >
+      <button
+        type="button"
+        class="text-content-muted hover:text-content inline-flex size-10 items-center justify-center transition-colors"
+        aria-label="Show previous Rugix Admin view"
+        data-rugix-admin-previous
+      >
+        <FaIcon icon={faChevronLeft} class="text-sm" />
+      </button>
+      <div class="mx-auto min-w-0 w-full max-w-6xl">
+        {
+          screens.map((screen, index) => (
+            <div
+              id={`rugix-admin-slide-${screen.slug}`}
+              role="group"
+              aria-roledescription="slide"
+              aria-label={`${index + 1} of ${screens.length}: ${screen.label}`}
+              class:list={[
+                "rugix-admin-slide",
+                index === 0 ? "is-active" : "",
+              ]}
+              data-rugix-admin-slide
+              data-label={screen.label}
+            >
+              <BrowserFrame
+                light={screen.light}
+                dark={screen.dark}
+                alt={screen.alt}
+                url={screen.url}
+                description={screen.description}
+              />
+            </div>
+          ))
+        }
+      </div>
+      <button
+        type="button"
+        class="text-content-muted hover:text-content inline-flex size-10 items-center justify-center transition-colors"
+        aria-label="Show next Rugix Admin view"
+        data-rugix-admin-next
+      >
+        <FaIcon icon={faChevronRight} class="text-sm" />
+      </button>
+    </div>
+    <div
+      class="mt-3 flex items-center justify-center gap-1"
+      aria-label="Choose a Rugix Admin view"
+    >
+      {
+        screens.map((screen, index) => (
+          <button
+            type="button"
+            class="rugix-admin-indicator inline-flex size-6 items-center justify-center"
+            aria-label={`Show ${screen.label} view`}
+            aria-current={index === 0 ? "true" : "false"}
+            data-rugix-admin-indicator
+            data-index={index}
+          >
+            <span class="rugix-admin-indicator-dot" aria-hidden="true" />
+          </button>
+        ))
+      }
+    </div>
+    <p class="sr-only" aria-live="polite" data-rugix-admin-status>
+      Showing {screens[0].label}, slide 1 of {screens.length}
+    </p>
+  </div>
+</Section>
+
+<style is:global>
+  .rugix-admin-indicator {
+    cursor: pointer;
+  }
+
+  .rugix-admin-indicator-dot {
+    width: 0.375rem;
+    height: 0.375rem;
+    border-radius: 9999px;
+    background: var(--theme-content-subtle);
+    transition:
+      width 180ms var(--ease-in-out),
+      background-color 180ms var(--ease-in-out);
+  }
+
+  .rugix-admin-indicator:hover .rugix-admin-indicator-dot {
+    background: var(--theme-content);
+  }
+
+  .rugix-admin-indicator[aria-current="true"] .rugix-admin-indicator-dot {
+    width: 1.25rem;
+    background: var(--theme-primary);
+  }
+
+  html.js .rugix-admin-slide {
+    display: none;
+  }
+
+  html.js .rugix-admin-slide.is-active {
+    display: block;
+  }
+
+  html:not(.js) .rugix-admin-slide + .rugix-admin-slide {
+    margin-top: 2rem;
+  }
+
+</style>
+
+<script>
+  function wireRugixAdminShowcase() {
+    document
+      .querySelectorAll<HTMLElement>("[data-rugix-admin-showcase]")
+      .forEach((showcase) => {
+        if (showcase.dataset.rugixAdminWired) return;
+        showcase.dataset.rugixAdminWired = "true";
+
+        const slides = Array.from(
+          showcase.querySelectorAll<HTMLElement>("[data-rugix-admin-slide]"),
+        );
+        const indicators = Array.from(
+          showcase.querySelectorAll<HTMLButtonElement>(
+            "[data-rugix-admin-indicator]",
+          ),
+        );
+        const previous = showcase.querySelector<HTMLButtonElement>(
+          "[data-rugix-admin-previous]",
+        );
+        const next = showcase.querySelector<HTMLButtonElement>(
+          "[data-rugix-admin-next]",
+        );
+        const status = showcase.querySelector<HTMLElement>(
+          "[data-rugix-admin-status]",
+        );
+        let activeIndex = 0;
+
+        const activate = (index: number) => {
+          activeIndex = (index + slides.length) % slides.length;
+          slides.forEach((slide, slideIndex) => {
+            const active = slideIndex === activeIndex;
+            slide.classList.toggle("is-active", active);
+            slide.setAttribute("aria-hidden", active ? "false" : "true");
+          });
+          indicators.forEach((indicator, indicatorIndex) => {
+            indicator.setAttribute(
+              "aria-current",
+              indicatorIndex === activeIndex ? "true" : "false",
+            );
+          });
+          if (status) {
+            const label = slides[activeIndex].dataset.label ?? "";
+            status.textContent = `Showing ${label}, slide ${activeIndex + 1} of ${slides.length}`;
+          }
+        };
+
+        indicators.forEach((indicator, index) => {
+          indicator.addEventListener("click", () => activate(index));
+        });
+        previous?.addEventListener("click", () => activate(activeIndex - 1));
+        next?.addEventListener("click", () => activate(activeIndex + 1));
+      });
+  }
+
+  wireRugixAdminShowcase();
+  document.addEventListener("astro:page-load", wireRugixAdminShowcase);
+</script>

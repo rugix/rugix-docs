@@ -12,8 +12,8 @@ for authorized changes. The daemon's feature policy determines which lifecycle
 actions the interface displays. Rugix Admin does not replace a fleet-management
 service or keep long-term operation history.
 
-The service listens on port `7492` by default. Open
-`http://<device-address>:7492/` after installing it on the device.
+The service listens on `127.0.0.1:7492` by default. Configure a trusted listen
+address before accessing it from another machine.
 
 See the dedicated [Rugix Admin documentation](/docs/admin/) for installation,
 security, interface behavior, and HTTP API details.

@@ -16,7 +16,7 @@ So, let's get started and unlock the potential of Rugix for your embedded projec
 
 [^debian-base]: The Debian base is produced by the [`debian-bootstrap`](https://github.com/rugix/rugix-bakery/tree/main/container/repositories/core/recipes/debian-bootstrap) recipe, which yields a minimal Debian system. Device-specific setup (kernel, bootloader, etc.) is added by recipes such as [`rpi-debian-setup`](https://github.com/rugix/rugix-bakery/tree/main/container/repositories/core/recipes/rpi-debian-setup). Rugix Bakery intentionally installs only what a given use case requires, keeping images small and the attack surface low. To inspect exactly what ended up in a built image, look at the [SPDX and CycloneDX SBOMs](/docs/bakery/sbom-generation) that Rugix Bakery emits alongside each system.
 
-If you want to get started with Rugix Ctrl and Yocto instead of Rugix Bakery, check out [Rugix's Yocto layers](https://github.com/silitics/meta-rugix/tree/main).
+If you want to get started with Rugix Ctrl and Yocto instead of Rugix Bakery, check out [Rugix's Yocto layers](https://github.com/rugix/meta-rugix/tree/main).
 
 ## Setup and Installation
 
