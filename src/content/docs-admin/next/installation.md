@@ -60,8 +60,8 @@ to the image:
 IMAGE_INSTALL:append = " rugix-admin"
 ```
 
-The recipe builds Rugix Admin and its embedded browser interface from the
-pinned source release. It also pulls in the privileged Rugix Ctrl daemon. Both
+The recipe builds Rugix Admin and its embedded browser interface from a pinned
+source revision. It also pulls in the privileged Rugix Ctrl daemon. Both
 systemd services are enabled automatically.
 
 Rugix Admin listens on the loopback interface by default. The daemon also uses

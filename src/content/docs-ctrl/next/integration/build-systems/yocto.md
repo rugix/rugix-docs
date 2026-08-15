@@ -88,7 +88,7 @@ The class deploys `<bundle-name>.rugixb` and `<bundle-name>.rugixb.hash` and cre
 
 - `rugix-ctrl`: builds and installs `/usr/bin/rugix-ctrl` for the target image. Versioned recipes pin Rugix Ctrl releases; `_git` recipes are development-only and use `AUTOREV`.
 - `rugix-ctrl-daemon`: installs the privileged Rugix Ctrl daemon service and its policy configuration. Optional operation families are disabled by default; see the [privileged operation daemon reference](../../../reference/privileged-daemon) before enabling them.
-- `rugix-admin`: builds Rugix Admin and its embedded browser interface from a pinned source release. It installs the systemd service and pulls in `rugix-ctrl-daemon` and a compatible Rugix Ctrl release. See the [Rugix Admin installation guide](/docs/admin/installation) for usage.
+- `rugix-admin`: builds Rugix Admin and its embedded browser interface from a pinned source revision. It installs the systemd service and pulls in `rugix-ctrl-daemon` and a compatible Rugix Ctrl release. See the [Rugix Admin installation guide](/docs/admin/installation) for usage.
 - `rugix-bundler-native`: builds and installs the native `rugix-bundler` tool used by `rugixb`, `rugixb.hash`, and `rugix-bundle`.
 - `rugix-bootstrapping-conf`: installs `/etc/rugix/bootstrapping.toml`. BSP layers usually override the file with a `.bbappend`. `RUGIX_SYSTEM_SIZE` and `RUGIX_BOOT_SIZE` can template the default file where supported.
 - `rugix-system-conf`: installs `/etc/rugix/system.toml`. BSP layers override this with the slot and boot-flow configuration for a concrete target.
