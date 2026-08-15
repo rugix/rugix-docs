@@ -39,5 +39,11 @@ The current API provides these operation families:
 - `POST /api/apps/install/:job-id` and `POST /api/apps/install/:job-id/url` install uploaded and remote application bundles.
 - `POST /api/system/actions/:action`, `POST /api/apps/:app/actions/:action`, and `POST /api/apps/actions/gc` start daemon-authorized lifecycle operations.
 - `GET /api/jobs`, `/api/jobs/:job-id`, and `/api/jobs/:job-id/events` expose in-memory job status, output, progress, compatibility-bypass notices, and activation outcomes.
+- `GET /api/events` exposes service-wide server-sent events. It emits an
+  `invalidate-all` event whenever a job reaches `succeeded` or `failed`, so
+  clients can refetch device information that the operation may have changed.
 
-Installations and lifecycle actions return a job. Subscribe to the job's event stream to follow it until its status becomes `succeeded` or `failed`.
+Installations and lifecycle actions return a job. Subscribe to the job's event
+stream to follow it until its status becomes `succeeded` or `failed`. Each job
+event has a monotonically increasing SSE event ID. A reconnecting client can
+send `Last-Event-ID`; the service then replays only newer buffered events.

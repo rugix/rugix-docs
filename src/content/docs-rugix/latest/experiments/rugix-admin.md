@@ -3,15 +3,17 @@
 
 # Rugix Admin
 
-_Rugix Admin_ is a web-based admin interface for managing a Rugix system.
-In particular, it allows users to update a system simply by uploading an image and it offers direct access to state and system management features.
+_Rugix Admin_ is the on-device web interface for a system running Rugix Ctrl. It
+provides system status and updates, application lifecycle management, component
+compatibility reports, and streamed operation logs.
 
-:::warning
-**Rugix Admin is currently a proof of concept and the UX is far from optimal.**
-:::
+Rugix Admin runs beside `rugix-ctrl` and uses the privileged operation daemon
+for authorized changes. The daemon's feature policy determines which lifecycle
+actions the interface displays. Rugix Admin does not replace a fleet-management
+service or keep long-term operation history.
 
-🚧 For now, if you install an update by uploading an image, you will not get any kind of progress indication from the UI and it may seem as nothing is happening. Uploading the image and installing it may take some time. Check your browsers loading indicator to verify whether the image is uploaded and installed. We plan to improve the UI/UX once Rugix's core is production-ready.
+The service listens on port `7492` by default. Open
+`http://<device-address>:7492/` after installing it on the device.
 
-By default, Rugix Admin is served on port `7492`.
-
-![Rugix Admin Screenshot](/img/screenshots/rugpi-admin.png)
+See the dedicated [Rugix Admin documentation](/docs/admin/) for installation,
+security, interface behavior, and HTTP API details.
