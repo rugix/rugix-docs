@@ -43,7 +43,7 @@ const stories = [
     img: "/img/umbrel-pro.jpg",
     alt: "Umbrel Pro device",
     name: "Umbrel",
-    body: `<a href="https://umbrel.com/">Umbrel</a> is a personal home cloud platform that lets anyone self-host their files, media, and applications with tens of thousands of installations worldwide. Umbrel chose Rugix as the foundation for <a href="https://umbrel.com/umbrelos">umbrelOS</a>, powering devices like the recently launched <a href="https://umbrel.com/umbrel-pro">Umbrel Pro</a>, their premium home cloud server. Rugix was chosen for its robustness, builtin state management with clean factory resets, and highly efficient delta updates.`,
+    body: `<a href="https://umbrel.com/">Umbrel</a> is a personal home cloud platform that lets anyone self-host their files, media, and applications with tens of thousands of installations worldwide. Umbrel chose Rugix as the foundation for <a href="https://umbrel.com/umbrelos">umbrelOS</a>, powering devices like the <a href="https://umbrel.com/umbrel-pro">Umbrel Pro</a>, its premium home cloud server. Rugix was chosen for its robustness, built-in state management with clean factory resets, and highly efficient delta updates.`,
   },
   {
     img: "/img/echecker-testbench.jpg",
@@ -64,36 +64,35 @@ const tools = [
   {
     href: "/docs/ctrl",
     title: "Rugix Ctrl",
-    blurb: "Update devices with confidence.",
-    body: "Provides atomic system and application updates, automatic rollback, efficient delta delivery, signature verification, and flexible management of persistent state. Integrates with various fleet management solutions.",
+    blurb: "Deploy updates and manage workloads and state.",
+    body: "Provides atomic system updates with automatic rollback, delta delivery, and signature verification, plus management of application workloads and persistent state. Integrates with different fleet management solutions.",
   },
   {
     href: "/docs/bakery",
     title: "Rugix Bakery",
-    blurb: "Build custom Linux systems.",
-    body: "Builds production-ready distributions based on Debian, Alpine Linux, and Raspberry Pi OS, with reproducible container-based builds, system variants, VM testing, SBOMs, and OTA updates powered by Rugix Ctrl.",
+    blurb: "Build custom Linux images.",
+    body: "Builds production-ready Linux images based on Debian, Alpine Linux, and Raspberry Pi OS in a consistent containerized environment, with configurable system variants, VM testing, SBOMs, and integrated Rugix Ctrl updates.",
   },
   {
     href: "/docs/admin",
     title: "Rugix Admin",
-    blurb: "Manage devices locally.",
-    body: "Provides a lightweight, browser-based interface for inspecting system status, installing updates, managing application workloads, and diagnosing individual devices. Ideal for development, demos, and field service.",
+    blurb: "Operate devices through a browser.",
+    body: "Runs on the device and provides a browser-based interface to view system status, install updates, manage application workloads, and check component compatibility. Ideal for development, demos, and field service.",
   },
 ];
 
 const proofPoints = [
-  "System Updates",
-  "Application Workloads",
-  "Persistent State",
-  "Delta Delivery",
-  "Secure Updates",
+  "Atomic & Signed Updates",
+  "Automatic Rollback",
+  "Bandwidth-Efficient Delivery",
+  "Compatibility Checks",
   "No Lock-In",
 ];
 ---
 
 <BaseLayout
-  title="Rugix: The Open Lifecycle Layer for Embedded Linux"
-  description="Rugix provides an open-source foundation for building and maintaining robust Linux-powered products, from development to production, without tying you to a build system or cloud backend."
+  title="Rugix: The Open-Source Toolkit for Embedded Linux"
+  description="Rugix is an open-source toolkit for deploying robust updates, managing application workloads and persistent state, building custom Linux images, and operating devices locally."
   brand={brand}
   nav={nav}
   actions={headerActions}
@@ -108,14 +107,13 @@ const proofPoints = [
       <h1
         class="font-display mx-auto max-w-3xl text-balance text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl"
       >
-        The Open Lifecycle Layer for Embedded Linux
+        The Open-Source Toolkit for Embedded Linux
       </h1>
       <p
         class="text-content mx-auto mt-6 max-w-2xl text-lg leading-relaxed md:text-xl"
       >
-        Rugix provides an open-source on-device foundation for updates, apps,
-        and state, without tying your product to a build system or cloud
-        backend.
+        Deploy robust updates, manage application workloads and persistent
+        state on your devices, and build custom Linux images for your hardware.
       </p>
       <div
         class="text-content-muted mx-auto mt-4 flex w-full flex-wrap items-center justify-center gap-x-2 gap-y-2 text-sm md:text-base"
@@ -215,12 +213,13 @@ const proofPoints = [
   </style>
 
   <Section background="none" padding="default" class="!pt-16 md:!pt-24">
-    <div class="mx-auto max-w-2xl text-center">
+    <div class="text-center">
       <h2 class="font-display text-3xl font-bold md:text-4xl">
         The Rugix Toolkit
       </h2>
       <p class="text-content-muted mt-4 text-lg">
-        Build, deploy, and operate production-ready Linux devices at scale.
+        Three modular tools: on-device systems management, custom image builds,
+        and an operator interface.
       </p>
     </div>
     <div class="mx-auto mt-12 grid max-w-6xl gap-6 md:grid-cols-3">
@@ -241,9 +240,10 @@ const proofPoints = [
       }
     </div>
     <p class="text-content-muted mx-auto mt-10 max-w-xl text-center text-sm leading-relaxed">
-      Use the complete toolkit, or adopt Rugix Ctrl independently. It works
-      with Yocto, Buildroot, other Linux build systems, and a variety of fleet
-      management solutions.
+      Use the tools together, or adopt Rugix Ctrl independently. Rugix Ctrl
+      works with Yocto, Buildroot, other Linux build systems, and the
+      <Link href="/fleet-management/">fleet management solution</Link> of your
+      choice.
     </p>
   </Section>
 

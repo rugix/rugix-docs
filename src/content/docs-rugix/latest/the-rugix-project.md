@@ -4,8 +4,8 @@
 # The Rugix Project
 
 While there are already plenty of tools for building images, updating systems, and managing state in the embedded Linux ecosystem, integrating them into a robust, coherent solution remains a significant challenge.
-The Rugix Project strives to **simplify the development of embedded Linux devices** by creating a unified, modern suite of tools that seamlessly integrate to provide a streamlined and efficient workflow for building, updating, and managing embedded Linux systems at scale.
-While the tools are designed to work together seamlessly, you can also use them individually, if you like.
+The Rugix Project strives to **simplify the development of embedded Linux devices** by creating a modern toolkit for building, updating, and managing embedded Linux systems at scale.
+The tools work together as a coherent workflow, but you can also use them individually.
 We believe that **building innovative devices shouldn't be as complicated as it often is today**.
 By lowering the amount of required engineering resources, we aim to foster innovation while reducing costs.
 

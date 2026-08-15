@@ -4,7 +4,7 @@
 
 # Getting Started 🚀
 
-Rugix is a suite of open-source tools designed to build **reliable** embedded Linux devices with **efficient and secure** over-the-air update capabilities.
+Rugix is an open-source toolkit for building **reliable** embedded Linux devices with **efficient and secure** over-the-air update capabilities.
 For this guide, you will be using two of these tools: _Rugix Bakery_, a flexible and user-friendly build system for bespoke Linux distributions, and _Rugix Ctrl_, a powerful tool for over-the-air system updates and system state management.
 While designed to work seamlessly together, you can also **use Rugix Ctrl without Rugix Bakery** and vice versa.
 
