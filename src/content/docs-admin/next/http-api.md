@@ -39,6 +39,7 @@ state.
 The current API provides these operation families:
 
 - `GET /api/health` reports whether the service is ready to accept requests.
+- `GET /api/info` reports the Rugix Admin build version shown by the frontend.
 - `GET /api/daemon`, `/api/system/info`, `/api/components`, `/api/apps`, and
   `/api/apps/:app` query the current device and daemon policy.
 - `POST /api/system/update/:job-id` and
