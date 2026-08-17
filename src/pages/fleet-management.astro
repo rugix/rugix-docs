@@ -4,7 +4,7 @@ import MarketingLayout from "../layouts/MarketingLayout.astro";
 
 <MarketingLayout
   title="Fleet Management"
-  description="How Rugix integrates with the fleet management solution of your choice."
+  description="Open fleet management interfaces, ready-made integrations, and the native Nexigon experience for Rugix Ctrl."
 >
   <h1>Fleet Management</h1>
 
@@ -16,36 +16,27 @@ import MarketingLayout from "../layouts/MarketingLayout.astro";
     it.
   </p>
 
+  <h2>Open Fleet Management Interfaces</h2>
   <p>
-    Rugix is not a fleet management solution. It provides an open, on-device
-    layer for building and updating embedded Linux systems, designed to be
-    complemented with the fleet management solution of your choice. Rugix
-    handles updates and state management on the device itself, independently
-    of whatever fleet management solution you use to orchestrate deployments.
-    This is a deliberate architectural choice, not an afterthought. You can
-    switch between different fleet management providers at any time and
-    continue updating your existing fleet. No migration headaches,
-    <strong>no vendor lock-in</strong>.
+    Rugix Ctrl exposes documented, open interfaces for installing system and
+    application updates and following their progress. A fleet management agent
+    can use these interfaces to deliver an update and trigger its installation,
+    while Rugix Ctrl handles the update safely on the device.
+  </p>
+  <p>
+    These interfaces let you integrate Rugix Ctrl with your own backend or a
+    fleet management solution of your choice. We also provide ready-made
+    integrations and reference implementations for several platforms, so you
+    do not need to build that connection from scratch.
   </p>
 
-  <p>
-    This matters because many fleet management solutions tightly couple their
-    cloud platform with their own on-device update mechanism. Once your
-    devices are deployed with their tooling, switching to a different provider
-    means re-engineering how your devices update, typically requiring a full
-    on-site reflash of your entire fleet. Your requirements may change over
-    time. Providers may change their pricing, their terms, or pivot in ways
-    that don't work for you. With a tightly coupled solution, you have no
-    good options when that happens. <strong>With Rugix, the on-device layer
-    is truly yours.</strong>
-  </p>
-
-  <h2>Supported Solutions</h2>
-  <p>Rugix currently integrates with:</p>
+  <h2>Ready-Made Integrations</h2>
+  <p>Rugix Ctrl integrates with:</p>
   <ul>
     <li>
-      <strong><a href="https://nexigon.cloud">Nexigon</a>:</strong> A modular
-      infrastructure layer for connected devices, built by the creators of Rugix.
+      <strong><a href="https://nexigon.cloud">Nexigon</a>:</strong> The
+      fleet management platform from the creators of Rugix, offering the most
+      native Rugix experience, including first-class support for Rugix Apps.
     </li>
     <li>
       <strong><a href="https://thin-edge.io/">thin-edge.io</a>:</strong> An
@@ -55,61 +46,57 @@ import MarketingLayout from "../layouts/MarketingLayout.astro";
     </li>
     <li>
       <strong><a href="https://memfault.com/">Memfault</a>:</strong> A fleet
-      management solution with a strong focus on observability.
+      management solution with a strong focus on observability, supported
+      through our reference integration.
     </li>
     <li>
       <strong><a href="https://mender.io/">Mender</a>:</strong> A fleet
-      management platform with a tightly-coupled OTA update tool.
+      management platform that can serve as the backend for Rugix Ctrl through
+      our reference integration.
     </li>
   </ul>
   <p>
-    You can also use Rugix without any fleet management solution at all, or
-    build your own integration. For technical details on each integration,
-    check out the{" "}
-    <a href="/docs/ctrl/advanced/fleet-management">fleet management documentation</a>.
+    You can also use Rugix Ctrl without any fleet management solution at all,
+    or build your own integration. For technical details on each integration,
+    see the{" "}
+    <a href="/docs/ctrl/integration/fleet-management/">fleet management documentation</a>.
   </p>
 
-  <h2>Rugix and Nexigon</h2>
+  <h2>Why Nexigon?</h2>
   <p>
-    You may have noticed that <a href="https://nexigon.cloud">Nexigon</a>, our
-    own fleet management platform, is listed above. We want to be transparent
-    and honest about that relationship and what it entails.
+    <a href="https://nexigon.cloud">Nexigon</a> is the commercial fleet
+    management platform from <a href="https://silitics.com">Silitics</a>, the
+    company behind Rugix. Because the two projects are developed side by side,
+    Nexigon offers the most native Rugix integration and a polished operator
+    experience for managing Rugix-based devices at scale.
   </p>
+  <ul>
+    <li>
+      <strong>Native Rugix Apps management:</strong> Inspect installed apps,
+      deploy new versions from a Nexigon repository, follow live logs, and
+      start, stop, roll back, or remove apps directly from the Nexigon UI.
+    </li>
+    <li>
+      <strong>Rugix-aware OTA workflows:</strong> Manage update artifacts,
+      stage rollouts across the fleet, track progress in real time, and retain
+      a complete audit trail.
+    </li>
+    <li>
+      <strong>Secure remote operations:</strong> Access devices remotely,
+      inspect their health, and run commands without exposing incoming ports or
+      operating a VPN.
+    </li>
+  </ul>
   <p>
-    Rugix is developed by <a href="https://silitics.com">Silitics</a>, a
-    company 100% owned and led by its founder{" "}
-    <a href="https://github.com/koehlma">Maximilian Köhl</a>. We help
-    companies build robust connected products, and Rugix and Nexigon grew out
-    of that work. We are not VC-funded and have no investors pushing to
-    maximize revenue at the expense of users. Some of our long-time customers
-    also use Rugix <strong>without</strong> Nexigon for fleet management.
-  </p>
-  <p>
-    We aim for a clean separation between the open-source project and our
-    commercial cloud infrastructure. This not just a promise but an
-    architectural decision. Mixing the two creates conflicts of interest that
-    would ultimately hurt both. Rugix is and will remain open-source and
-    permissively licensed. <strong>Rugix contains no Nexigon-specific
-    code.</strong> We will not degrade its functionality to push people toward
-    Nexigon. We want Rugix to grow independently, on its own merit. As an
-    example, <a href="/blog/efficient-delta-updates">delta updates</a> are a
-    feature we built into Rugix, even though other "open core" vendors reserve
-    them for their paid tiers. Having a commercial layer allows us to advance
-    the project in ways we otherwise just couldn't do.
-  </p>
-  <p>
-    That said, if you are looking for a fleet management solution that is
-    designed from the ground up to work with Rugix and follows{" "}
-    <a href="https://nexigon.cloud/blog/2026-02-19-primitives-first-architecture/">the same modular design principles</a>,
-    Nexigon is worth a look. It offers secure remote access to your devices
-    without VPN complexity, OTA update orchestration and telemetry, real-time
-    monitoring, and full audit logging for compliance. There is a{" "}
-    <a href="https://nexigon.cloud">free tier</a> and a{" "}
+    You can start with a{" "}
+    <a href="https://nexigon.cloud">free evaluation</a> and follow the{" "}
     <a href="https://docs.nexigon.dev/rugix/getting-started">getting started guide</a>{" "}
-    for using Rugix and Nexigon together for a seamless full-stack solution.
+    for using Rugix and Nexigon together.
   </p>
   <p>
-    If you want to learn more about how we think about open source, read our{" "}
-    <a href="/open-source-commitment">Commitment to Open Source</a>.
+    Nexigon's close integration does not change our open-source commitment:
+    Rugix remains permissively licensed and contains no Nexigon-specific code,
+    and we will not degrade its functionality to steer users toward Nexigon.
+    Read our <a href="/open-source-commitment">Commitment to Open Source</a>.
   </p>
 </MarketingLayout>

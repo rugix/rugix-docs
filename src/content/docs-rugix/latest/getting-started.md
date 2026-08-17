@@ -1,18 +1,17 @@
 ---
-
 ---
 
 # Getting Started 🚀
 
-Rugix is an open-source toolkit for building **reliable** embedded Linux devices with **efficient and secure** over-the-air update capabilities.
-For this guide, you will be using two of these tools: _Rugix Bakery_, a flexible and user-friendly build system for bespoke Linux distributions, and _Rugix Ctrl_, a powerful tool for over-the-air system updates and system state management.
-While designed to work seamlessly together, you can also **use Rugix Ctrl without Rugix Bakery** and vice versa.
+Rugix is an open-source toolkit for building and maintaining robust
+Linux-powered products. This guide uses two of its tools: _Rugix Bakery_ builds
+custom, OTA-ready Linux system images, and _Rugix Ctrl_ manages robust system
+updates and persistent state on the device. Rugix Ctrl is available for
+systems built with Yocto, Buildroot, or other build systems.
 
-With Rugix, our mission is clear: **Simplify the development of embedded Linux devices.**
-This quickstart guide will take you through the steps required to build a production-ready, customized variant of [Debian](https://www.debian.org)[^debian-base] with over-the-air update support, which you can readily run on any EFI-compatible system or deploy on a Raspberry Pi.
-You will also install an update to your system running in a VM or on a Raspberry Pi.
-End-to-end this guide should take less than 30 minutes to complete, even if you have no prior experience with embedded Linux.
-So, let's get started and unlock the potential of Rugix for your embedded projects!
+In less than 30 minutes, you will build a customized Debian system with
+over-the-air update support, boot it in a VM or on a Raspberry Pi, and install
+an update.[^debian-base]
 
 [^debian-base]: The Debian base is produced by the [`debian-bootstrap`](https://github.com/rugix/rugix-bakery/tree/main/container/repositories/core/recipes/debian-bootstrap) recipe, which yields a minimal Debian system. Device-specific setup (kernel, bootloader, etc.) is added by recipes such as [`rpi-debian-setup`](https://github.com/rugix/rugix-bakery/tree/main/container/repositories/core/recipes/rpi-debian-setup). Rugix Bakery intentionally installs only what a given use case requires, keeping images small and the attack surface low. To inspect exactly what ended up in a built image, look at the [SPDX and CycloneDX SBOMs](/docs/bakery/sbom-generation) that Rugix Bakery emits alongside each system.
 
@@ -230,9 +229,8 @@ For further details regarding the update process, [check out Rugix Ctrl's docume
 
 ## Conclusion
 
-Congratulations on completing the Rugix quickstart guide! 🙌
-You have successfully set up Rugix Bakery, customized your Debian-based system, built images for different devices, and learned how to install over-the-air updates with Rugix Ctrl.
-Rugix is designed to simplify the development of embedded Linux devices, making it easier for you to innovate and deploy reliable systems.
+You have used Rugix Bakery to customize and build a Debian-based system, then
+installed an over-the-air update with Rugix Ctrl.
 
 While this guide has covered the basics, there's more to learn and explore.
 We encourage you to dive deeper into both [Rugix Bakery's](/docs/bakery/) and [Rugix Ctrl's documentation](/docs/ctrl/) to discover additional functionalities and best practices.
@@ -240,12 +238,13 @@ In particular, you should read the section on [State Management](/docs/ctrl/stat
 
 [^state-management]: This may be surprising at first, but we consider it a feature that with Rugix the systems you build will typically be immutable and you have to be explicit about the state of the system you want to persist through updates and reboots.
 
-Happy building! 🚀
-
 :::tip
-**Looking for a way to securely access and update your devices in the field?** Check out [Nexigon](https://nexigon.cloud/?utm_source=rugix.org&utm_campaign=rugix-quickstart-guide), the ready-made infrastructure layer for connected devices, designed to seamlessly integrate with your applications and workflows.
-As a next step, you can follow the [Nexigon quickstart guide for Rugix](https://docs.nexigon.dev/rugix/getting-started?utm_source=rugix.org&utm_campaign=rugix-quickstart-guide) to onboard your device and connect it to Nexigon.
-Nexigon is developed by the creators of Rugix as a complementary commercial offering to support the development and maintenance of Rugix as an open-source project.
-Neither Nexigon nor Rugix are bound to each other and you can use Nexigon without Rugix or vice versa.
-**Rugix [supports a variety of fleet management solutions](/docs/ctrl/advanced/fleet-management) and gives you the freedom to choose the one that best fits your needs.**
+**Ready to operate a fleet?** [Nexigon](https://nexigon.cloud/?utm_source=rugix.org&utm_campaign=rugix-quickstart-guide)
+is the commercial fleet management platform from the creators of Rugix. It adds
+secure remote access, fleet-wide update orchestration, monitoring, and audit
+logs. Follow the [Nexigon quickstart guide for
+Rugix](https://docs.nexigon.dev/rugix/getting-started?utm_source=rugix.org&utm_campaign=rugix-quickstart-guide)
+to connect this device.
+
+For other fleet management options, see [Fleet Management](/fleet-management/).
 :::

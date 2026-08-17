@@ -214,7 +214,7 @@ export const getRugixDocsConfig = memoizeDocsConfig(
           prefix: `${v.slug}/`,
           /*
            * "Essentials" covers the mixed root-level pages (Getting
-           * Started, Production Checklist, The Rugix Project,
+           * Started, Production Checklist, About Rugix,
            * Upgrading from v0.8) without stuttering with any of them.
            */
           rootGroupTitle: "Essentials",

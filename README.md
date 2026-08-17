@@ -6,6 +6,9 @@ The website and documentation for [Rugix](https://rugix.org), built with
 and [`@silitics/astro-docs`](https://www.npmjs.com/package/@silitics/astro-docs)
 packages.
 
+> [!NOTE]
+> **Support:** This repository is covered by [Tier 1: Core](https://rugix.org/support-commitment/#tier-core) of the Rugix Support Commitment.
+
 ## Local Development
 
 ```sh
