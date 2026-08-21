@@ -130,7 +130,7 @@ A bundle at a URL, which Rugix Ctrl fetches itself:
 rugix-ctrl update install URL
 ```
 
-Rugix Ctrl uses HTTP range queries to dynamically fetch blocks that aren't already available locally (dynamic delta updates) as well as to automatically resume updates, if the connection drops mid-download. The retry count and backoff for these reconnects can be tuned via `--http-max-retries`, `--http-retry-initial-backoff`, and `--http-retry-max-backoff`. Range queries can also be disabled entirely with `--disable-range-queries` as a fallback for servers that don't support them.
+Rugix Ctrl uses HTTP range queries to dynamically fetch blocks that aren't already available locally (dynamic delta updates) as well as to automatically resume updates, if the connection drops mid-download. If no local blocks can be reused, Ctrl starts with a normal full request and switches to a range request only after an interruption. The retry count and backoff for these reconnects can be tuned via `--http-max-retries`, `--http-retry-initial-backoff`, and `--http-retry-max-backoff`. Range queries can also be disabled entirely with `--disable-range-queries` as a fallback for servers that don't support them.
 
 The stdin and HTTP forms are _streaming_ installs: Rugix Ctrl writes each block straight to its target as it arrives, rather than staging the whole bundle on the device first.
 
