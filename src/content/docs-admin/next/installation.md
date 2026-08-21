@@ -122,7 +122,7 @@ The installer downloads the latest stable release by default. Pass an exact
 release tag as the first argument to install a specific version:
 
 ```sh
-sudo bash install-rugix-admin.sh v0.5.0-rc.1
+sudo bash install-rugix-admin.sh v0.5.0
 ```
 
 Set `RUGIX_CTRL_VERSION` to an exact tag or a stable major-version selector
@@ -130,7 +130,7 @@ when the installer also needs to install Rugix Ctrl. It defaults to `v1`:
 
 ```sh
 sudo env RUGIX_CTRL_VERSION=v1.3.0 \
-  bash install-rugix-admin.sh v0.5.0-rc.1
+  bash install-rugix-admin.sh v0.5.0
 ```
 
 The installer then:
