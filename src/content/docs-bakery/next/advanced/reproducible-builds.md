@@ -1,5 +1,4 @@
 ---
-
 ---
 
 # Reproducible Builds
@@ -17,6 +16,8 @@ We aim to enable reproducible builds of Rugix itself as well as of system images
 Rugix Bakery supports a `--source-date` option which allows you to pin the source date of the build to a specific date and time (formatted according to RFC 3339). If you do not specify this option, Rugix Bakery will use the current date and time.
 In any case, Rugix Bakery will clamp the modification time of all files to the source date.
 The source date is also used to set the [`SOURCE_DATE_EPOCH` environment variable](https://reproducible-builds.org/docs/source-date-epoch/) in the build environment.
+Bakery also passes this value to filesystem construction tools so that creation
+timestamps do not depend on the time of the build.
 
 ## Reproducibility of Rugix
 
@@ -45,6 +46,36 @@ The infrastructure for reproducible builds is implemented as part of Rugix's [`x
 **🚧 This is work-in-progress. 🚧**
 
 Reproducibility of Rugix is a prerequisite for reproducible system images.
+
+### Filesystem Images
+
+Bakery represents a finished layer as a directory tree after all recipes have
+run. It constructs ext4 filesystems directly from this tree and passes the
+configured source date to `mkfs.ext4`. Reproducible targets must also specify a
+stable filesystem UUID, directory hash seed, and filesystem feature set in their
+ext4 options, as Rugix's default system partitions do. Given those fixed inputs,
+the same tree, partition size, source date, and Bakery version produce a
+byte-for-byte identical ext4 filesystem image.
+
+Bakery stores intermediate layer trees as PAX tar archives. These archives
+preserve deployment-relevant filesystem metadata, including ownership,
+permission and special mode bits, hardlinks, symbolic links, sparse files, device
+nodes, FIFOs, POSIX ACLs, and extended attributes such as file capabilities and
+SELinux labels. Bakery fails the build if it cannot restore this metadata. When
+importing ext filesystems, Bakery rejects sockets, project quota IDs, and inode
+flags such as immutable or append-only that the layer format cannot represent
+instead of silently dropping them.
+
+Modification times are clamped to the configured source date. Other timestamps,
+source inode numbers, block placement, journal contents, and free-space history
+are not layer semantics; they are normalized when constructing the output
+filesystem.
+
+Filesystem reproducibility does not by itself make the complete disk image
+reproducible. Partition-table identifiers, FAT filesystems, and bootloader
+artifacts must also be deterministic. This guarantee applies to each ext4
+partition image, not the assembled disk image, unless the selected target
+documents a stronger guarantee.
 
 Furthermore, reproducibility of images requires support by the underlying Linux distribution.
 In particular, it requires that a distribution provides immutable snapshots of their repositories (rebuilding packages is outside the scope of Rugix).
