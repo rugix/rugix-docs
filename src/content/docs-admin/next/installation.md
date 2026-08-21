@@ -23,7 +23,7 @@ Add the `rugix-extra` repository to `rugix-bakery.toml`:
 
 ```toml title="rugix-bakery.toml"
 [repositories]
-rugix-extra = { git = "https://github.com/rugix/rugix-extra.git" }
+rugix-extra = { git = "https://github.com/rugix/rugix-extra.git", branch = "v0.9" }
 ```
 
 For production builds, pin the repository to a known revision with `rev`. See
