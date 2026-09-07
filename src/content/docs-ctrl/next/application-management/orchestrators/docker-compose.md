@@ -78,6 +78,33 @@ services:
 Use `x-rugix.image.ref` only when the local source reference differs from the
 Compose `image:` reference.
 
+### Bundle a Prebuilt Image Archive
+
+A `docker-archive` source packages an image created by `docker save` or Nix's
+`dockerTools` without loading it into a local container daemon:
+
+```yaml
+services:
+  worker:
+    image: example/worker:1
+    x-rugix:
+      image:
+        source: docker-archive
+        ref: images/worker.tar.gz
+```
+
+The archive path is required and resolves relative to the Compose file. Absolute
+paths are also accepted. Use an archive containing one image and a path without
+colons. Skopeo handles compressed archives. Normal bundling rewrites the image
+reference to a Rugix-owned content tag and includes the image as a separate
+payload. With `--disable-pinning`, provide a Compose `image` tag to retain.
+
+For Nix builds, the Rugix flake exports `lib.mkComposeBundle`. It accepts Compose
+configuration and one image archive derivation per service, supplies Skopeo and
+Bundler, and produces the bundle plus its verification hash. See the
+[Nix helper documentation](https://github.com/rugix/rugix/blob/main/nix/compose-bundle.md)
+for an example and the argument reference.
+
 ### 3. Install on the Device
 
 ```shell
@@ -140,3 +167,11 @@ The following environment variables are available in the `docker-compose.yml`:
 | Variable             | Description                                           |
 | -------------------- | ----------------------------------------------------- |
 | `RUGIX_APP_DATA_DIR` | Absolute path to the app's persistent data directory. |
+
+## NixOS Integration
+
+The Rugix flake exports `nixosModules.rugix` for app recovery and daemon services.
+Enabling `services.rugix.apps.dockerCompose.enable` also enables Rugix and Docker
+and declares the Compose runtime component. See the
+[NixOS module guide](https://github.com/rugix/rugix/blob/main/nix/nixos-module.md)
+for a configuration example.
