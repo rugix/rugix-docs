@@ -30,17 +30,17 @@ importers:
         specifier: ^6.7.2
         version: 6.7.2
       '@silitics/astro-docs':
-        specifier: ^0.6.2
-        version: 0.6.2(@silitics/astro-theme@0.6.4(astro@7.2.0(@astrojs/markdown-remark@7.2.2)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(yaml@2.9.0))(tailwindcss@4.3.3))(astro@7.2.0(@astrojs/markdown-remark@7.2.2)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(yaml@2.9.0))
+        specifier: ^0.6.3
+        version: 0.6.3(@silitics/astro-theme@0.6.5(astro@7.2.0(@astrojs/markdown-remark@7.2.2)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(yaml@2.9.0))(tailwindcss@4.3.3))(astro@7.2.0(@astrojs/markdown-remark@7.2.2)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(yaml@2.9.0))
       '@silitics/astro-schema-viewer':
-        specifier: ^0.2.5
-        version: 0.2.5(@silitics/astro-theme@0.6.4(astro@7.2.0(@astrojs/markdown-remark@7.2.2)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(yaml@2.9.0))(tailwindcss@4.3.3))(astro@7.2.0(@astrojs/markdown-remark@7.2.2)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(yaml@2.9.0))
+        specifier: ^0.2.6
+        version: 0.2.6(@silitics/astro-theme@0.6.5(astro@7.2.0(@astrojs/markdown-remark@7.2.2)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(yaml@2.9.0))(tailwindcss@4.3.3))(astro@7.2.0(@astrojs/markdown-remark@7.2.2)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(yaml@2.9.0))
       '@silitics/astro-sidex-viewer':
-        specifier: ^0.2.3
-        version: 0.2.3(@silitics/astro-theme@0.6.4(astro@7.2.0(@astrojs/markdown-remark@7.2.2)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(yaml@2.9.0))(tailwindcss@4.3.3))(astro@7.2.0(@astrojs/markdown-remark@7.2.2)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(yaml@2.9.0))
+        specifier: ^0.2.4
+        version: 0.2.4(@silitics/astro-theme@0.6.5(astro@7.2.0(@astrojs/markdown-remark@7.2.2)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(yaml@2.9.0))(tailwindcss@4.3.3))(astro@7.2.0(@astrojs/markdown-remark@7.2.2)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(yaml@2.9.0))
       '@silitics/astro-theme':
-        specifier: ^0.6.4
-        version: 0.6.4(astro@7.2.0(@astrojs/markdown-remark@7.2.2)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(yaml@2.9.0))(tailwindcss@4.3.3)
+        specifier: ^0.6.5
+        version: 0.6.5(astro@7.2.0(@astrojs/markdown-remark@7.2.2)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(yaml@2.9.0))(tailwindcss@4.3.3)
       '@tailwindcss/vite':
         specifier: ^4.3.3
         version: 4.3.3(vite@8.2.0(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(yaml@2.9.0))
@@ -936,26 +936,26 @@ packages:
   '@shikijs/vscode-textmate@10.0.2':
     resolution: {integrity: sha512-83yeghZ2xxin3Nj8z1NMd/NCuca+gsYXswywDy5bHvwlWL8tpTQmzGeUuHd9FC3E/SBEMvzJRwWEOz5gGes9Qg==}
 
-  '@silitics/astro-docs@0.6.2':
-    resolution: {integrity: sha512-yQTkx7ViK1Fw1UTyNMKJpcafDHaoVfJ17/GMAKjvyST4095Z8tWJLx3YY9kpyAtn4qLDIAxG7FqhSHvFz2BAlA==}
+  '@silitics/astro-docs@0.6.3':
+    resolution: {integrity: sha512-JLhA2HANP9N+NP8JK4oyo2L7RHt1GPbaymVsUAP2FpcJ8Hll6rwQqSmM/mDY0smmDVc3IV1cHCDW7Gax6p7arQ==}
     peerDependencies:
-      '@silitics/astro-theme': ^0.6.4
+      '@silitics/astro-theme': ^0.6.5
       astro: ^7.0.0
 
-  '@silitics/astro-schema-viewer@0.2.5':
-    resolution: {integrity: sha512-SUAwE4VbJPFmfvgHaW1cQhk9zmOxdGH9julKQGLl/sciJ0Cyy5rjJMeJBcLYSMelddIReYUJqwrLN0lcLTGviA==}
+  '@silitics/astro-schema-viewer@0.2.6':
+    resolution: {integrity: sha512-khXoP+5tUPu9hXF0RBUqQU8wHiLXYjqeJvvNMfpUF8zNDMVT5q/MB7jKXjUaZzUM6KnlNC9abzgkGQxrJV2nRw==}
     peerDependencies:
-      '@silitics/astro-theme': ^0.6.4
+      '@silitics/astro-theme': ^0.6.5
       astro: ^7.0.0
 
-  '@silitics/astro-sidex-viewer@0.2.3':
-    resolution: {integrity: sha512-rSCL/Fc6g9Gu4azuBeSLsjTBhHtNBF6JaYYWzVeeOScYvAw4t5yKHleAVwdxA9BIFNytacMW5eiZMOmKjLi+tg==}
+  '@silitics/astro-sidex-viewer@0.2.4':
+    resolution: {integrity: sha512-ti7r7GH4WM+wE4Ovbs7NJwz/vckTFWG9nlz+kXF+CR8UUdZAJiZ7WuS7AyLfcOUy1ryvPmyYPQ4FQXSg8Ct0Ww==}
     peerDependencies:
-      '@silitics/astro-theme': ^0.6.4
+      '@silitics/astro-theme': ^0.6.5
       astro: ^7.0.0
 
-  '@silitics/astro-theme@0.6.4':
-    resolution: {integrity: sha512-NJGY+PHaBAN1MaS/CgsIV9FVzoahjIuVigZxlwJYz0iTXL6QLyK0syeihnitWouyp6dRHmd/jr0TsP5z77NF4Q==}
+  '@silitics/astro-theme@0.6.5':
+    resolution: {integrity: sha512-RdY8t3TqAJOEiYaNf6HAbS1y/CHaNnWy4mOg00MbQbaMG76qHf1OKkRJthAAz6c2JTvnEhdr8JBgOKMa+jb5xg==}
     peerDependencies:
       astro: ^7.0.0
       tailwindcss: ^4.0.0
@@ -3913,29 +3913,29 @@ snapshots:
 
   '@shikijs/vscode-textmate@10.0.2': {}
 
-  '@silitics/astro-docs@0.6.2(@silitics/astro-theme@0.6.4(astro@7.2.0(@astrojs/markdown-remark@7.2.2)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(yaml@2.9.0))(tailwindcss@4.3.3))(astro@7.2.0(@astrojs/markdown-remark@7.2.2)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(yaml@2.9.0))':
+  '@silitics/astro-docs@0.6.3(@silitics/astro-theme@0.6.5(astro@7.2.0(@astrojs/markdown-remark@7.2.2)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(yaml@2.9.0))(tailwindcss@4.3.3))(astro@7.2.0(@astrojs/markdown-remark@7.2.2)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(yaml@2.9.0))':
     dependencies:
       '@fortawesome/fontawesome-svg-core': 6.7.2
       '@fortawesome/free-solid-svg-icons': 6.7.2
-      '@silitics/astro-theme': 0.6.4(astro@7.2.0(@astrojs/markdown-remark@7.2.2)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(yaml@2.9.0))(tailwindcss@4.3.3)
+      '@silitics/astro-theme': 0.6.5(astro@7.2.0(@astrojs/markdown-remark@7.2.2)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(yaml@2.9.0))(tailwindcss@4.3.3)
       astro: 7.2.0(@astrojs/markdown-remark@7.2.2)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(yaml@2.9.0)
 
-  '@silitics/astro-schema-viewer@0.2.5(@silitics/astro-theme@0.6.4(astro@7.2.0(@astrojs/markdown-remark@7.2.2)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(yaml@2.9.0))(tailwindcss@4.3.3))(astro@7.2.0(@astrojs/markdown-remark@7.2.2)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(yaml@2.9.0))':
+  '@silitics/astro-schema-viewer@0.2.6(@silitics/astro-theme@0.6.5(astro@7.2.0(@astrojs/markdown-remark@7.2.2)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(yaml@2.9.0))(tailwindcss@4.3.3))(astro@7.2.0(@astrojs/markdown-remark@7.2.2)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(yaml@2.9.0))':
     dependencies:
       '@fortawesome/fontawesome-svg-core': 6.7.2
       '@fortawesome/free-solid-svg-icons': 6.7.2
-      '@silitics/astro-theme': 0.6.4(astro@7.2.0(@astrojs/markdown-remark@7.2.2)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(yaml@2.9.0))(tailwindcss@4.3.3)
+      '@silitics/astro-theme': 0.6.5(astro@7.2.0(@astrojs/markdown-remark@7.2.2)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(yaml@2.9.0))(tailwindcss@4.3.3)
       astro: 7.2.0(@astrojs/markdown-remark@7.2.2)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(yaml@2.9.0)
 
-  '@silitics/astro-sidex-viewer@0.2.3(@silitics/astro-theme@0.6.4(astro@7.2.0(@astrojs/markdown-remark@7.2.2)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(yaml@2.9.0))(tailwindcss@4.3.3))(astro@7.2.0(@astrojs/markdown-remark@7.2.2)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(yaml@2.9.0))':
+  '@silitics/astro-sidex-viewer@0.2.4(@silitics/astro-theme@0.6.5(astro@7.2.0(@astrojs/markdown-remark@7.2.2)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(yaml@2.9.0))(tailwindcss@4.3.3))(astro@7.2.0(@astrojs/markdown-remark@7.2.2)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(yaml@2.9.0))':
     dependencies:
       '@fortawesome/fontawesome-svg-core': 6.7.2
       '@fortawesome/free-solid-svg-icons': 6.7.2
-      '@silitics/astro-theme': 0.6.4(astro@7.2.0(@astrojs/markdown-remark@7.2.2)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(yaml@2.9.0))(tailwindcss@4.3.3)
+      '@silitics/astro-theme': 0.6.5(astro@7.2.0(@astrojs/markdown-remark@7.2.2)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(yaml@2.9.0))(tailwindcss@4.3.3)
       astro: 7.2.0(@astrojs/markdown-remark@7.2.2)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(yaml@2.9.0)
       marked: 16.4.2
 
-  '@silitics/astro-theme@0.6.4(astro@7.2.0(@astrojs/markdown-remark@7.2.2)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(yaml@2.9.0))(tailwindcss@4.3.3)':
+  '@silitics/astro-theme@0.6.5(astro@7.2.0(@astrojs/markdown-remark@7.2.2)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(yaml@2.9.0))(tailwindcss@4.3.3)':
     dependencies:
       '@astrojs/markdown-remark': 7.2.2
       '@fontsource-variable/ibm-plex-sans': 5.3.0

@@ -253,12 +253,18 @@
   color: var(--theme-content-subtle);
 }
 
+.delta-savings-table tbody th,
 .delta-savings-table tbody td {
   padding: 0.55rem 0.85rem;
   border-bottom: 1px solid var(--theme-divider);
 }
 
-.delta-savings-table tbody tr:last-child td {
+.delta-savings-table tbody th {
+  text-align: left;
+  font-weight: 400;
+}
+
+.delta-savings-table tbody tr:last-child > * {
   border-bottom: none;
 }
 
@@ -268,7 +274,7 @@
   font-family: var(--font-mono, ui-monospace, monospace);
 }
 
-.delta-savings-baseline td {
+.delta-savings-baseline > * {
   color: var(--theme-content-subtle);
   font-style: italic;
 }

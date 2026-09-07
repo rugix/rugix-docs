@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from "react"
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -7,36 +7,36 @@ import {
   Title,
   Tooltip,
   Legend,
-} from "chart.js";
-import { Bar } from "react-chartjs-2";
+} from "chart.js"
+import { Bar } from "react-chartjs-2"
 
-import COMPRESSION_FACTORS, { TOTAL_SIZES } from "./delta-savings-data";
+import COMPRESSION_FACTORS, { TOTAL_SIZES } from "./delta-savings-data"
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
-type Cadence = "monthly" | "quarterly" | "biannually" | "annually";
-type FactorKey = keyof (typeof COMPRESSION_FACTORS)["bookworm"]["annually"];
+type Cadence = "monthly" | "quarterly" | "biannually" | "annually"
+type FactorKey = keyof (typeof COMPRESSION_FACTORS)["bookworm"]["annually"]
 
 interface MethodSpec {
-  label: string;
-  key: FactorKey;
-  color: string;
+  label: string
+  key: FactorKey
+  color: string
   /**
    * Stack key. Methods sharing a stack render on top of each other in
    * the bar chart (used to split Deltar into "data" and "index"
    * portions while keeping the totals comparable to the other bars).
    */
-  stack?: string;
+  stack?: string
 }
 
-const CADENCES: Cadence[] = ["monthly", "quarterly", "biannually", "annually"];
-const CADENCE_LABELS = ["Monthly", "Quarterly", "Biannually", "Annually"];
+const CADENCES: Cadence[] = ["monthly", "quarterly", "biannually", "annually"]
+const CADENCE_LABELS = ["Monthly", "Quarterly", "Biannually", "Annually"]
 const ACCUMULATED_LABELS = [
   "Monthly (12 updates)",
   "Quarterly (4 updates)",
   "Biannual (2 updates)",
   "Annual (1 update)",
-];
+]
 
 const METHODS: MethodSpec[] = [
   { label: "No delta updates", key: "compression", color: "#f43f5e" },
@@ -73,7 +73,7 @@ const METHODS: MethodSpec[] = [
     stack: "deltar-casync-16-768-32768",
   },
   { label: "Xdelta", key: "xdelta", color: "#10b981" },
-];
+]
 
 /**
  * Hook returning the current effective theme — `"light"` or `"dark"`.
@@ -84,37 +84,41 @@ const METHODS: MethodSpec[] = [
  * media-query changes (when the OS setting flips).
  */
 function useThemeMode(): "light" | "dark" {
-  const [mode, setMode] = useState<"light" | "dark">("light");
+  const [mode, setMode] = useState<"light" | "dark">("light")
 
   useEffect(() => {
-    const root = document.documentElement;
-    const mql = window.matchMedia("(prefers-color-scheme: dark)");
+    const root = document.documentElement
+    const mql = window.matchMedia("(prefers-color-scheme: dark)")
 
     const compute = () => {
-      const explicit = root.getAttribute("data-theme");
+      const explicit = root.getAttribute("data-theme")
       if (explicit === "light" || explicit === "dark") {
-        setMode(explicit);
-        return;
+        setMode(explicit)
+        return
       }
-      setMode(mql.matches ? "dark" : "light");
-    };
+      setMode(mql.matches ? "dark" : "light")
+    }
 
-    compute();
-    const observer = new MutationObserver(compute);
-    observer.observe(root, { attributes: true, attributeFilter: ["data-theme"] });
-    mql.addEventListener("change", compute);
+    compute()
+    const observer = new MutationObserver(compute)
+    observer.observe(root, {
+      attributes: true,
+      attributeFilter: ["data-theme"],
+    })
+    mql.addEventListener("change", compute)
     return () => {
-      observer.disconnect();
-      mql.removeEventListener("change", compute);
-    };
-  }, []);
+      observer.disconnect()
+      mql.removeEventListener("change", compute)
+    }
+  }, [])
 
-  return mode;
+  return mode
 }
 
 function plotOptions(title: string, mode: "light" | "dark") {
-  const tickColor = mode === "dark" ? "#e5e7eb" : "#1f2937";
-  const gridColor = mode === "dark" ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)";
+  const tickColor = mode === "dark" ? "#e5e7eb" : "#1f2937"
+  const gridColor =
+    mode === "dark" ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)"
   return {
     plugins: {
       title: { display: true, text: title, color: tickColor },
@@ -124,14 +128,22 @@ function plotOptions(title: string, mode: "light" | "dark") {
     maintainAspectRatio: false,
     interaction: { mode: "index" as const, intersect: false },
     scales: {
-      x: { stacked: true, ticks: { color: tickColor }, grid: { color: gridColor } },
-      y: { stacked: true, ticks: { color: tickColor }, grid: { color: gridColor } },
+      x: {
+        stacked: true,
+        ticks: { color: tickColor },
+        grid: { color: gridColor },
+      },
+      y: {
+        stacked: true,
+        ticks: { color: tickColor },
+        grid: { color: gridColor },
+      },
     },
-  };
+  }
 }
 
 interface PlotShellProps {
-  children: React.ReactNode;
+  children: React.ReactNode
 }
 
 function PlotShell({ children }: PlotShellProps) {
@@ -139,7 +151,7 @@ function PlotShell({ children }: PlotShellProps) {
     <div className="delta-plot prose-reset">
       <div className="delta-plot-canvas">{children}</div>
     </div>
-  );
+  )
 }
 
 /**
@@ -148,7 +160,7 @@ function PlotShell({ children }: PlotShellProps) {
  * "no improvement over plain compression."
  */
 export function PlotRollingUpdates() {
-  const mode = useThemeMode();
+  const mode = useThemeMode()
   const data = {
     labels: CADENCE_LABELS,
     datasets: METHODS.map((method) => ({
@@ -158,19 +170,23 @@ export function PlotRollingUpdates() {
       data: CADENCES.map((cadence) => {
         const bw =
           COMPRESSION_FACTORS.bookworm[cadence][method.key] /
-          COMPRESSION_FACTORS.bookworm[cadence].compression;
+          COMPRESSION_FACTORS.bookworm[cadence].compression
         const bs =
           COMPRESSION_FACTORS.bullseye[cadence][method.key] /
-          COMPRESSION_FACTORS.bullseye[cadence].compression;
-        return (bw + bs) / 2;
+          COMPRESSION_FACTORS.bullseye[cadence].compression
+        return (bw + bs) / 2
       }),
     })),
-  };
+  }
   return (
     <PlotShell>
-      <Bar options={plotOptions("Minor Updates: Efficiency Ratios", mode)} data={data} />
+      <Bar
+        aria-label="Minor update efficiency ratios by update cadence. Lower values use less bandwidth than plain compression."
+        options={plotOptions("Minor Updates: Efficiency Ratios", mode)}
+        data={data}
+      />
     </PlotShell>
-  );
+  )
 }
 
 /**
@@ -178,7 +194,7 @@ export function PlotRollingUpdates() {
  * understanding the absolute cost across update frequencies.
  */
 export function PlotTotalSizes() {
-  const mode = useThemeMode();
+  const mode = useThemeMode()
   const data = {
     labels: ACCUMULATED_LABELS,
     datasets: METHODS.map((method) => ({
@@ -186,20 +202,21 @@ export function PlotTotalSizes() {
       backgroundColor: method.color,
       stack: method.stack ?? method.key,
       data: CADENCES.map((cadence) => {
-        const bw = TOTAL_SIZES.bookworm[cadence][method.key];
-        const bs = TOTAL_SIZES.bullseye[cadence][method.key];
-        return (bw + bs) / 2 / 2 / 1024 / 1024 / 1024;
+        const bw = TOTAL_SIZES.bookworm[cadence][method.key]
+        const bs = TOTAL_SIZES.bullseye[cadence][method.key]
+        return (bw + bs) / 2 / 2 / 1024 / 1024 / 1024
       }),
     })),
-  };
+  }
   return (
     <PlotShell>
       <Bar
+        aria-label="Accumulated update size in GiB per device per year, comparing delta methods and update cadences."
         options={plotOptions("Minor Updates: Accumulated GiB / Year", mode)}
         data={data}
       />
     </PlotShell>
-  );
+  )
 }
 
 /**
@@ -208,7 +225,7 @@ export function PlotTotalSizes() {
  * cost more than plain LZMA when the changes are large enough.
  */
 export function PlotMajorUpdates() {
-  const mode = useThemeMode();
+  const mode = useThemeMode()
   const data = {
     labels: CADENCE_LABELS,
     datasets: METHODS.map((method) => ({
@@ -221,10 +238,14 @@ export function PlotMajorUpdates() {
           COMPRESSION_FACTORS["bullseye-bookworm"][cadence].compression,
       ),
     })),
-  };
+  }
   return (
     <PlotShell>
-      <Bar options={plotOptions("Major Upgrades: Efficiency Ratios", mode)} data={data} />
+      <Bar
+        aria-label="Major upgrade efficiency ratios by update cadence. Values above one use more bandwidth than plain compression."
+        options={plotOptions("Major Upgrades: Efficiency Ratios", mode)}
+        data={data}
+      />
     </PlotShell>
-  );
+  )
 }
