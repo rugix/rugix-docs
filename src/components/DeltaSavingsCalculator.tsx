@@ -188,7 +188,7 @@ export default function DeltaSavingsCalculator() {
       </div>
 
       <div className="delta-savings-table-wrap">
-        <table className="delta-savings-table">
+        <table className="delta-savings-table" tabIndex={0}>
           <caption className="sr-only">
             Estimated annual update costs and savings by delta update method
           </caption>
