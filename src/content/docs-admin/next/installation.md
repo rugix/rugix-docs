@@ -1,13 +1,24 @@
 ---
 title: Installation
-description: Add Rugix Admin to a system image with Rugix Bakery or Yocto.
+description: Add Rugix Admin to a system image with Rugix Bakery, NixOS, or Yocto.
 order: 2
 ---
 
 Install Rugix Admin as part of the system image whenever possible. This keeps
 the interface and its service definition versioned with the rest of the device
-software. Rugix provides integrations for Rugix Bakery and Yocto; a standalone
+software. Rugix provides integrations for Rugix Bakery, NixOS, and Yocto; a standalone
 installer is also available for evaluating Rugix Admin on an existing system.
+
+## Install on NixOS
+
+The Rugix Admin flake exports `nixosModules.rugix-admin` and packages for x86-64
+and AArch64 Linux. The package builds and embeds the frontend; the module imports
+the Rugix service module and enables its privileged daemon. Admin listens on
+loopback by default, and daemon operations must be enabled explicitly.
+
+See [Nix Integration](https://github.com/rugix/rugix-admin/blob/main/nix/README.md)
+for a complete module configuration and build commands. These flake outputs
+require a revision containing the Nix integration; they are not in version 0.5.0.
 
 ## Install with Rugix Bakery
 
