@@ -19,6 +19,8 @@ An **app** is a named, self-contained application workload (e.g., `my-service`, 
 
 Each install of an app produces a new **generation**: an immutable snapshot of the app's files. Previous generations stay on disk, so rollback is instant with nothing to re-download. Alongside its generations, each app has a **data directory** for persistent state that survives across generations, the right place for databases, caches, or any runtime state.
 
+Apps can also define a general JSON configuration contract. Rugix stores device-specific configuration independently from immutable app generations, validates it against the app's optional JSON Schema, and applies it with the same rollback guarantees as an app update. See [Application Configuration](./configuration).
+
 ## Orchestrators
 
 Each app declares an **orchestrator** that knows how to start, stop, and check the workload. Rugix Apps ships with built-in orchestrators for common workload types:
@@ -98,9 +100,10 @@ Rugix Apps is designed to handle crashes and power loss gracefully:
 - A new generation is only marked as ready once all of its files have been fully extracted. An interrupted installation never leaves a half-installed generation.
 - If the device loses power during a generation switch, the interrupted operation is automatically replayed on the next boot.
 - If activation fails and a previous generation exists, rollback is attempted automatically.
+- If applying new configuration fails, the previously active combination of app generation and configuration revision is restored automatically.
 
 :::warning
-The last two guarantees rely on two systemd services being installed and enabled on the device:
+Crash recovery and boot-time restoration rely on two systemd services being installed and enabled on the device:
 
 - [`rugix-apps-restore-units.service`](https://github.com/rugix/rugix/blob/main/crates/apps/rugix-ctrl/assets/rugix-apps-restore-units.service): restores systemd units for the `binary` orchestrator after a reboot.
 - [`rugix-apps-recover.service`](https://github.com/rugix/rugix/blob/main/crates/apps/rugix-ctrl/assets/rugix-apps-recover.service): recovers interrupted transitions for all orchestrator types after the system is fully up.

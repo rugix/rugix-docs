@@ -75,6 +75,7 @@ This command:
 **Options:**
 
 - `--include` adds extra files or directories to the bundle (e.g., binaries, configuration, data files that the orchestrator script needs).
+- `--config-schema` and `--config-default` include the app's optional [JSON configuration contract](../../configuration).
 
 ### 3. Install on the Device
 
@@ -99,6 +100,7 @@ The following environment variables are set when the orchestrator script is invo
 | `RUGIX_APP_DIR`            | Absolute path to the app directory.                                   |
 | `RUGIX_APP_GENERATION_DIR` | Absolute path to the generation directory.                            |
 | `RUGIX_APP_DATA_DIR`       | Absolute path to the app's persistent data directory.                 |
+| `RUGIX_APP_CONFIG_PATH`    | Absolute path to the effective JSON configuration, when one exists.   |
 | `RUGIX_APP_RECOVERY`       | `"true"` if replaying an interrupted transition, `"false"` otherwise. |
 
 The working directory is set to the generation directory.

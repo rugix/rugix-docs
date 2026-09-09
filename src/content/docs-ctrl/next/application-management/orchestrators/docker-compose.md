@@ -57,6 +57,8 @@ or `docker` when using `--builder docker`).
 - `--include` adds extra files or directories to the bundle.
 - `--components` adds component TOML or JSON files and directories to the bundle's compatibility metadata.
 - `--health-check-timeout` writes the Docker Compose health-check timeout into `app.toml`. The default is 120 seconds; use `0` to disable waiting.
+- `--config-schema` and `--config-default` include the app's optional [JSON configuration contract](../../configuration).
+- `--config-env NAME=JSON_POINTER` projects a selected JSON scalar into the Compose interpolation environment. The option may be repeated.
 - `--metadata-file` includes an app metadata JSON file as `app-meta.json`.
 - `--disable-image-bundling` skips bundling container images, useful when devices pull images from a registry at runtime.
 - `--disable-pinning` keeps the Compose `image:` references as-is instead of rewriting them to Rugix-owned content tags. Images are still bundled under those original references.
@@ -164,9 +166,35 @@ Set `timeout` to `0` to disable waiting for health checks entirely (activation s
 
 The following environment variables are available in the `docker-compose.yml`:
 
-| Variable             | Description                                           |
-| -------------------- | ----------------------------------------------------- |
-| `RUGIX_APP_DATA_DIR` | Absolute path to the app's persistent data directory. |
+| Variable                | Description                                                         |
+| ----------------------- | ------------------------------------------------------------------- |
+| `RUGIX_APP_DATA_DIR`    | Absolute path to the app's persistent data directory.               |
+| `RUGIX_APP_CONFIG_PATH` | Absolute path to the effective JSON configuration, when one exists. |
+
+### Projecting Configuration Values
+
+Environment projection is specific to the Docker Compose orchestrator. Declare each variable explicitly when packing the app, using an [RFC 6901 JSON Pointer](https://www.rfc-editor.org/rfc/rfc6901):
+
+```shell
+rugix-bundler apps pack docker-compose \
+    --app my-app \
+    --config-schema config.schema.json \
+    --config-env SERVER_URL=/serverUrl \
+    docker-compose.yml \
+    my-app.rugixb
+```
+
+Then use normal Compose interpolation:
+
+```yaml title="docker-compose.yml"
+services:
+  server:
+    image: example/server
+    environment:
+      SERVER_URL: ${SERVER_URL:-https://default.example.com}
+```
+
+Only strings, numbers, and booleans can be projected. A missing or `null` value leaves the variable unset, allowing the Compose default to take effect. Objects and arrays cause activation to fail. Names beginning with `RUGIX_` are reserved.
 
 ## NixOS Integration
 

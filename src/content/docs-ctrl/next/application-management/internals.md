@@ -24,7 +24,7 @@ stateDiagram-v2
     Stopping --> Active: stopped / failed
 ```
 
-Activation, deactivation, and generation switches are all represented by the `Switching` state, which records an optional `from` generation (to deactivate) and an optional `to` generation (to activate). The `from` generation is deactivated first, then the `to` generation is activated. If activation fails and a `from` generation is available, rollback to that generation is attempted automatically (by activating the `from` generation again). If rollback also fails, the app enters the `Error` state and requires manual intervention.
+Activation, deactivation, generation switches, and configuration changes are all represented by the `Switching` state. Its `from` and `to` values are deployment pairs consisting of a generation and an optional device-specific configuration revision. The `from` deployment is deactivated first, then the `to` deployment is activated. If activation fails and a `from` deployment is available, rollback to that exact pair is attempted automatically. If rollback also fails, the app enters the `Error` state and requires manual intervention.
 
 Starting and stopping are represented by the `Starting` and `Stopping` states. The app's lifecycle state always returns to `Active` once the operation finishes; whether the workload itself is then running is reported separately by `status`. These states exist for crash recovery: if the system crashes while in one of them, the operation is replayed on the next boot.
 
@@ -56,7 +56,11 @@ App data is stored in the Rugix state directory at `/run/rugix/state/apps/` (or 
 ```
 <apps-dir>/<app>/
 ├── .rugix/
-│   └── state.json                   # app lifecycle state
+│   ├── state.json                   # app lifecycle state
+│   └── configuration-state.json     # desired and highest allocated revisions
+├── configurations/
+│   ├── 1.json                       # device-specific JSON revision
+│   └── 2.json
 ├── generations/
 │   ├── 1/                            # old generation
 │   │   ├── app.toml
@@ -83,8 +87,9 @@ Key aspects:
 
 - **Persistent data directory.** The `data/` directory is shared across all generations. It is the right place for databases, caches, or any state that should survive app updates.
 - **Complete marker.** The `.rugix/complete` file is written only after all payloads for a generation have been fully extracted. Its absence means the generation is incomplete.
-- **Generation metadata.** The `.rugix/generation.json` file stores the generation number, creation timestamp, and `lastActivated` timestamp. The `lastActivated` field is updated each time the generation is successfully activated. Rollback only considers generations where `lastActivated` is set.
-- **State file.** The `.rugix/state.json` file tracks the app's lifecycle state, including intermediate states used for [crash recovery](#crash-recovery).
+- **Generation metadata.** The `.rugix/generation.json` file stores the generation number, creation timestamp, `lastActivated` timestamp, and the configuration revision used for the most recent successful activation. Rollback only considers generations where `lastActivated` is set.
+- **Configuration revisions.** Device-specific JSON documents are immutable, numbered files under `configurations/`. The directory is restricted to root. `.rugix/configuration-state.json` records the desired revision and highest allocated revision independently from lifecycle state, ensuring revision numbers are never reused.
+- **State file.** The `.rugix/state.json` file tracks the app's lifecycle state, including the configuration revisions in intermediate states used for [crash recovery](#crash-recovery).
 
 ## App Bundles
 
@@ -150,7 +155,7 @@ If the system comes back up and the state is still intermediate, recovery replay
 The state file records one of:
 
 - **`inactive`**: no generation is active.
-- **`switching`**: a generation transition is in progress. Records an optional `from` generation (being deactivated), an optional `to` generation (being activated), and a `recovery` flag indicating whether this switch is a recovery attempt.
+- **`switching`**: a deployment transition is in progress. Records optional `from` and `to` generations with their configuration revisions, plus a `recovery` flag indicating whether this switch is a recovery attempt.
 - **`active`**: a generation is active and ready to run.
 - **`starting`**: the workload of an active generation is being started.
 - **`stopping`**: the workload of an active generation is being stopped.
@@ -181,18 +186,21 @@ The `rugix-ctrl apps recover` command can also be called manually at any time.
 
 ## CLI Reference
 
-| Command                                                 | Description                                   |
-| ------------------------------------------------------- | --------------------------------------------- |
-| `rugix-ctrl apps install BUNDLE`                      | Install apps from a bundle (`-` for stdin).   |
-| `rugix-ctrl apps list`                                  | List all installed apps with status.          |
-| `rugix-ctrl apps info APP`                            | Show details for an app.                      |
-| `rugix-ctrl apps activate APP [GENERATION]`           | Activate a generation (starts the app).       |
-| `rugix-ctrl apps deactivate APP`                      | Deactivate the current generation (stops it). |
-| `rugix-ctrl apps start APP`                           | Start the workload of an active app.          |
-| `rugix-ctrl apps stop APP`                            | Stop the workload without deactivating.       |
-| `rugix-ctrl apps rollback APP`                        | Roll back to the previous generation.         |
-| `rugix-ctrl apps remove APP`                          | Remove an app entirely.                       |
-| `rugix-ctrl apps generations APP`                     | List all generations.                         |
-| `rugix-ctrl apps gc [APP] [--keep N]`                   | Garbage collect old generations.              |
-| `rugix-ctrl apps recover`                               | Recover interrupted transitions for all apps. |
-| `rugix-ctrl apps service-manager systemd restore-units` | Restore app units into systemd (for boot).    |
+| Command                                                 | Description                                                               |
+| ------------------------------------------------------- | ------------------------------------------------------------------------- |
+| `rugix-ctrl apps install BUNDLE`                        | Install apps from a bundle (`-` for stdin).                               |
+| `rugix-ctrl apps list`                                  | List all installed apps with status.                                      |
+| `rugix-ctrl apps info APP`                              | Show details for an app.                                                  |
+| `rugix-ctrl apps config get APP`                        | Print the effective JSON configuration.                                   |
+| `rugix-ctrl apps config schema APP`                     | Print the app's JSON Schema.                                              |
+| `rugix-ctrl apps config set APP [SOURCE]`               | Validate, store, and apply JSON configuration.                            |
+| `rugix-ctrl apps activate APP [GENERATION]`             | Activate a generation (starts the app).                                   |
+| `rugix-ctrl apps deactivate APP`                        | Deactivate the current generation (stops it).                             |
+| `rugix-ctrl apps start APP`                             | Start the workload of an active app.                                      |
+| `rugix-ctrl apps stop APP`                              | Stop the workload without deactivating.                                   |
+| `rugix-ctrl apps rollback APP`                          | Roll back to the previous generation.                                     |
+| `rugix-ctrl apps remove APP`                            | Remove an app entirely.                                                   |
+| `rugix-ctrl apps generations APP`                       | List all generations.                                                     |
+| `rugix-ctrl apps gc [APP] [--keep N]`                   | Garbage collect old generations and unreferenced configuration revisions. |
+| `rugix-ctrl apps recover`                               | Recover interrupted transitions for all apps.                             |
+| `rugix-ctrl apps service-manager systemd restore-units` | Restore app units into systemd (for boot).                                |
