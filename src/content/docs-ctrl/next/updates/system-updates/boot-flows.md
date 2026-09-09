@@ -146,6 +146,18 @@ Those boot arguments have the form `ro init=/usr/bin/rugix-ctrl root=PARTUUID=<.
 Those boot arguments may be loaded and used by the second stage boot script, however, they can also be ignored.
 In the future we may add additional variables, e.g., for just the partition UUID.
 
+#### Preserving the Init Argument
+
+To preserve any `init` arguments in the incoming `boot.grubenv`, configure the boot flow as follows:
+
+```toml
+[boot-flow]
+type = "grub"
+overwrite-init = false
+```
+
+With `overwrite-init = false`, Rugix Ctrl does not add an `init` argument when the incoming `rugpi_bootargs` contains none. Rugix Ctrl's pre-init hooks and built-in persistent-state initialization do not run unless another part of the boot process invokes them.
+
 For further details, see the reference [boot scripts](https://github.com/rugix/rugix/tree/main/boot/grub/cfg) used by Rugix Bakery.
 
 ### U-Boot
@@ -258,6 +270,18 @@ This boot flow is specific to Raspberry Pi 4 and newer models.
 The `tryboot` boot flow works almost as described in [Raspberry Pi's documentation on the `tryboot` mechanism](https://www.raspberrypi.com/documentation/computers/config_txt.html#example-update-flow-for-ab-booting).
 Instead of reading the device tree `tryboot` flag, it compares the booted partition with the default stored in `autoboot.txt`.
 
+#### Preserving the Init Argument
+
+During update installation, this flow patches the incoming boot partition's `cmdline.txt` with the root partition for its boot group. By default, it also replaces any `init` argument with `init=/usr/bin/rugix-ctrl`. To keep the incoming image's `init` arguments instead, configure the flow explicitly:
+
+```toml
+[boot-flow]
+type = "rpi-tryboot"
+overwrite-init = false
+```
+
+With `overwrite-init = false`, Rugix Ctrl preserves existing `init` arguments and does not add one when the command line has none. Rugix Ctrl's pre-init hooks and built-in persistent-state initialization do not run unless another part of the boot process invokes them.
+
 This boot flow typically comes with the following image and system layout:
 
 ```
@@ -278,6 +302,18 @@ This boot flow also supports a GPT partition table where the system partitions a
 ### Raspberry Pi: U-Boot
 
 `type = "rpi-uboot"`
+
+#### Preserving the Init Argument
+
+During update installation, this flow patches the incoming boot partition's `cmdline.txt` with the root partition for its boot group. By default, it also replaces any `init` argument with `init=/usr/bin/rugix-ctrl`. To keep the incoming image's `init` arguments instead, configure the flow explicitly:
+
+```toml
+[boot-flow]
+type = "rpi-uboot"
+overwrite-init = false
+```
+
+With `overwrite-init = false`, Rugix Ctrl preserves existing `init` arguments and does not add one when the command line has none. Rugix Ctrl's pre-init hooks and built-in persistent-state initialization do not run unless another part of the boot process invokes them.
 
 This boot flow assumes the following image and system layout:
 
