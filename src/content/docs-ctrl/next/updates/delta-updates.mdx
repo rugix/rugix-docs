@@ -3,7 +3,7 @@ title: Delta Updates
 order: 40
 ---
 
-import DeltaSavingsCalculator from "../../../../components/DeltaSavingsCalculator.tsx";
+import DeltaSavingsCalculator from "../../../../components/DeltaSavingsCalculator.tsx"
 
 Delta updates can **reduce the amount of data transferred and the time required to install a new version** by reusing locally available parts of the old version of a system. This is especially useful for devices on metered or bandwidth-constrained connections. Delta updates are particularly effective when there are frequent updates with small changes. According to [our benchmarks](/blog/efficient-delta-updates), they can **reduce the amount of data transferred by up to 90%**.
 
@@ -37,44 +37,17 @@ When you install an update via HTTP, the server supports range queries, and the 
 
 Any HTTP server that supports byte-range requests works. This includes virtually every standard HTTP server, all S3-compatible object stores, and most CDNs. No special infrastructure is required.
 
-### Slot Indices
+### Automatic Slot Indices
 
-While we will improve the workflow in the future, dynamic delta updates currently require the manual creation of system block indices, for instance with:[^future-delta]
+Enable automatic delta updates in the Rugix Ctrl configuration:
 
-[^future-delta]: In the future, Rugix Ctrl will create indices automatically based on the indices it finds in the bundle.
-
-```shell
-rugix-ctrl slots create-index boot-a casync-64 sha512-256
-rugix-ctrl slots create-index system-a casync-64 sha512-256
+```toml title="/etc/rugix/ctrl.toml"
+automatic-delta-updates = true
 ```
 
-The update bundles built with Rugix Bakery use the parameters `casync-64` and `sha512-256` by default.
-If you want to use dynamic delta updates right now, just create the indices before installing the update bundle via HTTP.
-If the currently active system is A, then create an index for `system-a` and `boot-a`.
-If the currently active system is B, then create an index for `system-b` and `boot-b`.
-You can use `rugix-ctrl system info` to query whether the currently booted system is A or B.
+When Rugix Ctrl installs a full system update, it reads the required chunking and hashing parameters from each payload's block index. Before transferring payload data, it creates any missing matching indices for existing source slots. After writing and verifying a payload, it stores the payload's block index for the target slot. This lets the first update after enabling the option reuse local data and prepares the installed system for later delta updates.
 
-Here is an example script for installing an update:
-
-```shell title="install-update.sh"
-#!/usr/bin/env bash
-
-set -euo pipefail
-
-URL=$1
-
-ACTIVE_SYSTEM=$(rugix-ctrl system info | jq -r ".boot.activeGroup")
-
-if [ "$ACTIVE_SYSTEM" == "a" ]; then
-    rugix-ctrl slots create-index boot-a casync-64 sha512-256
-    rugix-ctrl slots create-index system-a casync-64 sha512-256
-else
-    rugix-ctrl slots create-index boot-b casync-64 sha512-256
-    rugix-ctrl slots create-index system-b casync-64 sha512-256
-fi
-
-rugix-ctrl update install "$URL"
-```
+Automatic index management currently applies only to full system updates. Incremental updates do not create or retain indices automatically. Update bundles built with Rugix Bakery include block indices using `casync-64` and `sha512-256` by default.
 
 For background on what block indices are and how they work, see [Update Bundles reference: Block Encoding](../update-bundles#block-encoding).
 
