@@ -12,11 +12,13 @@ Updates can also be signed using the PKCS#11 interface, which allows for secure 
 
 ## Verification Is Mandatory
 
-Rugix Ctrl **requires every bundle to be verified before installation**, either by a valid embedded signature against a configured root certificate or by an explicit bundle hash passed via `--bundle-hash`. If neither is provided, the installation is refused.
+Rugix Ctrl **requires every bundle to be verified before installation**, either by a valid embedded signature against a configured root certificate, by an explicit bundle hash passed via `--bundle-hash`, or by an [installation grant](./installation-grants) that signs the bundle hash. If none is provided, the installation is refused.
 
 This applies uniformly to [system updates](../system-updates/), [incremental updates](../incremental-updates), and [application updates](../../application-management/): the same bundle format means the same verification rules.
 
 The hash-based path is useful when you control the distribution channel end-to-end (e.g., a known bundle pushed by your own backend). For untrusted channels (user uploads, public mirrors, third-party fleet managers), you want signed bundles.
+
+A signature authenticates the software itself. It does not restrict _which_ device may install a bundle, or when. [Installation grants](./installation-grants) add that restriction, and can be required in addition to an embedded signature.
 
 ## What Gets Signed
 
