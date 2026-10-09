@@ -63,10 +63,18 @@ permissions = ["apps", "system"]
 max-lifetime = 86400
 ```
 
-With this section present, **every system and app installation requires a grant**.
-Caller-supplied bundle hashes, explicit root certificates, compatibility overrides,
-and insecure verification options cannot bypass it, and the privileged daemon's
-`dangerously-insecure` switch does not override it.
+With this section present, **every system and app installation requires a grant**. A
+grant decides how its installation is verified, so it cannot be combined with
+`--bundle-hash`, `--root-cert`, the `--insecure-*` options, or
+`--skip-compatibility-check`. Pass a grant or pass local overrides, not both.
+
+The boundary this protects is the one between the installer and whoever asks it to
+install something, which includes every client of the
+[privileged daemon](../reference/privileged-daemon). It is not a defense against an
+attacker who already has root on the device: that attacker can rewrite the policy,
+the replay state, or the slots directly. For the same reason there is a deliberate
+way out for an operator who needs one, described under
+[recovering a device](#recovering-a-device).
 
 Each `[[grants.authorities]]` entry is one trusted issuer:
 
@@ -149,6 +157,29 @@ Groups are exact identifiers inside the configured namespace. A grant addressed 
 `{"group": "canary"}` is accepted only while the helper lists `canary`, and a grant
 addressed to `{"recipient": "device-001"}` matches the device identity regardless of
 its groups. Membership never widens what an issuer's certificate permits.
+
+### Recovering a Device
+
+A device whose grant issuer is unreachable, whose clock is wrong, or whose replay
+state is damaged would otherwise have no way to install anything.
+`--insecure-skip-grant-verification` installs without a grant:
+
+```shell
+rugix-ctrl update install \
+  --insecure-skip-grant-verification \
+  --bundle-hash "$(rugix-bundler hash update.rugixb)" \
+  update.rugixb
+```
+
+Skipping the grant returns to the ordinary verification rules, so the bundle still
+needs an embedded signature or an explicit `--bundle-hash`, and
+`mode = "embedded-and-grant"` still requires the publisher signature. Each check is
+skipped only by its own option.
+
+Prefer this over removing `[grants]` from the configuration. It applies to one
+command, it names itself in the shell history and in the log, and the policy stays in
+force for every other installation. The privileged daemon refuses it, like every
+other insecure option, unless it is configured with `dangerously-insecure`.
 
 ## Replay State
 
