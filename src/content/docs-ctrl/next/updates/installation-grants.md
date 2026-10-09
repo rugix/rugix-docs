@@ -42,6 +42,12 @@ authorize a system update for production devices. That is described under
 What grants do not do is undo an installation that was already authorized. They
 restrict which requests a device accepts, which is why short validity windows matter.
 
+They also do not govern software that is already on the device. Activating an
+installed app generation, rolling one back, and selecting the spare system need no
+grant, because that software got onto the device under one, and because Rugix has to
+be able to roll back by itself when a trial boot fails. **A grant decides what may be
+installed, not which installed version runs.**
+
 ## Configure a Device
 
 Grant policy lives in `/etc/rugix/ctrl.toml`:
@@ -374,9 +380,8 @@ result may live.
 ### Finishing an Update Later
 
 An installation script often wants to finish an update itself, for example to emit
-telemetry before the device reboots. Installing with `--reboot no` stages the system
-without selecting it, and the grant that authorized the installation keeps
-authorizing its activation:
+telemetry before the device reboots. Install with `--reboot no` to stage the system
+without selecting it, then select it whenever you are ready:
 
 ```shell
 rugix-ctrl update install --grant update.cms --reboot no update.rugixb
@@ -384,12 +389,8 @@ rugix-ctrl update install --grant update.cms --reboot no update.rugixb
 rugix-ctrl system reboot --spare
 ```
 
-The device holds that authorization until it is used, or until the next granted
-system installation replaces it, so there is no deadline between the two commands.
-Selecting any _other_ system still needs a new grant, which is what keeps an
-unauthorized rollback to an older version out. Under grant policy, manual app
-activation, app rollback, and selecting a spare system that no grant staged are
-refused: to run stored software again, install its bundle with a new grant.
+There is no deadline between the two commands, and the second one needs no grant of
+its own: the grant authorized installing that system.
 
 An update whose grant expires mid-transfer cannot activate. Its inactive data may
 remain on the device and is replaced by the next granted installation.
