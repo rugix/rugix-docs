@@ -17,20 +17,30 @@ and [delta delivery](./delta-updates) unaffected.
 Grants are opt-in. Devices that do not configure them keep using
 [signed updates](./signed-updates) alone.
 
-## When to Use Grants
+## No Single Point of Compromise
 
-Use grants when the decision _"this device should run this version now"_ belongs to
-someone other than the software publisher, or when it must be auditable:
+Publishing software, authorizing a rollout, and distributing bundles are three
+different jobs. Grants let you separate them so that **compromising any one of them
+is not enough to install software on a device**:
 
-- A fleet service rolls out a release gradually and must stop a device from
-  installing a bundle it was not selected for.
-- A device accepts updates over an untrusted channel, where a bundle that is
-  genuine but stale, or meant for a different fleet, must be refused.
-- A deployment operator should be able to authorize installations without holding
-  the publisher's signing key.
+| Compromised | What the attacker gains | What still stops them |
+| --- | --- | --- |
+| Publisher signing key | Can sign a malicious bundle | A device installs nothing without a grant for that exact bundle |
+| Grant signing key | Can authorize a bundle for a device | Only bundles the publisher signed, and only ones the attacker can get onto the device |
+| Distribution infrastructure | Can deliver any bundle to any device | A device installs nothing without a grant, including publisher-signed bundles |
 
-A grant is not a replacement for a publisher signature. The two answer different
-questions, and a device can require both.
+That holds as long as the three roles use separate keys and systems. Requiring both
+signatures is what keeps the publisher independent of the deployment authority, so
+configure [an independent publisher signature](#require-an-independent-publisher-signature)
+when the two are not the same party.
+
+Grants also narrow what a compromised grant key can do. Each key carries its own
+namespace, audiences, and permissions, so a key for canary app rollouts cannot
+authorize a system update for production devices. That is described under
+[preparing certificates](#prepare-a-grant-signing-certificate).
+
+What grants do not do is undo an installation that was already authorized. They
+restrict which requests a device accepts, which is why short validity windows matter.
 
 ## Configure a Device
 
@@ -64,9 +74,13 @@ Local policy cannot be widened by any certificate, so an authority restricted to
 `["apps"]` cannot authorize a system update even if its certificates say otherwise.
 Add a second entry with the same permissions to rotate an authority's root.
 
-Rugix rejects a grant policy it could never enforce when the configuration loads, so
-an incomplete policy fails immediately instead of at the first installation. Restart
-the daemon after changing its configuration.
+A policy that could never authorize an installation is rejected when the
+configuration loads, so the mistake surfaces immediately instead of at the next
+rollout. Rugix refuses to run an operation when `[grants]` is present and
+`grants.authorities` is empty, `namespace` is empty, `identity-helper` is not an
+absolute path, an authority has no `root` or a zero `max-lifetime`, or
+`mode = "embedded-and-grant"` is set without any `signatures.roots`. Restart the
+daemon after changing its configuration.
 
 ### Require an Independent Publisher Signature
 
@@ -114,41 +128,34 @@ It must exit successfully within ten seconds; failure, a timeout, invalid JSON, 
 an empty identifier rejects the installation. A service-backed helper must
 authenticate its response and apply its own, shorter timeout.
 
-Rugix runs the helper during state initialization, when it admits an installation,
-and again before activation. Group membership may change between installations and
-even during one, in which case activation is refused. The device identity must keep
-matching the provisioned replay state, so changing it requires reprovisioning.
+Rugix runs the helper when it admits an installation and again before activation, so
+a device that was decommissioned or moved out of a group mid-rollout does not
+activate the software. _Activation_ is the step that makes installed software take
+effect: switching to the new app generation for an app update, and selecting the
+installed boot group for a system update. The device identity must keep matching the
+recorded replay state, so changing it requires reprovisioning.
 
 Protect the helper, its inputs, the configuration, and the certificates from
 installation callers: the audience check is exactly as strong as the identity the
 helper reports.
 
 Groups are exact identifiers inside the configured namespace. A grant addressed to
-`{"Group": "canary"}` is accepted only while the helper lists `canary`, and a grant
-addressed to `{"Recipient": "device-001"}` matches the device identity regardless of
+`{"group": "canary"}` is accepted only while the helper lists `canary`, and a grant
+addressed to `{"recipient": "device-001"}` matches the device identity regardless of
 its groups. Membership never widens what an issuer's certificate permits.
 
-## Initialize Replay State
+## Replay State
 
-Rugix remembers which grants it has used, so a grant cannot be replayed. Initialize
-that state once during provisioning, as root, after storage and state management are
-set up:
-
-```sh
-rugix-ctrl initialize-grant-state
-```
-
-Initialization refuses to overwrite existing state, and Rugix fails closed when the
-state is missing, invalid, or belongs to another identity. It is deliberately
-explicit: missing state cannot be told apart from deleted state, so initializing
-automatically at boot would let deleting a file make a used grant work again.
-
-State lives on the data partition under `.rugix/grants` when Rugix
+Rugix remembers which grants it has used so that a grant cannot be replayed. That
+state is created on first use, under `.rugix/grants` on the data partition when Rugix
 [state management](../state-management/) is active, which survives a state-profile
-reset, and in `/var/lib/rugix/grants` otherwise. Keep that location on persistent,
-protected storage outside the A/B system slots, and migrate it if you change the
-storage layout. Wiping the data partition clears authorization history and requires
-reprovisioning.
+reset, and under `/var/lib/rugix/grants` otherwise.
+
+The directory is readable only by the privileged installer, and **protecting it is
+what protects the history**: anything that can delete the records can equally create
+new ones. Keep it on persistent, protected storage outside the A/B system slots, and
+migrate it if you change the storage layout. Wiping it lets grants that were already
+used work again until they expire.
 
 ## Issue a Grant
 
@@ -163,17 +170,16 @@ rugix-bundler grants sign \
   --device device-001 \
   --expires-at 1h \
   --target system \
-  --boot-group B \
-  --reboot set \
   --cert grant-signer.pem \
   --key grant-signer.key \
   update.cms
 ```
 
-The device then installs the bundle with the grant:
+The device then installs that bundle with the grant, choosing its own installation
+options:
 
 ```shell
-rugix-ctrl update install --grant update.cms --boot-group B --reboot set update.rugixb
+rugix-ctrl update install --grant update.cms update.rugixb
 ```
 
 Use `--group canary` instead of `--device` to address a provisioned group, and
@@ -184,21 +190,27 @@ issuing time, or an absolute RFC 3339 timestamp. `--not-before` sets the start o
 window and defaults to now. Windows use whole seconds, with an inclusive start and an
 exclusive end.
 
-To inspect what a grant actually authorizes, verify it against a trusted copy of the
-bundle:
+A signing machine does not need the bundle itself. Given a hash from a trusted
+source, `--bundle-hash` issues the same grant without transferring gigabytes:
 
 ```shell
-rugix-bundler grants verify update.cms \
-  --root-cert grant-root.pem \
-  --namespace example-production \
-  --device device-001 \
-  --bundle update.rugixb
+rugix-bundler grants sign \
+  --bundle-hash "$(rugix-bundler hash update.rugixb)" \
+  --id rollout-42-device-001 \
+  --namespace example-production --device device-001 \
+  --expires-at 1h --target system \
+  --cert grant-signer.pem --key grant-signer.key update.cms
 ```
 
-### Choosing Permitted Options
+### Constraining Installation Options
 
-A system grant also decides which installation options the device may use. An option
-you leave out permits any value, and an option you set requires exactly that request:
+By default a grant authorizes the installation and leaves the installation options to
+the device, which is usually what you want: an installation script picks the boot
+group and decides how to reboot, including `--reboot no` to
+[finish the update itself](#finishing-an-update-later).
+
+When a rollout has to pin an option, state it at issuance. An option you set then
+requires exactly that request, and an option you leave out permits any value:
 
 | Issuing option | What the device may do |
 | --- | --- |
@@ -210,9 +222,30 @@ you leave out permits any value, and an option you set requires exactly that req
 | `--reboot set` | pass exactly `--reboot set` |
 | `--bundle-default-reboot` | omit `--reboot` and use the bundle's default |
 
-This lets one grant serve a whole group whose members differ, while a
-device-specific grant can pin every option. The bundle hash already binds every
-payload destination, including app names, so options are the only remaining freedom.
+The bundle hash already binds every payload destination, including app names, so
+options are the only remaining freedom. Pinning them suits a grant aimed at one
+device; leaving them open lets one group grant serve a fleet whose members differ.
+
+### Inspecting a Grant
+
+To see what a grant actually authorizes, verify it against a trusted bundle or hash:
+
+```shell
+rugix-bundler grants verify update.cms \
+  --root-cert grant-root.pem \
+  --namespace example-production \
+  --device device-001 \
+  --bundle-hash "$(rugix-bundler hash update.rugixb)"
+```
+
+The command prints the authenticated grant as JSON, which is the only view of a grant
+that is safe to act on. It applies no device policy and does not look at replay state,
+so a grant it accepts can still be refused by a device whose local `permissions` are
+narrower, or which has already used that grant.
+
+Verification requires the grant and its certificates to be valid at the time it
+checks, which defaults to now. Use `--at` with an RFC 3339 timestamp to inspect a
+grant whose window has not started yet or has already passed.
 
 ## Prepare a Grant Signing Certificate
 
@@ -285,9 +318,10 @@ with any CMS signer:
 
 ```shell
 rugix-bundler grants prepare \
-  --bundle update.rugixb --id rollout-42-device-001 \
+  --bundle-hash "$(rugix-bundler hash update.rugixb)" \
+  --id rollout-42-device-001 \
   --namespace example-production --device device-001 \
-  --expires-at 1h --target system --reboot set grant.raw
+  --expires-at 1h --target system grant.raw
 
 openssl cms -sign -binary -nodetach \
   -in grant.raw -signer grant-signer.pem -inkey grant-signer.key \
@@ -300,21 +334,29 @@ prepared as described above.
 ## Replay, Expiry, and Recovery
 
 An installation records its grant twice. After preflight and before anything is
-written, Rugix records the grant as _admitted_. Before apps are activated or a system
-boot is selected, it revalidates everything and records the grant as _consumed_.
+written, Rugix records the grant as _admitted_. Before activation, it revalidates
+everything and records the grant as _consumed_.
 
 That gives the behavior interrupted updates need:
 
 - A transfer that fails halfway can be retried with the same grant while it is still
   valid.
-- A consumed grant never authorizes an installation again, even if power is lost
-  between consumption and activation.
+- A consumed grant never authorizes an installation again.
 - Grants are independent. Using one does not invalidate others, and several
   authorities can issue grants for the same device without coordinating.
 
-Rugix keeps one record per grant until that grant expires, so short validity windows
-keep the state small. If an issuer creates more unexpired grants than a device
-retains, further installations wait until some expire.
+Consumption happens just before activation rather than after it, so an activation
+that fails afterwards leaves no usable grant behind. For an app update that means a
+failed activation rolls back and the retry needs a new grant; the alternative would
+let one authorization drive activation attempts repeatedly. Transfers, which are the
+part that actually fails often, retry freely because they happen before consumption.
+
+A device keeps one record per grant until that grant expires, up to 1024 records. A
+record is kept rather than discarded because discarding it would make that grant
+usable again, so an issuer that creates more than 1024 unexpired grants for one
+device has to wait for some to expire before that device accepts another. Short
+validity windows keep the number small: with one-hour windows the limit is 1024
+grants per hour for a single device.
 
 Grants and certificates expire, which requires the device to know the current time.
 Rugix uses the system clock, bounded below by a watermark it records whenever it
@@ -329,11 +371,28 @@ reboot may execute on a later boot, and software that is already running keeps
 running. The window limits when an installation may be _authorized_, not how long the
 result may live.
 
+### Finishing an Update Later
+
+An installation script often wants to finish an update itself, for example to emit
+telemetry before the device reboots. Installing with `--reboot no` stages the system
+without selecting it, and the grant that authorized the installation keeps
+authorizing its activation:
+
+```shell
+rugix-ctrl update install --grant update.cms --reboot no update.rugixb
+# ... report success, flush telemetry, wait for a maintenance window ...
+rugix-ctrl system reboot --spare
+```
+
+The device holds that authorization until it is used, or until the next granted
+system installation replaces it, so there is no deadline between the two commands.
+Selecting any _other_ system still needs a new grant, which is what keeps an
+unauthorized rollback to an older version out. Under grant policy, manual app
+activation, app rollback, and selecting a spare system that no grant staged are
+refused: to run stored software again, install its bundle with a new grant.
+
 An update whose grant expires mid-transfer cannot activate. Its inactive data may
-remain on the device and is replaced by the next granted installation. Under grant
-policy, manual app activation, app rollback, and `system reboot --spare` are
-disabled, including for a system staged with `--reboot no`: to run stored software
-again, install its bundle with a new grant.
+remain on the device and is replaced by the next granted installation.
 
 Short windows are also the practical answer to revocation, which otherwise needs
 fresh information on the device. Restoring an old backup of the replay state restores
