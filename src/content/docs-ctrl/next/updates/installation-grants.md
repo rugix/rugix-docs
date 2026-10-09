@@ -28,13 +28,12 @@ a grant naming that bundle and that device. A compromised distribution channel c
 deliver anything anywhere, and devices refuse all of it, including genuinely
 publisher-signed bundles, because delivery carries no authorization.
 
-A stolen grant key is the case worth being precise about. It can authorize an
-installation, but it still has to get the bundle onto the device, so it needs the
-distribution path as well. With
+A stolen grant key can authorize an installation, but it still has to get the bundle
+onto the device, so it needs the distribution path too. With
 [an independent publisher signature](#require-an-independent-publisher-signature) it
-also has to find a bundle the publisher signed. Under `grant-only` it does not: a
-grant alone decides verification there, so a stolen grant key can authorize a bundle
-of the attacker's own making, and delivery is the only thing left in the way.
+also needs a bundle the publisher signed. Under `grant-only` it does not: a grant
+alone decides verification there, so a stolen grant key can authorize a bundle of the
+attacker's own making, and delivery is all that stands in the way.
 
 A grant key is bounded by its own certificate as well. Each one carries a namespace,
 a set of audiences, and a set of permissions, so a key for canary app rollouts cannot
