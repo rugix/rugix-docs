@@ -19,25 +19,29 @@ Grants are opt-in. Devices that do not configure them keep using
 
 ## No Single Point of Compromise
 
-Publishing software, authorizing a rollout, and distributing bundles are three
-different jobs. Grants let you separate them so that **compromising any one of them
-is not enough to install software on a device**:
+Publishing software, authorizing a rollout, and delivering bundles to devices are
+three different jobs. Grants let you separate them, so that **compromising any one of
+them is not enough to install software on a device**.
 
-| Compromised | What the attacker gains | What still stops them |
-| --- | --- | --- |
-| Publisher signing key | Can sign a malicious bundle | A device installs nothing without a grant for that exact bundle |
-| Grant signing key | Can authorize a bundle for a device | Only bundles the publisher signed, and only ones the attacker can get onto the device |
-| Distribution infrastructure | Can deliver any bundle to any device | A device installs nothing without a grant, including publisher-signed bundles |
+A stolen publisher key can sign a malicious bundle, but no device installs it without
+a grant naming that bundle and that device. A compromised distribution channel can
+deliver anything anywhere, and devices refuse all of it, including genuinely
+publisher-signed bundles, because delivery carries no authorization.
 
-That holds as long as the three roles use separate keys and systems. Requiring both
-signatures is what keeps the publisher independent of the deployment authority, so
-configure [an independent publisher signature](#require-an-independent-publisher-signature)
-when the two are not the same party.
+A stolen grant key is the case worth being precise about. It can authorize an
+installation, but it still has to get the bundle onto the device, so it needs the
+distribution path as well. With
+[an independent publisher signature](#require-an-independent-publisher-signature) it
+also has to find a bundle the publisher signed. Under `grant-only` it does not: a
+grant alone decides verification there, so a stolen grant key can authorize a bundle
+of the attacker's own making, and delivery is the only thing left in the way.
 
-Grants also narrow what a compromised grant key can do. Each key carries its own
-namespace, audiences, and permissions, so a key for canary app rollouts cannot
+A grant key is bounded by its own certificate as well. Each one carries a namespace,
+a set of audiences, and a set of permissions, so a key for canary app rollouts cannot
 authorize a system update for production devices. That is described under
 [preparing certificates](#prepare-a-grant-signing-certificate).
+
+All of this holds only while the three roles use separate keys and systems.
 
 What grants do not do is undo an installation that was already authorized. They
 restrict which requests a device accepts, which is why short validity windows matter.
