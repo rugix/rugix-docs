@@ -88,7 +88,7 @@ Key aspects:
 - **Persistent data directory.** The `data/` directory is shared across all generations. It is the right place for databases, caches, or any state that should survive app updates.
 - **Complete marker.** The `.rugix/complete` file is written only after all payloads for a generation have been fully extracted. Its absence means the generation is incomplete.
 - **Generation metadata.** The `.rugix/generation.json` file stores the generation number, creation timestamp, `lastActivated` timestamp, and the configuration revision used for the most recent successful activation. Rollback only considers generations where `lastActivated` is set.
-- **Configuration revisions.** Device-specific JSON documents are immutable, numbered files under `configurations/`. The directory is restricted to root. `.rugix/configuration-state.json` records the desired revision and highest allocated revision independently from lifecycle state, ensuring revision numbers are never reused.
+- **Configuration revisions.** Device-specific JSON documents are immutable, numbered files under `configurations/`. The directory is restricted to root. `.rugix/configuration-state.json` records the desired revision and highest allocated revision independently from lifecycle state, ensuring a revision number is never reused for different content.
 - **State file.** The `.rugix/state.json` file tracks the app's lifecycle state, including the configuration revisions in intermediate states used for [crash recovery](#crash-recovery).
 
 ## App Bundles
@@ -186,21 +186,21 @@ The `rugix-ctrl apps recover` command can also be called manually at any time.
 
 ## CLI Reference
 
-| Command                                                 | Description                                                               |
-| ------------------------------------------------------- | ------------------------------------------------------------------------- |
-| `rugix-ctrl apps install BUNDLE`                        | Install apps from a bundle (`-` for stdin).                               |
-| `rugix-ctrl apps list`                                  | List all installed apps with status.                                      |
-| `rugix-ctrl apps info APP`                              | Show details for an app.                                                  |
-| `rugix-ctrl apps config get APP`                        | Print the effective JSON configuration.                                   |
-| `rugix-ctrl apps config schema APP`                     | Print the app's JSON Schema.                                              |
-| `rugix-ctrl apps config set APP [SOURCE]`               | Validate, store, and apply JSON configuration.                            |
-| `rugix-ctrl apps activate APP [GENERATION]`             | Activate a generation (starts the app).                                   |
-| `rugix-ctrl apps deactivate APP`                        | Deactivate the current generation (stops it).                             |
-| `rugix-ctrl apps start APP`                             | Start the workload of an active app.                                      |
-| `rugix-ctrl apps stop APP`                              | Stop the workload without deactivating.                                   |
-| `rugix-ctrl apps rollback APP`                          | Roll back to the previous generation.                                     |
-| `rugix-ctrl apps remove APP`                            | Remove an app entirely.                                                   |
-| `rugix-ctrl apps generations APP`                       | List all generations.                                                     |
-| `rugix-ctrl apps gc [APP] [--keep N]`                   | Garbage collect old generations and unreferenced configuration revisions. |
-| `rugix-ctrl apps recover`                               | Recover interrupted transitions for all apps.                             |
-| `rugix-ctrl apps service-manager systemd restore-units` | Restore app units into systemd (for boot).                                |
+| Command                                                     | Description                                                               |
+| ----------------------------------------------------------- | ------------------------------------------------------------------------- |
+| `rugix-ctrl apps install BUNDLE [--config FILE]`            | Install apps from a bundle (`-` for stdin).                               |
+| `rugix-ctrl apps list`                                      | List all installed apps with status.                                      |
+| `rugix-ctrl apps info APP`                                  | Show details for an app.                                                  |
+| `rugix-ctrl apps config get APP`                            | Print the effective JSON configuration.                                   |
+| `rugix-ctrl apps config schema APP`                         | Print the app's JSON Schema.                                              |
+| `rugix-ctrl apps config set APP [SOURCE]`                   | Validate, store, and apply JSON configuration.                            |
+| `rugix-ctrl apps activate APP [GENERATION] [--config FILE]` | Activate a generation (starts the app).                                   |
+| `rugix-ctrl apps deactivate APP`                            | Deactivate the current generation (stops it).                             |
+| `rugix-ctrl apps start APP`                                 | Start the workload of an active app.                                      |
+| `rugix-ctrl apps stop APP`                                  | Stop the workload without deactivating.                                   |
+| `rugix-ctrl apps rollback APP`                              | Roll back to the previous generation.                                     |
+| `rugix-ctrl apps remove APP`                                | Remove an app entirely.                                                   |
+| `rugix-ctrl apps generations APP`                           | List all generations.                                                     |
+| `rugix-ctrl apps gc [APP] [--keep N]`                       | Garbage collect old generations and unreferenced configuration revisions. |
+| `rugix-ctrl apps recover`                                   | Recover interrupted transitions for all apps.                             |
+| `rugix-ctrl apps service-manager systemd restore-units`     | Restore app units into systemd (for boot).                                |

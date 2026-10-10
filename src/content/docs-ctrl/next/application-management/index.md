@@ -63,6 +63,8 @@ rugix-ctrl apps install my-app-v2.rugixb
 
 The current generation is deactivated and the new generation is activated. The previous generation remains on disk for rollback.
 
+If the new generation declares a configuration schema that no longer accepts the configuration stored on the device, the installation fails before the running workload is stopped. Pass a document for the new generation with `--config`, as described in [Application Configuration](./configuration).
+
 ## Rollback
 
 To roll back to the previous generation:
