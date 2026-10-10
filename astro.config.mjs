@@ -5,6 +5,7 @@ import mdx from "@astrojs/mdx";
 import react from "@astrojs/react";
 import sitemap from "@astrojs/sitemap";
 import { markdownConfig } from "@silitics/astro-theme/markdown";
+import { docsSearch } from "@silitics/astro-docs/search";
 
 const noindexSitemapPaths =
   /^\/docs\/(?:(?:0\.6|0\.7\.5|0\.8\.14)|(?:ctrl|bakery)\/next)(?:\/|$)/;
@@ -29,6 +30,7 @@ export default defineConfig({
   integrations: [
     react(),
     mdx(),
+    docsSearch(),
     sitemap({
       filter: (page) => !noindexSitemapPaths.test(new URL(page).pathname),
     }),

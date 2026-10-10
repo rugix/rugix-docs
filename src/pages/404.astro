@@ -1,5 +1,6 @@
 ---
 import { BaseLayout, Section, Button } from "@silitics/astro-theme";
+import { DocsSearch } from "@silitics/astro-docs";
 import SiteFooter from "../layouts/SiteFooter.astro";
 import { brand, nav, headerActions } from "../site.ts";
 ---
@@ -12,6 +13,7 @@ import { brand, nav, headerActions } from "../site.ts";
   actions={headerActions}
   noindex
 >
+  <DocsSearch slot="header-pre-actions" variant="header" />
   <Section background="hero" padding="hero">
     <div slot="decoration" class="bg-grid-fade absolute inset-0" aria-hidden="true"></div>
     <div class="relative mx-auto max-w-2xl text-center">

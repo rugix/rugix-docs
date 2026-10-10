@@ -8,6 +8,7 @@ import {
   FaIcon,
 } from "@silitics/astro-theme";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import { DocsSearch } from "@silitics/astro-docs";
 import SiteFooter from "../../layouts/SiteFooter.astro";
 import BlogSidebar from "../../components/BlogSidebar.astro";
 import { brand, nav, headerActions } from "../../site.ts";
@@ -47,6 +48,7 @@ const sorted = posts
   nav={nav}
   actions={headerActions}
 >
+  <DocsSearch slot="header-pre-actions" variant="header" />
   <Section background="hero" padding="compact">
     <div slot="decoration" class="bg-grid-fade absolute inset-0" aria-hidden="true"></div>
     <div class="relative mx-auto max-w-3xl text-center">
