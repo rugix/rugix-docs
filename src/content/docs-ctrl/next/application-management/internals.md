@@ -104,7 +104,7 @@ There are currently two app payload types:
 - **`app-archive`**: delivers a tar archive that is extracted into the generation directory.
   - **`app`**: the app name.
 
-A bundle can contain multiple payloads for the same app. Payloads are applied in manifest order, and later payloads overlay earlier ones. For example, a bundle could ship a base archive followed by individual file payloads that override specific configuration files.
+An app bundle installs exactly one app, because it becomes one generation of that app. It may carry any number of payloads for that app, applied in manifest order so that later payloads overlay earlier ones. For example, a bundle could ship a base archive followed by individual file payloads that override specific configuration files. A manifest naming several apps is rejected when the bundle is packed, and again before it is installed. Pack one bundle per app.
 
 **`app-file`** payloads are ideal for large artifacts (Docker image tarballs, binaries) because they leverage the bundle format's support for compression, block-level deduplication, and delta encoding.
 **`app-archive`** payloads are convenient for delivering many small files at once (configuration, scripts, templates) without the overhead of a separate payload per file.
