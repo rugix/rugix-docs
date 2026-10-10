@@ -1,7 +1,7 @@
 ---
 import { getCollection, render } from "astro:content";
 import { ArticleLayout } from "@silitics/astro-theme";
-import { DocsToc } from "@silitics/astro-docs";
+import { DocsSearch, DocsToc } from "@silitics/astro-docs";
 import SiteFooter from "../../layouts/SiteFooter.astro";
 import BlogSidebar from "../../components/BlogSidebar.astro";
 import { brand, nav, headerActions } from "../../site.ts";
@@ -46,6 +46,7 @@ const frontmatter = {
   backHref="/blog"
   backLabel="Back to blog"
 >
+  <DocsSearch slot="header-pre-actions" variant="header" />
   <Content />
   <BlogSidebar slot="sidebar" currentSlug={slugFromEntry(post)} />
   <DocsToc slot="toc" headings={headings} />

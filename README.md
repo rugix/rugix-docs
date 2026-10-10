@@ -22,8 +22,10 @@ styles hot-reload without restarting.
 pnpm build
 ```
 
-Produces a static site in `dist/`. Deployment is handled by the GitHub Actions
-workflow in `.github/workflows/build.yml`.
+Produces a static site in `dist/`, including a Pagefind index of all documentation
+sets and versions. Search is available from the main header with Ctrl/Cmd+K or
+`/`. Use `pnpm preview` to test search against the built index. Deployment is
+handled by the GitHub Actions workflow in `.github/workflows/build.yml`.
 
 ## Content Layout
 

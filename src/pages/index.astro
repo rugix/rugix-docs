@@ -6,6 +6,7 @@ import {
   Link,
   FaIcon,
 } from "@silitics/astro-theme";
+import { DocsSearch } from "@silitics/astro-docs";
 import SiteFooter from "../layouts/SiteFooter.astro";
 import RugixAdminShowcase from "../components/RugixAdminShowcase.astro";
 import { faRocket, faArrowRight } from "@fortawesome/free-solid-svg-icons";
@@ -97,6 +98,7 @@ const proofPoints = [
   nav={nav}
   actions={headerActions}
 >
+  <DocsSearch slot="header-pre-actions" variant="header" />
   <Section
     background="hero"
     padding="hero"
