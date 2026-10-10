@@ -62,7 +62,7 @@ Carrying the desired revision forward keeps updates friction-free for as long as
 rugix-ctrl apps install --bundle-hash HASH --config config.json my-app-v2.rugixb
 ```
 
-That document is validated against the schema declared by the new generation. This is what `apps config set` cannot do, because it validates against the generation an app currently runs, or against the newest complete generation while an app is inactive. Only bundles that install a single app accept `--config`.
+That document is validated against the schema declared by the new generation. This is what `apps config set` cannot do, because it validates against the generation an app currently runs, or against the newest complete generation while an app is inactive.
 
 An already installed generation can be activated with a new document without downloading its bundle again:
 
