@@ -46,9 +46,43 @@ printf '%s\n' '{"serverUrl":"https://example.com"}' \
     | rugix-ctrl apps config set APP
 ```
 
+## Choosing Configuration for a Generation
+
+Each generation declares its own configuration contract, so an app update can change the schema. Rugix therefore decides which configuration revision a generation is activated with, and validates the result against that generation before any workload is touched:
+
+| Operation                       | Revision used                                                                                               |
+| ------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `apps install`, `apps activate` | the document passed with `--config`, otherwise the desired revision, the one most recently set or activated |
+| `apps rollback`                 | the revision the restored generation last activated with                                                    |
+| `apps config set`               | a revision holding the supplied document                                                                    |
+
+Carrying the desired revision forward keeps updates friction-free for as long as a new generation still accepts the document a device already has. When it does not, the installation fails before the running workload is stopped, and `--config` supplies a document for the incoming generation:
+
+```shell
+rugix-ctrl apps install --bundle-hash HASH --config config.json my-app-v2.rugixb
+```
+
+That document is validated against the schema declared by the new generation. This is what `apps config set` cannot do, because it validates against the generation an app currently runs, or against the newest complete generation while an app is inactive. Only bundles that install a single app accept `--config`.
+
+An already installed generation can be activated with a new document without downloading its bundle again:
+
+```shell
+rugix-ctrl apps activate my-app 2 --config config.json
+```
+
+Rollback restores a historical pair, while activation carries the device's intent forward. A successful rollback makes the restored revision the desired one, so a later update carries the rolled-back document forward rather than the newest one.
+
+### Evolving a Configuration Schema
+
+A new generation's schema should accept every document its predecessor accepted. Adding an optional property is safe. Adding a required property, or narrowing the type of an existing one, requires every affected device to receive a new document with `--config`. Rugix cannot check this property when a bundle is packed, so it is a rule for app authors rather than an enforced constraint.
+
+A device-specific document replaces the bundled default rather than being merged into it. Declare `default` annotations inside the schema for values an application should fall back to.
+
 ## Configuration Revisions and Rollback
 
-Each `set` reserves a monotonically increasing configuration revision number that is never reused, including after garbage collection. For an active app, Rugix deactivates and reactivates the same generation with the new revision. If activation fails, Rugix automatically reactivates the previous `(generation, configuration revision)` pair. For an inactive app, the new revision becomes the desired configuration and is applied on the next activation.
+Every new document reserves a monotonically increasing configuration revision number, and a number is never reused for different content, including after garbage collection. Re-applying the document an app already runs with reuses its revision and leaves the workload untouched, so repeatedly reconciling the same desired configuration does not restart an app.
+
+For an active app, Rugix deactivates and reactivates the same generation with the new revision. If activation fails, Rugix automatically reactivates the previous `(generation, configuration revision)` pair. For an inactive app, the new revision becomes the desired configuration and is applied on the next activation.
 
 When an old app generation is restored through rollback, Rugix uses the configuration revision with which that generation most recently activated successfully. This prevents a newer configuration contract from breaking an older application during rollback.
 
