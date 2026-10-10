@@ -152,6 +152,8 @@ To handle this, Rugix Apps tracks the app's lifecycle state in `<app_dir>/.rugix
 The state is updated _before_ a transition begins and again _after_ it completes.
 If the system comes back up and the state is still intermediate, recovery replays the operation.
 
+`rugix-ctrl apps info` reports this state as `lifecycle`, to keep it apart from the live workload `status` beside it.
+
 The state file records one of:
 
 - **`inactive`**: no generation is active.

@@ -117,7 +117,7 @@ See the [Application Management reference](./internals) for details on the crash
 
 ## Inspecting Apps
 
-All inspection commands produce structured JSON output:
+All inspection commands produce structured JSON output, described by published [JSON Schemas](https://github.com/rugix/rugix/tree/main/schemas):
 
 ```shell
 # List all apps with their status:
@@ -126,6 +126,8 @@ rugix-ctrl apps list
 # Show details for a specific app:
 rugix-ctrl apps info APP
 ```
+
+Both report two different things about an app, and it is worth keeping them apart. The **status** is the live state of the workload, observed from the orchestrator every time you ask: whether containers are running, healthy, or gone. The **lifecycle** state is what Rugix persisted about the app itself: which generation and configuration revision are deployed, and whether a transition needs recovery. An app can be lifecycle-active while its status reports `failed`, which is exactly the case where a workload crashed without Rugix having changed anything.
 
 ## Garbage Collection
 
