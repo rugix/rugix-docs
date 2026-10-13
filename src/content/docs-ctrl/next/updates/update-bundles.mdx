@@ -130,11 +130,34 @@ A bundle at a URL, which Rugix Ctrl fetches itself:
 rugix-ctrl update install URL
 ```
 
-Rugix Ctrl uses HTTP range queries to dynamically fetch blocks that aren't already available locally (dynamic delta updates) as well as to automatically resume updates, if the connection drops mid-download. If no local blocks can be reused, Ctrl starts with a normal full request and switches to a range request only after an interruption. The retry count and backoff for these reconnects can be tuned via `--http-max-retries`, `--http-retry-initial-backoff`, and `--http-retry-max-backoff`. Range queries can also be disabled entirely with `--disable-range-queries` as a fallback for servers that don't support them.
+Rugix Ctrl uses HTTP range queries to fetch blocks that aren't already available locally (dynamic delta updates). It combines adjacent missing blocks into larger requests, fetches several ranges concurrently, and reuses HTTP connections while installing verified blocks in order. If a local block fails verification, Ctrl downloads its original bundle range instead. Interrupted downloads resume at the remaining interval of the affected request.
+
+Both `update install` and `apps install` accept these HTTP tuning options:
+
+| Option                  | Default | Meaning                                                                    |
+| ----------------------- | ------- | -------------------------------------------------------------------------- |
+| `--http-stall-timeout`  | `60`    | Maximum time without incoming socket data, in seconds.                     |
+| `--http-max-range-size` | `1MiB`  | Maximum bytes per range request. Accepts units such as `256KiB` or `2MiB`. |
+| `--http-concurrency`    | `4`     | Maximum concurrent range requests.                                         |
+
+All three values must be positive. More concurrency and larger ranges can improve throughput but retain more downloaded data in memory: up to `(concurrency + 1) × max-range-size`, plus block, codec, and metadata buffers.
+
+For example:
+
+```shell
+rugix-ctrl update install URL \
+  --http-concurrency 2 \
+  --http-max-range-size 256KiB \
+  --http-stall-timeout 120
+```
+
+The stall timeout bounds idle waits, so a download that continues receiving data can run longer. DNS, connection, and request deadlines remain 60 seconds. Retry count and backoff can be tuned via `--http-max-retries`, `--http-retry-initial-backoff`, and `--http-retry-max-backoff`.
+
+Servers that do not support ranges fall back to a full streaming response; concurrency and range-size settings do not apply to that response. Use `--disable-range-queries` to select this streaming mode explicitly.
 
 The stdin and HTTP forms are _streaming_ installs: Rugix Ctrl writes each block straight to its target as it arrives, rather than staging the whole bundle on the device first.
 
-Every install uses streaming **verification** of the bundle. Rugix Ctrl aborts the install as soon as it reads a block that it cannot verify. A bundle is verified in one of two ways:
+Every install uses streaming **verification** of the bundle. Rugix Ctrl verifies each block before writing it. A rejected downloaded block can be fetched again when range access is available; persistent verification failures abort the install. A bundle is verified in one of two ways:
 
 - By a valid [embedded signature](../signed-updates), checked against a root certificate configured on the device.
 - By its **bundle hash**, passed to the install command with `--bundle-hash HASH`.
@@ -245,7 +268,7 @@ The process roughly looks as follows:
 │                │                      ▼
 │                │             ╔══════════════════╗                     ╭──────╮
 │  Payload Data  │ ◀─────────▶ ║ Adaptive Fetcher ║ ──────────────────▶ │ Slot │
-╰────────────────╯  read/skip  ╚══════════════════╝        write        ╰──────╯
+╰────────────────╯   ranges    ╚══════════════════╝        write        ╰──────╯
                                         ▲            (read/write/seek)
                                         │ read/seek
                                         ▼
