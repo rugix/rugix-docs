@@ -103,6 +103,62 @@ If the bundle directory contains a top-level `components/` directory, Rugix Bund
 Without a `block-encoding`, Rugix Ctrl isn't able to verify individual blocks of an update and will thus refuse installation. **Always add a `block-encoding` to every payload.**
 :::
 
+## Inspecting a Bundle
+
+Inspect a bundle before installing it:
+
+```shell
+rugix-ctrl bundle inspect BUNDLE.rugixb
+```
+
+The command prints JSON with the bundle hash and update type, payload destinations and hashes, embedded components, signature summaries, and the embedded manifest when present. Delta payloads report their input and reconstructed output hashes. Optional fields are omitted when absent.
+
+The `manifest` object contains the parsed embedded JSON, including unknown fields and their original names. It exposes payload filenames and declared encoding settings. These settings describe the build configuration; inspection does not check them against payload headers. If the manifest cannot be read as a JSON object, the command omits it and prints a warning.
+
+For a bundle with one slot payload, the output has this form (hashes shortened):
+
+```json
+{
+  "headerHash": "sha256:…",
+  "hashAlgorithm": "sha256",
+  "updateType": "full",
+  "payloads": [
+    {
+      "delivery": { "type": "slot", "slot": "system" },
+      "headerHash": "sha256:…",
+      "fileHash": "sha256:…"
+    }
+  ],
+  "signatures": [
+    { "signerSubjects": ["CN=Bundle Signer"], "headerMatches": true }
+  ],
+  "manifest": {
+    "update-type": "full",
+    "payloads": [
+      {
+        "filename": "system.img",
+        "delivery": { "type": "slot", "slot": "system" },
+        "block-encoding": {
+          "chunker": "fixed-64",
+          "compression": { "type": "xz" }
+        }
+      }
+    ]
+  }
+}
+```
+
+The same command accepts an HTTP(S) URL or a stream on standard input. Add `--json` for compact JSON suitable for scripts:
+
+```shell
+rugix-ctrl bundle inspect --json URL
+curl URL | rugix-ctrl bundle inspect --json -
+```
+
+Inspection reads only the bundle header and its following signature metadata, then stops at the payload section. This also works with standard input and HTTP servers without range support; reading the payloads is unnecessary. The command shares its HTTP tuning and retry options with `rugix-ctrl update install` and `rugix-ctrl apps install`, including `--disable-range-queries`.
+
+The payload descriptors report what the bundle declares. Inspection does not check that the payloads are present, install anything, require device configuration, or verify payload contents, cryptographic signatures, or certificate chains. Signature subjects are claimed identities from the embedded signer certificates. A signature's `headerMatches` flag only compares its declared digest with the bundle header. Malformed signatures are reported through per-signature `error` fields and do not prevent inspection.
+
 ## Installing a Bundle
 
 Rugix Ctrl installs bundles on the device with `rugix-ctrl update install`[^app-install] from any of three sources.
