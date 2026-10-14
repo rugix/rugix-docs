@@ -7,6 +7,8 @@ import { SidexViewer } from "@silitics/astro-sidex-viewer"
 import "@silitics/astro-sidex-viewer/styles.css"
 import rugixBundleIr from "../../../../schemas/rugix-bundle-ir.json"
 import FileTree from "../../../../components/FileTree.astro"
+import { SchemaViewer } from "@silitics/astro-schema-viewer"
+import bundleInspectSchema from "../../../../schemas/rugix-ctrl-output-bundle-inspect.schema.json"
 
 Updates are delivered to devices in the form of _update bundles_.
 
@@ -102,6 +104,31 @@ If the bundle directory contains a top-level `components/` directory, Rugix Bund
 :::info
 Without a `block-encoding`, Rugix Ctrl isn't able to verify individual blocks of an update and will thus refuse installation. **Always add a `block-encoding` to every payload.**
 :::
+
+## Inspecting a Bundle
+
+Inspect a bundle before installing it:
+
+```shell
+rugix-ctrl bundle inspect BUNDLE.rugixb
+```
+
+The command prints JSON with the bundle hash and update type, payload destinations and hashes, embedded components, and signature summaries. Block-index summaries report the chunker, hash algorithm, entry count, and compression format. Delta payloads report their input and reconstructed output hashes. Optional fields are omitted when absent.
+
+The same command accepts an HTTP(S) URL or a stream on standard input. Add `--json` for compact JSON suitable for scripts:
+
+```shell
+rugix-ctrl bundle inspect --json URL
+curl URL | rugix-ctrl bundle inspect --json -
+```
+
+Inspection reads the bundle header, signatures, and individual payload headers. Local files and HTTP sources with range support skip payload bodies. Standard input and HTTP servers without range support require reading through them. The command accepts the same HTTP tuning and retry options as installation, including `--disable-range-queries`.
+
+Inspection does not install anything, require device configuration, or verify payload contents, cryptographic signatures, or certificate chains. Signature subjects are claimed identities from the embedded signer certificates. A signature's `headerMatches` flag only compares its declared digest with the bundle header. Malformed signatures are reported through per-signature `error` fields and do not prevent inspection.
+
+The output follows this schema:
+
+<SchemaViewer schema={bundleInspectSchema} />
 
 ## Installing a Bundle
 
