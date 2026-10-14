@@ -37,17 +37,20 @@ When you install an update via HTTP, the server supports range queries, and the 
 
 Any HTTP server that supports byte-range requests works. This includes virtually every standard HTTP server, all S3-compatible object stores, and most CDNs. No special infrastructure is required.
 
-### Automatic Slot Indices
+### Slot Indices
 
-Enable automatic delta updates in the Rugix Ctrl configuration:
+Rugix Ctrl always retains the verified block index of installed slot data when the bundle provides it. This applies to block and file slots in full and incremental system updates and prepares the installed data for later dynamic delta updates. Existing matching indices are always used to reuse local blocks.
+
+To also reuse data from slots that do not yet have a matching index, enable computation of missing indices in the Rugix Ctrl configuration:
 
 ```toml title="/etc/rugix/ctrl.toml"
-automatic-delta-updates = true
+[install]
+auto-index = true
 ```
 
-When Rugix Ctrl installs a full system update, it reads the required chunking and hashing parameters from each payload's block index. Before transferring payload data, it creates any missing matching indices for existing source slots. After writing and verifying a payload, it stores the payload's block index for the target slot. This lets the first update after enabling the option reuse local data and prepares the installed system for later delta updates.
+When installing a full system update, Rugix Ctrl reads the required chunking and hashing parameters from each payload's block index and computes any missing matching indices for existing source slots before transferring payload data. This lets the first update after enabling the option reuse local data, including factory-installed data.
 
-Automatic index management currently applies only to full system updates. Incremental updates do not create or retain indices automatically. Update bundles built with Rugix Bakery include block indices using `casync-64` and `sha512-256` by default.
+The option is disabled by default and applies only to full system updates. Incremental updates retain indices for regular slot payloads but do not compute missing source indices. Update bundles built with Rugix Bakery include block indices using `casync-64` and `sha512-256` by default.
 
 For background on what block indices are and how they work, see [Update Bundles reference: Block Encoding](../update-bundles#block-encoding).
 
@@ -64,6 +67,8 @@ If you are using Rugix Bakery, you can use `./run-bakery bundler delta` instead.
 By default, Rugix Bundler will compute a patch for the `system` and `boot` slots, respectively. As the boot partition is usually modified by Rugix, the delta for the `boot` slot is computed against the `system` slot of the old version. If you want to compute patches for other slots, use the `--slot` option to provide a list of slots. You can use the syntax `new:old` to compute a patch for the `new` slot of the new version against the `old` slot of the old version.
 
 **Slots must be immutable** for static delta updates to work.
+
+Static delta payloads do not provide a block index for the reconstructed slot data, so Rugix Ctrl does not save an index after applying the patch. With `install.auto-index` enabled, a missing index can be computed when that slot is used as a source during a full system update.
 
 Rugix Bundler will include a hash of the old slot data in the patch bundle. This hash is used by Rugix Ctrl when installing the update to determine whether the required source for applying the patch is actually installed. In addition, it also includes a hash of the new slot data which is used to check the integrity of the new version after installing it.
 
