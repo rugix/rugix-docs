@@ -70,7 +70,7 @@ Rugix Ctrl currently loads components from:
 
 Missing component roots are ignored. If a root exists but is not a directory, cannot be read, or contains an invalid component file, Rugix Ctrl reports an error.
 
-Component declarations reject unknown fields. Capabilities and selectors must not specify both `version` and `value`.
+Component declarations accept unknown fields, so declarations written for newer versions of Rugix Ctrl still load. Rugix Ctrl logs a warning that names the unknown fields. Capabilities and selectors must not specify both `version` and `value`.
 
 Only active app generations contribute app-owned components. Inactive app generations do not affect compatibility checks.
 
