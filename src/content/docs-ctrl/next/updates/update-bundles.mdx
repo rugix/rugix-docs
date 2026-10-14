@@ -111,7 +111,9 @@ Inspect a bundle before installing it:
 rugix-ctrl bundle inspect BUNDLE.rugixb
 ```
 
-The command prints JSON with the bundle hash and update type, payload destinations and hashes, embedded components, and signature summaries. Delta payloads report their input and reconstructed output hashes. Optional fields are omitted when absent.
+The command prints JSON with the bundle hash and update type, payload destinations and hashes, embedded components, signature summaries, and the embedded manifest when present. Delta payloads report their input and reconstructed output hashes. Optional fields are omitted when absent.
+
+The `manifest` object contains the parsed embedded JSON, including unknown fields and their original names. It exposes payload filenames and declared encoding settings. These settings describe the build configuration; inspection does not check them against payload headers. If the manifest cannot be read as a JSON object, the command omits it and prints a warning.
 
 For a bundle with one slot payload, the output has this form (hashes shortened):
 
@@ -129,7 +131,20 @@ For a bundle with one slot payload, the output has this form (hashes shortened):
   ],
   "signatures": [
     { "signerSubjects": ["CN=Bundle Signer"], "headerMatches": true }
-  ]
+  ],
+  "manifest": {
+    "update-type": "full",
+    "payloads": [
+      {
+        "filename": "system.img",
+        "delivery": { "type": "slot", "slot": "system" },
+        "block-encoding": {
+          "chunker": "fixed-64",
+          "compression": { "type": "xz" }
+        }
+      }
+    ]
+  }
 }
 ```
 
