@@ -61,7 +61,7 @@ or `docker` when using `--builder docker`).
 - `--config-env NAME=JSON_POINTER` projects a selected JSON scalar into the Compose interpolation environment. The option may be repeated.
 - `--metadata-file` includes an app metadata JSON file as `app-meta.json`.
 - `--disable-image-bundling` skips bundling container images, useful when devices pull images from a registry at runtime.
-- `--disable-pinning` keeps the Compose `image:` references as-is instead of rewriting them to Rugix-owned content tags. Images are still bundled under those original references.
+- `--disable-pinning` keeps the Compose `image:` references as-is instead of rewriting them to Rugix-owned content tags. Images are still bundled under those original references. Deactivation does not remove them, because the references may also be used outside of the app.
 
 By default, services with `build:` entries are built locally and services with
 only `image:` entries are copied from a registry. To bundle an image that
@@ -123,13 +123,13 @@ Update the compose file or image tags, pack a new bundle, and install it:
 rugix-ctrl apps install --bundle-hash HASH my-app-v2.rugixb
 ```
 
-The old generation is deactivated (`docker compose down`), then the new generation is activated (`docker compose up -d --wait`). The previous generation remains on disk for rollback.
+The old generation is deactivated (`docker compose down`) and its Rugix-owned image tags are removed, then the new generation is activated (`docker compose up -d --wait`). The previous generation remains on disk for rollback.
 
 ## Generation Directory
 
 The generation directory must contain a `docker-compose.yml` file. It may also contain:
 
-- An `images/` directory with Docker image tarballs (`.tar` files) that are loaded with `docker image load` during activation.
+- An `images/` directory with Docker image tarballs (`.tar` files) that are loaded with `docker image load` during activation. Its `rugix-images.json` file records the tag of each bundled image.
 
 When using `rugix-bundler apps pack docker-compose`, this structure is created automatically.
 
@@ -141,11 +141,13 @@ The orchestrator drives Docker directly via `docker compose` and the Docker daem
 | ---------- | ------------------------------------------------------------------------------ |
 | activate   | Loads all images, then runs `docker compose up -d --wait` (see Health Checks). |
 | status     | Checks `docker compose ps --format json` output.                               |
-| deactivate | Runs `docker compose down`.                                                    |
+| deactivate | Runs `docker compose down`, then removes Rugix-owned image tags.               |
 | start      | Runs `docker compose up -d --wait` (without image loading).                    |
 | stop       | Runs `docker compose stop`.                                                    |
 
 **Boot behavior after `stop`:** `docker compose stop` stops the containers but does not remove them. Whether Docker restarts them on boot depends on the `restart` policy in the compose file. With `restart: always`, Docker restarts the containers automatically. With `restart: unless-stopped`, Docker remembers that the containers were explicitly stopped and does _not_ restart them.
+
+**Image removal on deactivation:** Deactivation removes the Rugix-owned content tags recorded in `images/rugix-images.json`, so images of old generations do not accumulate. Removing the last tag of an image deletes the image. Activation loads the images again from the generation directory, so rollbacks and configuration changes work without a registry.
 
 ## Health Checks
 
