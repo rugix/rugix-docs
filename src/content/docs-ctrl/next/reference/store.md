@@ -5,7 +5,7 @@ order: 4
 
 The store keeps large files, such as container images, on the device in a space-efficient way that still allows [delta updates](../../updates/delta-updates). It splits each file into chunks, keeps every distinct chunk once, and compresses it, so files that share most of their content, for example two versions of a container image, use little more space than one. When installing a bundle, Rugix Ctrl reuses chunks from the store instead of downloading them again, and a stored file can serve as the source of a static delta.
 
-Currently, [Rugix Apps](../../application-management/) uses the store for `app-file` payloads with `store = true`, as described in [App Bundles](../../application-management/internals#app-bundles). Docker Compose apps packed with `rugix-bundler` keep their container images there by default.
+[Rugix Apps](../../application-management/internals#stored-files) keeps app files in the store.
 
 ## Layout
 
@@ -23,30 +23,26 @@ The store lives in the Rugix state directory at `/run/rugix/state/store/` (or `/
 The store holds three kinds of entries:
 
 - **Chunks** are blocks of file content, named after the hash of their uncompressed bytes. A chunk shared by several files is stored once. Each chunk is compressed on its own; the `.xz` suffix marks compressed chunks. `<xx>` is the first byte of the hash in hex.
-- **Objects** describe one stored file each: how it was split into chunks and the hashes and sizes of its chunks. An object is named after the hash of this description.
-- **Refs** name stored files. A ref is a small file containing the name of an object. Each user of the store names its files in its own namespace. Rugix Apps names the file `PATH` of generation `N` of app `APP` with the ref `apps/APP/N/PATH`.
+- **Objects** describe one stored file each: how it was split into chunks and the hashes and sizes of its chunks. The description uses the block index format of [Rugix bundles](../../updates/update-bundles). An object is named after the hash of this description.
+- **Refs** name stored files. A ref is a small file containing the name of an object. Each user of the store names its files in its own namespace, a path prefix below `refs/`.
 
 ## Installing Files
 
-When Rugix Ctrl installs a file into the store, it keeps blocks that arrive compressed in the bundle as they are, so the device does not compress them again. Other content, such as a file reconstructed from a [delta payload](../../updates/delta-updates), is compressed on the device. Applying a delta payload to a stored file temporarily copies that file out of the store, because Xdelta requires a seekable source.
+When Rugix Ctrl installs a bundle payload into the store, it keeps blocks that arrive compressed in the bundle as they are, so the device does not compress them again. Other content, such as a file reconstructed from a [delta payload](../../updates/delta-updates), is compressed on the device. Applying a delta payload to a stored file temporarily copies that file out of the store, because Xdelta requires a seekable source.
 
-Installations of app and system bundles use stored chunks as local block sources. When a bundle is installed over HTTP from a server that supports range requests, blocks that are already in the store are not downloaded.
+Installations of system and app bundles use stored chunks as local block sources. When a bundle is installed over HTTP from a server that supports range requests, blocks that are already in the store are not downloaded.
 
 Installations stage new chunks and objects in `tmp/`, synchronize them to disk, and only then move them into place and write the ref. A file interrupted while being written therefore leaves at most unreferenced data, which the next garbage collection deletes.
 
 ## Reading Files
 
-Reading a stored file decompresses its chunks and verifies their hashes. Rugix Apps exposes the stored files of a generation through `rugix-ctrl apps cat`, which orchestrators use, for example, to [load container images](../../application-management/orchestrators/generic#large-files-in-the-store).
+Reading a stored file decompresses its chunks and verifies their hashes.
 
 ## Garbage Collection
 
-Garbage collection removes refs that their user no longer needs and then deletes all objects and chunks that no remaining ref reaches. For Rugix Apps, these are the refs of generations that no longer exist, including generations removed by a Rugix Ctrl version without the store. Files that an interrupted app installation already stored belong to its incomplete generation until `rugix-ctrl apps gc` removes that generation.
+Each user of the store decides which of its refs it still needs. Garbage collection removes the other refs and then deletes all objects and chunks that no remaining ref reaches. Users of the store run garbage collection after removing their data, and `rugix-ctrl store gc` runs it on demand.
 
-Garbage collection runs after `rugix-ctrl apps gc` and `rugix-ctrl apps remove`, and on demand with `rugix-ctrl store gc`. It waits until nothing else uses the store: installations of app and system bundles, `rugix-ctrl apps cat`, and image loading during app activation.
-
-## Compatibility
-
-Rugix Ctrl versions without the store ignore `store = true` and write the file into the generation directory. They cannot read files that a newer version stored. After a system rollback to such a version, its Docker Compose orchestrator can only activate generations whose images Docker still has, and orchestrator scripts calling `rugix-ctrl apps cat` fail. As long as devices may roll back to such a version, pack Docker Compose apps with `--image-location file`.
+Garbage collection waits until nothing else uses the store, that is, until no installation and no reader of a stored file is running.
 
 ## Commands
 

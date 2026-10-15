@@ -102,7 +102,7 @@ There are currently two app payload types:
   - **`app`**: the app name.
   - **`path`**: the relative path within the generation directory where the file should be placed.
   - **`mode`**: optional Unix file mode, for example `755` for executables. Not supported for stored files.
-  - **`store`**: optional, keeps the file in the [store](../../reference/store) instead of the generation directory when `true`.
+  - **`store`**: optional, keeps the file in the [store](#stored-files) instead of the generation directory when `true`.
 - **`app-archive`**: delivers a tar archive that is extracted into the generation directory.
   - **`app`**: the app name.
 
@@ -110,6 +110,16 @@ An app bundle installs exactly one app, because it becomes one generation of tha
 
 **`app-file`** payloads are ideal for large artifacts (Docker image tarballs, binaries) because they leverage the bundle format's support for compression, block-level deduplication, and delta encoding. With `store = true`, the device also keeps the file compressed and deduplicated across generations.
 **`app-archive`** payloads are convenient for delivering many small files at once (configuration, scripts, templates) without the overhead of a separate payload per file.
+
+## Stored Files
+
+An `app-file` payload with `store = true` is kept in the Rugix Ctrl [store](../../reference/store) instead of the generation directory. The store keeps each distinct chunk of content once and compressed, so generations whose files share most of their content use little more space than one. Rugix Apps names the stored file `PATH` of generation `N` of app `APP` with the ref `apps/APP/N/PATH`.
+
+A stored file does not exist in the generation directory. `rugix-ctrl apps files` lists the payload files of a generation and shows which of them are stored, and `rugix-ctrl apps cat` reads a file of a generation, wherever it is kept. Orchestrators use `apps cat` to read stored files, as shown for the [generic orchestrator](../orchestrators/generic#large-files-in-the-store). The Docker Compose orchestrator loads stored images by itself.
+
+Removing a generation or an app leaves its stored files in the store. Garbage collection, which runs after `rugix-ctrl apps gc` and `rugix-ctrl apps remove`, releases the stored files of generations that no longer exist, including generations removed by a Rugix Ctrl version without the store. Files that an interrupted installation already stored belong to its incomplete generation until `rugix-ctrl apps gc` removes that generation.
+
+Rugix Ctrl versions without the store ignore `store = true` and write the file into the generation directory. They cannot read files that a newer version stored. After a system rollback to such a version, its Docker Compose orchestrator can only activate generations whose images Docker still has, and orchestrator scripts calling `rugix-ctrl apps cat` fail. As long as devices may roll back to such a version, pack Docker Compose apps with `--image-location file`.
 
 ## Systemd Integration
 

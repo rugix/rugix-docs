@@ -41,7 +41,7 @@ This command:
 1. Generates the `app.toml` manifest with `orchestrator = "docker-compose"`.
 2. Copies registry images referenced in the compose file for the specified platform.
 3. Builds services with Compose `build:` entries using Podman by default.
-4. Saves each bundled image as a tarball so the bundle is fully self-contained. On the device, the tarball is kept in the [store](../../../reference/store) by default.
+4. Saves each bundled image as a tarball so the bundle is fully self-contained. On the device, the tarball is kept in the [store](../../internals#stored-files) by default.
 5. Rewrites the packaged Compose file to Rugix-owned bundle-local image tags with `pull_policy: never`.
 6. Packages everything into a [Rugix Bundle](../../../updates/update-bundles).
 
@@ -62,7 +62,7 @@ or `docker` when using `--builder docker`).
 - `--metadata-file` includes an app metadata JSON file as `app-meta.json`.
 - `--disable-image-bundling` skips bundling container images, useful when devices pull images from a registry at runtime.
 - `--disable-pinning` keeps the Compose `image:` references as-is instead of rewriting them to Rugix-owned content tags. Images are still bundled under those original references. Deactivation does not remove them, because the references may also be used outside of the app.
-- `--image-location` selects where the device keeps the image tarballs: `store` (the default) keeps them in the [store](../../../reference/store), and `file` writes them as files into the generation directory. Use `file` while devices may roll back to a Rugix Ctrl version without the store, which cannot read images kept in the store.
+- `--image-location` selects where the device keeps the image tarballs: `store` (the default) keeps them in the [store](../../internals#stored-files), and `file` writes them as files into the generation directory. Use `file` while devices may roll back to a Rugix Ctrl version without the store, which cannot read images kept in the store.
 
 By default, services with `build:` entries are built locally and services with
 only `image:` entries are copied from a registry. To bundle an image that
@@ -130,7 +130,7 @@ The old generation is deactivated (`docker compose down`) and its Rugix-owned im
 
 The generation directory must contain a `docker-compose.yml` file. It may also contain:
 
-- Docker image tarballs at `images/*.tar`, either as files in the generation directory or as files of the generation kept in the [store](../../../reference/store). Activation loads each of them with `docker image load`. The `images/rugix-images.json` file records the tag of each bundled image.
+- Docker image tarballs at `images/*.tar`, either as files in the generation directory or as files of the generation kept in the [store](../../internals#stored-files). Activation loads each of them with `docker image load`. The `images/rugix-images.json` file records the tag of each bundled image.
 
 When using `rugix-bundler apps pack docker-compose`, this structure is created automatically, with the image tarballs kept in the store.
 
