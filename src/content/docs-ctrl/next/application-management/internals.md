@@ -140,7 +140,7 @@ When Rugix Ctrl installs a stored file, it keeps blocks that arrive compressed i
 
 Installations of app and system bundles use stored chunks as local block sources. When a bundle is installed over HTTP from a server that supports range requests, blocks that are already in the store are not downloaded.
 
-Installations stage new chunks and objects in `tmp/`, synchronize them to disk, and only then move them into place and write the ref. An interrupted installation therefore leaves at most unreferenced data, which the next garbage collection deletes.
+Installations stage new chunks and objects in `tmp/`, synchronize them to disk, and only then move them into place and write the ref. A file interrupted while being written therefore leaves at most unreferenced data, which the next garbage collection deletes. Files that an interrupted installation already stored belong to its incomplete generation until `rugix-ctrl apps gc` removes that generation.
 
 Reading a stored file, for example to load a container image, decompresses its chunks and verifies their hashes.
 
