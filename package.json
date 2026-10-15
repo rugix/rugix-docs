@@ -18,7 +18,7 @@
     "@fortawesome/fontawesome-svg-core": "^6.7.2",
     "@fortawesome/free-brands-svg-icons": "^6.7.2",
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
-    "@silitics/astro-docs": "^0.6.5",
+    "@silitics/astro-docs": "^0.6.6",
     "@silitics/astro-schema-viewer": "^0.2.6",
     "@silitics/astro-sidex-viewer": "^0.2.4",
     "@silitics/astro-theme": "^0.6.6",
