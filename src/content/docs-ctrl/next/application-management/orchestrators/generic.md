@@ -90,6 +90,33 @@ The generation directory must contain:
 - `app.toml` with `orchestrator = "generic"`.
 - An executable `orchestrator` script.
 
+## Large Files in the Store
+
+Large files, such as container images, can be kept in the [store](../../internals#store) instead of the generation directory. The store keeps their content compressed and shares it between generations. `rugix-bundler apps pack generic` packages all files into one archive, so ship each large file as a separate `app-file` payload with `store = true` in a hand-written bundle manifest. For example, for a Podman image:
+
+```toml title="rugix-bundle.toml"
+update-type = "full"
+
+[[payloads]]
+filename = "app.tar"
+delivery = { type = "app-archive", app = "my-app" }
+block-encoding = { chunker = "casync-64", compression = { type = "xz" } }
+
+[[payloads]]
+filename = "image.tar"
+delivery = { type = "app-file", app = "my-app", path = "images/image.tar", store = true }
+block-encoding = { chunker = "casync-64", compression = { type = "xz" } }
+```
+
+The payload files belong in a `payloads/` directory next to the manifest, and `rugix-bundler bundle DIRECTORY my-app.rugixb` packs the bundle. A stored file does not exist in the generation directory. The orchestrator script streams it with `rugix-ctrl apps cat` during activation:
+
+```bash
+rugix-ctrl apps cat "$RUGIX_APP_NAME" images/image.tar \
+    --generation "$RUGIX_APP_GENERATION" | podman load
+```
+
+Pass `--generation` because the generation being activated is not yet the active one.
+
 ## Environment Variables
 
 The following environment variables are set when the orchestrator script is invoked:
@@ -98,6 +125,7 @@ The following environment variables are set when the orchestrator script is invo
 | -------------------------- | --------------------------------------------------------------------- |
 | `RUGIX_APP_NAME`           | The app name.                                                         |
 | `RUGIX_APP_DIR`            | Absolute path to the app directory.                                   |
+| `RUGIX_APP_GENERATION`     | The generation number.                                                |
 | `RUGIX_APP_GENERATION_DIR` | Absolute path to the generation directory.                            |
 | `RUGIX_APP_DATA_DIR`       | Absolute path to the app's persistent data directory.                 |
 | `RUGIX_APP_CONFIG_PATH`    | Absolute path to the effective JSON configuration, when one exists.   |
