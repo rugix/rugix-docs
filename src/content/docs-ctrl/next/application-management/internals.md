@@ -110,11 +110,15 @@ The store holds three kinds of entries:
 - **Objects** describe one stored file each: how it was split into chunks and the hashes and sizes of its chunks. An object is named after the hash of this description.
 - **Refs** name stored files. Rugix Apps names the file `PATH` of generation `N` of app `APP` with the ref `apps/APP/N/PATH`. A ref is a small file containing the name of an object.
 
-When Rugix Ctrl installs a stored file, it keeps the compressed blocks of the bundle as they arrive, so the device does not compress them again. Blocks that are already in the store are not downloaded at all, because installations of app and system bundles use stored chunks as local block sources. Reading a stored file, for example to load a container image, decompresses its chunks and verifies their hashes.
+When Rugix Ctrl installs a stored file, it keeps blocks that arrive compressed in the bundle as they are, so the device does not compress them again. Other content, such as the file reconstructed from a [delta payload](../../updates/delta-updates), is compressed on the device. Applying a delta payload to a stored file temporarily copies that file into the new generation directory, because Xdelta requires a seekable source. Reading a stored file, for example to load a container image, decompresses its chunks and verifies their hashes.
 
-Removing a generation or an app removes its refs. The store then deletes objects and chunks that no ref reaches when collecting garbage, which happens after `rugix-ctrl apps gc` and `rugix-ctrl apps remove`, or explicitly with `rugix-ctrl store gc`. Garbage collection also removes refs of generations that no longer exist.
+Installations of app and system bundles use stored chunks as local block sources. When a bundle is installed over HTTP from a server that supports range requests, blocks that are already in the store are not downloaded.
+
+Removing a generation or an app removes its refs. The store then deletes objects and chunks that no ref reaches when collecting garbage, which happens after `rugix-ctrl apps gc` and `rugix-ctrl apps remove`, or explicitly with `rugix-ctrl store gc`. Garbage collection waits for running installations to finish. `rugix-ctrl apps gc` also removes refs of generations that no longer exist, for example because a Rugix Ctrl version without the store removed them.
 
 Installations stage new chunks and objects in `tmp/`, synchronize them to disk, and only then move them into place and write the ref. An interrupted installation therefore leaves at most unreferenced data, which the next garbage collection deletes.
+
+Rugix Ctrl versions without the store cannot read stored files. After a system rollback to such a version, its Docker Compose orchestrator can only activate generations whose images Docker still has.
 
 Orchestrators read stored files with `rugix-ctrl apps cat`, which works the same for files in the generation directory:
 
