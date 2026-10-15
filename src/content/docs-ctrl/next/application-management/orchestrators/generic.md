@@ -92,7 +92,7 @@ The generation directory must contain:
 
 ## Large Files in the Store
 
-Large files, such as container images, can be kept in the [store](../../internals#stored-files) instead of the generation directory. The store keeps their content compressed and shares it between generations. `rugix-bundler apps pack generic` packages all files into one archive, so ship each large file as a separate `app-file` payload with `store = true` in a hand-written bundle manifest. For example, for a Podman image:
+Large files, such as container images, can be kept in the [store](../../internals#stored-files) instead of the generation directory. The store keeps their content compressed and shares it between generations. Rugix Ctrl versions without the store cannot read such files; see [Compatibility With Older Versions](../../internals#compatibility-with-older-versions). `rugix-bundler apps pack generic` packages all files into one archive, so ship each large file as a separate `app-file` payload with `store = true` in a hand-written bundle manifest. For example, for a Podman image:
 
 ```toml title="rugix-bundle.toml"
 update-type = "full"
@@ -108,7 +108,9 @@ delivery = { type = "app-file", app = "my-app", path = "images/image.tar", store
 block-encoding = { chunker = "casync-64", compression = { type = "xz" } }
 ```
 
-The payload files belong in a `payloads/` directory next to the manifest, and `rugix-bundler bundle DIRECTORY my-app.rugixb` packs the bundle. A stored file does not exist in the generation directory. The orchestrator script streams it with `rugix-ctrl apps cat` during activation:
+`app.tar` is a tar archive with `app.toml` and the `orchestrator` script. `image.tar` is an uncompressed image archive, for example from `podman save -o image.tar IMAGE`. Compressing it would hide shared content from the store and from delta updates. Both belong in a `payloads/` directory next to the manifest. `rugix-bundler bundle DIRECTORY my-app.rugixb` packs the bundle, where `DIRECTORY` contains `rugix-bundle.toml` and `payloads/` (see [Update Bundles](../../../updates/update-bundles)).
+
+A stored file does not exist in the generation directory. In the `activate` branch, the orchestrator script streams it with `rugix-ctrl apps cat`:
 
 ```bash
 rugix-ctrl apps cat "$RUGIX_APP_NAME" images/image.tar \

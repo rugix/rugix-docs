@@ -114,7 +114,7 @@ for an example and the argument reference.
 rugix-ctrl apps install --bundle-hash HASH my-app-v1.rugixb
 ```
 
-This writes the image tarballs to the store, streams them into `docker image load`, and runs `docker compose up -d --wait`.
+This writes the image tarballs into the store (or as files into the generation directory with `--image-location file`), streams them into `docker image load`, and runs `docker compose up -d --wait`.
 
 ### 4. Update
 
@@ -124,15 +124,13 @@ Update the compose file or image tags, pack a new bundle, and install it:
 rugix-ctrl apps install --bundle-hash HASH my-app-v2.rugixb
 ```
 
-The old generation is deactivated (`docker compose down`) and its Rugix-owned image tags are removed, then the new generation is activated (`docker compose up -d --wait`). The previous generation remains on disk for rollback. Its images stay in the store, which keeps image content shared by both generations only once.
+The old generation is deactivated (`docker compose down`) and its Rugix-owned image tags are removed, then the new generation is activated (`docker compose up -d --wait`). The previous generation remains on disk for rollback. With the default `--image-location store`, the image tarballs of both generations stay in the store, which keeps their shared content once. Docker additionally holds the loaded images of the active generation.
 
 ## Generation Directory
 
-The generation directory must contain a `docker-compose.yml` file. It may also contain:
+The generation directory must contain a `docker-compose.yml` file and may contain `images/rugix-images.json`, which records the tag of each bundled image. A generation may also have Docker image tarballs at `images/NAME.tar`, either in the generation directory or in the [store](../../internals#stored-files). Activation loads each of them with `docker image load`.
 
-- Docker image tarballs at `images/*.tar`, either as files in the generation directory or as files of the generation kept in the [store](../../internals#stored-files). Activation loads each of them with `docker image load`. The `images/rugix-images.json` file records the tag of each bundled image.
-
-When using `rugix-bundler apps pack docker-compose`, this structure is created automatically, with the image tarballs kept in the store.
+When using `rugix-bundler apps pack docker-compose`, this structure is created automatically, with the image tarballs kept in the store unless you pass `--image-location file`.
 
 ## Lifecycle Operations
 

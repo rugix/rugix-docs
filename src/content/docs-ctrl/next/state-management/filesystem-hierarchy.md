@@ -30,6 +30,6 @@ The state directory `/run/rugix/state` has the following hierarchy:
 - `apps`: Apps installed with [Rugix Apps](../../application-management/).
 - `store`: Content-addressed [store](../../reference/store) for large files, such as container images of apps.
 - `.rugix`: Internal state of Rugix Ctrl.
-- `app`: Persistent application data (unmanaged).
+- `app`: Persistent data of your own applications, unrelated to Rugix Apps and not managed by Rugix Ctrl.
 
-Rugix Ctrl manages this directory and may add entries in future versions. `app` is reserved for your own data. To keep other files, [declare them as persistent](../), which places them under `persist`.
+Rugix Ctrl manages this directory and may add entries in future versions. `app` is reserved for your own data. To keep other files, [declare them as persistent](../#selective-persistent-state), which places them under `persist`.
