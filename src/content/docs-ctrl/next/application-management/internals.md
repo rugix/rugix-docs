@@ -152,7 +152,7 @@ Garbage collection waits until nothing else uses the store: installations of app
 
 ### Compatibility
 
-Rugix Ctrl versions without the store ignore `store = true` and write the file into the generation directory. They cannot read files that a newer version stored. After a system rollback to such a version, its Docker Compose orchestrator can only activate generations whose images Docker still has, and orchestrator scripts calling `rugix-ctrl apps cat` fail. As long as devices may roll back to such a version, pack Docker Compose apps with `--disable-image-store`.
+Rugix Ctrl versions without the store ignore `store = true` and write the file into the generation directory. They cannot read files that a newer version stored. After a system rollback to such a version, its Docker Compose orchestrator can only activate generations whose images Docker still has, and orchestrator scripts calling `rugix-ctrl apps cat` fail. As long as devices may roll back to such a version, pack Docker Compose apps with `--image-location generation`.
 
 ## Systemd Integration
 
