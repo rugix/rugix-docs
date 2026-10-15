@@ -41,7 +41,7 @@ This command:
 1. Generates the `app.toml` manifest with `orchestrator = "docker-compose"`.
 2. Copies registry images referenced in the compose file for the specified platform.
 3. Builds services with Compose `build:` entries using Podman by default.
-4. Saves each bundled image as a tarball so the bundle is fully self-contained.
+4. Saves each bundled image as a tarball so the bundle is fully self-contained. On the device, the tarball is kept in the [store](../../internals#stored-files) by default.
 5. Rewrites the packaged Compose file to Rugix-owned bundle-local image tags with `pull_policy: never`.
 6. Packages everything into a [Rugix Bundle](../../../updates/update-bundles).
 
@@ -62,6 +62,7 @@ or `docker` when using `--builder docker`).
 - `--metadata-file` includes an app metadata JSON file as `app-meta.json`.
 - `--disable-image-bundling` skips bundling container images, useful when devices pull images from a registry at runtime.
 - `--disable-pinning` keeps the Compose `image:` references as-is instead of rewriting them to Rugix-owned content tags. Images are still bundled under those original references. Deactivation does not remove them, because the references may also be used outside of the app.
+- `--image-location` selects where the device keeps the image tarballs: `store` (the default) keeps them in the [store](../../internals#stored-files), and `file` writes them as files into the generation directory. Use `file` while devices may roll back to a Rugix Ctrl version without the store, which cannot read images kept in the store.
 
 By default, services with `build:` entries are built locally and services with
 only `image:` entries are copied from a registry. To bundle an image that
@@ -113,7 +114,7 @@ for an example and the argument reference.
 rugix-ctrl apps install --bundle-hash HASH my-app-v1.rugixb
 ```
 
-This extracts the payloads, loads the container images with `docker image load`, and runs `docker compose up -d --wait`.
+This writes the image tarballs into the store (or as files into the generation directory with `--image-location file`), streams them into `docker image load`, and runs `docker compose up -d --wait`.
 
 ### 4. Update
 
@@ -123,15 +124,13 @@ Update the compose file or image tags, pack a new bundle, and install it:
 rugix-ctrl apps install --bundle-hash HASH my-app-v2.rugixb
 ```
 
-The old generation is deactivated (`docker compose down`) and its Rugix-owned image tags are removed, then the new generation is activated (`docker compose up -d --wait`). The previous generation remains on disk for rollback.
+The old generation is deactivated (`docker compose down`) and its Rugix-owned image tags are removed, then the new generation is activated (`docker compose up -d --wait`). The previous generation remains on disk for rollback. With the default `--image-location store`, the image tarballs of both generations stay in the store, which keeps their shared content once. Docker additionally holds the loaded images of the active generation.
 
 ## Generation Directory
 
-The generation directory must contain a `docker-compose.yml` file. It may also contain:
+The generation directory must contain a `docker-compose.yml` file and may contain `images/rugix-images.json`, which records the tag of each bundled image. A generation may also have Docker image tarballs at `images/NAME.tar`, either in the generation directory or in the [store](../../internals#stored-files). Activation loads each of them with `docker image load`.
 
-- An `images/` directory with Docker image tarballs (`.tar` files) that are loaded with `docker image load` during activation. Its `rugix-images.json` file records the tag of each bundled image.
-
-When using `rugix-bundler apps pack docker-compose`, this structure is created automatically.
+When using `rugix-bundler apps pack docker-compose`, this structure is created automatically, with the image tarballs kept in the store unless you pass `--image-location file`.
 
 ## Lifecycle Operations
 
@@ -147,7 +146,7 @@ The orchestrator drives Docker directly via `docker compose` and the Docker daem
 
 **Boot behavior after `stop`:** `docker compose stop` stops the containers but does not remove them. Whether Docker restarts them on boot depends on the `restart` policy in the compose file. With `restart: always`, Docker restarts the containers automatically. With `restart: unless-stopped`, Docker remembers that the containers were explicitly stopped and does _not_ restart them.
 
-**Image removal on deactivation:** Deactivation removes the Rugix-owned content tags recorded in `images/rugix-images.json`, so images of old generations do not accumulate. Removing the last tag of an image deletes the image. Activation loads the images again from the generation directory, so rollbacks and configuration changes work without a registry.
+**Image removal on deactivation:** Deactivation removes the Rugix-owned content tags recorded in `images/rugix-images.json`, so images of old generations do not accumulate. Removing the last tag of an image deletes the image. Activation loads the images again from the generation directory or the store, so rollbacks and configuration changes work without a registry.
 
 ## Health Checks
 
