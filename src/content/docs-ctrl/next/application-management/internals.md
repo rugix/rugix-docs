@@ -91,9 +91,33 @@ Key aspects:
 - **Configuration revisions.** Device-specific JSON documents are immutable, numbered files under `configurations/`. The directory is restricted to root. `.rugix/configuration-state.json` records the desired revision and highest allocated revision independently from lifecycle state, ensuring a revision number is never reused for different content.
 - **State file.** The `.rugix/state.json` file tracks the app's lifecycle state, including the configuration revisions in intermediate states used for [crash recovery](#crash-recovery).
 
+## App Bundles
+
+App bundles use the same [Rugix Bundle format](../../updates/update-bundles) as system update bundles.
+The difference is in the payload type: instead of slot payloads that target partitions, app bundles contain **app payloads** that populate files within a generation directory.
+
+There are currently two app payload types:
+
+- **`app-file`**: delivers a single file into the generation directory or the [store](#store).
+  - **`app`**: the app name.
+  - **`path`**: the relative path within the generation directory where the file should be placed.
+  - **`mode`**: optional Unix file mode, for example `755` for executables. Not supported for stored files.
+  - **`store`**: optional, keeps the file in the [store](#store) instead of the generation directory when `true`.
+- **`app-archive`**: delivers a tar archive that is extracted into the generation directory.
+  - **`app`**: the app name.
+
+An app bundle installs exactly one app, because it becomes one generation of that app. It may carry any number of payloads for that app, applied in manifest order so that later payloads overlay earlier ones. For example, a bundle could ship a base archive followed by individual file payloads that override specific configuration files. This also holds between stored and unstored `app-file` payloads for the same path. A stored file takes precedence over a file at the same path extracted from an `app-archive` payload. A manifest naming several apps is rejected when the bundle is packed, and again before it is installed. Pack one bundle per app.
+
+**`app-file`** payloads are ideal for large artifacts (Docker image tarballs, binaries) because they leverage the bundle format's support for compression, block-level deduplication, and delta encoding. With `store = true`, the device also keeps the file compressed and deduplicated across generations.
+**`app-archive`** payloads are convenient for delivering many small files at once (configuration, scripts, templates) without the overhead of a separate payload per file.
+
 ## Store
 
-Files delivered by `app-file` payloads with `store = true` are kept in a content-addressed store instead of the generation directory. The store lives in the Rugix state directory at `/run/rugix/state/store/` (or `/var/lib/rugix/store/` if Rugix state management is not active), so a factory reset clears it together with the apps:
+Files delivered by `app-file` payloads with `store = true` are kept in a content-addressed store instead of the generation directory. Orchestrators read them with `rugix-ctrl apps cat`, as shown for the [generic orchestrator](../orchestrators/generic#large-files-in-the-store).
+
+### Layout
+
+The store lives in the Rugix state directory at `/run/rugix/state/store/` (or `/var/lib/rugix/store/` if Rugix state management is not active), so a factory reset clears it together with the apps. It is accessible to root only:
 
 ```
 <store>/
@@ -110,41 +134,25 @@ The store holds three kinds of entries:
 - **Objects** describe one stored file each: how it was split into chunks and the hashes and sizes of its chunks. An object is named after the hash of this description.
 - **Refs** name stored files. Rugix Apps names the file `PATH` of generation `N` of app `APP` with the ref `apps/APP/N/PATH`. A ref is a small file containing the name of an object.
 
-When Rugix Ctrl installs a stored file, it keeps blocks that arrive compressed in the bundle as they are, so the device does not compress them again. Other content, such as the file reconstructed from a [delta payload](../../updates/delta-updates), is compressed on the device. Applying a delta payload to a stored file temporarily copies that file into the new generation directory, because Xdelta requires a seekable source. Reading a stored file, for example to load a container image, decompresses its chunks and verifies their hashes.
+### Installing and Reading Files
+
+When Rugix Ctrl installs a stored file, it keeps blocks that arrive compressed in the bundle as they are, so the device does not compress them again. Other content, such as the file reconstructed from a [delta payload](../../updates/delta-updates), is compressed on the device. Applying a delta payload to a stored file temporarily copies that file into the new generation directory, because Xdelta requires a seekable source.
 
 Installations of app and system bundles use stored chunks as local block sources. When a bundle is installed over HTTP from a server that supports range requests, blocks that are already in the store are not downloaded.
 
-Removing a generation or an app removes its refs. The store then deletes objects and chunks that no ref reaches when collecting garbage, which happens after `rugix-ctrl apps gc` and `rugix-ctrl apps remove`, or explicitly with `rugix-ctrl store gc`. Garbage collection waits for running installations to finish. `rugix-ctrl apps gc` also removes refs of generations that no longer exist, for example because a Rugix Ctrl version without the store removed them.
-
 Installations stage new chunks and objects in `tmp/`, synchronize them to disk, and only then move them into place and write the ref. An interrupted installation therefore leaves at most unreferenced data, which the next garbage collection deletes.
 
-Rugix Ctrl versions without the store cannot read stored files. After a system rollback to such a version, its Docker Compose orchestrator can only activate generations whose images Docker still has.
+Reading a stored file, for example to load a container image, decompresses its chunks and verifies their hashes.
 
-Orchestrators read stored files with `rugix-ctrl apps cat`, which works the same for files in the generation directory:
+### Garbage Collection
 
-```shell
-rugix-ctrl apps cat my-app images/image-0.tar --generation 2 | docker image load
-```
+Removing a generation or an app leaves its stored files in the store. Garbage collection removes the refs of generations that no longer exist, including generations removed by a Rugix Ctrl version without the store, and then deletes all objects and chunks that no remaining ref reaches. It runs after `rugix-ctrl apps gc` and `rugix-ctrl apps remove`, and on demand with `rugix-ctrl store gc`.
 
-## App Bundles
+Garbage collection waits until nothing else uses the store: installations of app and system bundles, `rugix-ctrl apps cat`, and image loading during activation.
 
-App bundles use the same [Rugix Bundle format](../../updates/update-bundles) as system update bundles.
-The difference is in the payload type: instead of slot payloads that target partitions, app bundles contain **app payloads** that populate files within a generation directory.
+### Compatibility
 
-There are currently two app payload types:
-
-- **`app-file`**: delivers a single file into the generation directory or the [store](#store).
-  - **`app`**: the app name.
-  - **`path`**: the relative path within the generation directory where the file should be placed.
-  - **`mode`**: optional Unix file mode, for example `755` for executables. Not supported for stored files.
-  - **`store`**: optional, keeps the file in the [store](#store) instead of the generation directory when `true`. Rugix Ctrl versions without the store ignore this field and write the file into the generation directory.
-- **`app-archive`**: delivers a tar archive that is extracted into the generation directory.
-  - **`app`**: the app name.
-
-An app bundle installs exactly one app, because it becomes one generation of that app. It may carry any number of payloads for that app, applied in manifest order so that later payloads overlay earlier ones. For example, a bundle could ship a base archive followed by individual file payloads that override specific configuration files. A manifest naming several apps is rejected when the bundle is packed, and again before it is installed. Pack one bundle per app.
-
-**`app-file`** payloads are ideal for large artifacts (Docker image tarballs, binaries) because they leverage the bundle format's support for compression, block-level deduplication, and delta encoding. With `store = true`, the device also keeps the file compressed and deduplicated across generations.
-**`app-archive`** payloads are convenient for delivering many small files at once (configuration, scripts, templates) without the overhead of a separate payload per file.
+Rugix Ctrl versions without the store ignore `store = true` and write the file into the generation directory. They cannot read files that a newer version stored. After a system rollback to such a version, its Docker Compose orchestrator can only activate generations whose images Docker still has, and orchestrator scripts calling `rugix-ctrl apps cat` fail.
 
 ## Systemd Integration
 
@@ -225,29 +233,29 @@ The `rugix-ctrl apps recover` command can also be called manually at any time.
 
 ## CLI Reference
 
-| Command                                                     | Description                                                                              |
-| ----------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| `rugix-ctrl apps install BUNDLE [--config FILE]`            | Install apps from a bundle (`-` for stdin).                                              |
-| `rugix-ctrl apps list`                                      | List all installed apps with status.                                                     |
-| `rugix-ctrl apps info APP`                                  | Show details for an app.                                                                 |
-| `rugix-ctrl apps config get APP`                            | Print the effective JSON configuration.                                                  |
-| `rugix-ctrl apps config schema APP`                         | Print the app's JSON Schema.                                                             |
-| `rugix-ctrl apps config set APP [SOURCE]`                   | Validate, store, and apply JSON configuration.                                           |
-| `rugix-ctrl apps activate APP [GENERATION] [--config FILE]` | Activate a generation (starts the app).                                                  |
-| `rugix-ctrl apps deactivate APP`                            | Deactivate the current generation (stops it).                                            |
-| `rugix-ctrl apps start APP`                                 | Start the workload of an active app.                                                     |
-| `rugix-ctrl apps stop APP`                                  | Stop the workload without deactivating.                                                  |
-| `rugix-ctrl apps rollback APP`                              | Roll back to the previous generation.                                                    |
-| `rugix-ctrl apps remove APP`                                | Remove an app entirely.                                                                  |
-| `rugix-ctrl apps generations APP`                           | List all generations.                                                                    |
-| `rugix-ctrl apps files APP [--generation N]`                | List the payload files of a generation and whether they are in the store.                |
-| `rugix-ctrl apps cat APP PATH [--generation N]`             | Write a file of a generation to stdout, wherever it is kept.                             |
-| `rugix-ctrl apps gc [APP] [--keep N]`                       | Garbage collect old generations, unreferenced configuration revisions, and store data.   |
-| `rugix-ctrl apps recover`                                   | Recover interrupted transitions for all apps.                                            |
-| `rugix-ctrl apps service-manager systemd restore-units`     | Restore app units into systemd (for boot).                                               |
-| `rugix-ctrl store info`                                     | Summarize the store: refs, objects, chunks, referenced size, and disk usage.             |
-| `rugix-ctrl store list [PREFIX]`                            | List refs with the objects they name and their sizes.                                    |
-| `rugix-ctrl store verify`                                   | Check that all referenced objects and chunks are intact. Exits with 1 on problems.       |
-| `rugix-ctrl store gc`                                       | Delete objects and chunks that no ref reaches.                                           |
+| Command                                                     | Description                                                                             |
+| ----------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| `rugix-ctrl apps install BUNDLE [--config FILE]`            | Install apps from a bundle (`-` for stdin).                                             |
+| `rugix-ctrl apps list`                                      | List all installed apps with status.                                                    |
+| `rugix-ctrl apps info APP`                                  | Show details for an app.                                                                |
+| `rugix-ctrl apps config get APP`                            | Print the effective JSON configuration.                                                 |
+| `rugix-ctrl apps config schema APP`                         | Print the app's JSON Schema.                                                            |
+| `rugix-ctrl apps config set APP [SOURCE]`                   | Validate, store, and apply JSON configuration.                                          |
+| `rugix-ctrl apps activate APP [GENERATION] [--config FILE]` | Activate a generation (starts the app).                                                 |
+| `rugix-ctrl apps deactivate APP`                            | Deactivate the current generation (stops it).                                           |
+| `rugix-ctrl apps start APP`                                 | Start the workload of an active app.                                                    |
+| `rugix-ctrl apps stop APP`                                  | Stop the workload without deactivating.                                                 |
+| `rugix-ctrl apps rollback APP`                              | Roll back to the previous generation.                                                   |
+| `rugix-ctrl apps remove APP`                                | Remove an app entirely.                                                                 |
+| `rugix-ctrl apps generations APP`                           | List all generations.                                                                   |
+| `rugix-ctrl apps files APP [--generation N]`                | List the payload files of a generation and whether they are in the store.               |
+| `rugix-ctrl apps cat APP PATH [--generation N]`             | Write a file of a generation to stdout, wherever it is kept.                            |
+| `rugix-ctrl apps gc [APP] [--keep N]`                       | Garbage collect old generations, unreferenced configuration revisions, and store data.  |
+| `rugix-ctrl apps recover`                                   | Recover interrupted transitions for all apps.                                           |
+| `rugix-ctrl apps service-manager systemd restore-units`     | Restore app units into systemd (for boot).                                              |
+| `rugix-ctrl store info`                                     | Summarize the store: refs, objects, chunks, referenced size, and disk usage.            |
+| `rugix-ctrl store list [PREFIX]`                            | List refs with the objects they name and their sizes.                                   |
+| `rugix-ctrl store verify`                                   | Check that all referenced objects and chunks are intact. Exits with 1 on problems.      |
+| `rugix-ctrl store gc`                                       | Release files of removed generations and delete objects and chunks that no ref reaches. |
 
 `apps files`, `apps cat`, and the `store` commands read the state directory directly and therefore require root privileges. Without `--generation`, `apps files` and `apps cat` use the active generation.
