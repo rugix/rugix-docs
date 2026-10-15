@@ -62,7 +62,7 @@ or `docker` when using `--builder docker`).
 - `--metadata-file` includes an app metadata JSON file as `app-meta.json`.
 - `--disable-image-bundling` skips bundling container images, useful when devices pull images from a registry at runtime.
 - `--disable-pinning` keeps the Compose `image:` references as-is instead of rewriting them to Rugix-owned content tags. Images are still bundled under those original references. Deactivation does not remove them, because the references may also be used outside of the app.
-- `--image-location` selects where the device keeps the image tarballs: `store` (the default) keeps them in the [store](../../internals#store), and `generation` writes them into the generation directory. Use `generation` while devices may roll back to a Rugix Ctrl version without the store, which cannot read images kept in the store.
+- `--image-location` selects where the device keeps the image tarballs: `store` (the default) keeps them in the [store](../../internals#store), and `file` writes them as files into the generation directory. Use `file` while devices may roll back to a Rugix Ctrl version without the store, which cannot read images kept in the store.
 
 By default, services with `build:` entries are built locally and services with
 only `image:` entries are copied from a registry. To bundle an image that
