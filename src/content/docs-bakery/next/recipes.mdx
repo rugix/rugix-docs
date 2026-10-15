@@ -39,13 +39,32 @@ parameter_name = { default = "a default value" }
 other_parameter = {}  # Required parameter without a default value.
 ```
 
-Parameter values are provided by layer configurations in the `parameters` section. For the details, we refer back to the [layers section](/docs/bakery/next/layers) of this documentation. Layer configurations must provide values for all parameters that do not have a default.
+Parameter values are provided by layer configurations in the `parameters` section. For the details, we refer back to the [layers section](/docs/bakery/next/layers) of this documentation. Every parameter without a default requires a value when the recipe runs. A parameter file, described below, can also supply this value.
 
 Parameter values are exposed to a recipe's steps (see below) via environment variables of the form `RECIPE_PARAM_<PARAM_NAME>`. So, in case of our example, `RECIPE_PARAM_PARAMETER_NAME` and `RECIPE_PARAM_OTHER_PARAMETER`.
 
 :::tip
 Avoid hard-coding configuration values in your recipes and use parameters instead.
 :::
+
+### Parameter Files
+
+Use `--param-file` to override recipe parameters for a build without changing layer configurations. A parameter file configures recipes already used by a build. For example, with `core/ssh` included in a layer's `recipes` list, create a TOML file to provide authorized SSH keys:
+
+```toml title="parameters.toml"
+["core/ssh"]
+root_authorized_keys = "ssh-ed25519 AAAA... user@example"
+```
+
+Pass this file when baking an image:
+
+```shell
+./run-bakery bake image <system> --param-file parameters.toml
+```
+
+Each table names a recipe relative to the project repository. Use `core/ssh` for the core recipe, `<repository>/<recipe>` for a recipe from a configured repository, and a bare name for a project recipe. These references keep the same meaning when building layers or applying system mixins (optional layer fragments) from other repositories. An override applies wherever the selected recipe runs during the build.
+
+Parameter-file values take precedence over layer and mixin parameters, which take precedence over recipe defaults. You can pass `--param-file` more than once; later files override earlier values for the same recipe reference and parameter. Use one reference per recipe across parameter files; different references that resolve to the same recipe are rejected.
 
 ## Steps
 
