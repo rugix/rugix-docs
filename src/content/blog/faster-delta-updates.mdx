@@ -1,7 +1,7 @@
 ---
 slug: faster-delta-updates
 title: Faster Delta Updates
-description: Rugix Ctrl 1.4 makes adaptive delta updates much faster over HTTP. We benchmark the new pipeline against Rugix Ctrl 1.3.0 and RAUC.
+description: Rugix Ctrl 1.4 makes dynamic delta updates much faster over HTTP. We benchmark the new pipeline against Rugix Ctrl 1.3.0 and RAUC.
 authors: koehlma
 tags: [rugix, release, delta updates, ota, embedded linux]
 draft: true
@@ -12,7 +12,7 @@ import {
   PlotDownloadSizes,
 } from "../../components/NativeDeltaPlots.tsx"
 
-**Rugix Ctrl 1.4 introduces a new fetching pipeline that makes adaptive delta updates much faster over HTTP.** In our benchmarks, updates were about **15 to 31 times faster than with Rugix Ctrl 1.3.0 at 40 ms round-trip latency**. We also compared installation time and actual network traffic with RAUC.
+**Rugix Ctrl 1.4 introduces a new fetching pipeline that makes dynamic delta updates much faster over HTTP.** In our benchmarks, updates were about **15 to 31 times faster than with Rugix Ctrl 1.3.0 at 40 ms round-trip latency**. We also compared installation time and actual network traffic with RAUC.
 
 {/* truncate */}
 
@@ -20,7 +20,7 @@ Our earlier article on [efficient delta updates](/blog/efficient-delta-updates) 
 
 ## Fewer Bytes, Less Waiting
 
-Both Rugix and RAUC support _adaptive delta updates_: a device reuses parts of its existing system and downloads the missing data from a complete update bundle. An ordinary HTTP server can host that bundle. It only needs to support byte-range requests, which let an installer fetch selected parts of a file.
+With _dynamic delta updates_, a device reuses parts of its existing system and downloads the missing data from a complete update bundle. RAUC supports the same approach under the name _adaptive updates_. An ordinary HTTP server can host that bundle. It only needs to support byte-range requests, which let an installer fetch selected parts of a file.
 
 This can avoid downloading most of an image, but it can also require thousands of small requests. If those requests happen sequentially, each one pays the network round-trip cost. Opening a new connection for each request adds further overhead.
 
@@ -62,11 +62,11 @@ Rugix used Casync chunks with a nominal 64 KiB size and XZ compression. RAUC use
 
 **The graphs label a prerelease build of the fetching change as “Rugix 1.4 Fetcher.”** The measured revision is [`b82749f`](https://github.com/rugix/rugix/commit/b82749ff34ee8668fb3e53322af039a083e8bf69), rather than the final release binary.
 
-These results describe selected update pairs in a controlled environment. Embedded CPUs, flash storage, cold caches, and different networks can change installation times. The graphs retain every run, including slower measurements. The [native benchmark suite](https://github.com/rugix/rugix-benchmarks/tree/main/benchmarks/adaptive-downloads) contains the reproducible setup, complete results, HTTP/2 comparison, and analysis of our earlier download-size estimates.
+These results describe selected update pairs in a controlled environment. Embedded CPUs, flash storage, cold caches, and different networks can change installation times. The graphs retain every run, including slower measurements. The [native benchmark suite](https://github.com/rugix/rugix-benchmarks/tree/main/benchmarks/dynamic-downloads) contains the reproducible setup, complete results, HTTP/2 comparison, and analysis of our earlier download-size estimates.
 
 ## Try Rugix Ctrl 1.4
 
-The fetching improvements in [Rugix Ctrl 1.4](https://github.com/rugix/rugix/releases/tag/v1.4.0) work with an HTTP server that supports byte ranges. See the [Rugix Ctrl documentation](/docs/ctrl) to get started, or run the [benchmarks](https://github.com/rugix/rugix-benchmarks/tree/main/benchmarks/adaptive-downloads) with your own images.
+The fetching improvements in [Rugix Ctrl 1.4](https://github.com/rugix/rugix/releases/tag/v1.4.0) work with an HTTP server that supports byte ranges. See the [Rugix Ctrl documentation](/docs/ctrl) to get started, or run the [benchmarks](https://github.com/rugix/rugix-benchmarks/tree/main/benchmarks/dynamic-downloads) with your own images.
 
 ---
 
