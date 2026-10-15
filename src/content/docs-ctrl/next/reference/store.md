@@ -3,7 +3,7 @@ title: Store
 order: 4
 ---
 
-Rugix Ctrl keeps large files on the device in a content-addressed store. The store splits each file into chunks, keeps every distinct chunk once, and compresses it. Files that share most of their content, for example two versions of a container image, therefore use little more space than one. Installations of system and app bundles also reuse chunks from the store instead of downloading them again.
+The store keeps large files, such as container images, on the device in a space-efficient way that still allows [delta updates](../../updates/delta-updates). It splits each file into chunks, keeps every distinct chunk once, and compresses it, so files that share most of their content, for example two versions of a container image, use little more space than one. When installing a bundle, Rugix Ctrl reuses chunks from the store instead of downloading them again, and a stored file can serve as the source of a static delta.
 
 Currently, [Rugix Apps](../../application-management/) uses the store for `app-file` payloads with `store = true`, as described in [App Bundles](../../application-management/internals#app-bundles). Docker Compose apps packed with `rugix-bundler` keep their container images there by default.
 
