@@ -29,7 +29,7 @@ Based on [our benchmarks](/blog/efficient-delta-updates), we developed a savings
 
 ## Dynamic Delta Updates
 
-When you install an update via HTTP, the server supports range queries, and the bundle and system contain the necessary _block indices_, Rugix Ctrl adaptively downloads only the parts of the update that it does not already have, e.g., within the currently booted system partition.[^delta-read-only] Rugix Ctrl also reuses blocks from the [store](../../application-management/internals#store) of Rugix Apps, which holds files of app generations, such as container images, split into blocks.
+When you install an update via HTTP, the server supports range queries, and the bundle and system contain the necessary _block indices_, Rugix Ctrl adaptively downloads only the parts of the update that it does not already have, e.g., within the currently booted system partition.[^delta-read-only] Rugix Ctrl also reuses blocks from its [store](../../reference/store), which holds large files, such as container images of apps, split into blocks.
 
 [^delta-read-only]: Block reuse is best-effort: a block is taken from a slot only if it still matches the index. If a slot has changed since its index was created, the changed blocks are downloaded from the server instead, so the update still succeeds, just with less bandwidth saved. A read-only system partition maximizes reuse and is recommended in any case; Rugix Ctrl's [state management](../../state-management/) makes one easy.
 

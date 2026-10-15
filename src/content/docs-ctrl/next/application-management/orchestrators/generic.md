@@ -92,7 +92,7 @@ The generation directory must contain:
 
 ## Large Files in the Store
 
-Large files, such as container images, can be kept in the [store](../../internals#store) instead of the generation directory. The store keeps their content compressed and shares it between generations. `rugix-bundler apps pack generic` packages all files into one archive, so ship each large file as a separate `app-file` payload with `store = true` in a hand-written bundle manifest. For example, for a Podman image:
+Large files, such as container images, can be kept in the [store](../../../reference/store) instead of the generation directory. The store keeps their content compressed and shares it between generations. `rugix-bundler apps pack generic` packages all files into one archive, so ship each large file as a separate `app-file` payload with `store = true` in a hand-written bundle manifest. For example, for a Podman image:
 
 ```toml title="rugix-bundle.toml"
 update-type = "full"
