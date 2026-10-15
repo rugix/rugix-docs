@@ -323,6 +323,53 @@
   height: clamp(220px, 32vw, 340px);
 }
 
+.native-delta-plot .delta-plot-canvas {
+  height: clamp(300px, 50vw, 380px);
+}
+
+.native-delta-controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  color: var(--theme-content);
+}
+
+.native-delta-plot .native-delta-caption {
+  color: var(--theme-content-muted);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.native-delta-values {
+  margin: 1rem 0 2rem;
+  overflow-x: auto;
+}
+
+.native-delta-values summary {
+  cursor: pointer;
+}
+
+.native-delta-values table {
+  width: 100%;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.85rem;
+}
+
+.native-delta-runs {
+  display: block;
+  margin-top: 0.25rem;
+  color: var(--theme-content-muted);
+}
+
+.native-delta-values th,
+.native-delta-values td {
+  padding: 0.5rem;
+  text-align: left;
+  border-bottom: 1px solid var(--theme-divider);
+}
+
 /*
  * Supported-device cards. Used in the Bakery devices/index page to
  * list the hardware tiers Rugix Bakery targets.
