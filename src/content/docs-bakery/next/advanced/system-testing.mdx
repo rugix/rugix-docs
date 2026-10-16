@@ -54,7 +54,7 @@ ssh-keygen -t rsa -b 4096 -f id_rsa
 
 We recommend generating the keys locally and putting them into a directory outside of version control.
 
-If you want an example for how to set everything up, you can look at the system tests that we use to [test Rugix Ctrl](https://github.com/rugix/rugix-tests).
+For a complete example, see the [test workflows of Rugix Bakery itself](https://github.com/rugix/rugix-bakery/tree/main/tests). The `workflow` layer injects the public key with the `authorized-key` recipe, and the workflows in `tests/tests` use the matching private key.
 
 The declaration of test systems is followed by a specification of _test steps_.
 
