@@ -32,10 +32,10 @@ export const brand: Brand = {
   titleTemplate: "%s — Rugix",
   plausible: { domain: "rugix.org" },
   banner: {
-    id: "2026-rugix-apps",
+    id: "2026-10-emudhra-security-update",
     messageHtml:
-      '<a href="/blog/2026-03-23-rugix-apps">📣 Introducing Rugix Apps: Reliable Application Updates for Edge Devices</a>',
-    tone: "success",
+      'Security update: Upgrade Rugix Ctrl to 1.3.1 following the eMudhra CA-key compromise. <a href="https://github.com/rugix/rugix/security/advisories/GHSA-637r-qx4c-jm45">Read the advisory</a>.',
+    tone: "primary",
     dismissible: true,
   },
 }
