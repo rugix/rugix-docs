@@ -6,6 +6,11 @@
 @import "@silitics/astro-docs/styles.css";
 @import "@silitics/astro-schema-viewer/styles.css";
 
+.site-banner[data-banner-id="2026-10-emudhra-security-update"] {
+  --theme-primary-muted: oklch(0.5 0.2 25);
+  --theme-content: oklch(0.99 0 0);
+}
+
 /*
  * Prose reset. Apply `.prose-reset` to any wrapper that hosts a
  * component nested inside a `.prose` container — calculators, plots,

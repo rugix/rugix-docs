@@ -31,7 +31,7 @@ handled by the GitHub Actions workflow in `.github/workflows/build.yml`.
 
 Configure the site-wide announcement banner in `brand.banner` in `src/site.ts`.
 Use a new `id` for each announcement so dismissing an earlier banner does not
-hide a new notice.
+hide a new notice. Banner-specific styling lives in `src/styles/site.css`.
 
 ## Content Layout
 
