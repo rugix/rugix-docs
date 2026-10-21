@@ -32,9 +32,9 @@ export const brand: Brand = {
   titleTemplate: "%s — Rugix",
   plausible: { domain: "rugix.org" },
   banner: {
-    id: "2026-10-emudhra-security-update",
+    id: "2026-10-emudhra-guidance",
     messageHtml:
-      '<strong>Security notice:</strong> Upgrade Rugix Ctrl to 1.3.1 following the <a href="https://emudhra.we-have-a-problem.com/" target="_blank" rel="noopener noreferrer" aria-label="eMudhra CA-key compromise (opens in a new tab)">eMudhra CA-key compromise</a>. <a href="https://github.com/rugix/rugix/security/advisories/GHSA-637r-qx4c-jm45" target="_blank" rel="noopener noreferrer" aria-label="Read the advisory (opens in a new tab)">Read the advisory</a>.',
+      '<strong>Security notice:</strong> Following the eMudhra CA key compromise, upgrade Rugix Ctrl to 1.3.1 and update the trust stores in your images. <a href="/blog/emudhra-ca-key-compromise">Read our guidance</a>.',
     tone: "primary",
     dismissible: true,
   },
