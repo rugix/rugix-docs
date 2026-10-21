@@ -27,6 +27,12 @@ sets and versions. Search is available from the main header with Ctrl/Cmd+K or
 `/`. Use `pnpm preview` to test search against the built index. Deployment is
 handled by the GitHub Actions workflow in `.github/workflows/build.yml`.
 
+## Site Announcements
+
+Configure the site-wide announcement banner in `brand.banner` in `src/site.ts`.
+Use a new `id` for each announcement so dismissing an earlier banner does not
+hide a new notice. Banner-specific styling lives in `src/styles/site.css`.
+
 ## Content Layout
 
 - `src/content/blog/` — blog posts (`YYYY-MM-DD-slug.md`).
