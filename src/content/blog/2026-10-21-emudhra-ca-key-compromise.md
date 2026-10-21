@@ -41,6 +41,8 @@ Then roll out the new image to your devices. Devices download it with their curr
 
 Rugix Ctrl 1.3.1 rejects server certificates issued under `emSign ECC Root CA - G3`. If one of your HTTPS endpoints, for example your update server, uses such a certificate, replace it before rolling out the upgrade. Otherwise, upgraded devices can no longer download from it.
 
+Going forward, Rugix Ctrl releases will use the system trust store instead of a compiled-in one. Updating the `ca-certificates` package in your image will then fix issues like this one without a new Rugix Ctrl release.
+
 ## Other Trust Stores in Your Images
 
 A device image usually contains more than one trust store.
