@@ -26,6 +26,59 @@ Enable the core Rugix package group by adding `rugix` to `DISTRO_FEATURES`:
 DISTRO_FEATURES:append = " rugix"
 ```
 
+### Optional Apps Integration
+
+The optional Apps integration is available on the `main` branch of `meta-rugix`,
+which currently targets Yocto Wrynose. `RUGIX_FEATURES` selects optional image
+integrations. It is a space-separated list and defaults to empty. Global settings
+apply to every image; use an image recipe or a recipe override such as
+`RUGIX_FEATURES:pn-core-image-minimal` to select features for one image. Enable
+`apps` to install the systemd services that restore app units and recover
+interrupted deployments:
+
+```bitbake
+RUGIX_FEATURES:append = " apps"
+```
+
+For Docker Compose stacks, select `apps-docker-compose` instead. It includes
+the Apps services, Docker Engine, the Compose plugin, persistent Docker storage,
+and Docker runtime component metadata. Add `meta-virtualization` and its
+dependencies (`meta-oe`, `meta-python`, `meta-networking`, and `meta-filesystems`)
+to `BBLAYERS`, then configure:
+
+```bitbake
+RUGIX_FEATURES:append = " apps-docker-compose"
+DISTRO_FEATURES:append = " virtualization seccomp ipv6"
+PACKAGECONFIG:append:pn-docker-compose = " docker-plugin"
+```
+
+Both features require systemd as the init manager and Rugix Ctrl 1.3.0 or newer.
+Both QEMU examples use systemd and include the
+`examples/include/apps-docker-compose.yaml` KAS fragment to enable Docker
+Compose Apps. For example:
+
+```sh
+mise run build examples/qemu-x86_64-grub.yaml
+```
+
+The fragment adds the required layer and configuration. The `virtualization`
+distro feature enables Docker kernel configuration for the examples'
+`linux-yocto` kernels. Custom kernels need equivalent container support in
+their BSP.
+
+App generations and data use Rugix's state directory. The Docker integration
+persists `/var/lib/docker` and `/var/lib/containerd` through Rugix state
+management, which must already be active in your integration. Adapt
+`/etc/rugix/state/docker.toml` if Docker uses different storage paths. Compose
+services that should start after reboot need a restart policy such as
+`restart: unless-stopped`.
+
+See [application management](../../../application-management) for packaging
+and deploying apps. To manage apps through Rugix Admin, separately enable
+`RUGIX_CTRL_DAEMON_APP_LIFECYCLE = "true"` in the distribution configuration or
+`local.conf`. Installing the runtime does not enable privileged daemon
+permissions.
+
 ### Bundle Image Type
 
 The `image-type-rugixb` class lets a Yocto image recipe produce a Rugix update bundle from the same image definition used to build the target disk image. This keeps the update artifact tied to the image's WIC partition layout and avoids maintaining a separate bundle recipe for the common case.
