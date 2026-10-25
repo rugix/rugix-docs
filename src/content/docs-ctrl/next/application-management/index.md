@@ -67,6 +67,27 @@ The current generation is deactivated and the new generation is activated. The p
 
 If the new generation declares a configuration schema that no longer accepts the configuration stored on the device, the installation fails before the running workload is stopped. Pass a document for the new generation with `--config`, as described in [Application Configuration](./configuration).
 
+## Staging an Update
+
+To download and install a new generation while the current one keeps running, pass `--no-activate`, then activate the generation when the device may be interrupted, for example in a maintenance window:
+
+```shell
+rugix-ctrl apps install --no-activate my-app-v2.rugixb
+rugix-ctrl apps activate my-app 2
+```
+
+`rugix-ctrl apps info` lists the staged generation as complete and inactive. `apps gc` removes generations that have never been activated, so activate a staged generation before collecting garbage.
+
+## Recording the Origin of a Generation
+
+A management tool that installs apps needs to recognize the generations it installed, for example, to tell which release an app runs after a rollback. Pass a JSON document describing the bundle with `--origin`:
+
+```shell
+rugix-ctrl apps install --origin '{"release":"2.0.0"}' my-app-v2.rugixb
+```
+
+Rugix Ctrl stores the document with the new generation without interpreting it. `rugix-ctrl apps info` and `rugix-ctrl apps generations` report it as `origin` of the generation.
+
 ## Rollback
 
 To roll back to the previous generation:

@@ -87,7 +87,7 @@ Key aspects:
 
 - **Persistent data directory.** The `data/` directory is shared across all generations. It is the right place for databases, caches, or any state that should survive app updates.
 - **Complete marker.** The `.rugix/complete` file is written only after all payloads for a generation have been fully extracted. Its absence means the generation is incomplete.
-- **Generation metadata.** The `.rugix/generation.json` file stores the generation number, creation timestamp, `lastActivated` timestamp, and the configuration revision used for the most recent successful activation. Rollback only considers generations where `lastActivated` is set.
+- **Generation metadata.** The `.rugix/generation.json` file stores the generation number, creation timestamp, `lastActivated` timestamp, and the configuration revision used for the most recent successful activation, and the `origin` supplied with `apps install --origin`, if any. Rollback only considers generations where `lastActivated` is set.
 - **Configuration revisions.** Device-specific JSON documents are immutable, numbered files under `configurations/`. The directory is restricted to root. `.rugix/configuration-state.json` records the desired revision and highest allocated revision independently from lifecycle state, ensuring a revision number is never reused for different content.
 - **State file.** The `.rugix/state.json` file tracks the app's lifecycle state, including the configuration revisions in intermediate states used for [crash recovery](#crash-recovery).
 
@@ -205,6 +205,8 @@ The `rugix-ctrl apps recover` command can also be called manually at any time.
 | Command                                                     | Description                                                                                                               |
 | ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
 | `rugix-ctrl apps install BUNDLE [--config FILE]`            | Install apps from a bundle (`-` for stdin).                                                                               |
+| `rugix-ctrl apps install BUNDLE --no-activate`              | Install a generation without activating it.                                                                               |
+| `rugix-ctrl apps install BUNDLE --origin JSON`              | Install apps and record the origin of the new generation.                                                                 |
 | `rugix-ctrl apps list`                                      | List all installed apps with status.                                                                                      |
 | `rugix-ctrl apps info APP`                                  | Show details for an app.                                                                                                  |
 | `rugix-ctrl apps config get APP`                            | Print the effective JSON configuration.                                                                                   |
