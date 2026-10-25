@@ -76,7 +76,7 @@ rugix-ctrl apps install --no-activate my-app-v2.rugixb
 rugix-ctrl apps activate my-app 2
 ```
 
-`rugix-ctrl apps info` lists the staged generation as complete and inactive. `apps gc` removes generations that have never been activated, so activate a staged generation before collecting garbage.
+`rugix-ctrl apps info` lists the staged generation as complete, inactive, and `staged`. Garbage collection keeps it until you activate it or a newer generation.
 
 ## Recording the Origin of a Generation
 
@@ -160,7 +160,7 @@ Over time, old generations accumulate on disk. To clean them up:
 rugix-ctrl apps gc [app] [--keep N]
 ```
 
-By default, this keeps the currently active generation and the last previously active one (for rollback). The `--keep` flag controls how many previous generations to retain. Afterwards, Rugix Ctrl deletes stored content that no remaining generation uses.
+By default, this keeps the currently active generation and the last previously active one (for rollback). The `--keep` flag controls how many previous generations to retain. Generations that were never activated are removed, for example after a failed installation or activation. Staged generations are the exception: a complete generation installed with `--no-activate` is kept until it or a newer generation is activated. Afterwards, Rugix Ctrl deletes stored content that no remaining generation uses.
 
 ## Removing an App
 
