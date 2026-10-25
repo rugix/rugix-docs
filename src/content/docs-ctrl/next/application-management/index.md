@@ -67,6 +67,27 @@ The current generation is deactivated and the new generation is activated. The p
 
 If the new generation declares a configuration schema that no longer accepts the configuration stored on the device, the installation fails before the running workload is stopped. Pass a document for the new generation with `--config`, as described in [Application Configuration](./configuration).
 
+## Staging an Update
+
+To download and install a new generation while the current one keeps running, pass `--no-activate`, then activate the generation when the device may be interrupted, for example in a maintenance window:
+
+```shell
+rugix-ctrl apps install --no-activate my-app-v2.rugixb
+rugix-ctrl apps activate my-app 2
+```
+
+`rugix-ctrl apps info` lists the staged generation as complete, inactive, and `staged`. Garbage collection keeps it until you activate it or a newer generation.
+
+## Recording the Origin of a Generation
+
+A management tool that installs apps needs to recognize the generations it installed, for example, to tell which release an app runs after a rollback. Pass a JSON document describing the bundle with `--origin`:
+
+```shell
+rugix-ctrl apps install --origin '{"release":"2.0.0"}' my-app-v2.rugixb
+```
+
+Rugix Ctrl stores the document with the new generation without interpreting it. `rugix-ctrl apps info` and `rugix-ctrl apps generations` report it as `origin` of the generation.
+
 ## Rollback
 
 To roll back to the previous generation:
@@ -139,7 +160,7 @@ Over time, old generations accumulate on disk. To clean them up:
 rugix-ctrl apps gc [app] [--keep N]
 ```
 
-By default, this keeps the currently active generation and the last previously active one (for rollback). The `--keep` flag controls how many previous generations to retain. Afterwards, Rugix Ctrl deletes stored content that no remaining generation uses.
+By default, this keeps the currently active generation and the last previously active one (for rollback). The `--keep` flag controls how many previous generations to retain. Generations that were never activated are removed, for example after a failed installation or activation. Staged generations are the exception: a complete generation installed with `--no-activate` is kept until it or a newer generation is activated. Afterwards, Rugix Ctrl deletes stored content that no remaining generation uses.
 
 ## Removing an App
 
