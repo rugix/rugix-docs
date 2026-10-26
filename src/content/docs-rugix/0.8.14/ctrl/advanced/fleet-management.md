@@ -34,7 +34,7 @@ To learn more, check out the [thin-edge.io Rugix reference repository](https://g
 ## Memfault
 
 [Memfault](https://memfault.com/) is a fleet management solution with a focus on observability.
-We provide a [template repository showcasing how to integrate Rugix with Memfault](https://github.com/rugix/rugix-template-memfault).
+We provide a [template repository showcasing how to integrate Rugix with Memfault](https://github.com/rugix/rugix-example-memfault).
 Check out the [corresponding Interrupt article for further details](https://interrupt.memfault.com/blog/robust-ota-updates-the-easy-way).
 
 ## Mender

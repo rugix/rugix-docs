@@ -11,6 +11,7 @@ import {
   brand,
   nav,
   headerActions,
+  getDocsEditUrl,
   getRugixDocsConfig,
 } from "../../../site.ts";
 
@@ -50,7 +51,7 @@ const title =
   explicitTitle ??
   headings[0]?.text ??
   (pageSlug ? titleize(pageSlug.split("/").at(-1)!) : "Documentation");
-const editExt = entry.filePath?.endsWith(".mdx") ? "mdx" : "md";
+const editUrl = getDocsEditUrl(entry.filePath);
 ---
 
 <DocsLayout
@@ -65,7 +66,7 @@ const editExt = entry.filePath?.endsWith(".mdx") ? "mdx" : "md";
   headings={headings}
   basePath="/docs/"
   bodyTitle={!!explicitTitle}
-  editExt={editExt}
+  editUrl={editUrl}
 >
   <Content />
   <SiteFooter slot="footer" />

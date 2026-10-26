@@ -146,7 +146,7 @@ Those boot arguments have the form `ro init=/usr/bin/rugix-ctrl root=PARTUUID=<.
 Those boot arguments may be loaded and used by the second stage boot script, however, they can also be ignored.
 In the future we may add additional variables, e.g., for just the partition UUID.
 
-For further details, see the reference [boot scripts](https://github.com/rugix/rugix/tree/main/boot/grub/cfg) used by Rugix Bakery.
+For further details, see the reference [boot scripts](https://github.com/rugix/rugix-bakery/tree/main/boot/grub/cfg) used by Rugix Bakery.
 
 ### U-Boot
 
@@ -312,7 +312,7 @@ The reference implementation for Raspberry Pi uses two boot scripts, one first s
 The first stage follows the steps outlined above and then loads the second stage boot script.
 This has the advantage that the second stage script can be updated in a fail-safe way.
 
-For further details, see the reference [boot scripts](https://github.com/rugix/rugix/tree/main/boot/u-boot/scripts) for Raspberry Pi.
+For further details, see the reference [boot scripts](https://github.com/rugix/rugix-bakery/tree/main/boot/u-boot/scripts) for Raspberry Pi.
 
 ## On Atomicity of Commits
 

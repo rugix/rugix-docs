@@ -9,7 +9,7 @@ Furthermore, you may want to build images and other artifacts specifically for t
 You can do all that within a single Rugix Bakery project, allowing you to share build configurations between the different systems.
 
 Systems are defined in the `systems` section of the project configuration.
-Here is an example taken from the [Debian template](https://github.com/rugix/rugix/tree/main/bakery/templates/debian-grub-efi):
+Here is an example taken from the [Debian template](https://github.com/rugix/rugix-bakery/tree/main/container/templates/debian-grub-efi):
 
 ```toml
 [systems.customized-arm64]

@@ -10,6 +10,7 @@ import {
   brand,
   nav,
   headerActions,
+  getDocsEditUrl,
   getAdminDocsConfig,
 } from "../../../site.ts";
 
@@ -36,11 +37,7 @@ const title =
   explicitTitle ??
   headings[0]?.text ??
   (pageSlug ? titleize(pageSlug.split("/").at(-1)!) : "Rugix Admin");
-const editExt = entry.filePath?.endsWith(".mdx") ? "mdx" : "md";
-const editBaseUrl = docsConfig.versions.find(
-  (v) => v.slug === VERSION,
-)?.editBaseUrl;
-const editUrl = `${editBaseUrl}/index.${editExt}`;
+const editUrl = getDocsEditUrl(entry.filePath);
 ---
 
 <DocsLayout
@@ -55,8 +52,7 @@ const editUrl = `${editBaseUrl}/index.${editExt}`;
   headings={headings}
   basePath="/docs/admin/"
   bodyTitle={!!explicitTitle}
-  editUrl={entry.id === VERSION ? editUrl : undefined}
-  editExt={editExt}
+  editUrl={editUrl}
 >
   <Content />
   <SiteFooter slot="footer" />
