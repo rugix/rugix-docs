@@ -70,7 +70,7 @@ The reference implementation for Raspberry Pi uses two boot scripts, one first s
 The first stage follows the steps outlined above and then loads the second stage boot script.
 This has the advantage that the second stage script can be updated in a fail-safe way.
 
-For further details, we refer to the reference [boot scripts](https://github.com/rugix/rugix/tree/main/boot/u-boot/scripts) for Raspberry Pi.
+For further details, we refer to the reference [boot scripts](https://github.com/rugix/rugix-bakery/tree/main/boot/u-boot/scripts) for Raspberry Pi.
 
 ### Grub (EFI)
 

@@ -158,7 +158,7 @@ overwrite-init = false
 
 With `overwrite-init = false`, Rugix Ctrl does not add an `init` argument when the incoming `rugpi_bootargs` contains none. Rugix Ctrl's pre-init hooks and built-in persistent-state initialization do not run unless another part of the boot process invokes them.
 
-For further details, see the reference [boot scripts](https://github.com/rugix/rugix/tree/main/boot/grub/cfg) used by Rugix Bakery.
+For further details, see the reference [boot scripts](https://github.com/rugix/rugix-bakery/tree/main/boot/grub/cfg) used by Rugix Bakery.
 
 ### U-Boot
 
@@ -348,7 +348,7 @@ The reference implementation for Raspberry Pi uses two boot scripts, one first s
 The first stage follows the steps outlined above and then loads the second stage boot script.
 This has the advantage that the second stage script can be updated in a fail-safe way.
 
-For further details, see the reference [boot scripts](https://github.com/rugix/rugix/tree/main/boot/u-boot/scripts) for Raspberry Pi.
+For further details, see the reference [boot scripts](https://github.com/rugix/rugix-bakery/tree/main/boot/u-boot/scripts) for Raspberry Pi.
 
 ## On Atomicity of Commits
 

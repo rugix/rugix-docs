@@ -28,7 +28,7 @@ To obtain a reproducible build environment, we follow a two stage process:
 
 Everything else we built will be based on the reproducible Stage 1 image.
 
-The infrastructure for reproducible builds is implemented as part of Rugpi's [`xtask`](https://github.com/rugix/rugix/tree/main/xtask).
+The infrastructure for reproducible builds is implemented as part of Rugpi's [`xtask`](https://github.com/rugix/rugix-bakery/tree/main/xtask).
 
 ## Reproducibility of Images
 

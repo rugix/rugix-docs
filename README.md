@@ -27,6 +27,15 @@ sets and versions. Search is available from the main header with Ctrl/Cmd+K or
 `/`. Use `pnpm preview` to test search against the built index. Deployment is
 handled by the GitHub Actions workflow in `.github/workflows/build.yml`.
 
+## Link Checks
+
+Run `mise run check:links` to build the site and validate internal links,
+page anchors, and GitHub edit links against their source files. The checker
+uses production redirects from the infrastructure checkout at
+`/workspace/silitics/infrastructure/hosts/production/silitics/core1/default.nix`.
+Set `RUGIX_DOCS_REDIRECTS_FILE` to use a different checkout. External links
+require a separate check.
+
 ## Site Announcements
 
 Configure the site-wide announcement banner in `brand.banner` in `src/site.ts`.

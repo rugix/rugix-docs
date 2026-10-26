@@ -9,6 +9,7 @@ import {
   brand,
   nav,
   headerActions,
+  getDocsEditUrl,
   getCtrlDocsConfig,
 } from "../../../../site.ts";
 
@@ -44,7 +45,7 @@ const title =
   explicitTitle ??
   headings[0]?.text ??
   (pageSlug ? titleize(pageSlug.split("/").at(-1)!) : "Rugix Ctrl");
-const editExt = entry.filePath?.endsWith(".mdx") ? "mdx" : "md";
+const editUrl = getDocsEditUrl(entry.filePath);
 ---
 
 <DocsLayout
@@ -59,7 +60,7 @@ const editExt = entry.filePath?.endsWith(".mdx") ? "mdx" : "md";
   headings={headings}
   basePath="/docs/ctrl/"
   bodyTitle={!!explicitTitle}
-  editExt={editExt}
+  editUrl={editUrl}
 >
   <Content />
   <SiteFooter slot="footer" />

@@ -70,7 +70,7 @@ exclude = [...]
 ```
 
 A recipe describes modifications to be done to the system.
-Rugpi Bakery comes with a set of [core recipes](https://github.com/rugix/rugix/tree/main/bakery/repositories/core/recipes) which you can use.
+Rugpi Bakery comes with a set of [core recipes](https://github.com/rugix/rugix/tree/v0.7.5/bakery/repositories/core/recipes) which you can use.
 
 Each recipe has its own directory with a `recipe.toml` configuration file.
 Recipes may have a `description`, a `priority`, and `dependencies`.

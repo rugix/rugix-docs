@@ -8,11 +8,15 @@ const projectRoot = process.cwd()
 const distDir = resolve(projectRoot, "dist")
 const redirectsFile =
   process.env.RUGIX_DOCS_REDIRECTS_FILE ??
-  "/workspace/silitics/infrastructure/hosts/silitics/core1/default.nix"
+  "/workspace/silitics/infrastructure/hosts/production/silitics/core1/default.nix"
 
 run("pnpm", ["build"])
 
 const remaps = [
+  [
+    "^https://github\\.com/rugix/rugix-docs/edit/main/",
+    `${fileUrl(projectRoot)}/`,
+  ],
   [`^https://(?:www\\.)?rugix\\.org/404/?$`, fileUrl(`${distDir}/404.html`)],
   [
     `^${escapeRegExp(fileUrl(`${distDir}/404/`))}$`,
@@ -67,12 +71,12 @@ function loadRugixRedirectRemaps(path, rootDir) {
         ? to
         : fileUrl(`${rootDir}${to}`)
     remaps.push([
-      `^https://(?:www\\.)?rugix\\.org${escapeRegExp(from)}${from.endsWith("/") ? "" : "/?"}(?:[?#].*)?$`,
-      target,
+      `^https://(?:www\\.)?rugix\\.org${escapeRegExp(from)}${from.endsWith("/") ? "" : "/?"}(?:\\?[^#]*)?(#.*)?$`,
+      `${target}$1`,
     ])
     remaps.push([
-      `^${escapeRegExp(fileUrl(`${rootDir}${from}`))}${from.endsWith("/") ? "" : "/?"}(?:[?#].*)?$`,
-      target,
+      `^${escapeRegExp(fileUrl(`${rootDir}${from}`))}${from.endsWith("/") ? "" : "/?"}(?:\\?[^#]*)?(#.*)?$`,
+      `${target}$1`,
     ])
   }
   return remaps

@@ -1,5 +1,7 @@
 import "./styles/site.css"
 
+import { relative } from "node:path"
+
 import { getCollection } from "astro:content"
 import type {
   Brand,
@@ -138,14 +140,16 @@ export const socials: SocialLink[] = [
   },
 ]
 
-/*
- * Edit-this-page URLs point at this repo's `src/content/<collection>/
- * <version>/<slug>.<ext>` tree. Each version's `editBaseUrl` extends
- * down to the version directory so the framework only has to append
- * `<pageSlug>.<ext>`.
- */
 const REPO_EDIT_BASE =
   "https://github.com/rugix/rugix-docs/edit/main/src/content"
+
+export function getDocsEditUrl(
+  filePath: string | undefined,
+): string | undefined {
+  return filePath
+    ? `${REPO_EDIT_BASE}/${relative("src/content", filePath)}`
+    : undefined
+}
 
 /*
  * Peer doc sets surfaced as a pill row at the top of every docs

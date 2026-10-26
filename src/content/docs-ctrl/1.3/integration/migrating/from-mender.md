@@ -7,7 +7,7 @@ Mender supports two bootloaders, U-Boot and GRUB.
 Rugix Ctrl implements two Mender-compatible boot flows, `mender-uboot` and `mender-grub`, which are compatible with Mender's U-Boot and GRUB integration, respectively.
 
 :::note
-This migration path has been proven in production and at scale by [Umbrel](https://github.com/getumbrel/umbrel/blob/3e4ad453ad63629251648326177fc50402e3514d/packages/os/README), which migrated their legacy Mender-provisioned x86 devices from Mender to Rugix Ctrl.
+This migration path has been proven in production and at scale by [Umbrel](https://github.com/getumbrel/umbrel/blob/3e4ad453ad63629251648326177fc50402e3514d/packages/os/README.md), which migrated their legacy Mender-provisioned x86 devices from Mender to Rugix Ctrl.
 :::
 
 Migrating from Mender to Rugix Ctrl requires a custom [system configuration file](../../../updates/system-updates/system-configuration) which specifies the correct Mender-compatible boot flow, boot groups, and slots.

@@ -17,11 +17,11 @@ To onboard a device, follow the [Nexigon quickstart guide for Rugix](https://doc
 
 ## Memfault
 
-[Memfault](https://memfault.com/) is a fleet management solution with a focus on observability. We provide a [template repository showing how to integrate Rugix with Memfault](https://github.com/rugix/rugix-template-memfault); the [corresponding Interrupt article](https://interrupt.memfault.com/blog/robust-ota-updates-the-easy-way) covers it in depth.
+[Memfault](https://memfault.com/) is a fleet management solution with a focus on observability. We provide a [template repository showing how to integrate Rugix with Memfault](https://github.com/rugix/rugix-example-memfault); the [corresponding Interrupt article](https://interrupt.memfault.com/blog/robust-ota-updates-the-easy-way) covers it in depth.
 
 ## Mender
 
-[Mender](https://mender.io) is a fleet management solution with a tightly-coupled update engine of its own. To integrate Rugix Ctrl with Mender's fleet management, see our [template repository for Rugix with Mender](https://github.com/rugix/rugix-template-mender).
+[Mender](https://mender.io) is a fleet management solution with a tightly-coupled update engine of its own. To integrate Rugix Ctrl with Mender's fleet management, see our [template repository for Rugix with Mender](https://github.com/rugix/rugix-example-mender).
 
 :::note
 Mender's fleet management is incompatible with Rugix's dynamic delta updates. This is unlikely to change, as delta updates are a key commercial feature of Mender's own update client.
