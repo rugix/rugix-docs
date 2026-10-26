@@ -61,6 +61,7 @@ App data is stored in the Rugix state directory at `/run/rugix/state/apps/` (or 
 ├── configurations/
 │   ├── 1.json                       # device-specific JSON revision
 │   └── 2.json
+├── current -> generations/3          # activated generation
 ├── generations/
 │   ├── 1/                            # old generation
 │   │   ├── app.toml
@@ -85,6 +86,7 @@ App data is stored in the Rugix state directory at `/run/rugix/state/apps/` (or 
 
 Key aspects:
 
+- **Current generation.** The relative `current` symlink points to the activated generation. It remains available while its workload is stopped or starting. During a deployment switch, it continues to point to the previous generation until activation succeeds, then Rugix replaces it atomically. It also remains available during deactivation until the app becomes `Inactive`. It is absent in the `Inactive` and `Error` states and during an initial activation with no previous generation. Generations may contain compatibility metadata in `.rugix/components` and optional health definitions supplied by app payloads in `.rugix/health/nodes`. External readers can discover these files through `<apps-dir>/*/current/.rugix/`; they should skip missing directories. The symlink exposes the files but does not load health definitions by itself.
 - **Persistent data directory.** The `data/` directory is shared across all generations. It is the right place for databases, caches, or any state that should survive app updates.
 - **Complete marker.** The `.rugix/complete` file is written only after all payloads for a generation have been fully extracted. Its absence means the generation is incomplete.
 - **Generation metadata.** The `.rugix/generation.json` file stores the generation number, creation timestamp, `lastActivated` timestamp, the configuration revision used for the most recent successful activation, the `origin` supplied with `apps install --origin`, if any, and whether it was installed with `--no-activate` (`staged`). Rollback only considers generations where `lastActivated` is set. Garbage collection removes generations without `lastActivated`, unless they are complete, staged, and newer than every activated generation.
@@ -199,6 +201,8 @@ WantedBy=multi-user.target
 ```
 
 The `rugix-ctrl apps recover` command can also be called manually at any time.
+
+Recovery also reconciles each app's `current` symlink with its persisted lifecycle state. This repairs a missing or stale link after a crash and creates links for apps activated by earlier Rugix versions. State and link updates are separate filesystem operations; readers should retry during transitions. Rugix replaces links atomically and syncs the app directory before an operation completes.
 
 ## CLI Reference
 
