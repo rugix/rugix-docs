@@ -43,7 +43,7 @@ const INSTALLERS = [
   },
   {
     id: "rugix-pipeline",
-    label: "Rugix 1.4 Fetcher",
+    label: "Rugix Ctrl 1.4 Fetcher",
     color: "#0ea5e9",
     dash: [],
   },
@@ -71,47 +71,29 @@ function colors(mode: "light" | "dark") {
   }
 }
 
-function timeCell(row: ReturnType<typeof group>) {
-  return `${row.seconds_median.toFixed(1)} [${row.seconds_q1.toFixed(1)}, ${row.seconds_q3.toFixed(1)}]`
-}
-
-/** Native installation medians and every individual run, including slow runs. */
+/** Median installation times across the tested network latencies. */
 export function PlotInstallationTimes() {
   const [workload, setWorkload] = useState<Workload>("monthly")
   const controlId = useId()
   const mode = useThemeMode()
   const palette = colors(mode)
-  const installers = INSTALLERS
-  const title = "Installation Time"
-  const groups = installers.map((installer) =>
+  const title = "Median Installation Time"
+  const groups = INSTALLERS.map((installer) =>
     RTTS.map((rtt) => group(workload, installer.id, rtt)),
   )
   const data = {
-    datasets: [
-      ...installers.map((installer, index) => ({
-        label: installer.label,
-        borderColor: installer.color,
-        backgroundColor: installer.color,
-        borderDash: installer.dash,
-        borderWidth: 2,
-        pointRadius: 4,
-        showLine: true,
-        data: groups[index].map((row) => ({
-          x: row.rtt_ms,
-          y: row.seconds_median,
-        })),
+    datasets: INSTALLERS.map((installer, index) => ({
+      label: installer.label,
+      borderColor: installer.color,
+      backgroundColor: installer.color,
+      borderDash: installer.dash,
+      borderWidth: 2,
+      pointRadius: 4,
+      data: groups[index].map((row) => ({
+        x: row.rtt_ms,
+        y: row.seconds_median,
       })),
-      ...installers.map((installer, index) => ({
-        label: `${installer.label}: individual installs`,
-        backgroundColor: installer.color + "55",
-        pointRadius: 3,
-        pointHoverRadius: 0,
-        showLine: false,
-        data: groups[index].flatMap((row) =>
-          row.seconds_samples.map((seconds) => ({ x: row.rtt_ms, y: seconds })),
-        ),
-      })),
-    ],
+    })),
   }
   const options: ChartOptions<"line"> = {
     responsive: true,
@@ -119,34 +101,12 @@ export function PlotInstallationTimes() {
     interaction: { mode: "nearest", axis: "x", intersect: false },
     plugins: {
       title: { display: true, text: title, color: palette.text },
-      legend: {
-        position: "bottom",
-        onClick: (_event, item, legend) => {
-          const index = item.datasetIndex!
-          const visible = legend.chart.isDatasetVisible(index)
-          legend.chart.setDatasetVisibility(index, !visible)
-          legend.chart.setDatasetVisibility(index + installers.length, !visible)
-          legend.chart.update()
-        },
-        labels: {
-          color: palette.text,
-          filter: (item) =>
-            installers.some((installer) => installer.label === item.text),
-        },
-      },
+      legend: { position: "bottom", labels: { color: palette.text } },
       tooltip: {
-        filter: (item) => item.datasetIndex < installers.length,
         callbacks: {
-          title: (items) => `${items[0].parsed.x} ms added RTT`,
+          title: (items) => `${items[0].parsed.x} ms added round-trip latency`,
           label: (item) =>
             `${item.dataset.label}: ${item.parsed.y?.toFixed(1)} s median`,
-          afterLabel: (item) => {
-            const row = groups[item.datasetIndex][item.dataIndex]
-            return [
-              `IQR: ${row.seconds_q1.toFixed(1)}–${row.seconds_q3.toFixed(1)} s`,
-              `Range: ${row.seconds_minimum.toFixed(1)}–${row.seconds_maximum.toFixed(1)} s; n = ${row.repetitions}`,
-            ]
-          },
         },
       },
     },
@@ -198,19 +158,17 @@ export function PlotInstallationTimes() {
         <Line
           data={data}
           options={options}
-          aria-label={`${title}, ${workload}, five installs per condition`}
+          aria-label={`${title}, ${workload}, medians of five installs per condition`}
         />
       </PlotShell>
       <p className="native-delta-caption">
-        Lines show medians; faint points show all five installs. Hover for
-        interquartile ranges and full ranges.
+        Median installation times from five installs per condition.
       </p>
       <details className="native-delta-values">
-        <summary>Show measured values</summary>
+        <summary>Show median values</summary>
         <table>
           <caption>
-            Installation time in seconds: median [interquartile range], full
-            range, and all five runs
+            Median installation time in seconds by added round-trip latency
           </caption>
           <thead>
             <tr>
@@ -223,24 +181,11 @@ export function PlotInstallationTimes() {
             </tr>
           </thead>
           <tbody>
-            {installers.map((installer, index) => (
+            {INSTALLERS.map((installer, index) => (
               <tr key={installer.id}>
                 <th scope="row">{installer.label}</th>
                 {groups[index].map((row) => (
-                  <td key={row.rtt_ms}>
-                    {timeCell(row)}
-                    <span className="native-delta-runs">
-                      Range: {row.seconds_minimum.toFixed(1)}–
-                      {row.seconds_maximum.toFixed(1)} s
-                    </span>
-                    <span className="native-delta-runs">
-                      Runs:{" "}
-                      {row.seconds_samples
-                        .map((value) => value.toFixed(1))
-                        .join(", ")}{" "}
-                      s
-                    </span>
-                  </td>
+                  <td key={row.rtt_ms}>{row.seconds_median.toFixed(1)}</td>
                 ))}
               </tr>
             ))}

@@ -357,12 +357,6 @@
   font-size: 0.85rem;
 }
 
-.native-delta-runs {
-  display: block;
-  margin-top: 0.25rem;
-  color: var(--theme-content-muted);
-}
-
 .native-delta-values th,
 .native-delta-values td {
   padding: 0.5rem;
