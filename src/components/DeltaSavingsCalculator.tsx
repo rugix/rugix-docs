@@ -37,7 +37,7 @@ const METHODS: Array<{
   {
     name: "Block-Based, Casync 16 KiB",
     key: "block-based-casync-16-768",
-    tools: "Rugix Ctrl, Casync",
+    tools: "Rugix Ctrl",
     bodyFactor: RUGIX_BODY_FACTOR,
   },
   {
@@ -248,10 +248,16 @@ export default function DeltaSavingsCalculator() {
       <p className="delta-savings-footnote">
         Estimates average two years of Debian Bookworm and Bullseye updates,
         with a complete-image XZ download as the baseline. Based on our{" "}
-        <a href="/blog/faster-delta-updates">newer benchmarks</a>, block-based
-        estimates use correction factors of ×{RAUC_BODY_FACTOR.toFixed(3)} for
-        fixed 4 KiB / 32 KiB blocks and ×{RUGIX_BODY_FACTOR.toFixed(3)} for
-        Casync 16 KiB blocks. The default 0.09 USD/GiB is based on{" "}
+        <a href="https://github.com/rugix/rugix-benchmarks/tree/main/benchmarks/dynamic-downloads">
+          newer benchmarks
+        </a>
+        , block-based estimates use correction factors of ×
+        {RAUC_BODY_FACTOR.toFixed(3)} for fixed 4 KiB / 32 KiB blocks and ×
+        {RUGIX_BODY_FACTOR.toFixed(3)} for Casync 16 KiB blocks with Rugix
+        Ctrl's new fetcher. These HTTP response-body corrections come from two
+        Bookworm update pairs and are extrapolated to the other schedules and
+        Bullseye updates. Actual savings depend on your update content and
+        billing metric. The default 0.09 USD/GiB is based on{" "}
         <a href="https://aws.amazon.com/s3/pricing/">
           Amazon S3 internet transfer pricing
         </a>
