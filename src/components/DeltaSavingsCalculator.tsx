@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react"
 
 import COMPRESSION_FACTORS from "./delta-savings-data"
+import CALIBRATION from "./delta-calibration-data.json"
 
 type Schedule = "monthly" | "quarterly" | "biannually" | "annually"
 
@@ -18,30 +19,38 @@ const UPDATES_PER_YEAR: Record<Schedule, number> = {
   annually: 1,
 }
 
+const RUGIX_BODY_FACTOR = measuredBodyFactor("rugix-pipeline-casync16")
+const RAUC_BODY_FACTOR = measuredBodyFactor("rauc-http-32k")
+
 const METHODS: Array<{
   name: string
   key: keyof (typeof COMPRESSION_FACTORS)["bookworm"]["annually"]
   tools: string
+  bodyFactor: number
 }> = [
   {
     name: "Block-Based, Fixed 4 KiB / 32 KiB",
     key: "block-based-fixed-4-768-32768",
     tools: "≈ RAUC",
+    bodyFactor: RAUC_BODY_FACTOR,
   },
   {
     name: "Block-Based, Casync 16 KiB",
     key: "block-based-casync-16-768",
-    tools: "Rugix, Casync",
+    tools: "Rugix Ctrl",
+    bodyFactor: RUGIX_BODY_FACTOR,
   },
   {
     name: "File-Based, Deltar 16 KiB",
     key: "deltar-casync-16-768-32768",
     tools: "≈ OSTree, ≈ APT",
+    bodyFactor: 1,
   },
   {
     name: "Delta Compression (Xdelta)",
     key: "xdelta",
-    tools: "Rugix, Mender, Xdelta",
+    tools: "Rugix Ctrl, Mender, Xdelta",
+    bodyFactor: 1,
   },
 ]
 
@@ -62,10 +71,10 @@ const fleetTicks = [
 /**
  * Cost-savings calculator for delta updates.
  *
- * Estimates the bandwidth bill for a fleet over a year given an update
- * cadence, image size, devices, and per-GiB egress cost — and shows the
- * savings each delta update technique would produce, averaged across
- * Debian Bookworm and Bullseye benchmark scenarios.
+ * Estimates annual download costs from uncompressed image size, fleet size,
+ * update cadence, and price per GiB. Base compression factors average Bookworm
+ * and Bullseye simulations; block-based models use corrections derived from
+ * measured HTTP response-body bytes.
  *
  * Designed to ship as an Astro client island: render with
  * `client:visible` so the JS only loads when the user scrolls to it.
@@ -108,7 +117,8 @@ export default function DeltaSavingsCalculator() {
         devices *
         (imageSizeMiB / 1024) *
         costPerGiB *
-        factor
+        factor *
+        method.bodyFactor
       return {
         ...method,
         cost,
@@ -136,7 +146,9 @@ export default function DeltaSavingsCalculator() {
         </label>
 
         <label className="delta-savings-control">
-          <span className="delta-savings-control-label">Cost per GiB</span>
+          <span className="delta-savings-control-label">
+            Cost per GiB downloaded
+          </span>
           <div className="delta-savings-slider-row">
             <input
               type="range"
@@ -170,7 +182,9 @@ export default function DeltaSavingsCalculator() {
         </label>
 
         <label className="delta-savings-control">
-          <span className="delta-savings-control-label">Image size</span>
+          <span className="delta-savings-control-label">
+            Uncompressed image size
+          </span>
           <div className="delta-savings-slider-row">
             <input
               type="range"
@@ -232,10 +246,32 @@ export default function DeltaSavingsCalculator() {
       </div>
 
       <p className="delta-savings-footnote">
-        Estimates are based on averages over two years of monthly Debian
-        Bookworm and Bullseye snapshots. Actual savings depend on your update
-        content. The default 0.09 USD/GiB matches AWS S3 egress.
+        Estimates average two years of Debian Bookworm and Bullseye updates,
+        with a complete-image XZ download as the baseline. Based on our{" "}
+        <a href="https://github.com/rugix/rugix-benchmarks/tree/main/benchmarks/dynamic-downloads">
+          newer benchmarks
+        </a>
+        , block-based estimates use correction factors of ×
+        {RAUC_BODY_FACTOR.toFixed(3)} for fixed 4 KiB / 32 KiB blocks and ×
+        {RUGIX_BODY_FACTOR.toFixed(3)} for Casync 16 KiB blocks with Rugix
+        Ctrl's new fetcher. These HTTP response-body corrections come from two
+        Bookworm update pairs and are extrapolated to the other schedules and
+        Bullseye updates. Actual savings depend on your update content and
+        billing metric. The default 0.09 USD/GiB is based on{" "}
+        <a href="https://aws.amazon.com/s3/pricing/">
+          Amazon S3 internet transfer pricing
+        </a>
+        ; adjust it to your costs.
       </p>
     </div>
   )
+}
+
+/** Keep calibrated costs on the same byte basis as the complete-image baseline. */
+function measuredBodyFactor(candidate: string) {
+  const correction = CALIBRATION.find(
+    (row) => row.candidate === candidate && row.workload === "minor-pooled",
+  )
+  if (!correction) throw new Error("Missing download calibration: " + candidate)
+  return correction.body_factor
 }
