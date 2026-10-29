@@ -37,7 +37,8 @@ The `envs` commands let you work with an environment independently of a system
 build. Run them from a project containing `rugix-bakery.toml`.
 
 :::note
-Recipe steps do not yet support selecting an environment.
+Repository [build rules](/docs/bakery/next/build-rules) select environments for artifact operations.
+Recipe steps continue to run in Bakery or the target root filesystem.
 :::
 
 ### Inspect and Build
@@ -98,7 +99,7 @@ container has been removed.
 
 ## Share Environments
 
-[Repositories](./repositories) can supply environments using the same directory
+[Repositories](/docs/bakery/next/repositories) can supply environments using the same directory
 convention. Reference one with its repository prefix, for example:
 
 ```shell

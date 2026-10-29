@@ -33,12 +33,9 @@ recipes = [
 
 This file defines a layer, named `customized`, that is based on the layer `core/debian-bookworm`, a general-purpose layer to build Debian-based systems shipped with Rugix Bakery. The configuration file then specifies a bunch of recipes to set up and customize the system, for instance, setting up a bootloader integration with Grub and providing a network configuration.
 
-In addition to project-specific layers and recipes defined in the project directory, you can use layers and recipes provided by [repositories](/docs/bakery/next/repositories). In case of the example, these repositories are `core` and `rugix-extra`. We will explain repositories in detail later. The `core` repository is shipped with Rugix Bakery and includes the following layers for you to use as a parent layer:
-
-- `core/debian-bookworm` for Debian Bookworm,
-- `core/alpine-3-20` for Alpine Linux 3.20,
-- `core/raspios-bookworm` for Raspberry Pi OS (Bookworm), and
-- `core/raspios-bullseye` for Raspberry Pi OS (Bullseye).
+In addition to project-specific layers and recipes defined in the project directory, you can use layers and recipes provided by [repositories](/docs/bakery/next/repositories). In case of the example, these repositories are `core` and `rugix-extra`. We will explain repositories in detail later. The built-in
+[core layer reference](/docs/bakery/next/reference/core/layers/) lists available
+base layers, their architecture variants, source images, and configured recipes.
 
 ## Root Layers
 
@@ -85,6 +82,86 @@ Note that imported layers must not specify any recipes. Customizations are appli
 
 Recipes may depend on other recipes and as such will pull in their dependencies automatically when specified in the `recipes` list of a layer. To avoid that, e.g., when you want to replace some recipe with a local variant, you can exclude certain recipes from a layer. To this end, you can provide a list of recipes to exclude via the `exclude` property.
 
+## Recipe Artifact Inputs
+
+A recipe can install artifacts produced by a [build rule](/docs/bakery/next/build-rules), such as
+an application compiled in a tooling environment. The recipe declares named
+inputs. The layer can bind each input to an artifact, and recipes can also supply
+[default bindings and their own prerequisite rules](/docs/bakery/next/recipes#artifact-inputs).
+For example:
+
+```toml title="recipes/install-app/recipe.toml"
+[inputs]
+application = "file"
+```
+
+A `run` or `install` step reads those inputs through `RECIPE_INPUTS_DIR`:
+
+```sh title="recipes/install-app/steps/00-run.sh"
+#!/bin/sh
+set -eu
+install -D -m 0755 "$RECIPE_INPUTS_DIR/application" "$RUGIX_ROOT_DIR/usr/bin/application"
+```
+
+The layer defines the prerequisite rule and connects its output to the recipe:
+
+```toml title="layers/device.toml"
+parent = "core/debian-bookworm"
+recipes = ["install-app"]
+
+[rules.application]
+uses = "vendor/build-app"
+inputs.source = { file = "application" }
+parameters.architecture = { parameter = "architecture" }
+
+[inputs.install-app]
+application = { rule = { node = "application", output = "binary" } }
+```
+
+Here, `vendor/build-app` declares a `source` directory input and an `architecture`
+parameter, and exports a `binary` file. The `application` source directory is
+relative to the repository containing the layer. Bakery supplies the layer's
+target architecture as the `architecture` parameter available to its prerequisite
+rules.
+
+Layers, prerequisite rules, and image assembly run in one dependency graph.
+Bakery builds prerequisite artifacts before running the layer's recipes.
+Recipe inputs are read-only and isolated per recipe. Their contents and metadata
+participate in layer caching. Bindings apply to recipes executed by this layer;
+a parent builds its own inputs and recipes separately.
+
+The `inputs` table uses recipe references as keys, just like `parameters`.
+For a repository recipe, use a table such as `[inputs."vendor/install-app"]`.
+Recipes accept file and directory inputs. Missing bindings, unknown inputs,
+inactive recipes, and incompatible kinds fail before execution.
+
+Bindings support the same file, rule output, selection, and tree forms as
+[rule inputs](/docs/bakery/next/build-rules#bind-inputs-and-secrets). An omitted binding forwards
+an available enclosing input of the same name, then falls back to a recipe's
+`input-defaults` binding. Explicit layer bindings take precedence over both.
+Rules defined by a layer can
+also consume its parent's `rootfs`, `boot`, `config`, `artifacts`, and `bsp`
+directory artifacts through `{ input = "rootfs" }`, for example. A root layer
+has no parent artifacts. Cycles between layers and rules are rejected.
+
+Mixins support the same `rules` and `inputs` tables. Their parent artifacts
+come from the preceding layer or mixin. See the
+[layer input example](https://github.com/rugix/rugix-bakery/tree/main/examples/layer-inputs)
+for a complete application-to-filesystem build.
+
+## Inspect and Document Definitions
+
+Discover definitions without building them:
+
+```shell
+./run-bakery layers list
+./run-bakery layers inspect core/debian-trixie --json
+```
+
+Inspection shows the selected definition and its documentation. Add `--json` to export their metadata and adjacent
+Markdown. See [definition catalogs](/docs/bakery/next/definition-catalogs/) for
+the shared documentation format and reference generator.
+
 ## Configuration Reference
 
 For reference, here is the complete schema for layer configuration files:
@@ -93,4 +170,4 @@ For reference, here is the complete schema for layer configuration files:
 You will find the most recent version of this schema [on
 GitHub](https://github.com/rugix/rugix-bakery/blob/main/schemas/rugix-bakery-layer.schema.json).
 
-[^1]: The layer should be fully reproducible, however, Rugix Bakery does currently not support building images reproducibly. We will add this functionality in the future such that images can be reproduced bit-by-bit.
+[^1]: Reproducing a layer requires fixed distribution inputs and deterministic recipes. Image assembly has additional controls for timestamps and generated identifiers; see [Reproducible Builds](/docs/bakery/next/advanced/reproducible-builds/).

@@ -37,6 +37,14 @@ For instance, to build an image for a given system, run:
 ./run-bakery bake image <system>
 ```
 
+## Repository Build Rules
+
+For a custom image pipeline, select a [repository build rule](/docs/bakery/next/build-rules) with
+`build.uses`. Bakery builds the layer as usual, then passes its root filesystem
+and other artifacts to that rule. The repository controls boot packaging, signing,
+disk assembly, and update bundle creation. Use the rule's parameters and inputs
+instead of the `target`, `image`, and `options` settings described below.
+
 ## Targets
 
 When declaring a system within the project configuration, you can specify a _target_ that is appropriate for the respective device.
@@ -84,13 +92,19 @@ Currently, this is limited to creating partitions with optional filesystems.
 
 #### Image Creation Process
 
-The process of creating an image roughly works as follows:
+The predefined pipeline creates an image through build rules:
 
-1. Create the required filesystems from the layer.
-2. Compute a partition table based on the specified image layout and filesystems.
-3. Create an image and partition it according to the computed table.
-4. Copy the prepared filesystems into the image.
-5. Patch the boot configuration based on the target.
+1. Build the layer and prepare its release metadata.
+2. Initialize the target's bootloader and firmware files.
+3. Resolve the layout into a disk image containing partition tables and raw firmware.
+4. Patch the boot configuration with the resolved partition identifiers.
+5. Create filesystem images from the prepared trees.
+6. Populate the disk with those filesystem images.
+
+Filesystem archives and software inventories are separate rule outputs.
+`bake bundle` adds an update bundle using the same partition artifacts.
+See [repository build rules](/docs/bakery/next/build-rules#standard-system-pipeline) for how the
+pipeline connects to the build graph.
 
 Supported partition tables:
 
@@ -100,6 +114,7 @@ Supported partition tables:
 Supported filesystems:
 
 - `ext4`: [Ext4 Filesystem](https://en.wikipedia.org/wiki/Ext4)
-- `fat32`: [FAT32 Filesystem](https://en.wikipedia.org/wiki/File_Allocation_Table)
+- `fat32`: [FAT Filesystem](https://en.wikipedia.org/wiki/File_Allocation_Table). For fixed capacities, the formatter selects FAT12, FAT16, or FAT32 to suit the image size.
+- `squashfs`: Compressed, read-only SquashFS filesystem.
 
 The image layout is specified in the `image.layout` section. For details, we refer to the [project configuration reference](/docs/bakery/next/projects#project-configuration).

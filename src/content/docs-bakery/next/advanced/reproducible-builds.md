@@ -13,11 +13,51 @@ We aim to enable reproducible builds of Rugix itself as well as of system images
 
 ## Source Date
 
-Rugix Bakery supports a `--source-date` option which allows you to pin the source date of the build to a specific date and time (formatted according to RFC 3339). If you do not specify this option, Rugix Bakery will use the current date and time.
-In any case, Rugix Bakery will clamp the modification time of all files to the source date.
+Rugix Bakery supports `--source-date` to pin a build's source date to an RFC 3339
+timestamp. When omitted, layer recipes use their build time. Release preparation
+uses the completed layer archive's modification time, so reusing that layer
+retains its source date and default release version. Pin `--source-date` when
+reproducing a release across independent layer builds.
+
+Rugix Bakery clamps file modification times to the source date.
 The source date is also used to set the [`SOURCE_DATE_EPOCH` environment variable](https://reproducible-builds.org/docs/source-date-epoch/) in the build environment.
 Bakery also passes this value to filesystem construction tools so that creation
 timestamps do not depend on the time of the build.
+
+## Build Rules
+
+The core artifact rules produce reproducible outputs with the same input bytes
+and filesystem metadata, parameters, and Bakery container image.
+Pin the image by digest to keep the tool versions fixed. A cache hit alone does
+not demonstrate reproducibility: the same rule must also produce identical
+bytes when executed again with a fresh cache.
+
+Filesystem rules expose `source-date-epoch` as a Unix timestamp, defaulting to
+zero. Custom compositions must pass this parameter explicitly when they need
+a release-specific date. The predefined system pipeline sets filesystem
+timestamps from its build context.
+
+For example:
+
+```toml
+uses = "core/image-ext4"
+inputs.tree = { file = "prepared-root" }
+parameters.source-date-epoch = 1700000000
+```
+
+| Building Block       | Reproducibility Controls                                                                                    |
+| -------------------- | ----------------------------------------------------------------------------------------------------------- |
+| ext4                 | Derived UUID and directory hash seed; fixed creation, access, and change times; clamped modification times. |
+| FAT                  | Derived volume ID, invariant format metadata, sorted insertion, and fixed UTC entry timestamps.             |
+| SquashFS             | Fixed creation time, clamped file timestamps, and reproducible compression.                                 |
+| Disk layouts         | MBR disk IDs and GPT GUIDs derived from the layout and resolved geometry.                                   |
+| Software inventories | Source-date creation times and content-derived document identifiers.                                        |
+| Rugix bundle         | Fixed manifest and payload bytes.                                                                           |
+
+Extra `mkfs-options` can override reproducible defaults. Pin distribution
+repositories when building the input root filesystem. See the
+[core rule reference](/docs/bakery/next/reference/core/rules/) for each rule's
+behavior.
 
 ## Reproducibility of Rugix
 
@@ -51,11 +91,10 @@ Reproducibility of Rugix is a prerequisite for reproducible system images.
 
 Bakery represents a finished layer as a directory tree after all recipes have
 run. It constructs ext4 filesystems directly from this tree and passes the
-configured source date to `mkfs.ext4`. Reproducible targets must also specify a
-stable filesystem UUID, directory hash seed, and filesystem feature set in their
-ext4 options, as Rugix's default system partitions do. Given those fixed inputs,
-the same tree, partition size, source date, and Bakery version produce a
-byte-for-byte identical ext4 filesystem image.
+configured source date to `mkfs.ext4`. The core rule derives a stable UUID and
+directory hash seed unless explicit options override them. Given the same input
+tree, partition size, source date, formatter options, and Bakery image, it
+produces a byte-for-byte identical ext4 filesystem image.
 
 Bakery stores intermediate layer trees as PAX tar archives. These archives
 preserve deployment-relevant filesystem metadata, including ownership,
