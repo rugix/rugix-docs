@@ -113,11 +113,11 @@ the following source forms:
 
 ```toml
 inputs.rootfs = { input = "rootfs" }
-inputs.layout = { file = "layouts/device.toml" }
+inputs.layout = { path = "layouts/device.toml" }
 inputs.kernel = { rule = { node = "kernel", output = "kernel" } }
 ```
 
-`input` refers to the enclosing composition's input. `file` resolves a path
+`input` refers to the enclosing composition's input. `path` resolves a path
 relative to the repository containing the invocation and accepts a file or
 directory. `rule` references a named node's output. An omitted input binding
 forwards an enclosing input of the same name.
@@ -139,7 +139,9 @@ kind. The selected path, after resolving symlinks, must remain inside the source
 directory. Selections can also use a rule output as their source. A consuming command's input identity
 tracks the selected artifact, so unrelated files do not invalidate that command.
 
-A `tree` binding assembles artifacts at explicitly named paths. For example,
+A `tree` binding defines a directory inline by mapping destination paths to
+artifact sources. Bakery assembles a new directory without modifying the sources.
+For example,
 this binding places boot artifacts and a repository configuration file into a
 directory:
 
@@ -150,7 +152,7 @@ uses = "core/image-fat"
 [execution.rules.boot-filesystem.inputs.tree.tree]
 "boot.img" = { rule = { node = "boot-image", output = "image" } }
 "boot.sig" = { rule = { node = "signature", output = "signature" } }
-"config/device.txt" = { file = "config/device.txt" }
+"config/device.txt" = { path = "config/device.txt" }
 ```
 
 Each destination accepts a file or directory source. Destinations must be
@@ -383,7 +385,7 @@ An invocation file can also run without building a layer. For example:
 
 ```toml title="make-root.toml"
 uses = "core/image-ext4"
-inputs.tree = { file = "prepared-root" }
+inputs.tree = { path = "prepared-root" }
 ```
 
 ```shell

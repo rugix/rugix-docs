@@ -82,15 +82,19 @@ application = "file"
 [parameters.profile]
 default = "release"
 
-[rules.application]
+[rules.build-application]
 uses = "build-app"
-inputs.source = { file = "application" }
+inputs.source = { path = "application" }
 parameters.architecture = { parameter = "architecture" }
 parameters.profile = { parameter = "profile" }
 
 [input-defaults]
-application = { rule = { node = "application", output = "binary" } }
+application = { rule = { node = "build-application", output = "binary" } }
 ```
+
+The `application` input is a file consumed by the recipe. The `build-application`
+node invokes the `build-app` rule, and `input-defaults.application` binds its
+`binary` output to that input. Node names and input names are independent.
 
 In this example, the recipe's repository also defines a `build-app` rule.
 That rule accepts a `source` directory, `architecture` and `profile` parameters,
@@ -126,7 +130,7 @@ To install a prebuilt application, add an input binding to the layer:
 
 ```toml
 [inputs."vendor/install-app"]
-application = { file = "prebuilt/application" }
+application = { path = "prebuilt/application" }
 ```
 
 This path resolves from the layer's repository. For this recipe, the binding

@@ -109,13 +109,13 @@ The layer defines the prerequisite rule and connects its output to the recipe:
 parent = "core/debian-bookworm"
 recipes = ["install-app"]
 
-[rules.application]
+[rules.build-application]
 uses = "vendor/build-app"
-inputs.source = { file = "application" }
+inputs.source = { path = "application" }
 parameters.architecture = { parameter = "architecture" }
 
 [inputs.install-app]
-application = { rule = { node = "application", output = "binary" } }
+application = { rule = { node = "build-application", output = "binary" } }
 ```
 
 Here, `vendor/build-app` declares a `source` directory input and an `architecture`

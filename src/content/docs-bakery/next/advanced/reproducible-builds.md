@@ -41,7 +41,7 @@ For example:
 
 ```toml
 uses = "core/image-ext4"
-inputs.tree = { file = "prepared-root" }
+inputs.tree = { path = "prepared-root" }
 parameters.source-date-epoch = 1700000000
 ```
 
