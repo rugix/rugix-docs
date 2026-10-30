@@ -317,8 +317,11 @@ that consumes the same partition artifacts.
 
 The existing `image` and `options` settings configure this pipeline. They retain
 the target layouts, boot flows, and root filesystem policies, including
-journal-free ext4 root partitions. Filesystem capacity comes from each resolved
-partition; the standalone filesystem rules still default to automatic sizing.
+journal-free ext4 root partitions. Disabling the journal keeps read-only mounts
+from modifying the lower filesystem used by Rugix's overlay and static deltas.
+Ext4 UUIDs and directory hash seeds default to values derived from the input tree.
+Filesystem capacity comes from each resolved partition; the standalone
+filesystem rules still default to automatic sizing.
 
 BSP layouts can be supplied by layer recipes. Bakery expands the dependent
 portion of the graph once those artifacts exist. Its rules then execute through
