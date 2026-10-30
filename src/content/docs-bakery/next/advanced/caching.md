@@ -3,7 +3,14 @@
 
 # Caching
 
-Rugix Bakery caches layers and build rule outputs, reusing them while their tracked inputs remain unchanged. In addition to the builtin layer caching, Rugix Bakery uses a global cache available in recipes via the `RUGIX_CACHE_DIR` environment variable. This cache can be used to cache downloaded files or other data. Note that is a global cache shared among all recipes and layers.
+Bakery's build engine caches successful node outputs, including layer builds and
+command rules. Both use the same result cache and dependency tracking.
+
+A cached result contains a node's named output artifacts. Bakery reuses it when
+its implementation, parameters, runtime, and tracked inputs are unchanged.
+Registered project dependencies are checked before reuse. New results become
+available only after execution and output validation succeed. Failed builds
+leave previous successful results intact.
 
 To clean all caches, run:
 
@@ -21,9 +28,12 @@ configuration determine the recipe schedule and artifact bindings used by that
 identity. Recipe priority determines execution order; equal priorities use a
 stable repository and recipe name order.
 
-An explicit `bake layer --source-date` or `bake image --source-date` value also
-contributes to the layer identity. Changing it rebuilds affected layers. Without
-an explicit date, a reused layer retains the source date from its original build.
+The effective source epoch also contributes to every layer identity and to
+command identities unless a command declares `uses-source-date-epoch = false`.
+Bakery uses `--source-date`, then `SOURCE_DATE_EPOCH`, then a fixed default of
+`0`. Changing the effective value rebuilds consumers. See
+[Reproducible Builds](/docs/bakery/next/advanced/reproducible-builds/#source-date)
+for source-date selection and command opt-outs.
 
 Recipes may also read project files that are selected during execution.
 Register those paths so Bakery can check them before reusing a layer:
@@ -54,3 +64,10 @@ if [ -f "$RUGIX_PROJECT_DIR/.env" ]; then
     . "$RUGIX_PROJECT_DIR/.env"
 fi
 ```
+
+## Shared Download Cache
+
+Recipes can use `RUGIX_CACHE_DIR` to retain downloads and other reusable data.
+This directory is shared among recipes and layers. Its contents are separate
+from the build engine's result cache and do not automatically participate in
+cache invalidation.

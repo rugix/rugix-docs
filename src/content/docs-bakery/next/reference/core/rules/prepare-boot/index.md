@@ -17,10 +17,9 @@ Patch an initialized Rugix boot tree against resolved disk geometry.
 
 ## Parameters
 
-| Name                | Default     | Description                                                                   |
-| ------------------- | ----------- | ----------------------------------------------------------------------------- |
-| `target`            | `"unknown"` | Rugix boot target: rpi-tryboot, rpi-uboot, generic-grub-efi, bsp, or unknown. |
-| `source-date-epoch` | `0`         | Upper bound for generated boot timestamps, as Unix seconds.                   |
+| Name     | Default     | Description                                                                   |
+| -------- | ----------- | ----------------------------------------------------------------------------- |
+| `target` | `"unknown"` | Rugix boot target: rpi-tryboot, rpi-uboot, generic-grub-efi, bsp, or unknown. |
 
 ## Outputs
 
@@ -30,10 +29,11 @@ Patch an initialized Rugix boot tree against resolved disk geometry.
 
 ## Execution
 
-| Setting      | Value   |
-| ------------ | ------- |
-| Environment  | Bakery  |
-| Output cache | Allowed |
+| Setting      | Value    |
+| ------------ | -------- |
+| Environment  | Bakery   |
+| Source epoch | Consumed |
+| Output cache | Allowed  |
 
 Patch an initialized Rugix boot tree against an existing disk's partition table.
 The rule reads the disk and copies the boot tree before modifying it.
@@ -45,7 +45,6 @@ uses = "core/prepare-boot"
 inputs.image = { path = "layout.img" }
 inputs.boot = { path = "initialized-boot" }
 parameters.target = "rpi-tryboot"
-parameters.source-date-epoch = 1792972800
 ```
 
 The predefined boot flows use root partition 5 for MBR and partition 4 for GPT.

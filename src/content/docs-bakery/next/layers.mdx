@@ -1,4 +1,5 @@
 ---
+order: 40
 ---
 
 import { SchemaViewer } from "@silitics/astro-schema-viewer"
@@ -91,8 +92,8 @@ inputs. The layer can bind each input to an artifact, and recipes can also suppl
 For example:
 
 ```toml title="recipes/install-app/recipe.toml"
-[inputs]
-application = "file"
+[inputs.application]
+kind = "file"
 ```
 
 A `run` or `install` step reads those inputs through `RECIPE_INPUTS_DIR`:
@@ -159,7 +160,7 @@ Discover definitions without building them:
 ```
 
 Inspection shows the selected definition and its documentation. Add `--json` to export their metadata and adjacent
-Markdown. See [definition catalogs](/docs/bakery/next/definition-catalogs/) for
+Markdown. See [definition catalogs](/docs/bakery/next/reference/definition-catalogs/) for
 the shared documentation format and reference generator.
 
 ## Configuration Reference

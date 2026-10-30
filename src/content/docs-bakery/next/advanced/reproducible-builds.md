@@ -13,37 +13,57 @@ We aim to enable reproducible builds of Rugix itself as well as of system images
 
 ## Source Date
 
-Rugix Bakery supports `--source-date` to pin a build's source date to an RFC 3339
-timestamp. When omitted, layer recipes use their build time. Release preparation
-uses the completed layer archive's modification time, so reusing that layer
-retains its source date and default release version. Pin `--source-date` when
-reproducing a release across independent layer builds.
+The source date is a fixed timestamp that build tools use when creating artifacts.
+Bakery resolves it once per build, in this order:
 
-Rugix Bakery clamps file modification times to the source date.
-The source date is also used to set the [`SOURCE_DATE_EPOCH` environment variable](https://reproducible-builds.org/docs/source-date-epoch/) in the build environment.
-Bakery also passes this value to filesystem construction tools so that creation
-timestamps do not depend on the time of the build.
+1. `--source-date`, as an RFC 3339 timestamp.
+2. The `SOURCE_DATE_EPOCH` environment variable, as nonnegative Unix seconds.
+3. `0`, the Unix epoch.
+
+All `bake` commands accept `--source-date`. For example:
+
+```shell
+./run-bakery bake image device --source-date 2024-01-01T00:00:00Z
+SOURCE_DATE_EPOCH=1704067200 ./run-bakery bake rule filesystem.toml build/filesystem
+```
+
+Bakery carries this value through nested graphs and layer builds. Recipes and
+command rules receive it as
+[`SOURCE_DATE_EPOCH`](https://reproducible-builds.org/docs/source-date-epoch/).
+The core filesystem and archive rules use it to fix creation timestamps and
+clamp modification times. Release metadata and software inventories use the same
+date. This also makes the default release version deterministic; specify release
+information when building a named release.
+
+A fixed date alone does not make arbitrary commands reproducible. Rules must use
+tools and options that honor it. Pin distribution inputs and tool versions too.
 
 ## Build Rules
 
 The core artifact rules produce reproducible outputs with the same input bytes
-and filesystem metadata, parameters, and Bakery container image.
+and filesystem metadata, parameters, effective source epoch, and Bakery container image.
 Pin the image by digest to keep the tool versions fixed. A cache hit alone does
 not demonstrate reproducibility: the same rule must also produce identical
 bytes when executed again with a fresh cache.
 
-Filesystem rules expose `source-date-epoch` as a Unix timestamp, defaulting to
-zero. Custom compositions must pass this parameter explicitly when they need
-a release-specific date. The predefined system pipeline sets filesystem
-timestamps from its build context.
+Command rules consume the source epoch by default. Its value participates in
+their cache identity, so changing it rebuilds affected commands. Graphs inherit
+the epoch automatically and need no forwarding parameters.
 
-For example:
+A rule whose outputs are independent of the epoch can opt out. For example,
+this execution fragment opts out for a compilation rule:
 
 ```toml
-uses = "core/image-ext4"
-inputs.tree = { path = "prepared-root" }
-parameters.source-date-epoch = 1700000000
+[execution]
+type = "run"
+command = ["/run/rugix/bakery/work/rule/compile.sh"]
+uses-source-date-epoch = false
 ```
+
+Bakery removes `SOURCE_DATE_EPOCH` from that command's environment, including any
+Dockerfile default, and excludes the value from its cache identity. Changes to
+other inputs still invalidate the cached result. Layer builds always consume the
+source epoch because recipes and layer archives use it.
 
 | Building Block       | Reproducibility Controls                                                                                    |
 | -------------------- | ----------------------------------------------------------------------------------------------------------- |

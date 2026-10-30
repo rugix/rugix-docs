@@ -223,6 +223,12 @@ function page(kind, item) {
           [
             ["Environment", env],
             [
+              "Source epoch",
+              execution["uses-source-date-epoch"] === false
+                ? "Ignored"
+                : "Consumed",
+            ],
+            [
               "Output cache",
               execution.cache === false ? "Disabled" : "Allowed",
             ],
@@ -250,8 +256,8 @@ function inputs(definition) {
         ["Name", "Kind", "Description"],
         ports.map(([name, port]) => [
           code(name),
-          typeof port === "string" ? port : port.kind,
-          typeof port === "string" ? "" : (port.description ?? ""),
+          port.kind,
+          port.description ?? "",
         ]),
       )
     : "No artifact inputs.\n\n"

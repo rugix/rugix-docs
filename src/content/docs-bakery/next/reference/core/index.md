@@ -1,4 +1,5 @@
 ---
+order: 20
 title: Core Reference
 description: Reusable rules, recipes, and base layers supplied with Rugix Bakery.
 ---
@@ -17,4 +18,4 @@ turn that filesystem into a device-specific image and update bundle. Partition
 roles, signing policy, and release layouts belong to those compositions.
 
 Each reference page lists the definition's interface and its documented behavior.
-The pages are [generated from repository catalogs](/docs/bakery/next/definition-catalogs/).
+The pages are [generated from repository catalogs](/docs/bakery/next/reference/definition-catalogs/).

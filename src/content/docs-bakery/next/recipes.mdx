@@ -1,4 +1,5 @@
 ---
+order: 50
 ---
 
 import { SchemaViewer } from "@silitics/astro-schema-viewer"
@@ -69,15 +70,15 @@ Parameter-file values take precedence over layer and mixin parameters, which tak
 ## Artifact Inputs
 
 A recipe can declare artifacts that its steps consume, such as a compiled
-application or generated configuration. Declare each input's name and kind in
-`inputs`. A layer can [supply these artifacts](/docs/bakery/next/layers#recipe-artifact-inputs),
+application or generated configuration. Declare each input in `inputs` as an
+object with a required `kind` and optional `description`. A layer can [supply these artifacts](/docs/bakery/next/layers#recipe-artifact-inputs),
 or the recipe can define default bindings and prerequisite rules itself.
 
 For example, this installation recipe builds an application by default:
 
 ```toml title="recipes/install-app/recipe.toml"
-[inputs]
-application = "file"
+[inputs.application]
+kind = "file"
 
 [parameters.profile]
 default = "release"
@@ -306,7 +307,7 @@ Discover definitions without building them:
 ```
 
 Inspection shows the selected definition and its documentation. Add `--json` to export their metadata and adjacent
-Markdown. See [definition catalogs](/docs/bakery/next/definition-catalogs/) for
+Markdown. See [definition catalogs](/docs/bakery/next/reference/definition-catalogs/) for
 the shared documentation format and reference generator.
 
 ## Configuration Reference

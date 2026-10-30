@@ -1,5 +1,6 @@
 ---
-title: Repository Build Rules
+order: 60
+title: Build Rules
 ---
 
 Build rules turn files and directories into release artifacts. A rule can create a
@@ -24,11 +25,14 @@ a command, builds a layer, or composes other rules into a graph. Commands use Ba
 default. An optional `env` selects a [tooling environment](/docs/bakery/next/envs) for commands
 that need additional or different tools.
 
+Each input definition is an object with a required `kind` (`file` or `directory`)
+and an optional `description`.
+
 For example, this rule copies a root filesystem into an ext4 image:
 
 ```toml title="rules/root-image/rule.toml"
-[inputs]
-rootfs = "directory"
+[inputs.rootfs]
+kind = "directory"
 
 [parameters.size]
 default = 1073741824
@@ -78,8 +82,8 @@ this composition exports an ext4 image and a metadata-preserving archive of
 the same filesystem tree:
 
 ```toml title="rules/root-artifacts/rule.toml"
-[inputs]
-rootfs = "directory"
+[inputs.rootfs]
+kind = "directory"
 
 [execution]
 type = "graph"
@@ -179,8 +183,8 @@ env = "signing"
 command = ["openssl", "dgst", "-sha256", "-sign", "/run/rugix/bakery/work/secrets/key",
            "-out", "/run/rugix/bakery/work/outputs/signature", "/run/rugix/bakery/work/inputs/image"]
 
-[inputs]
-image = "file"
+[inputs.image]
+kind = "file"
 
 [execution.outputs.signature]
 kind = "file"
@@ -230,8 +234,8 @@ These become available to that layer's recipe bindings and prerequisite rules.
 For example, this wrapper requires a compiled application artifact:
 
 ```toml title="rules/device-rootfs/rule.toml"
-[inputs]
-application = "file"
+[inputs.application]
+kind = "file"
 
 [execution]
 type = "layer"
@@ -330,12 +334,12 @@ portion of the graph once those artifacts exist. Its rules then execute through
 the same cache and environment handling as other graph nodes.
 
 Changing a layout, source date, release identity, or rule input rebuilds the
-affected artifacts. Without `--source-date`, the completed layer archive's
-modification time supplies the source date and default release version. Reusing
-that layer retains its release date. Use `--source-date` and explicit release
-information to reproduce metadata across independent layer builds. Disk and partition IDs are derived
-from the layout and resolved geometry. Software inventories use the source date
-and content-derived document IDs.
+affected artifacts. Bakery resolves one source date for layers, assembly rules,
+and release metadata. It uses `--source-date`, then `SOURCE_DATE_EPOCH`, then
+`0`. Use an explicit source date and release information when reproducing a named
+release. Disk and partition IDs are derived from the layout and resolved
+geometry. Software inventories use the source date and content-derived document
+IDs.
 
 ## Assemble a System
 
@@ -412,14 +416,30 @@ For example, inspect the ext4 filesystem interface without building an image:
 ```
 
 Rules can carry input, output, and parameter descriptions alongside their
-implementations. See [definition catalogs](/docs/bakery/next/definition-catalogs/)
+implementations. See [definition catalogs](/docs/bakery/next/reference/definition-catalogs/)
 for the metadata format and JSON export used to generate reference pages.
+
+## Source Epoch
+
+Commands receive `SOURCE_DATE_EPOCH` by default. Bakery resolves one value for
+the build and carries it through nested graphs, so compositions need no
+source-date parameters. The value participates in command cache identities.
+
+Set `execution.uses-source-date-epoch = false` only when a command's outputs are
+independent of the epoch. Bakery then removes the variable from its environment
+and excludes it from that command's cache identity. Layers always consume it.
+See [Reproducible Builds](/docs/bakery/next/advanced/reproducible-builds/#source-date)
+for defaults and examples.
 
 ## Caching and Execution
 
-Bakery caches successful rule outputs by their execution runtime, rule
-implementation directory, parameter values, input contents and metadata, and
-registered project dependencies.
+The build engine caches successful command and layer outputs through one result
+cache. Command identities include their execution runtime, rule implementation
+directory, parameters, input contents and metadata, and registered project
+dependencies. Layer identities include the source epoch, resolved recipe schedule, recipe
+implementations and parameters, parent artifacts, and recipe input artifacts.
+See [Caching](/docs/bakery/next/advanced/caching) for layer source dates and
+project dependency registration.
 For commands without `env`, the runtime identity includes Bakery's image ID and
 executable. The standard `run-bakery` launcher supplies the resolved image ID;
 without an immutable image ID, these commands run without output caching.
@@ -431,7 +451,10 @@ symlinks, and device nodes contribute to the cache key. Access and change times 
 Use `cache = false` in a run implementation for commands that must always execute.
 Sensitive inputs participate through cache-local keyed fingerprints. A failed command or missing output
 does not publish a successful cache entry. Commands execute serially, and a
-project lock protects the rule cache.
+project lock protects the result cache.
+
+Commands must finish their work before exiting. Bakery terminates surviving
+background processes before publishing command outputs.
 
 Rules must bind their input artifacts or register the project files they depend on. Network responses, wall-clock time,
 ambient environment variables, and other external state are not tracked. Pin
@@ -441,3 +464,9 @@ Bakery's surrounding namespaces.
 
 For a recipe installing a Debian package built from a Cargo application, see the
 [layer input example](https://github.com/rugix/rugix-bakery/tree/main/examples/layer-inputs).
+
+## Configuration Reference
+
+See the [rule definition schema](/docs/bakery/next/reference/schemas#rule-definitions) for
+`rule.toml` fields and the [rule invocation schema](/docs/bakery/next/reference/schemas#rule-invocations)
+for `uses`, input, parameter, and secret bindings.

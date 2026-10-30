@@ -23,7 +23,7 @@ test("repository catalogs generate reference pages and detect or remove stale ge
           definition: {
             description: "Compose artifacts.",
             inputs: {
-              source: "file",
+              source: { kind: "file" },
               assets: { kind: "directory", description: "Assets | resources" },
             },
             parameters: {
@@ -58,7 +58,7 @@ test("repository catalogs generate reference pages and detect or remove stale ge
             inputs: {
               application: { kind: "file", description: "Application binary." },
             },
-            "input-defaults": { application: { file: "prebuilt" } },
+            "input-defaults": { application: { path: "prebuilt" } },
             dependencies: ["prepare"],
             priority: 100,
           },

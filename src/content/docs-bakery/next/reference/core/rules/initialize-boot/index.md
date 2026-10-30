@@ -16,11 +16,10 @@ Install Rugix boot-flow files into boot and configuration trees.
 
 ## Parameters
 
-| Name                | Default     | Description                                                                   |
-| ------------------- | ----------- | ----------------------------------------------------------------------------- |
-| `target`            | `"unknown"` | Rugix boot target: rpi-tryboot, rpi-uboot, generic-grub-efi, bsp, or unknown. |
-| `architecture`      | `"amd64"`   | Target architecture.                                                          |
-| `source-date-epoch` | `0`         | Upper bound for generated boot timestamps, as Unix seconds.                   |
+| Name           | Default     | Description                                                                   |
+| -------------- | ----------- | ----------------------------------------------------------------------------- |
+| `target`       | `"unknown"` | Rugix boot target: rpi-tryboot, rpi-uboot, generic-grub-efi, bsp, or unknown. |
+| `architecture` | `"amd64"`   | Target architecture.                                                          |
 
 ## Outputs
 
@@ -31,10 +30,11 @@ Install Rugix boot-flow files into boot and configuration trees.
 
 ## Execution
 
-| Setting      | Value   |
-| ------------ | ------- |
-| Environment  | Bakery  |
-| Output cache | Allowed |
+| Setting      | Value    |
+| ------------ | -------- |
+| Environment  | Bakery   |
+| Source epoch | Consumed |
+| Output cache | Allowed  |
 
 Initialize one of Rugix's predefined boot flows before sizing or creating its
 filesystems. The rule copies both input trees, installs bootloader or firmware
@@ -48,7 +48,6 @@ inputs.boot = { path = "prepared-boot" }
 inputs.config = { path = "prepared-config" }
 parameters.target = "generic-grub-efi"
 parameters.architecture = "amd64"
-parameters.source-date-epoch = 1792972800
 ```
 
 The supported boot flows are GRUB EFI, Raspberry Pi tryboot, and Raspberry Pi

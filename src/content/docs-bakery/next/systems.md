@@ -1,4 +1,5 @@
 ---
+order: 30
 ---
 
 # Systems
@@ -21,9 +22,9 @@ target = "generic-grub-efi"
 Each system has a _name_ (`customized-arm64` in the example), is based on a layer providing the root filesystem and Linux kernel for that system (`customized` in the example), and has a concrete CPU architecture (`arm64` in the example).
 The `target` setting is optional and used to select defaults for supported devices (see below).
 
-You can built different types of artifacts for a given system.
+You can build different types of artifacts for a given system.
 Currently, Rugix Bakery can build full system images and Rugix Ctrl update bundles.
-Generally, artifacts are build with a command of the form:
+Generally, artifacts are built with a command of the form:
 
 ```shell
 ./run-bakery bake <type> <system>
@@ -39,11 +40,87 @@ For instance, to build an image for a given system, run:
 
 ## Repository Build Rules
 
-For a custom image pipeline, select a [repository build rule](/docs/bakery/next/build-rules) with
-`build.uses`. Bakery builds the layer as usual, then passes its root filesystem
-and other artifacts to that rule. The repository controls boot packaging, signing,
-disk assembly, and update bundle creation. Use the rule's parameters and inputs
-instead of the `target`, `image`, and `options` settings described below.
+A system's `build.uses` setting selects a [build rule](/docs/bakery/next/build-rules) as its
+image pipeline. Bakery builds the layer and prepares release metadata, then
+supplies its root filesystem and other artifacts to that rule. The rule can
+compose filesystem creation, boot packaging, signing, disk assembly, and update
+bundle creation.
+
+For example, this project builds a Debian root filesystem into an ext4 image
+and a tar archive. First, define a layer that sets the hostname:
+
+```toml title="layers/demo.toml"
+parent = "core/debian-bookworm"
+recipes = ["core/set-hostname"]
+
+[parameters."core/set-hostname"]
+hostname = "demo"
+```
+
+Define a reusable pipeline with a `rootfs` input and two output artifacts:
+
+```toml title="rules/filesystem-release/rule.toml"
+[inputs.rootfs]
+kind = "directory"
+
+[parameters.label]
+default = "system"
+
+[execution]
+type = "graph"
+
+[execution.rules.filesystem]
+uses = "core/image-ext4"
+inputs.tree = { input = "rootfs" }
+parameters.label = { parameter = "label" }
+
+[execution.rules.archive]
+uses = "core/archive-tree"
+inputs.tree = { input = "rootfs" }
+
+[execution.outputs]
+image = { rule = { node = "filesystem", output = "image" } }
+"rootfs.tar" = { rule = { node = "archive", output = "archive" } }
+```
+
+Select that pipeline for a system:
+
+```toml title="rugix-bakery.toml"
+[systems.demo]
+layer = "demo"
+architecture = "amd64"
+
+[systems.demo.build]
+uses = "filesystem-release"
+parameters.label = "demo-root"
+```
+
+Here, `uses` names the rule directory. Bakery supplies the layer's `rootfs`
+artifact to the rule's input of the same name. The composition connects it to
+both core rules. The `label` parameter sets the ext4 volume label; the image
+sizes itself from the filesystem tree.
+
+Build the artifacts with:
+
+```shell
+./run-bakery bake image demo
+```
+
+The pipeline's `image` output becomes `build/demo/system.img`, and its
+`rootfs.tar` output becomes `build/demo/rootfs.tar`. This example produces a
+filesystem image without a partition table, kernel, or bootloader. A bootable
+pipeline must also prepare those artifacts. A pipeline can export a `bundle`
+file for `bake bundle`; this example does not create one.
+
+The rule can also live in a dependency repository. After adding that repository
+to the project, select it with a qualified name such as
+`uses = "vendor/filesystem-release"`. The project still supplies the layer;
+the repository supplies the reusable pipeline.
+
+See [Assemble a System](/docs/bakery/next/build-rules#assemble-a-system) for all supplied
+artifacts and output conventions. Configure a repository pipeline through its
+inputs and parameters. Combining `build` with the predefined pipeline's
+`target`, `image`, or `options` settings is rejected.
 
 ## Targets
 

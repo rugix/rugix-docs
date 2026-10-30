@@ -1,4 +1,5 @@
 ---
+order: 30
 title: Definition Catalogs
 description: Inspect repository building blocks and generate reference documentation.
 ---
@@ -65,8 +66,8 @@ path = "application.squashfs"
 description = "Compressed application filesystem."
 ```
 
-Recipes use the same parameter and artifact-input descriptions. The compact input
-notation, such as `tree = "directory"`, remains available. Descriptions do not
+Recipes use the same parameter and artifact-input definitions. Each input is an
+object with a required `kind` and an optional `description`. Descriptions do not
 change input requirements or parameter values.
 
 Keep longer explanations and examples beside the definition:
@@ -123,9 +124,9 @@ array. Each entry contains a `name`, a typed `definition`, and optional Markdown
 ```
 
 A parameter with no `default` is required. Defaults preserve their JSON types,
-including `false`, `0`, and empty strings. Artifact inputs retain either their
-compact string notation or their documented object notation. Rule execution
-definitions remain available, including graph output bindings.
+including `false`, `0`, and empty strings. Artifact inputs contain their required
+`kind` and any optional `description`. Rule execution definitions remain
+available, including graph output bindings.
 
 Exports describe the selected definitions. They do not expand inherited recipes,
 resolve a build graph, download imported layer images, or validate that a referenced

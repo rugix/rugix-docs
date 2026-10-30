@@ -23,10 +23,11 @@ Create an indexed Rugix update bundle from a manifest and payloads.
 
 ## Execution
 
-| Setting      | Value   |
-| ------------ | ------- |
-| Environment  | Bakery  |
-| Output cache | Allowed |
+| Setting      | Value    |
+| ------------ | -------- |
+| Environment  | Bakery   |
+| Source epoch | Consumed |
+| Output cache | Allowed  |
 
 ## Behavior
 

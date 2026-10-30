@@ -61,7 +61,7 @@ Markdown explanations. It removes obsolete generated pages for the supplied
 catalog kinds and preserves authored pages. The site build uses the committed
 pages and does not require a Bakery installation.
 
-See the [catalog guide](src/content/docs-bakery/next/definition-catalogs.md) for
+See the [catalog guide](src/content/docs-bakery/next/reference/definition-catalogs.md) for
 metadata conventions and generation for other repositories.
 
 ## Site Announcements

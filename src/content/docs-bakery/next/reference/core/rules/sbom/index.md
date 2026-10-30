@@ -24,10 +24,11 @@ Scan a filesystem tree and produce SPDX and CycloneDX software inventories.
 
 ## Execution
 
-| Setting      | Value   |
-| ------------ | ------- |
-| Environment  | Bakery  |
-| Output cache | Allowed |
+| Setting      | Value    |
+| ------------ | -------- |
+| Environment  | Bakery   |
+| Source epoch | Consumed |
+| Output cache | Allowed  |
 
 Scan a root filesystem with Syft and emit SPDX and CycloneDX software
 inventories. The build context supplies the system name, release version, and

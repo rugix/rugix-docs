@@ -15,15 +15,14 @@ Create an ext4 image from a directory tree.
 
 ## Parameters
 
-| Name                | Default | Description                                                                                                           |
-| ------------------- | ------- | --------------------------------------------------------------------------------------------------------------------- |
-| `size`              | `0`     | Capacity in bytes. Zero sizes the image from the tree and shrinks it after population.                                |
-| `label`             | `""`    | Filesystem label. Empty leaves the label unset.                                                                       |
-| `uuid`              | `""`    | Filesystem UUID. Empty derives a stable UUID from the normalized input archive.                                       |
-| `block-size`        | `4096`  | Filesystem block size in bytes.                                                                                       |
-| `reserved-percent`  | `0`     | Percentage of blocks reserved for the superuser.                                                                      |
-| `mkfs-options`      | `""`    | Additional mkfs.ext4 arguments, separated with shell-style quoting.                                                   |
-| `source-date-epoch` | `0`     | Filesystem creation, access, and change time and upper bound for modification times, as Unix seconds (0..4294967295). |
+| Name               | Default | Description                                                                            |
+| ------------------ | ------- | -------------------------------------------------------------------------------------- |
+| `size`             | `0`     | Capacity in bytes. Zero sizes the image from the tree and shrinks it after population. |
+| `label`            | `""`    | Filesystem label. Empty leaves the label unset.                                        |
+| `uuid`             | `""`    | Filesystem UUID. Empty derives a stable UUID from the normalized input archive.        |
+| `block-size`       | `4096`  | Filesystem block size in bytes.                                                        |
+| `reserved-percent` | `0`     | Percentage of blocks reserved for the superuser.                                       |
+| `mkfs-options`     | `""`    | Additional mkfs.ext4 arguments, separated with shell-style quoting.                    |
 
 ## Outputs
 
@@ -33,10 +32,11 @@ Create an ext4 image from a directory tree.
 
 ## Execution
 
-| Setting      | Value   |
-| ------------ | ------- |
-| Environment  | Bakery  |
-| Output cache | Allowed |
+| Setting      | Value    |
+| ------------ | -------- |
+| Environment  | Bakery   |
+| Source epoch | Consumed |
+| Output cache | Allowed  |
 
 ## Behavior
 
@@ -49,10 +49,10 @@ tree with normalized timestamps. Set `uuid` when another component needs a
 particular filesystem identity. The rule does not select a root partition, boot
 scheme, or update slot.
 
-`source-date-epoch` fixes filesystem creation, access, and change times and
-clamps file modification times. It defaults to zero. Identical tree metadata,
-parameters, and Bakery tooling produce identical image bytes, including with
-automatic sizing.
+The build source epoch fixes filesystem creation, access, and change times and
+clamps file modification times. It defaults to zero. Identical input contents
+and metadata, parameters, source epoch, and Bakery tooling produce identical
+image bytes, including with automatic sizing.
 
 Additional `mkfs-options` use shell-style quoting to separate arguments. Bakery
 does not perform shell expansion. Options that request random values or current
@@ -71,3 +71,6 @@ parameters.label = "system"
 Save this invocation as `root.toml` and run
 `./run-bakery bake rule root.toml build/root`. The image appears at
 `build/root/image`.
+
+For this rule, the source epoch must be between `0` and `4294967295` Unix
+seconds (inclusive), as required by the filesystem tooling.

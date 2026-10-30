@@ -15,14 +15,13 @@ Create a FAT image from a directory tree.
 
 ## Parameters
 
-| Name                  | Default | Description                                                                                                           |
-| --------------------- | ------- | --------------------------------------------------------------------------------------------------------------------- |
-| `size`                | `0`     | Capacity in bytes. Zero sizes the image from the tree, including FAT32 overhead.                                      |
-| `label`               | `""`    | Volume label. Empty uses the formatter's default.                                                                     |
-| `volume-id`           | `""`    | Eight hexadecimal digits. Empty derives a stable ID from tree paths and file contents.                                |
-| `sectors-per-cluster` | `0`     | Sectors per cluster. Zero chooses a cluster size automatically.                                                       |
-| `mkfs-options`        | `""`    | Additional mkfs.fat arguments, separated with shell-style quoting.                                                    |
-| `source-date-epoch`   | `0`     | Timestamp for copied file and directory entries, as Unix seconds (0..4294967295). FAT timestamps cannot precede 1980. |
+| Name                  | Default | Description                                                                            |
+| --------------------- | ------- | -------------------------------------------------------------------------------------- |
+| `size`                | `0`     | Capacity in bytes. Zero sizes the image from the tree, including FAT32 overhead.       |
+| `label`               | `""`    | Volume label. Empty uses the formatter's default.                                      |
+| `volume-id`           | `""`    | Eight hexadecimal digits. Empty derives a stable ID from tree paths and file contents. |
+| `sectors-per-cluster` | `0`     | Sectors per cluster. Zero chooses a cluster size automatically.                        |
+| `mkfs-options`        | `""`    | Additional mkfs.fat arguments, separated with shell-style quoting.                     |
 
 ## Outputs
 
@@ -32,10 +31,11 @@ Create a FAT image from a directory tree.
 
 ## Execution
 
-| Setting      | Value   |
-| ------------ | ------- |
-| Environment  | Bakery  |
-| Output cache | Allowed |
+| Setting      | Value    |
+| ------------ | -------- |
+| Environment  | Bakery   |
+| Source epoch | Consumed |
+| Output cache | Allowed  |
 
 ## Behavior
 
@@ -51,10 +51,10 @@ An explicit capacity is useful for fixed boot partitions. The rule fails if the
 tree does not fit. The default volume ID comes from tree paths and file
 contents; set `volume-id` when another component needs a particular ID.
 
-The rule formats with invariant metadata and copies entries in sorted order.
-`source-date-epoch` fixes copied-entry timestamps, using UTC. It defaults to
-zero; FAT timestamps cannot precede 1980. Identical inputs, parameters, and
-Bakery tooling produce identical image bytes.
+The rule formats with invariant metadata and copies entries in sorted order. The
+build source epoch fixes copied-entry timestamps, using UTC. It defaults to
+zero; FAT timestamps cannot precede 1980. Identical inputs, parameters, source
+epoch, and Bakery tooling produce identical image bytes.
 
 Additional `mkfs-options` use shell-style quoting to separate arguments. Bakery
 does not perform shell expansion. Options that request random values or current
@@ -74,3 +74,6 @@ parameters.volume-id = "1234abcd"
 Save the invocation as `build-rule.toml` in the project. Run
 `./run-bakery bake rule build-rule.toml build/result`; exported artifacts appear
 under their output names in `build/result`.
+
+For this rule, the source epoch must be between `0` and `4294967295` Unix
+seconds (inclusive), as required by the filesystem tooling.

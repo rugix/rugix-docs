@@ -29,10 +29,11 @@ Resolve a Bakery image layout into an unpopulated disk image.
 
 ## Execution
 
-| Setting      | Value   |
-| ------------ | ------- |
-| Environment  | Bakery  |
-| Output cache | Allowed |
+| Setting      | Value    |
+| ------------ | -------- |
+| Environment  | Bakery   |
+| Source epoch | Consumed |
+| Output cache | Allowed  |
 
 Resolve a Bakery `ImageLayout` into an unpopulated disk. This rule supports GPT,
 MBR with extended partitions, and raw firmware written before partitions. It
