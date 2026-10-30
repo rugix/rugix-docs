@@ -10,10 +10,10 @@ Scan a filesystem tree and produce SPDX and CycloneDX software inventories.
 
 ## Inputs
 
-| Name      | Kind      | Description                                                  |
-| --------- | --------- | ------------------------------------------------------------ |
-| `tree`    | directory | Root filesystem tree to scan.                                |
-| `context` | file      | Bakery build context containing system and release identity. |
+| Name      | Kind      | Description                                                        |
+| --------- | --------- | ------------------------------------------------------------------ |
+| `tree`    | directory | Root filesystem tree to scan.                                      |
+| `context` | file      | Rugix Bakery build context containing system and release identity. |
 
 ## Outputs
 
@@ -24,11 +24,11 @@ Scan a filesystem tree and produce SPDX and CycloneDX software inventories.
 
 ## Execution
 
-| Setting      | Value    |
-| ------------ | -------- |
-| Environment  | Bakery   |
-| Source epoch | Consumed |
-| Output cache | Allowed  |
+| Setting      | Value        |
+| ------------ | ------------ |
+| Environment  | Rugix Bakery |
+| Source epoch | Consumed     |
+| Output cache | Allowed      |
 
 Scan a root filesystem with Syft and emit SPDX and CycloneDX software
 inventories. The build context supplies the system name, release version, and
@@ -49,5 +49,5 @@ inputs.context = { input = "context" }
 
 Document creation times use the source date. Document identifiers derive from
 the inventory after timestamp normalization. Syft's version and package
-catalogers come from the Bakery runtime and contribute to its cache identity.
-The standard system pipeline publishes both inventory formats.
+catalogers come from the Rugix Bakery runtime and contribute to its cache
+identity. The standard system pipeline publishes both inventory formats.

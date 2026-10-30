@@ -9,45 +9,100 @@ Repositories supply these operations and any additional tooling environments the
 need, so projects can reuse a platform's image pipeline and replace individual
 operations.
 
-Layers and recipes build the root filesystem as nodes in the same graph.
-Recipes can consume rule-built artifacts through their
-[layer input bindings](/docs/bakery/next/layers#recipe-artifact-inputs). A system's optional
-`build` setting selects a rule that assembles its filesystem into an image.
-Systems without this setting use a predefined pipeline composed of the same core
-rules. Both workflows build layers, filesystem images, disks, and bundles through
-one executor.
+Use the predefined pipelines for [supported targets](/docs/bakery/next/systems#targets)
+when they meet your device's requirements. Define rules when you need additional
+operations, such as compiling an application or preparing a device-specific boot
+image. Recipes can install their outputs through
+[artifact inputs](/docs/bakery/next/recipes#artifact-inputs), and a system can select
+a rule as its [image pipeline](/docs/bakery/next/systems#repository-build-rules).
 
-## Rules and Compositions
+## Invoke a Rule
+
+A rule definition describes a reusable operation. A rule invocation selects that
+definition with `uses` and supplies its inputs and parameters. For example, to
+create an ext4 image from an existing `prepared-root` directory in your project,
+save the following invocation as `make-root.toml` in the project directory,
+alongside `rugix-bakery.toml`:
+
+```toml title="make-root.toml"
+uses = "core/image-ext4"
+inputs.tree = { path = "prepared-root" }
+parameters.label = "system"
+```
+
+Run it from the project directory:
+
+```shell
+./run-bakery bake rule make-root.toml build/root
+```
+
+The `core/image-ext4` rule takes a directory input named `tree` and exports a file
+named `image`. The result appears at `build/root/image`, sized automatically from
+the directory's contents. The `label` parameter sets its filesystem label.
+This produces a filesystem image; it does not add a partition table or bootloader.
+
+The [core rule reference](/docs/bakery/next/reference/core/rules/) lists available
+rules and their interfaces. The following sections explain how to define your
+own operations and combine rules into reusable pipelines.
+
+## Define a Command Rule
 
 A rule lives in `rules/<name>/rule.toml`. Its interface declares named file or
 directory inputs, parameters, secrets, and outputs. Its implementation runs
-a command, builds a layer, or composes other rules into a graph. Commands use Bakery's tools by
+a command, builds a layer, or composes other rules into a graph. Commands use Rugix Bakery's tools by
 default. An optional `env` selects a [tooling environment](/docs/bakery/next/envs) for commands
 that need additional or different tools.
 
 Each input definition is an object with a required `kind` (`file` or `directory`)
 and an optional `description`.
 
-For example, this rule copies a root filesystem into an ext4 image:
+For example, this rule compresses a file with gzip:
 
-```toml title="rules/root-image/rule.toml"
-[inputs.rootfs]
-kind = "directory"
-
-[parameters.size]
-default = 1073741824
+```toml title="rules/compress-file/rule.toml"
+[inputs.source]
+kind = "file"
 
 [execution]
 type = "run"
-command = ["python3", "/run/rugix/bakery/work/rule/run.py"]
+command = ["/bin/sh", "/run/rugix/bakery/work/rule/run.sh"]
 
-[execution.outputs.image]
+[execution.outputs.compressed]
 kind = "file"
-path = "root.img"
+path = "file.gz"
 ```
 
-Bakery reserves `/run/rugix/bakery/work` for one execution's workspace.
-Both execution modes receive the following mounts within that directory:
+Place its implementation beside the definition:
+
+```shell title="rules/compress-file/run.sh"
+#!/bin/sh
+set -eu
+gzip -n -c /run/rugix/bakery/work/inputs/source > /run/rugix/bakery/work/outputs/file.gz
+```
+
+The script reads the declared input and writes the declared output. The `-n`
+option omits the source filename and timestamp from the gzip header, so identical
+input bytes produce identical output with the same gzip version.
+
+For example, invoke the rule on an existing kernel file:
+
+```toml title="compress-kernel.toml"
+uses = "compress-file"
+inputs.source = { path = "artifacts/kernel" }
+```
+
+```shell
+./run-bakery bake rule compress-kernel.toml build/kernel
+```
+
+The compressed kernel appears at `build/kernel/compressed`. Output names are
+part of a rule's interface; the implementation's filename, `file.gz` here,
+does not determine the exported name.
+
+### Command Workspace
+
+Rugix Bakery reserves `/run/rugix/bakery/work` for one execution's workspace.
+Commands receive the following mounts within that directory, whether they run
+directly in Rugix Bakery or in a tooling environment:
 
 | Relative Path     | Contents                                                | Access     |
 | ----------------- | ------------------------------------------------------- | ---------- |
@@ -58,26 +113,30 @@ Both execution modes receive the following mounts within that directory:
 | `outputs/`        | Fresh output directory                                  | Read-write |
 | `project/`        | Consuming project directory                             | Read-only  |
 
-For example, `run.py` can read `size` from `/run/rugix/bakery/work/parameters.json`, create
-`/run/rugix/bakery/work/outputs/root.img`, and run `mkfs.ext4 -d /run/rugix/bakery/work/inputs/rootfs` on it. Output paths
-are relative to `/run/rugix/bakery/work/outputs`. Bakery checks that every declared output exists,
-has the declared kind, and resolves within that directory.
+Output paths in a command rule are relative to
+`/run/rugix/bakery/work/outputs`. Rugix Bakery checks that every declared output exists,
+has the declared kind, and resolves within that directory. Parameter values are
+available as a JSON object in `parameters.json`.
 
 Commands are literal argument lists. Use an explicit shell when shell syntax is
-needed. Both execution modes receive the same artifact mounts and a fresh output
-directory. Declared artifacts carry data between rules.
+needed. Each command receives a fresh output directory; use artifact bindings
+to carry data between commands.
 
-Without `env`, a command runs directly in the Bakery container with private
+Without `env`, a command runs directly in the Rugix Bakery container with private
 artifact mounts, a fresh `/tmp`, and `/run/rugix/bakery/work/outputs` as its working directory. It uses
-Bakery's installed tools without building an additional environment. Changes
-outside the artifact mounts and `/tmp` affect the shared Bakery container, so
+Rugix Bakery's installed tools without building an additional environment. Changes
+outside the artifact mounts and `/tmp` affect the shared Rugix Bakery container, so
 commands must not modify its tooling. All core rules use this execution mode.
 
 With `env`, each command runs in a fresh container built from that environment's
 Dockerfile. It inherits the image's environment variables and working directory;
 changes to its own filesystem are discarded.
 
-A composition connects artifacts between reusable operations. For example,
+## Compose Rules
+
+A composition is a rule whose implementation invokes other rules and connects
+their artifacts. It exposes its own inputs and outputs, so callers can use a
+whole pipeline through the same interface as a single command. For example,
 this composition exports an ext4 image and a metadata-preserving archive of
 the same filesystem tree:
 
@@ -101,14 +160,20 @@ image = { rule = { node = "filesystem", output = "image" } }
 archive = { rule = { node = "archive", output = "archive" } }
 ```
 
-Bakery expands a composition, validates its interfaces and dependencies, then
-executes commands in dependency order. A shared predecessor runs once. Only
-nodes needed by exported outputs execute.
+The composition's `rootfs` input supplies both operations. The names
+`filesystem` and `archive` identify invocations within this composition; they
+are independent of the rule names selected by `uses`. Each output binding
+selects a named invocation and one of its outputs.
+
+An invocation becomes a node in the dependency graph described in
+[Build Model](/docs/bakery/next/build-model#rules-and-artifacts). Rugix Bakery validates
+the connections and executes producers before their consumers. A shared
+producer runs once, and only nodes needed by exported outputs execute.
 
 Rule and environment references resolve from the repository that defines them.
 For example, an imported rule can use its own `tools/signing` dependency without
 requiring the consuming project to declare that alias. Unprefixed names refer to
-the defining repository; `core/` refers to Bakery's built-in repository.
+the defining repository; `core/` refers to Rugix Bakery's built-in repository.
 
 ## Bind Inputs and Secrets
 
@@ -138,16 +203,15 @@ A `select` binding takes a file or directory from another directory artifact:
 inputs.os-release = { select = { source = { input = "rootfs" }, path = "etc/os-release", kind = "file" } }
 ```
 
-The path must be relative and cannot contain `..`. Bakery checks its declared
+The path must be relative and cannot contain `..`. Rugix Bakery checks its declared
 kind. The selected path, after resolving symlinks, must remain inside the source
 directory. Selections can also use a rule output as their source. A consuming command's input identity
 tracks the selected artifact, so unrelated files do not invalidate that command.
 
 A `tree` binding defines a directory inline by mapping destination paths to
-artifact sources. Bakery assembles a new directory without modifying the sources.
-For example,
-this binding places boot artifacts and a repository configuration file into a
-directory:
+artifact sources. Rugix Bakery assembles a new directory without modifying the sources.
+For example, this invocation fragment places boot artifacts and a repository
+configuration file into a directory:
 
 ```toml
 [execution.rules.boot-filesystem]
@@ -167,14 +231,17 @@ Trees and selections can appear in composition outputs as well as input bindings
 
 Tree assembly preserves source ownership, permissions, timestamps, and extended
 attributes. It also preserves links within each imported directory. Generated
-parent directories have mode `0755` and an epoch modification time. Bakery caches assembled trees by their destinations and source
+parent directories have mode `0755` and an epoch modification time. Rugix Bakery caches assembled trees by their destinations and source
 contents and metadata.
 
 ### Bind Secrets
 
-Declare signing keys separately:
+Secrets carry inputs such as private signing keys. They must be explicitly
+bound, and their contents are excluded from inspection and cache metadata.
+For example, this rule signs a file using the
+[signing environment](/docs/bakery/next/envs#define-an-environment):
 
-```toml
+```toml title="rules/sign-file/rule.toml"
 secrets = ["key"]
 
 [execution]
@@ -191,12 +258,38 @@ kind = "file"
 path = "signature"
 ```
 
-Secrets require explicit bindings at every composition boundary. Within a secret
-binding, `{ input = "key" }` forwards an enclosing secret. A secret binding may
+With an existing image and private key, invoke it as follows:
+
+```toml title="sign-image.toml"
+uses = "sign-file"
+inputs.image = { path = "artifacts/boot.img" }
+secrets.key = { path = "keys/signing.pem" }
+```
+
+```shell
+./run-bakery bake rule sign-image.toml build/signature
+```
+
+The signature appears at `build/signature/signature`. Both paths resolve from
+the repository containing the invocation. Keep the private key out of the
+environment's Docker build context.
+
+Secrets require explicit bindings at every composition boundary. For example,
+a composition declaring `secrets = ["key"]` forwards that secret to a signing
+node with the following invocation fragment:
+
+```toml
+[execution.rules.signature]
+uses = "sign-file"
+inputs.image = { input = "image" }
+secrets.key = { input = "key" }
+```
+
+Within a secret binding, `input` refers to an enclosing secret. A secret binding may
 select a path from a secret directory; assembling a `tree` in a secret binding is
 rejected because assembled trees are cached.
 
-Secrets affect cache validity just like ordinary inputs. Bakery fingerprints
+Secrets affect cache validity just like ordinary inputs. Rugix Bakery fingerprints
 their contents and filesystem metadata using a private key stored in the local
 rule cache with mode `0600`. It never stores secret contents or unkeyed secret
 fingerprints in cache metadata. Changing a secret or replacing the local
@@ -219,7 +312,7 @@ layer = "device"
 architecture = "amd64"
 ```
 
-Bakery resolves `device` from the rule's repository and builds its parents and
+Rugix Bakery resolves `device` from the rule's repository and builds its parents and
 prerequisite rules in the same graph. The rule exports `rootfs`, `boot`,
 `config`, `artifacts`, and `bsp` directories, plus an `archive` file containing
 the complete layer. A layer rule's interface does not declare output paths.
@@ -280,7 +373,7 @@ cp "$RUGIX_PROJECT_DIR/$selected" /run/rugix/bakery/work/outputs/device.conf
 ```
 
 Both the selector and the selected file affect this command's cache entry.
-Bakery checks the paths recorded by the previous execution before reusing its
+Rugix Bakery checks the paths recorded by the previous execution before reusing its
 outputs. A successful execution replaces that set with its new registrations.
 Reading a file does not automatically register it.
 
@@ -302,7 +395,7 @@ Layer recipes support the same registration mechanism.
 
 ## Standard System Pipeline
 
-The familiar system configuration selects a predefined build pipeline. For
+A system's `target` setting selects a predefined build pipeline. For
 example:
 
 ```toml
@@ -312,7 +405,7 @@ architecture = "amd64"
 target = "generic-grub-efi"
 ```
 
-Bakery builds the layer and its mixins, then prepares a private filesystem tree
+Rugix Bakery builds the layer and its mixins, then prepares a private filesystem tree
 with release metadata. It installs the target's boot files before resolving the
 image layout into a disk artifact. A subsequent rule patches the boot
 configuration against that disk's partition IDs. Filesystem rules create each
@@ -321,20 +414,20 @@ places those filesystem artifacts into the disk. Separate rules produce
 filesystem archives and software inventories. `bake bundle` adds a bundle rule
 that consumes the same partition artifacts.
 
-The existing `image` and `options` settings configure this pipeline. They retain
-the target layouts, boot flows, and root filesystem policies, including
+The `image` and `options` settings configure its layout, boot flow, and
+root filesystem policy. Standard system images use
 journal-free ext4 root partitions. Disabling the journal keeps read-only mounts
 from modifying the lower filesystem used by Rugix's overlay and static deltas.
 Ext4 UUIDs and directory hash seeds default to values derived from the input tree.
 Filesystem capacity comes from each resolved partition; the standalone
 filesystem rules still default to automatic sizing.
 
-BSP layouts can be supplied by layer recipes. Bakery expands the dependent
-portion of the graph once those artifacts exist. Its rules then execute through
-the same cache and environment handling as other graph nodes.
+Layer recipes can supply device-specific layouts through the layer's `bsp`
+directory. Rugix Bakery resolves these layouts after building the layer, so assembly
+can use generated board configuration.
 
 Changing a layout, source date, release identity, or rule input rebuilds the
-affected artifacts. Bakery resolves one source date for layers, assembly rules,
+affected artifacts. Rugix Bakery resolves one source date for layers, assembly rules,
 and release metadata. It uses `--source-date`, then `SOURCE_DATE_EPOCH`, then
 `0`. Use an explicit source date and release information when reproducing a named
 release. Disk and partition IDs are derived from the layout and resolved
@@ -343,7 +436,10 @@ IDs.
 
 ## Assemble a System
 
-Select a repository rule in `rugix-bakery.toml`:
+A system selects its assembly rule through `build.uses`. The
+[Systems guide](/docs/bakery/next/systems#repository-build-rules) provides a complete
+example. For example, if a configured `platforms` repository supplies a `release`
+rule accepting a `disk-size` parameter, select it as follows:
 
 ```toml
 [systems.device]
@@ -355,7 +451,7 @@ uses = "platforms/release"
 parameters.disk-size = 3221225472
 ```
 
-Bakery schedules the selected layer and release preparation before the assembly
+Rugix Bakery schedules the selected layer and release preparation before the assembly
 invocation in one graph. The invocation receives these artifacts:
 
 | Input       | Kind      | Contents                                                             |
@@ -374,7 +470,7 @@ metadata at `/etc/rugix/system-build-info.json`.
 
 The selected rule must export an `image` file, published as
 `build/<system>/system.img`. An optional `bundle` export becomes
-`system.rugixb`; other exports retain their names. Bakery also publishes
+`system.rugixb`; other exports retain their names. Rugix Bakery also publishes
 `build-context.json`. These destination names must not collide.
 The existing `bake image` and `bake bundle` commands use these artifacts.
 
@@ -382,24 +478,6 @@ A repository pipeline owns its disk layout, boot artifacts, filesystems, and
 bundle manifest. Configure those through its parameters and inputs.
 Combining `build` with the predefined pipeline's `target`, `image`, or `options` assembly
 settings is rejected.
-
-## Build Independently
-
-An invocation file can also run without building a layer. For example:
-
-```toml title="make-root.toml"
-uses = "core/image-ext4"
-inputs.tree = { path = "prepared-root" }
-```
-
-```shell
-./run-bakery bake rule make-root.toml build/root
-```
-
-Exported files and directories appear under their port names, here
-`build/root/image`. Output publication happens after the complete build
-succeeds. For example, a project can build filesystem images from an existing
-root filesystem without running its layer recipes.
 
 ## Reuse Core Rules
 
@@ -421,12 +499,12 @@ for the metadata format and JSON export used to generate reference pages.
 
 ## Source Epoch
 
-Commands receive `SOURCE_DATE_EPOCH` by default. Bakery resolves one value for
+Commands receive `SOURCE_DATE_EPOCH` by default. Rugix Bakery resolves one value for
 the build and carries it through nested graphs, so compositions need no
 source-date parameters. The value participates in command cache identities.
 
 Set `execution.uses-source-date-epoch = false` only when a command's outputs are
-independent of the epoch. Bakery then removes the variable from its environment
+independent of the epoch. Rugix Bakery then removes the variable from its environment
 and excludes it from that command's cache identity. Layers always consume it.
 See [Reproducible Builds](/docs/bakery/next/advanced/reproducible-builds/#source-date)
 for defaults and examples.
@@ -440,10 +518,10 @@ dependencies. Layer identities include the source epoch, resolved recipe schedul
 implementations and parameters, parent artifacts, and recipe input artifacts.
 See [Caching](/docs/bakery/next/advanced/caching) for layer source dates and
 project dependency registration.
-For commands without `env`, the runtime identity includes Bakery's image ID and
+For commands without `env`, the runtime identity includes Rugix Bakery's image ID and
 executable. The standard `run-bakery` launcher supplies the resolved image ID;
 without an immutable image ID, these commands run without output caching.
-For commands with `env`, Bakery builds the environment through Buildah, which
+For commands with `env`, Rugix Bakery builds the environment through Buildah, which
 manages Dockerfile layer caching, and uses its resolved image ID. Changes to any
 of these invalidate that command and affected downstream commands. Input modification times, ownership, permissions, extended attributes, ACLs,
 symlinks, and device nodes contribute to the cache key. Access and change times are excluded.
@@ -453,14 +531,14 @@ Sensitive inputs participate through cache-local keyed fingerprints. A failed co
 does not publish a successful cache entry. Commands execute serially, and a
 project lock protects the result cache.
 
-Commands must finish their work before exiting. Bakery terminates surviving
+Commands must finish their work before exiting. Rugix Bakery terminates surviving
 background processes before publishing command outputs.
 
 Rules must bind their input artifacts or register the project files they depend on. Network responses, wall-clock time,
 ambient environment variables, and other external state are not tracked. Pin
 runtime dependencies and use declared inputs for repeatable builds. Both
 execution modes are intended for trusted tooling. Tooling containers share
-Bakery's surrounding namespaces.
+Rugix Bakery's surrounding namespaces.
 
 For a recipe installing a Debian package built from a Cargo application, see the
 [layer input example](https://github.com/rugix/rugix-bakery/tree/main/examples/layer-inputs).

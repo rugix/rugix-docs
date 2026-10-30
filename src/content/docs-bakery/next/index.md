@@ -24,16 +24,21 @@ The ability to declare multiple systems is particularly useful when building you
 
 ## Build Process
 
-A system selects a CPU architecture, a layer, and an image pipeline. Layers and
-recipes prepare its filesystem. Build rules turn files and directories into
-artifacts such as filesystem images, boot files, disks, and update bundles.
-A rule can use Bakery's tools or select a Dockerfile-defined tooling environment.
-Repositories distribute these building blocks for reuse across projects.
+The build process starts with a _layer_: a filesystem and its associated build
+outputs, such as a kernel and boot files. A layer can use another layer as its
+parent and apply _recipes_ to install packages, add an application, or configure
+services. For example, two device variants can share a Debian base and an
+application layer, then apply their own device-specific recipes. Rugix Bakery
+caches completed layers so that the variants reuse the same application build.
 
-Bakery supplies predefined pipelines for supported devices. You can also compose
-rules into your own image pipeline while keeping the same layers and recipes.
-Layer builds and artifact operations run in one dependency graph, with cached
-outputs reused across builds and systems.
+A system selects a layer, a CPU architecture, and a pipeline that packages its
+filesystem into an image or update bundle. Rugix Bakery supplies predefined
+pipelines for supported devices. For custom devices, _build rules_ let you
+compose operations such as filesystem creation, signing, and disk assembly into
+your own pipeline. Rules can also build artifacts consumed by recipes, such as
+an application package. Additional tools can be supplied through Dockerfile-defined
+_tooling environments_, and _repositories_ distribute these reusable definitions
+across projects.
 
 The [build model](/docs/bakery/next/build-model) explains how these concepts fit together.
 Continue with [projects](/docs/bakery/next/projects) to configure a build.

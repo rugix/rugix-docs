@@ -32,11 +32,11 @@ Create an ext4 image from a directory tree.
 
 ## Execution
 
-| Setting      | Value    |
-| ------------ | -------- |
-| Environment  | Bakery   |
-| Source epoch | Consumed |
-| Output cache | Allowed  |
+| Setting      | Value        |
+| ------------ | ------------ |
+| Environment  | Rugix Bakery |
+| Source epoch | Consumed     |
+| Output cache | Allowed      |
 
 ## Behavior
 
@@ -51,12 +51,12 @@ scheme, or update slot.
 
 The build source epoch fixes filesystem creation, access, and change times and
 clamps file modification times. It defaults to zero. Identical input contents
-and metadata, parameters, source epoch, and Bakery tooling produce identical
-image bytes, including with automatic sizing.
+and metadata, parameters, source epoch, and Rugix Bakery tooling produce
+identical image bytes, including with automatic sizing.
 
-Additional `mkfs-options` use shell-style quoting to separate arguments. Bakery
-does not perform shell expansion. Options that request random values or current
-timestamps override the rule's reproducible defaults.
+Additional `mkfs-options` use shell-style quoting to separate arguments. Rugix
+Bakery does not perform shell expansion. Options that request random values or
+current timestamps override the rule's reproducible defaults.
 
 ## Example
 

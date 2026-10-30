@@ -7,7 +7,7 @@ import LayerSchema from "../../../schemas/rugix-bakery-layer.schema.json"
 
 # Layers
 
-Layers are defined by _layer configuration files_ `<layer name>.toml` in the `layers` directory. As described in the [introduction](/docs/bakery/next/layers), a layer is built by executing recipes. For a given layer, the respective layer configuration file specifies the recipes to be executed as well as an optional parent layer that should be used as a base. Here is an example taken from the [Debian template](https://github.com/rugix/rugix-bakery/tree/main/container/templates/debian-grub-efi):
+Layers are defined by _layer configuration files_ `<layer name>.toml` in the `layers` directory. As described in [Build Model](/docs/bakery/next/build-model#systems-layers-and-recipes), a layer is built by executing recipes. For a given layer, the respective layer configuration file specifies the recipes to be executed as well as an optional parent layer that should be used as a base. Here is an example taken from the [Debian template](https://github.com/rugix/rugix-bakery/tree/main/container/templates/debian-grub-efi):
 
 ```toml title="layers/customized.toml"
 #:schema https://raw.githubusercontent.com/rugix/rugix/refs/tags/v0.8.0/schemas/rugix-bakery-layer.schema.json
@@ -121,12 +121,12 @@ application = { rule = { node = "build-application", output = "binary" } }
 
 Here, `vendor/build-app` declares a `source` directory input and an `architecture`
 parameter, and exports a `binary` file. The `application` source directory is
-relative to the repository containing the layer. Bakery supplies the layer's
+relative to the repository containing the layer. Rugix Bakery supplies the layer's
 target architecture as the `architecture` parameter available to its prerequisite
 rules.
 
 Layers, prerequisite rules, and image assembly run in one dependency graph.
-Bakery builds prerequisite artifacts before running the layer's recipes.
+Rugix Bakery builds prerequisite artifacts before running the layer's recipes.
 Recipe inputs are read-only and isolated per recipe. Their contents and metadata
 participate in layer caching. Bindings apply to recipes executed by this layer;
 a parent builds its own inputs and recipes separately.

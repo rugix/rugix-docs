@@ -30,11 +30,11 @@ Install Rugix boot-flow files into boot and configuration trees.
 
 ## Execution
 
-| Setting      | Value    |
-| ------------ | -------- |
-| Environment  | Bakery   |
-| Source epoch | Consumed |
-| Output cache | Allowed  |
+| Setting      | Value        |
+| ------------ | ------------ |
+| Environment  | Rugix Bakery |
+| Source epoch | Consumed     |
+| Output cache | Allowed      |
 
 Initialize one of Rugix's predefined boot flows before sizing or creating its
 filesystems. The rule copies both input trees, installs bootloader or firmware
@@ -53,7 +53,7 @@ parameters.architecture = "amd64"
 The supported boot flows are GRUB EFI, Raspberry Pi tryboot, and Raspberry Pi
 U-Boot. The `bsp` and `unknown` targets retain the supplied trees without
 installing a predefined boot flow. Bootloader binaries and firmware come from
-the Bakery runtime, which contributes to the rule's cache identity.
+the Rugix Bakery runtime, which contributes to the rule's cache identity.
 
 Use these output trees when resolving dynamic partition capacities. Once the
 partition table exists, `core/prepare-boot` patches the root partition

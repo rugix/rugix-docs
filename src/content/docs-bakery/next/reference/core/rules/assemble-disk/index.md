@@ -22,11 +22,11 @@ Populate an existing disk layout with numbered partition images.
 
 ## Execution
 
-| Setting      | Value    |
-| ------------ | -------- |
-| Environment  | Bakery   |
-| Source epoch | Consumed |
-| Output cache | Allowed  |
+| Setting      | Value        |
+| ------------ | ------------ |
+| Environment  | Rugix Bakery |
+| Source epoch | Consumed     |
+| Output cache | Allowed      |
 
 Place independently built filesystem images into an existing disk layout. This
 rule supports GPT and MBR, including logical partitions. It preserves partition

@@ -36,10 +36,10 @@ uses production redirects from the infrastructure checkout at
 Set `RUGIX_DOCS_REDIRECTS_FILE` to use a different checkout. External links
 require a separate check.
 
-## Bakery Reference Generation
+## Rugix Bakery Reference Generation
 
-The Bakery `next` reference is generated from the JSON catalogs emitted by
-Rugix Bakery. Export catalogs from a Bakery project using the version being
+The Rugix Bakery `next` reference is generated from the JSON catalogs emitted by
+Rugix Bakery. Export catalogs from a Rugix Bakery project using the version being
 documented:
 
 ```sh
@@ -55,11 +55,11 @@ node scripts/generate-reference.mjs /tmp/core-rules.json /tmp/core-recipes.json 
 node scripts/generate-reference.mjs --check /tmp/core-rules.json /tmp/core-recipes.json /tmp/core-layers.json
 ```
 
-Edit the definitions and their adjacent Markdown in the Bakery repository.
+Edit the definitions and their adjacent Markdown in the Rugix Bakery repository.
 The generator creates interface tables from configuration and includes the
 Markdown explanations. It removes obsolete generated pages for the supplied
 catalog kinds and preserves authored pages. The site build uses the committed
-pages and does not require a Bakery installation.
+pages and does not require a Rugix Bakery installation.
 
 See the [catalog guide](src/content/docs-bakery/next/reference/definition-catalogs.md) for
 metadata conventions and generation for other repositories.

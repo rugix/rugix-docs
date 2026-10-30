@@ -38,10 +38,35 @@ For instance, to build an image for a given system, run:
 ./run-bakery bake image <system>
 ```
 
+## System Mixins
+
+A mixin adds recipes and configuration after a system's selected layer. This is
+useful for variations such as enabling debugging tools without creating a
+separate layer configuration. For example, define a mixin that enables SSH:
+
+```toml title="mixins/development.toml"
+recipes = ["core/ssh"]
+```
+
+Select it for a development system:
+
+```toml title="rugix-bakery.toml"
+[systems.development]
+layer = "customized"
+architecture = "arm64"
+target = "generic-grub-efi"
+mixins = ["development"]
+```
+
+Rugix Bakery builds the selected layer, applies the mixin, then assembles the
+resulting system. Mixins can declare dependencies on other mixins and use the
+same recipe parameters and artifact input bindings as layers. See the
+[mixin schema](/docs/bakery/next/reference/schemas#mixins) for all settings.
+
 ## Repository Build Rules
 
 A system's `build.uses` setting selects a [build rule](/docs/bakery/next/build-rules) as its
-image pipeline. Bakery builds the layer and prepares release metadata, then
+image pipeline. Rugix Bakery builds the layer and prepares release metadata, then
 supplies its root filesystem and other artifacts to that rule. The rule can
 compose filesystem creation, boot packaging, signing, disk assembly, and update
 bundle creation.
@@ -95,7 +120,7 @@ uses = "filesystem-release"
 parameters.label = "demo-root"
 ```
 
-Here, `uses` names the rule directory. Bakery supplies the layer's `rootfs`
+Here, `uses` names the rule directory. Rugix Bakery supplies the layer's `rootfs`
 artifact to the rule's input of the same name. The composition connects it to
 both core rules. The `label` parameter sets the ext4 volume label; the image
 sizes itself from the filesystem tree.

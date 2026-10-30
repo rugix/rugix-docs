@@ -3,14 +3,15 @@
 
 # Caching
 
-Bakery's build engine caches successful node outputs, including layer builds and
-command rules. Both use the same result cache and dependency tracking.
+Rugix Bakery caches completed layers and the outputs of command rules to avoid
+repeating unchanged work. Both use the same result cache: a cached result contains
+the files and directories exported by one build operation.
 
-A cached result contains a node's named output artifacts. Bakery reuses it when
-its implementation, parameters, runtime, and tracked inputs are unchanged.
-Registered project dependencies are checked before reuse. New results become
-available only after execution and output validation succeed. Failed builds
-leave previous successful results intact.
+A result can be reused when the operation's implementation, parameters, tools,
+and tracked inputs are unchanged. Rugix Bakery checks registered project
+dependencies before reuse and publishes new results only after execution and
+output validation succeed. A failed build leaves previous successful results
+intact.
 
 To clean all caches, run:
 
@@ -20,30 +21,32 @@ To clean all caches, run:
 
 ## Layer Caching
 
-Layer nodes identify their inputs by content and metadata: recipe implementations,
-effective recipe parameters, parent archives, declared artifact inputs, and the
-Bakery runtime. Without an immutable runtime identity, layers execute without
-cache reuse. Changes to layer
-configuration determine the recipe schedule and artifact bindings used by that
-identity. Recipe priority determines execution order; equal priorities use a
-stable repository and recipe name order.
+A cached layer represents the result of applying its recipes to its parent.
+Changes to the parent, recipe implementations, effective parameters, or declared
+artifact inputs rebuild the layer. Layer configuration determines which recipes
+run and which artifacts they receive, so these choices also affect reuse.
+Recipes run in priority order; ties use a stable repository and recipe name order.
+
+The Rugix Bakery image identifies the tools used by the recipes. The standard
+`run-bakery` launcher supplies its immutable image ID. Without an immutable
+runtime identity, layers execute without cache reuse.
 
 The effective source epoch also contributes to every layer identity and to
 command identities unless a command declares `uses-source-date-epoch = false`.
-Bakery uses `--source-date`, then `SOURCE_DATE_EPOCH`, then a fixed default of
+Rugix Bakery uses `--source-date`, then `SOURCE_DATE_EPOCH`, then a fixed default of
 `0`. Changing the effective value rebuilds consumers. See
 [Reproducible Builds](/docs/bakery/next/advanced/reproducible-builds/#source-date)
 for source-date selection and command opt-outs.
 
 Recipes may also read project files that are selected during execution.
-Register those paths so Bakery can check them before reusing a layer:
+Register those paths so Rugix Bakery can check them before reusing a layer:
 
 ```bash
 printf '%s\n' "<path>" >> "$RUGIX_REBUILD_IF_CHANGED"
 ```
 
 where `<path>` is a path relative to the project directory. Register a file or
-a directory; directories include their contents recursively. Bakery records
+a directory; directories include their contents recursively. Rugix Bakery records
 content and metadata hashes, so file changes, additions, and deletions trigger a
 rebuild even if modification times are preserved. Missing paths are tracked too.
 
@@ -54,7 +57,8 @@ remains available as an alias for `RUGIX_REBUILD_IF_CHANGED`.
 
 [Build rules](/docs/bakery/next/build-rules#use-project-files) use the same mechanism.
 
-A common use case would be to load a `.env` file with secret environment variables from the project directory:
+For example, a recipe can load optional project settings from a `.env` file
+and register it as a dependency:
 
 ```shell
 # Rebuild the layer if the environment changes.

@@ -8,7 +8,7 @@ Rules, recipes, and layers expose different parts of a build. Rules transform
 artifacts, recipes customize root filesystems, and layers select a base and a set
 of recipes. Each definition can carry descriptions for users and tools.
 
-Bakery can export these definitions as JSON without building a layer, executing
+Rugix Bakery can export these definitions as JSON without building a layer, executing
 a rule, or creating an environment. Documentation generators use that export
 to keep interface facts, such as parameter defaults, aligned with the definitions.
 

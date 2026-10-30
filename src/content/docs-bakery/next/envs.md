@@ -8,12 +8,12 @@ to a build operation. It keeps those dependencies separate from the Linux system
 being built. For example, an environment can supply tools for signing boot
 artifacts without installing those tools into the resulting system.
 
-Each environment is defined by a Dockerfile and its build context. Bakery builds
+Each environment is defined by a Dockerfile and its build context. Rugix Bakery builds
 this definition into a cached container image. Commands execute in fresh working
 containers created from that image, so operations can share a tooling definition.
 Changes to a container's own filesystem are discarded after execution.
 
-Environments run on Bakery's architecture, independently of a system's target
+Environments run on Rugix Bakery's architecture, independently of a system's target
 architecture. For example, an amd64 tooling environment can process firmware for
 an arm64 device.
 
@@ -32,14 +32,14 @@ files there and use `COPY` to include them in the image. A `.dockerignore` file
 in that directory excludes files from the context. Environment discovery skips
 hidden directories and directories without a `Dockerfile`.
 
-## Work With Environments Directly
+## Work with Environments Directly
 
 The `envs` commands let you work with an environment independently of a system
 build. Run them from a project containing `rugix-bakery.toml`.
 
 :::note
 Repository [build rules](/docs/bakery/next/build-rules) select environments for artifact operations.
-Recipe steps continue to run in Bakery or the target root filesystem.
+Recipe steps continue to run in Rugix Bakery or the target root filesystem.
 :::
 
 ### Inspect and Build
@@ -53,12 +53,12 @@ Recipe steps continue to run in Bakery or the target root filesystem.
 
 Inspection reports the environment name, Dockerfile path, and build context
 without building an image. JSON inspection uses the fields `name`, `dockerfile`,
-and `context`. Paths refer to locations inside Bakery's container.
+and `context`. Paths refer to locations inside Rugix Bakery's container.
 
 Building prints the resolved image ID to standard output and build progress to
-standard error. Bakery uses Buildah to build the Dockerfile and retain intermediate
+standard error. Rugix Bakery uses Buildah to build the Dockerfile and retain intermediate
 layers. Changes to the Dockerfile or included context files invalidate the
-affected layers. The image lives in Bakery's project cache, separately from the
+affected layers. The image lives in Rugix Bakery's project cache, separately from the
 host Docker or Podman image store.
 
 To execute Dockerfile instructions again without using cached layers:
@@ -95,7 +95,7 @@ Supply a different shell or a command after `--`, for example:
 ./run-bakery envs shell signing -- /bin/sh -c 'ls /project'
 ```
 
-The command's exit status becomes Bakery's exit status after the working
+The command's exit status becomes Rugix Bakery's exit status after the working
 container has been removed.
 
 ## Share Environments
@@ -115,7 +115,7 @@ dependencies. The built-in repository uses the prefix `core/`.
 
 ## Choose Storage
 
-By default, Bakery tests whether native OverlayFS works on the cache filesystem
+By default, Rugix Bakery tests whether native OverlayFS works on the cache filesystem
 and uses it when available. Otherwise it uses VFS directory copies. Native overlay
 avoids copying an entire image for each working container; VFS supports hosts
 where overlay mounts are unavailable, with higher copying and disk-space costs.
@@ -128,18 +128,18 @@ Select a backend explicitly when diagnosing storage issues:
 ```
 
 FUSE overlay is also available with `--storage fuse`. It requires
-`fuse-overlayfs` inside Bakery and access to `/dev/fuse`. For example, with
+`fuse-overlayfs` inside Rugix Bakery and access to `/dev/fuse`. For example, with
 rootless Podman:
 
 ```shell
 DOCKER=podman DOCKER_FLAGS="--device /dev/fuse" ./run-bakery envs shell signing --storage fuse
 ```
 
-Each backend has a separate image store. All three use Bakery's namespace setup
+Each backend has a separate image store. All three use Rugix Bakery's namespace setup
 and run commands with chroot isolation, which shares surrounding namespaces.
 Use environments for trusted tooling; they do not provide an isolation boundary
 for hostile commands. Building and running environments requires neither a host
-container socket mounted into Bakery nor a nested Docker daemon.
+container socket mounted into Rugix Bakery nor a nested Docker daemon.
 
 `./run-bakery cache clean` removes the project's cached environment images along
 with its other build caches.

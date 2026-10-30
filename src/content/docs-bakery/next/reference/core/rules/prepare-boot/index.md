@@ -29,11 +29,11 @@ Patch an initialized Rugix boot tree against resolved disk geometry.
 
 ## Execution
 
-| Setting      | Value    |
-| ------------ | -------- |
-| Environment  | Bakery   |
-| Source epoch | Consumed |
-| Output cache | Allowed  |
+| Setting      | Value        |
+| ------------ | ------------ |
+| Environment  | Rugix Bakery |
+| Source epoch | Consumed     |
+| Output cache | Allowed      |
 
 Patch an initialized Rugix boot tree against an existing disk's partition table.
 The rule reads the disk and copies the boot tree before modifying it.

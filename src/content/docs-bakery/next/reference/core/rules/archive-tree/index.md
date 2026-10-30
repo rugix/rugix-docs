@@ -28,11 +28,11 @@ Archive a directory tree while preserving Linux filesystem metadata.
 
 ## Execution
 
-| Setting      | Value    |
-| ------------ | -------- |
-| Environment  | Bakery   |
-| Source epoch | Consumed |
-| Output cache | Allowed  |
+| Setting      | Value        |
+| ------------ | ------------ |
+| Environment  | Rugix Bakery |
+| Source epoch | Consumed     |
+| Output cache | Allowed      |
 
 Create a sorted PAX tar archive of a filesystem tree. The archive preserves
 ownership, permissions, hard links, symlinks, device nodes, ACLs, and extended

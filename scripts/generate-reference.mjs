@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Generate repository reference pages from Bakery's Sidex-defined JSON catalogs.
+ * Generate repository reference pages from Rugix Bakery's Sidex-defined JSON catalogs.
  * Configuration facts come from definitions; adjacent Markdown supplies explanations.
  */
 import { readFile, readdir, mkdir, writeFile, unlink } from "node:fs/promises"
@@ -217,7 +217,7 @@ function page(kind, item) {
                 ? execution.env
                 : owner + execution.env,
             )
-          : "Bakery"
+          : "Rugix Bakery"
         body += table(
           ["Setting", "Value"],
           [
@@ -238,7 +238,7 @@ function page(kind, item) {
         body +=
           execution.type === "graph"
             ? "Composes other rules into a build graph.\n\n"
-            : "Uses Bakery's layer builder.\n\n"
+            : "Uses Rugix Bakery's layer builder.\n\n"
       }
     }
   }

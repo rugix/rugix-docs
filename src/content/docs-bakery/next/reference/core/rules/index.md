@@ -22,7 +22,7 @@ Artifact transformations and compositions supplied by this repository.
 | -------------------------------------------- | --------------------------------------------------------------------------- |
 | [`core/archive-tree`](./archive-tree/)       | Archive a directory tree while preserving Linux filesystem metadata.        |
 | [`core/assemble-disk`](./assemble-disk/)     | Populate an existing disk layout with numbered partition images.            |
-| [`core/image-layout`](./image-layout/)       | Resolve a Bakery image layout into an unpopulated disk image.               |
+| [`core/image-layout`](./image-layout/)       | Resolve a Rugix Bakery image layout into an unpopulated disk image.         |
 | [`core/initialize-boot`](./initialize-boot/) | Install Rugix boot-flow files into boot and configuration trees.            |
 | [`core/prepare-boot`](./prepare-boot/)       | Patch an initialized Rugix boot tree against resolved disk geometry.        |
 | [`core/sbom`](./sbom/)                       | Scan a filesystem tree and produce SPDX and CycloneDX software inventories. |

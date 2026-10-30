@@ -23,9 +23,9 @@ other recipes; their priorities determine execution order.
 
 ## Behavior
 
-Copies Bakery's bundled Raspberry Pi second-stage U-Boot script into the layer's
-boot tree. The surrounding image assembly must supply the compatible first-stage
-boot configuration.
+Copies Rugix Bakery's bundled Raspberry Pi second-stage U-Boot script into the
+layer's boot tree. The surrounding image assembly must supply the compatible
+first-stage boot configuration.
 
 ## Example
 

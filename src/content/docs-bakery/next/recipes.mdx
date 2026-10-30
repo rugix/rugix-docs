@@ -113,7 +113,7 @@ recipes = ["vendor/install-app"]
 profile = "debug"
 ```
 
-Bakery resolves recipe parameters, builds the required artifacts, then runs the
+Rugix Bakery resolves recipe parameters, builds the required artifacts, then runs the
 layer's recipe steps. Local rules receive the recipe's effective parameter values,
 including layer and parameter-file overrides. A reference to the `architecture`
 parameter uses the target architecture unless the recipe declares its own
@@ -135,7 +135,7 @@ application = { path = "prebuilt/application" }
 ```
 
 This path resolves from the layer's repository. For this recipe, the binding
-replaces the default and skips the compiler rule. Bakery selects each input in
+replaces the default and skips the compiler rule. Rugix Bakery selects each input in
 this order:
 
 1. An explicit layer or mixin binding.
@@ -149,7 +149,7 @@ or defaults. They can also read the parent layer's directory artifacts, such as
 `rootfs`, through input references.
 
 Rule node names are local to each recipe and separate from layer node names.
-Bakery plans only rules reachable from the selected bindings and rejects cycles
+Rugix Bakery plans only rules reachable from the selected bindings and rejects cycles
 between defaults, rules, and layers. Artifact inputs remain read-only and
 participate in layer caching.
 
@@ -265,8 +265,8 @@ outputs to a recipe through [artifact inputs](#artifact-inputs).
 A recipe can select that rule as its default, so a repository can supply the
 tooling environment, build, and installation behavior together.
 
-A recipe's `run` steps use Bakery's own tools. If those steps need additional
-tools directly, you can create a Docker image based on Bakery's image.
+A recipe's `run` steps use Rugix Bakery's own tools. If those steps need additional
+tools directly, you can create a Docker image based on Rugix Bakery's image.
 
 For instance, to add Node.js to the build environment you can use the following `Dockerfile`:
 
@@ -291,11 +291,17 @@ RUGIX_CONTEXT_DIR=".." RUGIX_BAKERY_IMAGE="custom-image" ./run-bakery
 ```
 
 As a result, the root directory of your repository will be available as the context directory (see environment variables above).
-For caching, you can rely on Rugix Bakery's [layer cache](/docs/bakery/next/advanced/caching), rebuilding a layer only if certain files changed (which can be in the context directory).
-In addition, you can also use the global Rugix Bakery cache exposed via the `RUGIX_CACHE_DIR` environment variable.
+Register project files used by these steps through
+`RUGIX_REBUILD_IF_CHANGED` so that changes invalidate the
+[layer cache](/docs/bakery/next/advanced/caching#layer-caching).
+Registered paths must remain within the project directory. Files read from a
+separate context directory are not tracked by this mechanism; pass build inputs
+through declared artifacts or keep tracked sources in the project directory.
+The shared download cache exposed by `RUGIX_CACHE_DIR` remains available for
+downloads and other reusable data.
 
 Reusable repositories should supply artifact-producing rules and tooling
-environments so their recipes can use the standard Bakery image.
+environments so their recipes can use the standard Rugix Bakery image.
 
 ## Inspect and Document Definitions
 

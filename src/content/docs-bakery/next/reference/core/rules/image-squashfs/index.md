@@ -29,11 +29,11 @@ Create a SquashFS image from a directory tree.
 
 ## Execution
 
-| Setting      | Value    |
-| ------------ | -------- |
-| Environment  | Bakery   |
-| Source epoch | Consumed |
-| Output cache | Allowed  |
+| Setting      | Value        |
+| ------------ | ------------ |
+| Environment  | Rugix Bakery |
+| Source epoch | Consumed     |
+| Output cache | Allowed      |
 
 ## Behavior
 
@@ -43,11 +43,12 @@ SquashFS determines the image size from its compressed contents. The rule uses
 The build source epoch fixes the filesystem creation time and clamps file
 timestamps. It defaults to zero. The rule uses one compression worker and
 reproducible SquashFS construction. Identical input contents and metadata,
-parameters, source epoch, and Bakery tooling produce identical image bytes.
+parameters, source epoch, and Rugix Bakery tooling produce identical image
+bytes.
 
-Additional `mkfs-options` use shell-style quoting to separate arguments. Bakery
-does not perform shell expansion. Options that request random values or current
-timestamps override the rule's reproducible defaults.
+Additional `mkfs-options` use shell-style quoting to separate arguments. Rugix
+Bakery does not perform shell expansion. Options that request random values or
+current timestamps override the rule's reproducible defaults.
 
 ## Example
 

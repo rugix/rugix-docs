@@ -1,6 +1,6 @@
 ---
 title: Configuration Schemas
-description: Field reference for Bakery's TOML configuration files.
+description: Field reference for Rugix Bakery's TOML configuration files.
 order: 10
 ---
 
@@ -14,7 +14,7 @@ import InvocationSchema from "../../../../schemas/rugix-bakery-rule-invocation.s
 import RepositorySchema from "../../../../schemas/rugix-bakery-repository.schema.json"
 import TestSchema from "../../../../schemas/rugix-bakery-test.schema.json"
 
-Bakery uses TOML for its configuration files. These schemas describe the
+Rugix Bakery uses TOML for its configuration files. These schemas describe the
 accepted fields and their types. Expand an object to inspect its properties.
 For the relationships between these files, start with the [build model](/docs/bakery/next/build-model).
 
@@ -30,7 +30,7 @@ For the relationships between these files, start with the [build model](/docs/ba
 | System test         | `tests/<name>.toml`                                                 | [System Test](#system-tests)         |
 
 Tooling environments use `envs/<name>/Dockerfile` and that directory as their
-build context. They have no separate Bakery TOML configuration.
+build context. They have no separate Rugix Bakery TOML configuration.
 
 ## Projects and Systems
 
@@ -116,7 +116,7 @@ See [System Testing](/docs/bakery/next/advanced/system-testing) for examples.
 
 ## Schemas for Editors and Tools
 
-The [Bakery schema directory](https://github.com/rugix/rugix-bakery/tree/main/schemas)
+The [Rugix Bakery schema directory](https://github.com/rugix/rugix-bakery/tree/main/schemas)
 contains JSON schemas generated from the configuration definitions. A TOML editor
 with JSON Schema support can use a `#:schema` directive. For example:
 
@@ -124,7 +124,7 @@ with JSON Schema support can use a `#:schema` directive. For example:
 #:schema https://raw.githubusercontent.com/rugix/rugix-bakery/main/schemas/rugix-bakery-rule.schema.json
 ```
 
-Use a schema matching your Bakery version when pinning a project to a release.
+Use a schema matching your Rugix Bakery version when pinning a project to a release.
 
 The [definition catalogs](/docs/bakery/next/reference/definition-catalogs/) describe instantiated repository
 definitions for documentation and tooling. Their JSON output has its own
