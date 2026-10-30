@@ -22,9 +22,11 @@ export default defineConfig({
      * URLs that no longer exist. Pinning them here makes Vite
      * pre-bundle once at startup. (Don't add `react`/`react-dom` —
      * the @astrojs/react integration owns that.)
+     * Mermaid also needs pre-bundling to convert its CommonJS
+     * dependencies into browser modules.
      */
     optimizeDeps: {
-      include: ["chart.js", "react-chartjs-2"],
+      include: ["chart.js", "react-chartjs-2", "@silitics/astro-theme > mermaid"],
     },
   },
   integrations: [

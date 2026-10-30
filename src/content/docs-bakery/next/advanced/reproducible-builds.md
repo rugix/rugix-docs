@@ -13,11 +13,71 @@ We aim to enable reproducible builds of Rugix itself as well as of system images
 
 ## Source Date
 
-Rugix Bakery supports a `--source-date` option which allows you to pin the source date of the build to a specific date and time (formatted according to RFC 3339). If you do not specify this option, Rugix Bakery will use the current date and time.
-In any case, Rugix Bakery will clamp the modification time of all files to the source date.
-The source date is also used to set the [`SOURCE_DATE_EPOCH` environment variable](https://reproducible-builds.org/docs/source-date-epoch/) in the build environment.
-Bakery also passes this value to filesystem construction tools so that creation
-timestamps do not depend on the time of the build.
+The source date is a fixed timestamp that build tools use when creating artifacts.
+Rugix Bakery resolves it once per build, in this order:
+
+1. `--source-date`, as an RFC 3339 timestamp.
+2. The `SOURCE_DATE_EPOCH` environment variable, as nonnegative Unix seconds.
+3. `0`, the Unix epoch.
+
+All `bake` commands accept `--source-date`. For example:
+
+```shell
+./run-bakery bake image device --source-date 2024-01-01T00:00:00Z
+SOURCE_DATE_EPOCH=1704067200 ./run-bakery bake rule filesystem.toml build/filesystem
+```
+
+Rugix Bakery carries this value through nested graphs and layer builds. Recipes and
+command rules receive it as
+[`SOURCE_DATE_EPOCH`](https://reproducible-builds.org/docs/source-date-epoch/).
+The core filesystem and archive rules use it to fix creation timestamps and
+clamp modification times. Release metadata and software inventories use the same
+date. This also makes the default release version deterministic; specify release
+information when building a named release.
+
+A fixed date alone does not make arbitrary commands reproducible. Rules must use
+tools and options that honor it. Pin distribution inputs and tool versions too.
+
+## Build Rules
+
+The core artifact rules produce reproducible outputs with the same input bytes
+and filesystem metadata, parameters, effective source epoch, and Rugix Bakery container image.
+Pin the image by digest to keep the tool versions fixed. A cache hit alone does
+not demonstrate reproducibility: the same rule must also produce identical
+bytes when executed again with a fresh cache.
+
+Command rules consume the source epoch by default. Its value participates in
+their cache identity, so changing it rebuilds affected commands. Graphs inherit
+the epoch automatically and need no forwarding parameters.
+
+A rule whose outputs are independent of the epoch can opt out. For example,
+this execution fragment opts out for a compilation rule:
+
+```toml
+[execution]
+type = "run"
+command = ["/run/rugix/bakery/work/rule/compile.sh"]
+uses-source-date-epoch = false
+```
+
+Rugix Bakery removes `SOURCE_DATE_EPOCH` from that command's environment, including any
+Dockerfile default, and excludes the value from its cache identity. Changes to
+other inputs still invalidate the cached result. Layer builds always consume the
+source epoch because recipes and layer archives use it.
+
+| Building Block       | Reproducibility Controls                                                                                    |
+| -------------------- | ----------------------------------------------------------------------------------------------------------- |
+| ext4                 | Derived UUID and directory hash seed; fixed creation, access, and change times; clamped modification times. |
+| FAT                  | Derived volume ID, invariant format metadata, sorted insertion, and fixed UTC entry timestamps.             |
+| SquashFS             | Fixed creation time, clamped file timestamps, and reproducible compression.                                 |
+| Disk layouts         | MBR disk IDs and GPT GUIDs derived from the layout and resolved geometry.                                   |
+| Software inventories | Source-date creation times and content-derived document identifiers.                                        |
+| Rugix bundle         | Fixed manifest and payload bytes.                                                                           |
+
+Extra `mkfs-options` can override reproducible defaults. Pin distribution
+repositories when building the input root filesystem. See the
+[core rule reference](/docs/bakery/next/reference/core/rules/) for each rule's
+behavior.
 
 ## Reproducibility of Rugix
 
@@ -49,20 +109,19 @@ Reproducibility of Rugix is a prerequisite for reproducible system images.
 
 ### Filesystem Images
 
-Bakery represents a finished layer as a directory tree after all recipes have
+Rugix Bakery represents a finished layer as a directory tree after all recipes have
 run. It constructs ext4 filesystems directly from this tree and passes the
-configured source date to `mkfs.ext4`. Reproducible targets must also specify a
-stable filesystem UUID, directory hash seed, and filesystem feature set in their
-ext4 options, as Rugix's default system partitions do. Given those fixed inputs,
-the same tree, partition size, source date, and Bakery version produce a
-byte-for-byte identical ext4 filesystem image.
+configured source date to `mkfs.ext4`. The core rule derives a stable UUID and
+directory hash seed unless explicit options override them. Given the same input
+tree, partition size, source date, formatter options, and Rugix Bakery image, it
+produces a byte-for-byte identical ext4 filesystem image.
 
-Bakery stores intermediate layer trees as PAX tar archives. These archives
+Rugix Bakery stores intermediate layer trees as PAX tar archives. These archives
 preserve deployment-relevant filesystem metadata, including ownership,
 permission and special mode bits, hardlinks, symbolic links, sparse files, device
 nodes, FIFOs, POSIX ACLs, and extended attributes such as file capabilities and
-SELinux labels. Bakery fails the build if it cannot restore this metadata. When
-importing ext filesystems, Bakery rejects sockets, project quota IDs, and inode
+SELinux labels. Rugix Bakery fails the build if it cannot restore this metadata. When
+importing ext filesystems, Rugix Bakery rejects sockets, project quota IDs, and inode
 flags such as immutable or append-only that the layer format cannot represent
 instead of silently dropping them.
 

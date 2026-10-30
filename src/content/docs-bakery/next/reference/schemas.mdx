@@ -1,0 +1,131 @@
+---
+title: Configuration Schemas
+description: Field reference for Rugix Bakery's TOML configuration files.
+order: 10
+---
+
+import { SchemaViewer } from "@silitics/astro-schema-viewer"
+import ProjectSchema from "../../../../schemas/rugix-bakery-project.schema.json"
+import LayerSchema from "../../../../schemas/rugix-bakery-layer.schema.json"
+import MixinSchema from "../../../../schemas/rugix-bakery-mixin.schema.json"
+import RecipeSchema from "../../../../schemas/rugix-bakery-recipe.schema.json"
+import RuleSchema from "../../../../schemas/rugix-bakery-rule.schema.json"
+import InvocationSchema from "../../../../schemas/rugix-bakery-rule-invocation.schema.json"
+import RepositorySchema from "../../../../schemas/rugix-bakery-repository.schema.json"
+import TestSchema from "../../../../schemas/rugix-bakery-test.schema.json"
+
+Rugix Bakery uses TOML for its configuration files. These schemas describe the
+accepted fields and their types. Expand an object to inspect its properties.
+For the relationships between these files, start with the [build model](/docs/bakery/next/build-model).
+
+| Configuration       | File                                                                | Schema                               |
+| ------------------- | ------------------------------------------------------------------- | ------------------------------------ |
+| Project and systems | `rugix-bakery.toml`                                                 | [Project](#projects-and-systems)     |
+| Layer               | `layers/<name>.toml`                                                | [Layer](#layers)                     |
+| System mixin        | `mixins/<name>.toml`                                                | [Mixin](#mixins)                     |
+| Recipe              | `recipes/<name>/recipe.toml`                                        | [Recipe](#recipes)                   |
+| Rule definition     | `rules/<name>/rule.toml`                                            | [Rule Definition](#rule-definitions) |
+| Rule invocation     | An invocation file, a system's `build` table, or a named graph node | [Rule Invocation](#rule-invocations) |
+| Repository          | `rugix-repository.toml`                                             | [Repository](#repositories)          |
+| System test         | `tests/<name>.toml`                                                 | [System Test](#system-tests)         |
+
+Tooling environments use `envs/<name>/Dockerfile` and that directory as their
+build context. They have no separate Rugix Bakery TOML configuration.
+
+## Projects and Systems
+
+A project declares repository dependencies and systems. Each system selects its
+architecture, layer, and either predefined image settings or a `build` rule
+invocation. Image layout types are included in this schema.
+
+See [Projects](/docs/bakery/next/projects) and [Systems](/docs/bakery/next/systems) for examples.
+
+<SchemaViewer schema={ProjectSchema} />
+
+## Layers
+
+A layer selects a parent or import source, recipes, parameter overrides, and
+optional rule prerequisites and recipe input bindings. Architecture-specific
+layer files use the same schema.
+
+See [Layers](/docs/bakery/next/layers) for examples.
+
+<SchemaViewer schema={LayerSchema} />
+
+## Mixins
+
+A mixin applies additional recipes, parameters, and artifact bindings to a system
+after its selected layer. It can also declare dependencies on other mixins.
+
+<SchemaViewer schema={MixinSchema} />
+
+## Recipes
+
+A recipe defines root filesystem customization. It can declare parameters,
+artifact inputs, prerequisite rules, and default input bindings. Its step scripts
+live beside the configuration.
+
+See [Recipes](/docs/bakery/next/recipes) for step execution and scheduling.
+
+<SchemaViewer schema={RecipeSchema} />
+
+## Rule Definitions
+
+A rule declares an artifact interface and its implementation. An execution can
+run a command, compose other rules, or build a layer. Each input definition is an
+object with a required `kind` (`file` or `directory`) and an optional
+`description`. Source bindings determine which artifact is supplied.
+
+See [Build Rules](/docs/bakery/next/build-rules) for definitions and compositions.
+
+<SchemaViewer schema={RuleSchema} />
+
+## Rule Invocations
+
+An invocation selects a definition with `uses` and binds its inputs,
+parameters, and secrets. Named entries in a composition's `rules` table and
+a system's `build` table use this structure.
+
+Artifact sources include `path` for an existing repository-relative file or
+directory, `input` for an enclosing input, `rule` for a node output,
+`select` for a path inside a directory artifact, and `tree` for a directory
+assembled from other sources.
+
+See [Bind Inputs and Secrets](/docs/bakery/next/build-rules#bind-inputs-and-secrets) for examples.
+
+<SchemaViewer schema={InvocationSchema} />
+
+## Repositories
+
+A repository declares its name, description, and dependencies on other
+repositories. Definitions are discovered from its `layers`, `recipes`,
+`rules`, and `envs` directories.
+
+See [Repositories](/docs/bakery/next/repositories) for dependency configuration and naming.
+
+<SchemaViewer schema={RepositorySchema} />
+
+## System Tests
+
+A system test declares systems to run and test steps. Tests can boot images in
+QEMU and interact with them through SSH.
+
+See [System Testing](/docs/bakery/next/advanced/system-testing) for examples.
+
+<SchemaViewer schema={TestSchema} />
+
+## Schemas for Editors and Tools
+
+The [Rugix Bakery schema directory](https://github.com/rugix/rugix-bakery/tree/main/schemas)
+contains JSON schemas generated from the configuration definitions. A TOML editor
+with JSON Schema support can use a `#:schema` directive. For example:
+
+```toml
+#:schema https://raw.githubusercontent.com/rugix/rugix-bakery/main/schemas/rugix-bakery-rule.schema.json
+```
+
+Use a schema matching your Rugix Bakery version when pinning a project to a release.
+
+The [definition catalogs](/docs/bakery/next/reference/definition-catalogs/) describe instantiated repository
+definitions for documentation and tooling. Their JSON output has its own
+[schemas](https://github.com/rugix/rugix-bakery/tree/main/schemas).
