@@ -437,5 +437,5 @@ runtime dependencies and use declared inputs for repeatable builds. Both
 execution modes are intended for trusted tooling. Tooling containers share
 Bakery's surrounding namespaces.
 
-For a recipe consuming an environment-built application, see the
+For a recipe installing a Debian package built from a Cargo application, see the
 [layer input example](https://github.com/rugix/rugix-bakery/tree/main/examples/layer-inputs).
