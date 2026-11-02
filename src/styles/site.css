@@ -336,14 +336,15 @@
   color: var(--theme-content);
 }
 
-.native-delta-plot .native-delta-caption {
+.native-delta-plot .native-delta-caption,
+.native-delta-results .native-delta-caption {
   color: var(--theme-content-muted);
   font-size: 0.9rem;
   line-height: 1.6;
 }
 
 .native-delta-values {
-  margin: 1rem 0 2rem;
+  margin: 1rem 0;
   overflow-x: auto;
 }
 
@@ -351,17 +352,66 @@
   cursor: pointer;
 }
 
-.native-delta-values table {
+.native-delta-values .native-delta-table {
+  display: table;
   width: 100%;
+  margin: 0;
+  border-collapse: collapse;
+  font-size: 0.9rem;
   font-variant-numeric: tabular-nums;
-  font-size: 0.85rem;
 }
 
-.native-delta-values th,
-.native-delta-values td {
-  padding: 0.5rem;
+.native-delta-results .native-delta-table {
+  table-layout: fixed;
+}
+
+.native-delta-table caption {
+  padding: 0 0 0.75rem;
   text-align: left;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.native-delta-table th,
+.native-delta-table td {
+  padding: 0.8rem 0.5rem;
   border-bottom: 1px solid var(--theme-divider);
+  text-align: right;
+}
+
+.native-delta-table th:first-child {
+  text-align: left;
+}
+
+.native-delta-results .native-delta-table th:first-child {
+  width: 44%;
+}
+
+.native-delta-table thead th {
+  background: var(--theme-surface-1);
+  color: var(--theme-content-muted);
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.native-delta-table thead th:not(:first-child) {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.native-delta-table tbody th {
+  font-weight: 500;
+}
+
+.native-delta-table [data-featured="true"] {
+  background: var(--theme-primary-muted);
+  font-weight: 600;
+}
+
+.native-delta-table [data-featured="true"] th {
+  font-weight: inherit;
 }
 
 /*

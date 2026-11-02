@@ -1,0 +1,66 @@
+---
+slug: faster-delta-updates
+title: Faster Delta Updates
+description: Benchmarks of Rugix Ctrl's concurrent HTTP fetcher show faster dynamic delta updates on networks with latency and lower network traffic than RAUC.
+authors: koehlma
+tags: [rugix, benchmarks, delta updates, ota, embedded linux]
+---
+
+import {
+  InstallationTimesTable,
+  PlotDownloadSizes,
+} from "../../components/NativeDeltaResults.tsx"
+
+Rugix Ctrl and RAUC install system updates on embedded Linux devices. Both support dynamic delta updates, which reduce downloads by reusing data already on a device. But downloading only the missing data can still be slow when an installer sends thousands of small HTTP requests one after another.
+
+Rugix Ctrl 1.4 introduces a concurrent fetching pipeline that reduces this waiting. In our benchmarks at 40 ms of added round-trip delay, median installation speedups ranged from about **14× to 31× compared with Rugix Ctrl 1.3.0 and RAUC 1.15.2**. Across three Debian update scenarios at 10 ms added round-trip delay, Rugix Ctrl transferred **25.5–28.5% fewer bytes than RAUC**, counting traffic in both directions.
+
+{/* truncate */}
+
+## Fewer Bytes, Less Waiting
+
+A device fetches the missing data from a complete update bundle. An ordinary HTTP server can host the bundle; it only needs to support byte-range requests. Our earlier article, [Efficient Delta Updates](/blog/efficient-delta-updates), explains how this reduces downloads.
+
+Downloading only the missing data can still require thousands of small requests. Rugix Ctrl 1.3.0 fetched ranges sequentially and frequently opened new connections, so each request could add another network round trip. Rugix Ctrl 1.4 combines adjacent missing blocks into larger ranges, reuses connections, and fetches several ranges concurrently. Downloads progress while the installer verifies, decompresses, and writes data it has already received. These improvements are enabled by default and work with existing block-encoded bundles.
+
+## Faster Installations
+
+We compared Rugix Ctrl 1.3.0, the new fetcher, and RAUC 1.15.2 using three Debian update scenarios: a monthly Bookworm update, an annual Bookworm update, and an upgrade from Bullseye to Bookworm. RAUC calls its dynamic delta mechanism _adaptive updates_. Each installer reconstructed the same 1.38 GiB filesystem image.
+
+The link was limited to **20 MiB/s**, with **0, 10, or 40 ms of added round-trip latency**. We repeated every measurement five times. The table shows median times for complete installations over HTTP/1.1, including downloading, decoding, verification, and writes. Select an update scenario to explore the results.
+
+<InstallationTimesTable client:visible />
+
+For the monthly update at 40 ms added latency, median installation times were **457.6 seconds with Rugix Ctrl 1.3.0**, **440.5 seconds with RAUC**, and **31.0 seconds with the new fetcher**. The new fetcher used **four connections instead of 2,750** in the monthly benchmark.
+
+Across all three scenarios at 40 ms added latency, median speedups were about **15–31× over Rugix Ctrl 1.3.0 and 14–31× over RAUC**. These speedups pair each baseline run with the new fetcher run from the same repetition. At 10 ms added latency, speedups over the two baselines ranged from about seven to eleven times. At zero added latency, we found no consistent improvement over Rugix Ctrl 1.3.0. The pipeline helps most when an installer would otherwise wait for sequential network requests.
+
+## Less Network Traffic Than RAUC
+
+We also measured actual traffic on the network interface, including response data, protocol overhead, requests, acknowledgments, and retransmissions. Packet captures and Linux interface counters agree for every accepted run.
+
+<PlotDownloadSizes client:visible />
+
+For the monthly update at 10 ms added latency, the new Rugix Ctrl fetcher transferred **175.9 MiB**, compared with **246.1 MiB for RAUC**. Across the three selected scenarios, Rugix Ctrl used about **25.5–28.5% less interface traffic**.
+
+The two systems use different block layouts. RAUC identifies reusable fixed 4 KiB blocks and fetches data from compressed groups in its bundle. Rugix Ctrl uses content-defined chunks, whose boundaries follow the data, and compresses those chunks individually. These choices affect both reuse and the amount of compressed data that must be fetched.
+
+The measured download sizes also informed an update to our [delta update savings calculator](/blog/efficient-delta-updates#savings-calculator). Its [calibration report](https://github.com/rugix/rugix-benchmarks/blob/main/benchmarks/dynamic-downloads/results/2026-10/calculator.md) explains how the measurements relate to the earlier models.
+
+## Benchmark Setup and Limits
+
+We measured the fetching change at prerelease revision [`b82749f`](https://github.com/rugix/rugix/commit/b82749ff34ee8668fb3e53322af039a083e8bf69), labeled “Rugix Ctrl 1.4 Fetcher” in the results. These measurements cover that change rather than a fresh benchmark of the final release.
+
+The tests used fresh x86-64 KVM guests with four virtual CPUs, 8 GiB RAM, and blank target slots. Corpus filesystems were installed as data and were not booted. Reuse indices were prepared and caches warmed before timing; boot, initial index generation, and reboot are excluded. Every run passed an independent check of the reconstructed image.
+
+Rugix Ctrl used Casync chunks with a nominal 64 KiB size and XZ compression. RAUC used its built-in `block-hash-index` method and 64 KiB XZ compression groups, following its [adaptive-update documentation](https://rauc.readthedocs.io/en/latest/advanced.html#block-based-adaptive-update-block-hash-index). Both Rugix Ctrl versions were rebuilt with the same pinned compiler, and we used the new fetcher's default settings. We also checked RAUC with HTTP/2 over TLS; it did not substantially change installation time in these measurements.
+
+These results describe selected update pairs in a controlled environment. Embedded CPUs, flash storage, cold caches, and different networks can change installation times. The [benchmark suite](https://github.com/rugix/rugix-benchmarks/tree/main/benchmarks/dynamic-downloads) contains the reproducible setup, all individual measurements, and complete HTTP/2 results.
+
+## Try It with Your Own Images
+
+The fetching improvements are included in [Rugix Ctrl 1.4](/blog/releases/1.4) and work with an HTTP server that supports byte ranges. See the [Rugix Ctrl documentation](/docs/ctrl) to get started, or run the [benchmark suite](https://github.com/rugix/rugix-benchmarks/tree/main/benchmarks/dynamic-downloads) with your own images.
+
+---
+
+At [Silitics](https://silitics.com), we help companies build robust embedded Linux products. If you need help evaluating delta updates or integrating Rugix into an existing platform, [we would love to hear from you](mailto:hello@silitics.com).

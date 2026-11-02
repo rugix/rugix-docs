@@ -39,7 +39,7 @@ Any HTTP server that supports byte-range requests works. This includes virtually
 
 ### Concurrent Fetching
 
-Rugix Ctrl 1.4 combines adjacent missing blocks into larger HTTP ranges, reuses connections, and fetches several ranges concurrently. Downloads overlap with payload verification, decompression, and writes. This reduces waiting on network round trips and is enabled by default for existing block-encoded bundles. See the [1.4 release benchmarks](/blog/releases/1.4#faster-delta-updates) for measured installation times and network traffic.
+Rugix Ctrl 1.4 combines adjacent missing blocks into larger HTTP ranges, reuses connections, and fetches several ranges concurrently. Downloads overlap with payload verification, decompression, and writes. This reduces waiting on network round trips and is enabled by default for existing block-encoded bundles. See the [delta update benchmarks](/blog/faster-delta-updates) for measured installation times and network traffic.
 
 ### Slot Indices
 

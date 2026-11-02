@@ -4,28 +4,17 @@ import {
   BarElement,
   CategoryScale,
   LinearScale,
-  LineElement,
-  PointElement,
   Legend,
   Title,
   Tooltip,
   type ChartOptions,
 } from "chart.js"
-import { Bar, Line } from "react-chartjs-2"
+import { Bar } from "react-chartjs-2"
 
 import { PlotShell, useThemeMode } from "./DeltaPlot"
 import BENCHMARK from "./native-delta-data.json"
 
-ChartJS.register(
-  BarElement,
-  CategoryScale,
-  LinearScale,
-  LineElement,
-  PointElement,
-  Legend,
-  Title,
-  Tooltip,
-)
+ChartJS.register(BarElement, CategoryScale, LinearScale, Legend, Title, Tooltip)
 
 const WORKLOADS = [
   { id: "monthly", label: "Monthly Update" },
@@ -39,15 +28,13 @@ const INSTALLERS = [
     id: "rugix-release",
     label: "Rugix Ctrl 1.3.0",
     color: "#64748b",
-    dash: [5, 4],
   },
   {
     id: "rugix-pipeline",
     label: "Rugix Ctrl 1.4 Fetcher",
     color: "#0ea5e9",
-    dash: [],
   },
-  { id: "rauc-http", label: "RAUC 1.15.2", color: "#c084fc", dash: [2, 3] },
+  { id: "rauc-http", label: "RAUC 1.15.2", color: "#c084fc" },
 ]
 const DOWNLOAD_INSTALLERS = INSTALLERS.slice(1)
 const RTTS = [0, 10, 40]
@@ -72,71 +59,14 @@ function colors(mode: "light" | "dark") {
 }
 
 /** Median installation times across the tested network latencies. */
-export function PlotInstallationTimes() {
+export function InstallationTimesTable() {
   const [workload, setWorkload] = useState<Workload>("monthly")
   const controlId = useId()
-  const mode = useThemeMode()
-  const palette = colors(mode)
-  const title = "Median Installation Time"
   const groups = INSTALLERS.map((installer) =>
     RTTS.map((rtt) => group(workload, installer.id, rtt)),
   )
-  const data = {
-    datasets: INSTALLERS.map((installer, index) => ({
-      label: installer.label,
-      borderColor: installer.color,
-      backgroundColor: installer.color,
-      borderDash: installer.dash,
-      borderWidth: 2,
-      pointRadius: 4,
-      data: groups[index].map((row) => ({
-        x: row.rtt_ms,
-        y: row.seconds_median,
-      })),
-    })),
-  }
-  const options: ChartOptions<"line"> = {
-    responsive: true,
-    maintainAspectRatio: false,
-    interaction: { mode: "nearest", axis: "x", intersect: false },
-    plugins: {
-      title: { display: true, text: title, color: palette.text },
-      legend: { position: "bottom", labels: { color: palette.text } },
-      tooltip: {
-        callbacks: {
-          title: (items) => `${items[0].parsed.x} ms added round-trip latency`,
-          label: (item) =>
-            `${item.dataset.label}: ${item.parsed.y?.toFixed(1)} s median`,
-        },
-      },
-    },
-    scales: {
-      x: {
-        type: "linear",
-        min: 0,
-        max: 40,
-        title: {
-          display: true,
-          text: "Added Round-Trip Latency (ms)",
-          color: palette.text,
-        },
-        ticks: { color: palette.text, stepSize: 10 },
-        grid: { color: palette.grid },
-      },
-      y: {
-        beginAtZero: true,
-        title: {
-          display: true,
-          text: "Installation Time (s)",
-          color: palette.text,
-        },
-        ticks: { color: palette.text },
-        grid: { color: palette.grid },
-      },
-    },
-  }
   return (
-    <div className="native-delta-plot prose-reset">
+    <div className="native-delta-results prose-reset">
       <label className="native-delta-controls" htmlFor={controlId}>
         Update scenario
         <select
@@ -154,22 +84,9 @@ export function PlotInstallationTimes() {
           ))}
         </select>
       </label>
-      <PlotShell>
-        <Line
-          data={data}
-          options={options}
-          aria-label={`${title}, ${workload}, medians of five installs per condition`}
-        />
-      </PlotShell>
-      <p className="native-delta-caption">
-        Median installation times from five installs per condition.
-      </p>
-      <details className="native-delta-values">
-        <summary>Show median values</summary>
-        <table>
-          <caption>
-            Median installation time in seconds by added round-trip latency
-          </caption>
+      <div className="native-delta-values">
+        <table className="native-delta-table">
+          <caption>Median installation time (seconds)</caption>
           <thead>
             <tr>
               <th scope="col">Installer</th>
@@ -182,7 +99,10 @@ export function PlotInstallationTimes() {
           </thead>
           <tbody>
             {INSTALLERS.map((installer, index) => (
-              <tr key={installer.id}>
+              <tr
+                key={installer.id}
+                data-featured={installer.id === "rugix-pipeline"}
+              >
                 <th scope="row">{installer.label}</th>
                 {groups[index].map((row) => (
                   <td key={row.rtt_ms}>{row.seconds_median.toFixed(1)}</td>
@@ -191,7 +111,10 @@ export function PlotInstallationTimes() {
             ))}
           </tbody>
         </table>
-      </details>
+      </div>
+      <p className="native-delta-caption">
+        Five installs per condition. Columns show added round-trip latency.
+      </p>
     </div>
   )
 }
@@ -257,7 +180,7 @@ export function PlotDownloadSizes() {
       </p>
       <details className="native-delta-values">
         <summary>Show measured values</summary>
-        <table>
+        <table className="native-delta-table">
           <caption>Network traffic in both directions, MiB</caption>
           <thead>
             <tr>
