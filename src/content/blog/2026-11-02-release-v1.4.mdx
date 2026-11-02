@@ -18,15 +18,15 @@ Dynamic delta updates reduce downloads by reusing data that is already on a devi
 
 In our benchmark of a monthly Debian update with 40 ms of added round-trip latency, the new fetcher reduced the median installation time from **457.6 seconds to 31.0 seconds** compared with Rugix Ctrl 1.3.0. Read [Faster Delta Updates](/blog/faster-delta-updates) for the complete comparison with Rugix Ctrl 1.3.0 and RAUC, including the benchmark setup and its limits.
 
-Delta updates now also happen by default on subsequent updates. Rugix Ctrl 1.4 retains the verified _block indices_ supplied by regular system payloads: records of the installed data chunks that later updates can reuse. Rugix Bakery bundles include these indices by default, and the HTTP server must support byte-range requests. Reusing factory-installed data without matching indices remains opt-in through `install.auto-index`. See [Delta Updates](/docs/ctrl/updates/delta-updates#slot-indices) for the requirements and configuration.
+Delta updates now also happen by default on subsequent updates. Rugix Ctrl 1.4 retains the verified _block indices_ supplied by regular system payloads, so later updates can reuse the installed data. Rugix Bakery bundles include these indices by default. Reusing factory-installed data without matching indices remains opt-in through `install.auto-index`. See [Delta Updates](/docs/ctrl/updates/delta-updates#slot-indices) for the requirements and configuration.
 
 ## Application Configuration and Staged Deployments
 
 [Rugix Apps](/blog/2026-03-23-rugix-apps) manages application workloads independently of the base system. It installs each application version as an immutable _generation_ and can roll back to a previous generation when an update does not work as expected.
 
-Devices running the same generation often need different settings, for example, the address of a site-specific server. Rugix Ctrl 1.4 adds device-specific JSON configuration, which it manages separately from the immutable generations. An app bundle can include a JSON Schema and default settings, and Rugix Ctrl validates the resulting configuration before activating the workload.
+Devices running the same application often need different settings, for example, the address of a site-specific server. Rugix Ctrl 1.4 adds device-specific JSON configuration, which it manages separately from the immutable generations. An app bundle can include a JSON Schema and default settings, and Rugix Ctrl validates the resulting configuration before activating the workload.
 
-Configuration has its own revision history. When an app rolls back, Rugix Ctrl restores the configuration revision that the older generation was last activated with. If the schema of a new generation no longer accepts the current configuration, supply a new document with `--config` when installing or activating that generation. Applying the document that an app already runs with no longer restarts its workload.
+Configuration has its own revision history. When an app rolls back, Rugix Ctrl restores the configuration revision that the older generation was last activated with. If the schema of a new generation no longer accepts the current configuration, you can supply a new configuration with `--config` when installing or activating that generation.
 
 You can now also separate installation from activation. For example, you can download and install an update while the current workload keeps running and then activate it during a maintenance window:
 
@@ -51,13 +51,11 @@ Because stored files no longer appear in the generation directory, use `rugix-ct
 
 ## Recoverable Bootstrapping
 
-When a device boots for the first time, Rugix Ctrl can _bootstrap_ it, for example, by growing the partition table and creating the data partition. Rugix Ctrl 1.4 records partition creation and filesystem initialization in a durable journal. If bootstrapping is interrupted, for example, by a power failure, the next boot resumes from that journal and preserves filesystems whose completion was recorded durably. If the disk, the bootstrapping configuration, or the planned partition geometry changed in the meantime, Rugix Ctrl rejects recovery instead of applying an outdated plan to the device.
-
-On Raspberry Pi, the `rpi-tryboot` and `rpi-uboot` boot flows now preserve the contents of a prepared boot partition when `boot.img` is present, so authenticated boot images remain unchanged.
+When a device boots for the first time, Rugix Ctrl can _bootstrap_ it, for example, by growing the partition table and creating the data partition. Rugix Ctrl 1.4 records partition creation and filesystem initialization in a durable journal. If bootstrapping is interrupted, for example, by a power failure, the next boot resumes from that journal and preserves filesystems whose completion was recorded durably. If the disk, the bootstrapping configuration, or the planned partition geometry changed in the meantime, Rugix Ctrl rejects recovery instead of applying an outdated plan to the device. This makes bootstrapping resilient to power failures in the field.
 
 ## Bundle Inspection and Nix Integration
 
-The new `rugix-ctrl bundle inspect` command reads a bundle from a file, an HTTP(S) URL, or standard input and reports its manifest and payload metadata.
+The new `rugix-ctrl bundle inspect` command reads a bundle from a file, an HTTP(S) URL, or standard input and reports its manifest, included components, and payload metadata.
 
 For Nix users, the Rugix flake now provides `lib.mkBundle` and `lib.mkComposeBundle` for building Rugix bundles and Docker Compose app bundles in Nix. It also provides a NixOS module that sets up the Rugix Ctrl services, the daemon configuration, and app recovery. See the [Nix integration guide](https://github.com/rugix/rugix/blob/v1.4.0/nix/README.md).
 
@@ -66,7 +64,7 @@ For Nix users, the Rugix flake now provides `lib.mkBundle` and `lib.mkComposeBun
 Before deploying Rugix Ctrl 1.4, check the following changes:
 
 - **HTTPS uses the operating system's trust store.** Rugix Ctrl now verifies HTTPS update servers against the operating system's CA certificates and no longer embeds a separate set of public CA certificates. Install and maintain `ca-certificates` on target devices. Bundle signing roots remain configured independently.
-- **Compose images use the store by default.** Older Rugix Ctrl versions cannot read stored files. If a device rolls back to a system with an older Rugix Ctrl version, a generation installed with stored images can only activate while Docker still has those images, and custom orchestrator scripts that call `rugix-ctrl apps cat` fail. While devices may still roll back to an older Rugix Ctrl version, pack Compose bundles with `--image-location file` to keep the images as files in the generation directory.
+- **Docker Compose apps use the store by default.** Older Rugix Ctrl versions cannot read stored files. If a device rolls back to a system with an older Rugix Ctrl version, a generation installed with stored images can only activate while Docker still has those images, and custom orchestrator scripts that call `rugix-ctrl apps cat` fail. While devices may still roll back to an older Rugix Ctrl version, pack Compose bundles with `--image-location file` to keep the images as files in the generation directory.
 - **Application inspection output changes.** `rugix-ctrl apps info` now reports the persisted lifecycle state as `lifecycle` instead of `state`, alongside the live workload `status`. It also omits `createdAt` when generation metadata is missing. Update tools that consume this output.
 - **Each app bundle targets one app.** Rugix Bundler and Rugix Ctrl reject app bundles with payloads for several apps. No packing command produces such bundles, so this only affects hand-written manifests. Pack a separate bundle for each app.
 
@@ -74,7 +72,7 @@ The [changelog](https://github.com/rugix/rugix/blob/v1.4.0/CHANGELOG.md) lists a
 
 ## Get Started
 
-Download Rugix Ctrl 1.4 and Rugix Bundler from the [GitHub release](https://github.com/rugix/rugix/releases/tag/v1.4.0), or follow the [Rugix Ctrl documentation](/docs/ctrl) to integrate them into an embedded Linux system. To evaluate the faster fetching with your own images, run our [benchmarks](https://github.com/rugix/rugix-benchmarks/tree/main/benchmarks/dynamic-downloads).
+Download Rugix Ctrl 1.4 and Rugix Bundler from the [GitHub release](https://github.com/rugix/rugix/releases/tag/v1.4.0), or follow the [Rugix Ctrl documentation](/docs/ctrl) to integrate them into an embedded Linux system.
 
 We welcome feedback and contributions on [GitHub](https://github.com/rugix/rugix). If you have questions or want to discuss a deployment, join our [Discord community](https://discord.gg/cZ8wP9jNsn).
 
