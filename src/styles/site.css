@@ -323,8 +323,20 @@
   height: clamp(220px, 32vw, 340px);
 }
 
+.native-delta-plot {
+  margin: 1.75em 0;
+}
+
+.native-delta-plot .delta-plot {
+  margin: 0;
+}
+
 .native-delta-plot .delta-plot-canvas {
   height: clamp(300px, 50vw, 380px);
+}
+
+.native-delta-plot .native-delta-caption {
+  margin-top: 0.75rem;
 }
 
 .native-delta-controls {
