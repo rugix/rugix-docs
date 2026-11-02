@@ -9,6 +9,10 @@ the interface and its service definition versioned with the rest of the device
 software. Rugix provides integrations for Rugix Bakery, NixOS, and Yocto; a standalone
 installer is also available for evaluating Rugix Admin on an existing system.
 
+Rugix Admin 0.6.0 requires Rugix Ctrl 1.4.0 or later. Upgrade Rugix Ctrl before
+upgrading Rugix Admin. Rugix Admin 0.5.0 uses the application inspection format
+of Rugix Ctrl 1.3.x and cannot display application details with Rugix Ctrl 1.4.0.
+
 ## Install on NixOS
 
 The Rugix Admin flake exports `nixosModules.rugix-admin` and packages for x86-64
@@ -18,7 +22,7 @@ loopback by default, and daemon operations must be enabled explicitly.
 
 See [Nix Integration](https://github.com/rugix/rugix-admin/blob/main/nix/README.md)
 for a complete module configuration and build commands. These flake outputs
-require a revision containing the Nix integration; they are not in version 0.5.0.
+are available starting with Rugix Admin 0.6.0.
 
 ## Install with Rugix Bakery
 
@@ -48,8 +52,15 @@ recipes = [
     "core/rugix-ctrl-daemon",
     "rugix-extra/rugix-admin",
 ]
+
+[parameters."core/rugix-ctrl"]
+version = "v1.4.0"
+
+[parameters."rugix-extra/rugix-admin"]
+source = "v0.6.0"
 ```
 
+Pin both releases to keep their application inspection formats compatible.
 The daemon recipe installs the privileged service required by Rugix Admin. See
 [Configuration](../configuration) to select the available operations.
 
@@ -62,6 +73,10 @@ Build the system image as usual:
 Install the resulting image through your normal provisioning workflow.
 
 ## Install with Yocto
+
+The `meta-rugix` layer currently packages Rugix Admin 0.5.0 with Rugix Ctrl
+1.3.x. The following instructions install that pair. Rugix Admin 0.6.0 requires
+updated recipes for both components.
 
 For a Yocto image that already integrates Rugix Ctrl, use the official
 [`meta-rugix`](https://github.com/rugix/meta-rugix) layer and add Rugix Admin
@@ -133,15 +148,15 @@ The installer downloads the latest stable release by default. Pass an exact
 release tag as the first argument to install a specific version:
 
 ```sh
-sudo bash install-rugix-admin.sh v0.5.0
+sudo bash install-rugix-admin.sh v0.6.0
 ```
 
 Set `RUGIX_CTRL_VERSION` to an exact tag or a stable major-version selector
 when the installer also needs to install Rugix Ctrl. It defaults to `v1`:
 
 ```sh
-sudo env RUGIX_CTRL_VERSION=v1.3.0 \
-  bash install-rugix-admin.sh v0.5.0
+sudo env RUGIX_CTRL_VERSION=v1.4.0 \
+  bash install-rugix-admin.sh v0.6.0
 ```
 
 The installer then:
@@ -157,6 +172,6 @@ The installer then:
 6. starts both services.
 
 An existing `rugix-ctrl` installation and `/etc/rugix/daemon.toml` are
-preserved. The existing binary must provide the `rugix-ctrl daemon` command.
-The controls visible in Rugix Admin reflect the policy that was already
-configured on the device.
+preserved. Upgrade an existing Rugix Ctrl installation to 1.4.0 or later
+separately before installing Rugix Admin 0.6.0. The controls visible in Rugix
+Admin reflect the policy that was already configured on the device.
