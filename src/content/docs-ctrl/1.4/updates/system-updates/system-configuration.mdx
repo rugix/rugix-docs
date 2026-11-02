@@ -32,7 +32,7 @@ By default, Rugix Ctrl locates both partitions on its own: it takes the first pa
 When a device's layout differs from this, declare the partitions explicitly in the `config-partition` and `data-partition` sections of `system.toml`. Each is identified either by `device`, the path to a block device, or by `partition`, a partition number on the root device:
 
 ```toml title="/etc/rugix/system.toml"
-#:schema https://raw.githubusercontent.com/rugix/rugix/refs/heads/main/schemas/rugix-ctrl-system.schema.json
+#:schema https://raw.githubusercontent.com/rugix/rugix/refs/tags/v1.4.0/schemas/rugix-ctrl-system.schema.json
 
 [config-partition]
 # The config partition is the block device `/dev/sda1`.
@@ -68,7 +68,7 @@ A _slot_ is declared under `slots.<name>`, where `<name>` is a name you choose. 
 A `block` slot is a block device, specified by `device` (a path such as `/dev/sda2`) or `partition` (a partition number on the root device). A typical slot definition for an A/B device with separate boot partitions may look as follows:
 
 ```toml title="/etc/rugix/system.toml"
-#:schema https://raw.githubusercontent.com/rugix/rugix/refs/heads/main/schemas/rugix-ctrl-system.schema.json
+#:schema https://raw.githubusercontent.com/rugix/rugix/refs/tags/v1.4.0/schemas/rugix-ctrl-system.schema.json
 
 [slots.boot-a]
 type = "block"
@@ -164,4 +164,4 @@ For the complete set of options, here is the full schema for `system.toml`:
 
 <SidexViewer ir={rugixCtrlIr} type="system.SystemConfig" initialDepth={1} />
 
-The schema is defined in [`system.sidex`](https://github.com/rugix/rugix/blob/main/crates/apps/rugix-ctrl/schemas/system.sidex).
+The schema is defined in [`system.sidex`](https://github.com/rugix/rugix/blob/v1.4.0/crates/apps/rugix-ctrl/schemas/system.sidex).

@@ -37,6 +37,10 @@ When you install an update via HTTP, the server supports range queries, and the 
 
 Any HTTP server that supports byte-range requests works. This includes virtually every standard HTTP server, all S3-compatible object stores, and most CDNs. No special infrastructure is required.
 
+### Concurrent Fetching
+
+Rugix Ctrl 1.4 combines adjacent missing blocks into larger HTTP ranges, reuses connections, and fetches several ranges concurrently. Downloads overlap with payload verification, decompression, and writes. This reduces waiting on network round trips and is enabled by default for existing block-encoded bundles. See the [1.4 release benchmarks](/blog/releases/1.4#faster-delta-updates) for measured installation times and network traffic.
+
 ### Slot Indices
 
 Rugix Ctrl always retains the verified block index of installed slot data when the bundle provides it. This applies to block and file slots in full and incremental system updates and prepares the installed data for later dynamic delta updates. Existing matching indices are always used to reuse local blocks.

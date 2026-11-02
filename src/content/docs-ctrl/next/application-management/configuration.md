@@ -76,7 +76,7 @@ Rollback restores a historical pair, while activation carries the device's inten
 
 A new generation's schema should accept every document its predecessor accepted. Adding an optional property is safe. Adding a required property, or narrowing the type of an existing one, requires every affected device to receive a new document with `--config`. Rugix cannot check this property when a bundle is packed, so it is a rule for app authors rather than an enforced constraint.
 
-A device-specific document replaces the bundled default rather than being merged into it. Declare `default` annotations inside the schema for values an application should fall back to.
+A device-specific document replaces the bundled default rather than being merged into it. Schema `default` annotations can describe fallback values, but Rugix Ctrl does not insert them into the document. The application must implement those fallbacks.
 
 ## Configuration Revisions and Rollback
 

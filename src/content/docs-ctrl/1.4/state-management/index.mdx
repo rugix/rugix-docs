@@ -46,7 +46,7 @@ The same early-init mechanism that brings up the overlay also runs [Bootstrappin
 State that should persist through updates and reboots is declared in _state configuration_ files under `/etc/rugix/state`. For example, to persist the root user's home directory:
 
 ```toml title="/etc/rugix/state/root-home.toml"
-#:schema https://raw.githubusercontent.com/rugix/rugix/refs/heads/main/schemas/rugix-ctrl-state.schema.json
+#:schema https://raw.githubusercontent.com/rugix/rugix/refs/tags/v1.4.0/schemas/rugix-ctrl-state.schema.json
 
 [[persist]]
 directory = "/root"
@@ -80,7 +80,7 @@ By default, the overlay is discarded to prevent accidental state from corrupting
 You can, however, make the overlay persistent with the following configuration:
 
 ```toml title="/etc/rugix/state.toml"
-#:schema https://raw.githubusercontent.com/rugix/rugix/refs/heads/main/schemas/rugix-ctrl-state.schema.json
+#:schema https://raw.githubusercontent.com/rugix/rugix/refs/tags/v1.4.0/schemas/rugix-ctrl-state.schema.json
 
 overlay = "persist"
 ```
@@ -221,4 +221,4 @@ Here is the complete schema for state configuration files:
 
 <SidexViewer ir={rugixCtrlIr} type="state.StateConfig" initialDepth={1} />
 
-The schema is defined in [`state.sidex`](https://github.com/rugix/rugix/blob/main/crates/apps/rugix-ctrl/schemas/state.sidex).
+The schema is defined in [`state.sidex`](https://github.com/rugix/rugix/blob/v1.4.0/crates/apps/rugix-ctrl/schemas/state.sidex).

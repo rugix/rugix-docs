@@ -1,0 +1,110 @@
+---
+slug: releases/1.4
+title: Rugix Ctrl 1.4
+description: Rugix Ctrl 1.4 brings faster delta updates, versioned application configuration, and shared content storage for application workloads.
+authors: koehlma
+tags: [rugix, release, delta updates, ota, embedded linux]
+---
+
+import {
+  PlotInstallationTimes,
+  PlotDownloadSizes,
+} from "../../components/NativeDeltaPlots.tsx"
+
+We are excited to announce the release of Rugix Ctrl 1.4. 🎉
+
+This release speeds up dynamic delta updates over HTTP, adds versioned configuration and staged deployments for Rugix Apps, and introduces shared storage that avoids keeping duplicate application data. It also improves recovery during device initialization and adds Nix integration for building bundles and configuring Rugix Ctrl services.
+
+{/* truncate */}
+
+## Faster Delta Updates
+
+With _dynamic delta updates_, a device reuses parts of its existing system and downloads the missing data from a complete update bundle. An ordinary HTTP server can host the bundle; it only needs to support byte-range requests. Our earlier article, [Efficient Delta Updates](/blog/efficient-delta-updates), explains how this reduces downloads.
+
+Downloading only the missing data can still require thousands of small requests. Rugix Ctrl 1.3.0 fetched ranges sequentially and frequently opened new connections, so each request could add another network round trip. Rugix Ctrl 1.4 combines adjacent missing blocks into larger ranges, reuses connections, and fetches several ranges concurrently. Downloads progress while the installer verifies, decompresses, and writes data it has already received. These improvements are enabled by default and work with existing block-encoded bundles.
+
+### Faster Installations
+
+We compared Rugix Ctrl 1.3.0, the new fetcher, and RAUC 1.15.2 using three Debian update scenarios: a monthly Bookworm update, an annual Bookworm update, and an upgrade from Bullseye to Bookworm. RAUC calls its dynamic delta mechanism _adaptive updates_. Each installer reconstructed the same 1.38 GiB filesystem image.
+
+The link was limited to **20 MiB/s**, with **0, 10, or 40 ms of added round-trip latency**. We repeated every measurement five times. The graph shows median times for complete installations over HTTP/1.1, including downloading, decoding, verification, and writes. Select an update scenario to explore the results.
+
+<PlotInstallationTimes client:visible />
+
+For the monthly update at 40 ms added latency, median installation times were **457.6 seconds with Rugix Ctrl 1.3.0**, **440.5 seconds with RAUC**, and **31.0 seconds with the new fetcher**. The new fetcher used **four connections instead of 2,750** in the monthly benchmark.
+
+Across all three scenarios at 40 ms added latency, median speedups were about **15–31× over Rugix Ctrl 1.3.0 and 14–31× over RAUC**. These speedups pair each baseline run with the new fetcher run from the same repetition. At 10 ms added latency, speedups over the two baselines ranged from about seven to eleven times. At zero added latency, we found no consistent improvement over Rugix Ctrl 1.3.0. The pipeline helps most when an installer would otherwise wait for sequential network requests.
+
+### Less Network Traffic Than RAUC
+
+We also measured actual traffic on the network interface, including response data, protocol overhead, requests, acknowledgments, and retransmissions. Packet captures and Linux interface counters agree for every accepted run.
+
+<PlotDownloadSizes client:visible />
+
+For the monthly update at 10 ms added latency, the new Rugix Ctrl fetcher transferred **175.9 MiB**, compared with **246.1 MiB for RAUC**. Across the three selected scenarios, Rugix Ctrl used about **25.5–28.5% less interface traffic**.
+
+The two systems use different block layouts. RAUC identifies reusable fixed 4 KiB blocks and fetches data from compressed groups in its bundle. Rugix Ctrl uses content-defined chunks, whose boundaries follow the data, and compresses those chunks individually. These choices affect both reuse and the amount of compressed data that must be fetched.
+
+The measured download sizes also informed an update to our [delta update savings calculator](/blog/efficient-delta-updates#savings-calculator). Its [calibration report](https://github.com/rugix/rugix-benchmarks/blob/main/benchmarks/dynamic-downloads/results/2026-10/calculator.md) explains how the measurements relate to the earlier models.
+
+### Benchmark Setup and Limits
+
+We measured the fetching change at prerelease revision [`b82749f`](https://github.com/rugix/rugix/commit/b82749ff34ee8668fb3e53322af039a083e8bf69), shown as “Rugix Ctrl 1.4 Fetcher” in the graphs. These measurements cover that change rather than a fresh benchmark of the final release.
+
+The tests used fresh x86-64 KVM guests with four virtual CPUs, 8 GiB RAM, and blank target slots. Corpus filesystems were installed as data and were not booted. Reuse indices were prepared and caches warmed before timing; boot, initial index generation, and reboot are excluded. Every run passed an independent check of the reconstructed image.
+
+Rugix Ctrl used Casync chunks with a nominal 64 KiB size and XZ compression. RAUC used its built-in `block-hash-index` method and 64 KiB XZ compression groups, following its [adaptive-update documentation](https://rauc.readthedocs.io/en/latest/advanced.html#block-based-adaptive-update-block-hash-index). Both Rugix Ctrl versions were rebuilt with the same pinned compiler, and we used the new fetcher's default settings. We also checked RAUC with HTTP/2 over TLS; it did not substantially change installation time in these measurements.
+
+These results describe selected update pairs in a controlled environment. Embedded CPUs, flash storage, cold caches, and different networks can change installation times. The [benchmark suite](https://github.com/rugix/rugix-benchmarks/tree/main/benchmarks/dynamic-downloads) contains the reproducible setup, all individual measurements, and complete HTTP/2 results.
+
+## Application Configuration and Staged Deployments
+
+Rugix Apps manages application workloads independently of the base operating system. Each installed version becomes a _generation_, with its own files and rollback history. Rugix Ctrl 1.4 adds device-specific JSON configuration, managed separately from those immutable generations. An app bundle can include a JSON Schema and default settings, and Rugix Ctrl validates the effective document before activating the workload.
+
+Configuration has its own revision history. When an app rolls back, Rugix Ctrl restores the configuration revision that the older generation last activated with. If an incoming generation needs a different document, pass it with `--config` during installation or activation. Applying the same document again leaves a running workload untouched.
+
+You can also separate installation from activation. For example, download an update while the current workload keeps running, then activate it during a maintenance window:
+
+```shell
+rugix-ctrl apps install --bundle-hash HASH --no-activate my-app-v2.rugixb
+rugix-ctrl apps activate my-app 2 --config config.json
+```
+
+Here, `HASH` is the bundle hash produced by Rugix Bundler, `my-app` is the app ID, and `2` is the generation number reported by the installation. Signed bundles can be verified through configured certificate roots instead. A staged generation remains available through garbage collection until it or a newer generation is activated.
+
+Management tools can attach a JSON document with `--origin` to identify the release or deployment that produced a generation. See [Application Management](/docs/ctrl/application-management/) and [Application Configuration](/docs/ctrl/application-management/configuration) for the complete workflows. Rugix Apps remains experimental, so its interfaces may change between releases.
+
+## Shared Storage for Application Data
+
+Keeping several generations of a container workload can consume substantial storage even when most of their contents are identical. Rugix Ctrl 1.4 adds a _content-addressed store_: a storage area shared across applications and generations that keeps each distinct chunk of data once, using the compressed blocks delivered in a bundle.
+
+Rugix Bundler now uses this store by default for Docker Compose images. Rugix Ctrl streams the images into Docker when activating a generation, and removes Rugix-owned image tags when deactivating it. Retained generations keep their stored data for later activation or rollback; garbage collection releases content once no generation references it. The store also supplies local blocks when installing new application and system bundles, extending the data available for dynamic delta updates.
+
+Use `rugix-ctrl apps files` and `rugix-ctrl apps cat` to list and read generation files wherever they are stored. The new `rugix-ctrl store` commands inspect, verify, and collect stored content. See the [store reference](/docs/ctrl/reference/store).
+
+## Boot Recovery, Bundle Inspection, and Nix Integration
+
+Rugix Ctrl can now resume interrupted bootstrap partition creation and filesystem initialization from a durable journal. It preserves checkpointed filesystems and rejects replay if the disk, configuration, or planned partition geometry changed. Raspberry Pi update flows also preserve prepared boot partition contents when `boot.img` is present, keeping authenticated boot images unchanged.
+
+The new `rugix-ctrl bundle inspect` command reads bundles from a file, HTTP(S), or standard input and reports their manifest and payload metadata. For Nix users, the flake adds helpers for building update and Docker Compose bundles, plus a NixOS module for Rugix Ctrl services, daemon configuration, and app recovery. See the [Nix integration guide](https://github.com/rugix/rugix/blob/v1.4.0/nix/README.md).
+
+## Upgrading to 1.4
+
+Before deploying Rugix Ctrl 1.4, check these changes:
+
+- **HTTPS uses the operating system's trust store.** Install and maintain `ca-certificates` on target devices. Rugix Ctrl no longer embeds a separate public CA bundle. Bundle-signing roots remain configured independently.
+- **Compose images use the store by default.** Older Rugix Ctrl versions cannot read stored files. After a system rollback to an older version, a generation installed with stored images can only activate while Docker still has those images. Custom orchestrator scripts calling `rugix-ctrl apps cat` also need 1.4. Pack bundles with `--image-location file` while devices may roll back to older Rugix Ctrl versions.
+- **Application inspection output changes.** `apps info` reports persisted state as `lifecycle`, alongside the live workload `status`, and omits `createdAt` when generation metadata is missing. Update tools that consume this output.
+- **Each app bundle targets one app.** Hand-written manifests containing payloads for several apps are rejected. Pack a separate bundle for each app.
+
+The [changelog](https://github.com/rugix/rugix/blob/v1.4.0/CHANGELOG.md) lists all changes, including the security fixes from the 1.3 patch releases.
+
+## Get Started
+
+Download Rugix Ctrl 1.4 and Rugix Bundler from the [GitHub release](https://github.com/rugix/rugix/releases/tag/v1.4.0), or follow the [Rugix Ctrl documentation](/docs/ctrl) to integrate them into an embedded Linux system. To evaluate the fetching improvements with your own images, run the [benchmarks](https://github.com/rugix/rugix-benchmarks/tree/main/benchmarks/dynamic-downloads).
+
+We welcome feedback and contributions on [GitHub](https://github.com/rugix/rugix). Join our [Discord community](https://discord.gg/cZ8wP9jNsn) to discuss your deployment.
+
+---
+
+At [Silitics](https://silitics.com), we help companies build robust and secure embedded Linux products. If you need help designing an update architecture or integrating Rugix into an existing platform, [we would love to hear from you](mailto:hello@silitics.com).

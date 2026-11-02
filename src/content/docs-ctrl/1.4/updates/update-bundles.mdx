@@ -62,7 +62,7 @@ As an example, consider a full [system update](../system-updates/) for a device 
 The manifest declares one payload per image, `boot.vfat` for the `boot` slot and `system.ext4` for the `system` slot, each with its own [block encoding](#block-encoding):
 
 ```toml
-#:schema https://raw.githubusercontent.com/rugix/rugix/refs/heads/main/schemas/rugix-bundle-manifest.schema.json
+#:schema https://raw.githubusercontent.com/rugix/rugix/refs/tags/v1.4.0/schemas/rugix-bundle-manifest.schema.json
 
 update-type = "full"
 
@@ -103,6 +103,62 @@ If the bundle directory contains a top-level `components/` directory, Rugix Bund
 Without a `block-encoding`, Rugix Ctrl isn't able to verify individual blocks of an update and will thus refuse installation. **Always add a `block-encoding` to every payload.**
 :::
 
+## Inspecting a Bundle
+
+Inspect a bundle before installing it:
+
+```shell
+rugix-ctrl bundle inspect BUNDLE.rugixb
+```
+
+The command prints JSON with the bundle hash and update type, payload destinations and hashes, embedded components, signature summaries, and the embedded manifest when present. Delta payloads report their input and reconstructed output hashes. Optional fields are omitted when absent.
+
+The `manifest` object contains the parsed embedded JSON, including unknown fields and their original names. It exposes payload filenames and declared encoding settings. These settings describe the build configuration; inspection does not check them against payload headers. If the manifest cannot be read as a JSON object, the command omits it and prints a warning.
+
+For a bundle with one slot payload, the output has this form (hashes shortened):
+
+```json
+{
+  "headerHash": "sha256:…",
+  "hashAlgorithm": "sha256",
+  "updateType": "full",
+  "payloads": [
+    {
+      "delivery": { "type": "slot", "slot": "system" },
+      "headerHash": "sha256:…",
+      "fileHash": "sha256:…"
+    }
+  ],
+  "signatures": [
+    { "signerSubjects": ["CN=Bundle Signer"], "headerMatches": true }
+  ],
+  "manifest": {
+    "update-type": "full",
+    "payloads": [
+      {
+        "filename": "system.img",
+        "delivery": { "type": "slot", "slot": "system" },
+        "block-encoding": {
+          "chunker": "fixed-64",
+          "compression": { "type": "xz" }
+        }
+      }
+    ]
+  }
+}
+```
+
+The same command accepts an HTTP(S) URL or a stream on standard input. Add `--json` for compact JSON suitable for scripts:
+
+```shell
+rugix-ctrl bundle inspect --json URL
+curl URL | rugix-ctrl bundle inspect --json -
+```
+
+Inspection reads only the bundle header and its following signature metadata, then stops at the payload section. This also works with standard input and HTTP servers without range support; reading the payloads is unnecessary. The command shares its HTTP tuning and retry options with `rugix-ctrl update install` and `rugix-ctrl apps install`, including `--disable-range-queries`.
+
+The payload descriptors report what the bundle declares. Inspection does not check that the payloads are present, install anything, require device configuration, or verify payload contents, cryptographic signatures, or certificate chains. Signature subjects are claimed identities from the embedded signer certificates. A signature's `headerMatches` flag only compares its declared digest with the bundle header. Malformed signatures are reported through per-signature `error` fields and do not prevent inspection.
+
 ## Installing a Bundle
 
 Rugix Ctrl installs bundles on the device with `rugix-ctrl update install`[^app-install] from any of three sources.
@@ -130,11 +186,36 @@ A bundle at a URL, which Rugix Ctrl fetches itself:
 rugix-ctrl update install URL
 ```
 
-Rugix Ctrl uses HTTP range queries to dynamically fetch blocks that aren't already available locally (dynamic delta updates) as well as to automatically resume updates, if the connection drops mid-download. If no local blocks can be reused, Ctrl starts with a normal full request and switches to a range request only after an interruption. The retry count and backoff for these reconnects can be tuned via `--http-max-retries`, `--http-retry-initial-backoff`, and `--http-retry-max-backoff`. Range queries can also be disabled entirely with `--disable-range-queries` as a fallback for servers that don't support them.
+Rugix Ctrl uses HTTP range queries to fetch blocks that aren't already available locally (dynamic delta updates). It combines adjacent missing blocks into larger requests, fetches several ranges concurrently, and reuses HTTP connections while installing verified blocks in order. If a local block fails verification, Rugix Ctrl downloads its original bundle range instead. Interrupted downloads resume at the remaining interval of the affected request.
+
+HTTPS server certificates are verified against the operating system's trust store. Install and maintain `ca-certificates` in the device image, including any private CA certificates needed by your update server. These transport trust roots are separate from the roots configured for [bundle signatures](../signed-updates).
+
+Both `update install` and `apps install` accept these HTTP tuning options:
+
+| Option                  | Default | Meaning                                                                    |
+| ----------------------- | ------- | -------------------------------------------------------------------------- |
+| `--http-stall-timeout`  | `60`    | Maximum time without incoming socket data, in seconds.                     |
+| `--http-max-range-size` | `1MiB`  | Maximum bytes per range request. Accepts units such as `256KiB` or `2MiB`. |
+| `--http-concurrency`    | `4`     | Maximum concurrent range requests.                                         |
+
+All three values must be positive. More concurrency and larger ranges can improve throughput but retain more downloaded data in memory: up to `(concurrency + 1) × max-range-size`, plus block, codec, and metadata buffers.
+
+For example:
+
+```shell
+rugix-ctrl update install URL \
+  --http-concurrency 2 \
+  --http-max-range-size 256KiB \
+  --http-stall-timeout 120
+```
+
+The stall timeout bounds idle waits, so a download that continues receiving data can run longer. DNS, connection, and request deadlines remain 60 seconds. Retry count and backoff can be tuned via `--http-max-retries`, `--http-retry-initial-backoff`, and `--http-retry-max-backoff`.
+
+Servers that do not support ranges fall back to a full streaming response; concurrency and range-size settings do not apply to that response. Use `--disable-range-queries` to select this streaming mode explicitly.
 
 The stdin and HTTP forms are _streaming_ installs: Rugix Ctrl writes each block straight to its target as it arrives, rather than staging the whole bundle on the device first.
 
-Every install uses streaming **verification** of the bundle. Rugix Ctrl aborts the install as soon as it reads a block that it cannot verify. A bundle is verified in one of two ways:
+Every install uses streaming **verification** of the bundle. Rugix Ctrl verifies each block before writing it. A rejected downloaded block can be fetched again when range access is available; persistent verification failures abort the install. A bundle is verified in one of two ways:
 
 - By a valid [embedded signature](../signed-updates), checked against a root certificate configured on the device.
 - By its **bundle hash**, passed to the install command with `--bundle-hash HASH`.
@@ -245,7 +326,7 @@ The process roughly looks as follows:
 │                │                      ▼
 │                │             ╔══════════════════╗                     ╭──────╮
 │  Payload Data  │ ◀─────────▶ ║ Adaptive Fetcher ║ ──────────────────▶ │ Slot │
-╰────────────────╯  read/skip  ╚══════════════════╝        write        ╰──────╯
+╰────────────────╯   ranges    ╚══════════════════╝        write        ╰──────╯
                                         ▲            (read/write/seek)
                                         │ read/seek
                                         ▼
@@ -280,4 +361,4 @@ Here is the complete schema for the bundle manifest:
   initialDepth={1}
 />
 
-The schema is defined in [`manifest.sidex`](https://github.com/rugix/rugix/blob/main/crates/libs/rugix-bundle/schemas/manifest.sidex).
+The schema is defined in [`manifest.sidex`](https://github.com/rugix/rugix/blob/v1.4.0/crates/libs/rugix-bundle/schemas/manifest.sidex).

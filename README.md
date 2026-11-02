@@ -74,7 +74,7 @@ hide a new notice. Banner-specific styling lives in `src/styles/site.css`.
 
 - `src/content/blog/` — blog posts (`YYYY-MM-DD-slug.md`).
 - `src/content/docs-rugix/<version>/` — umbrella docs (`latest`, `0.8.14`, `0.7.5`, `0.6`).
-- `src/content/docs-ctrl/<version>/` — Rugix Ctrl docs (`1.3`, `next`).
+- `src/content/docs-ctrl/<version>/` — Rugix Ctrl docs (`1.4`, `next`).
 - `src/content/docs-bakery/<version>/` — Rugix Bakery docs (`0.9`, `next`).
 - `src/schemas/*.schema.json` — JSON Schema sources rendered inline by
   `@silitics/astro-schema-viewer`.

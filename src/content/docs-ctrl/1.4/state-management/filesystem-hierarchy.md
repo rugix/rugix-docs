@@ -27,4 +27,9 @@ The state directory `/run/rugix/state` has the following hierarchy:
 - `persist`: Files and directories persisted with Rugix Ctrl.
 - `ssh`: Persistent SSH host keys.
 - `machine-id`: Persistent `/etc/machine-id`.
-- `app`: Persistent application data (unmanaged).
+- `apps`: Apps installed with [Rugix Apps](../../application-management/).
+- `store`: Content-addressed [store](../../reference/store) for large files, such as container images of apps.
+- `.rugix`: Internal state of Rugix Ctrl.
+- `app`: Persistent data of your own applications, unrelated to Rugix Apps and not managed by Rugix Ctrl.
+
+Rugix Ctrl manages this directory and may add entries in future versions. `app` is reserved for your own data. To keep other files, [declare them as persistent](../#selective-persistent-state), which places them under `persist`.

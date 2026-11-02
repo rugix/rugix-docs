@@ -18,7 +18,7 @@ Migrating from RAUC to Rugix Ctrl requires a [system configuration file](../../.
 Here is an example for U-Boot with typical A/B boot partitions:
 
 ```toml title="/etc/rugix/system.toml"
-#:schema https://raw.githubusercontent.com/rugix/rugix/refs/heads/main/schemas/rugix-ctrl-system.schema.json
+#:schema https://raw.githubusercontent.com/rugix/rugix/refs/tags/v1.4.0/schemas/rugix-ctrl-system.schema.json
 
 [boot-flow]
 type = "rauc-uboot"

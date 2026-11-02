@@ -186,7 +186,9 @@ A bundle at a URL, which Rugix Ctrl fetches itself:
 rugix-ctrl update install URL
 ```
 
-Rugix Ctrl uses HTTP range queries to fetch blocks that aren't already available locally (dynamic delta updates). It combines adjacent missing blocks into larger requests, fetches several ranges concurrently, and reuses HTTP connections while installing verified blocks in order. If a local block fails verification, Ctrl downloads its original bundle range instead. Interrupted downloads resume at the remaining interval of the affected request.
+Rugix Ctrl uses HTTP range queries to fetch blocks that aren't already available locally (dynamic delta updates). It combines adjacent missing blocks into larger requests, fetches several ranges concurrently, and reuses HTTP connections while installing verified blocks in order. If a local block fails verification, Rugix Ctrl downloads its original bundle range instead. Interrupted downloads resume at the remaining interval of the affected request.
+
+HTTPS server certificates are verified against the operating system's trust store. Install and maintain `ca-certificates` in the device image, including any private CA certificates needed by your update server. These transport trust roots are separate from the roots configured for [bundle signatures](../signed-updates).
 
 Both `update install` and `apps install` accept these HTTP tuning options:
 

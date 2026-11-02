@@ -27,6 +27,14 @@ Bootstrapping is configured in `/etc/rugix/bootstrapping.toml` and requires a co
 
 [^bootstrap-in-production]: A malicious actor with write access to the config partition could re-arm bootstrapping on a production device, even with secure boot in place. To mitigate this, install a `prepare` bootstrapping hook that gates the process on an independent signal (e.g., a flag in one-time-programmable memory) and aborts if it should not run.
 
+## Interrupted Bootstrapping
+
+Rugix Ctrl records partition creation and filesystem initialization in a recovery journal on the config partition at `/.rugix/bootstrap-journal.json`. If bootstrapping is interrupted, the next boot resumes from that journal. A filesystem whose completion checkpoint was saved is preserved; one without a durable checkpoint may be initialized again.
+
+The journal binds recovery to the original disk, the exact bootstrapping configuration bytes, and the planned partition geometry. If any of these differ, Rugix Ctrl rejects recovery instead of applying an old plan to a changed device. Keep the configuration unchanged while a bootstrap operation is pending.
+
+Bootstrap hooks can run again during recovery. Make them safe to repeat, especially when they provision identifiers, certificates, or one-time-programmable storage. The partition journal does not make arbitrary hook side effects transactional.
+
 ## System Layout
 
 While one may choose to already prepare the provisioning image and its partition table for the exact storage capacity of a device, this may not always be feasible. Maybe you have different variants of a device with different storage capacities and want to use the same image for all of them, or you may want your users to be able to flash an image onto their own storage media. In these cases, the partition table of the image will not match the storage capacity and typically does not even contain all the required partitions, such as redundant system partitions and the data partition. In that case, you can configure Rugix Ctrl to adapt the partition table and create the necessary partitions and filesystems. The desired _system layout_ is defined in the `layout` configuration section.
@@ -124,4 +132,4 @@ Here is the complete schema for the bootstrapping configuration file:
 
 <SidexViewer ir={rugixCtrlIr} type="bootstrapping.BootstrappingConfig" initialDepth={1} />
 
-The schema is defined in [`bootstrapping.sidex`](https://github.com/rugix/rugix/blob/main/crates/apps/rugix-ctrl/schemas/bootstrapping.sidex).
+The schema is defined in [`bootstrapping.sidex`](https://github.com/rugix/rugix/blob/v1.4.0/crates/apps/rugix-ctrl/schemas/bootstrapping.sidex).

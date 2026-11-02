@@ -19,6 +19,10 @@ An **app** is a named, self-contained application workload (e.g., `my-service`, 
 
 Each install of an app produces a new **generation**: an immutable snapshot of the app's files. Previous generations stay on disk, so rollback is instant with nothing to re-download. Alongside its generations, each app has a **data directory** for persistent state that survives across generations, the right place for databases, caches, or any runtime state.
 
+Keeping a full copy of every file for every generation is costly for large files such as container images. Such files can instead be kept in the **store**, a content-addressed storage area shared by all generations and apps. The store splits files into chunks, keeps each distinct chunk once, and compresses it. Two generations whose container images share most layers therefore use little more space than one. A bundle marks such files for the store, and bundles packed with `rugix-bundler apps pack docker-compose` keep their container images there by default. See [Stored Files](./internals#stored-files) for details.
+
+Apps can also define a general JSON configuration contract. Rugix stores device-specific configuration independently from immutable app generations, validates it against the app's optional JSON Schema, and applies it with the same rollback guarantees as an app update. See [Application Configuration](./configuration).
+
 ## Orchestrators
 
 Each app declares an **orchestrator** that knows how to start, stop, and check the workload. Rugix Apps ships with built-in orchestrators for common workload types:
@@ -61,6 +65,29 @@ rugix-ctrl apps install my-app-v2.rugixb
 
 The current generation is deactivated and the new generation is activated. The previous generation remains on disk for rollback.
 
+If the new generation declares a configuration schema that no longer accepts the configuration stored on the device, the installation fails before the running workload is stopped. Pass a document for the new generation with `--config`, as described in [Application Configuration](./configuration).
+
+## Staging an Update
+
+To download and install a new generation while the current one keeps running, pass `--no-activate`, then activate the generation when the device may be interrupted, for example in a maintenance window:
+
+```shell
+rugix-ctrl apps install --no-activate my-app-v2.rugixb
+rugix-ctrl apps activate my-app 2
+```
+
+`rugix-ctrl apps info` lists the staged generation as complete, inactive, and `staged`. Garbage collection keeps it until you activate it or a newer generation.
+
+## Recording the Origin of a Generation
+
+A management tool that installs apps needs to recognize the generations it installed, for example, to tell which release an app runs after a rollback. Pass a JSON document describing the bundle with `--origin`:
+
+```shell
+rugix-ctrl apps install --origin '{"release":"2.0.0"}' my-app-v2.rugixb
+```
+
+Rugix Ctrl stores the document with the new generation without interpreting it. `rugix-ctrl apps info` and `rugix-ctrl apps generations` report it as `origin` of the generation.
+
 ## Rollback
 
 To roll back to the previous generation:
@@ -98,12 +125,13 @@ Rugix Apps is designed to handle crashes and power loss gracefully:
 - A new generation is only marked as ready once all of its files have been fully extracted. An interrupted installation never leaves a half-installed generation.
 - If the device loses power during a generation switch, the interrupted operation is automatically replayed on the next boot.
 - If activation fails and a previous generation exists, rollback is attempted automatically.
+- If applying new configuration fails, the previously active combination of app generation and configuration revision is restored automatically.
 
 :::warning
-The last two guarantees rely on two systemd services being installed and enabled on the device:
+Crash recovery and boot-time restoration rely on two systemd services being installed and enabled on the device:
 
-- [`rugix-apps-restore-units.service`](https://github.com/rugix/rugix/blob/main/crates/apps/rugix-ctrl/assets/rugix-apps-restore-units.service): restores systemd units for the `binary` orchestrator after a reboot.
-- [`rugix-apps-recover.service`](https://github.com/rugix/rugix/blob/main/crates/apps/rugix-ctrl/assets/rugix-apps-recover.service): recovers interrupted transitions for all orchestrator types after the system is fully up.
+- [`rugix-apps-restore-units.service`](https://github.com/rugix/rugix/blob/v1.4.0/crates/apps/rugix-ctrl/assets/rugix-apps-restore-units.service): restores systemd units for the `binary` orchestrator after a reboot.
+- [`rugix-apps-recover.service`](https://github.com/rugix/rugix/blob/v1.4.0/crates/apps/rugix-ctrl/assets/rugix-apps-recover.service): recovers interrupted transitions for all orchestrator types after the system is fully up.
 
 Without them, apps using the `binary` orchestrator will not start after a reboot, and interrupted transitions (for any orchestrator) will not be recovered automatically.
 :::
@@ -112,7 +140,7 @@ See the [Application Management reference](./internals) for details on the crash
 
 ## Inspecting Apps
 
-All inspection commands produce structured JSON output:
+All inspection commands produce structured JSON output, described by published [JSON Schemas](https://github.com/rugix/rugix/tree/v1.4.0/schemas):
 
 ```shell
 # List all apps with their status:
@@ -122,6 +150,8 @@ rugix-ctrl apps list
 rugix-ctrl apps info APP
 ```
 
+Both report two different things about an app, and it is worth keeping them apart. The **status** is the live state of the workload, observed from the orchestrator every time you ask: whether containers are running, healthy, or gone. The **lifecycle** state is what Rugix persisted about the app itself: which generation and configuration revision are deployed, and whether a transition needs recovery. An app can be lifecycle-active while its status reports `failed`, which is exactly the case where a workload crashed without Rugix having changed anything.
+
 ## Garbage Collection
 
 Over time, old generations accumulate on disk. To clean them up:
@@ -130,11 +160,11 @@ Over time, old generations accumulate on disk. To clean them up:
 rugix-ctrl apps gc [app] [--keep N]
 ```
 
-By default, this keeps the currently active generation and the last previously active one (for rollback). The `--keep` flag controls how many previous generations to retain.
+By default, this keeps the currently active generation and the last previously active one (for rollback). The `--keep` flag controls how many previous generations to retain. Generations that were never activated are removed, for example after a failed installation or activation. Staged generations are the exception: a complete generation installed with `--no-activate` is kept until it or a newer generation is activated. Afterwards, Rugix Ctrl deletes stored content that no remaining generation uses.
 
 ## Removing an App
 
-To remove an app entirely, including all generations and persistent data:
+To remove an app entirely, including all generations, their stored files, and persistent data:
 
 ```shell
 rugix-ctrl apps remove APP

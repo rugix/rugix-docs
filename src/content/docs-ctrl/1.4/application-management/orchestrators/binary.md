@@ -9,7 +9,7 @@ The `binary` orchestrator manages a single executable via a systemd service unit
 
 ### 1. Create a Systemd Unit Template
 
-Write a `systemd.service` unit template. Use `${GENERATION_DIR}` and `${DATA_DIR}` as placeholders:
+Write a `systemd.service` unit template. Use `${GENERATION_DIR}`, `${DATA_DIR}`, and optionally `${CONFIG_PATH}` as placeholders:
 
 ```ini title="systemd.service"
 [Unit]
@@ -49,6 +49,7 @@ This command:
 
 - `--service` specifies the systemd unit template.
 - `--include` adds extra files or directories to the bundle.
+- `--config-schema` and `--config-default` include the app's optional [JSON configuration contract](../../configuration).
 
 ### 3. Install on the Device
 
@@ -68,20 +69,21 @@ The generation directory must contain:
 
 ## Template Placeholders
 
-| Placeholder         | Replaced with                                         |
-| ------------------- | ----------------------------------------------------- |
-| `${GENERATION_DIR}` | Absolute path to the generation directory.            |
-| `${DATA_DIR}`       | Absolute path to the app's persistent data directory. |
+| Placeholder         | Replaced with                                                                         |
+| ------------------- | ------------------------------------------------------------------------------------- |
+| `${GENERATION_DIR}` | Absolute path to the generation directory.                                            |
+| `${DATA_DIR}`       | Absolute path to the app's persistent data directory.                                 |
+| `${CONFIG_PATH}`    | Absolute path to the effective JSON configuration, or an empty string if none exists. |
 
 ## Lifecycle Operations
 
-| Operation  | Implementation                                                                                                                                               |
-| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Operation  | Implementation                                                                                                                                                                                         |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | activate   | Renders the unit template, writes it to `.rugix/systemd/units/` in the generation directory and `/run/systemd/system/`, runs `daemon-reload`, then `systemctl enable --runtime` and `systemctl start`. |
-| status     | Maps `systemctl is-active` output to running/stopped/failed/unknown.                                                                                         |
-| deactivate | Runs `systemctl stop` and `systemctl disable --runtime`, removes the runtime unit file, runs `daemon-reload`.                                                |
-| start      | Runs `systemctl start`.                                                                                                                                      |
-| stop       | Runs `systemctl stop`.                                                                                                                                       |
+| status     | Maps `systemctl is-active` output to running/stopped/failed/unknown.                                                                                                                                   |
+| deactivate | Runs `systemctl stop` and `systemctl disable --runtime`, removes the runtime unit file, runs `daemon-reload`.                                                                                          |
+| start      | Runs `systemctl start`.                                                                                                                                                                                |
+| stop       | Runs `systemctl stop`.                                                                                                                                                                                 |
 
 **Boot behavior after `stop`:** `systemctl stop` stops the service but does not disable it. The unit remains enabled via runtime symlinks, so systemd restarts the service on the next boot (once the unit has been restored and re-enabled by `restore-units`).
 
