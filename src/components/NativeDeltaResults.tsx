@@ -36,7 +36,6 @@ const INSTALLERS = [
   },
   { id: "rauc-http", label: "RAUC 1.15.2", color: "#c084fc" },
 ]
-const DOWNLOAD_INSTALLERS = INSTALLERS.slice(1)
 const RTTS = [0, 10, 40]
 const MIB = 1024 ** 2
 
@@ -119,12 +118,12 @@ export function InstallationTimesTable() {
   )
 }
 
-/** Compare measured interface traffic, including requests and acknowledgments. */
+/** Measured interface traffic, including requests and acknowledgments. */
 export function PlotDownloadSizes() {
   const palette = colors(useThemeMode())
   const data = {
     labels: WORKLOADS.map((item) => item.label),
-    datasets: DOWNLOAD_INSTALLERS.map((installer) => ({
+    datasets: INSTALLERS.map((installer) => ({
       label: installer.label,
       backgroundColor: installer.color,
       data: WORKLOADS.map(
@@ -185,7 +184,7 @@ export function PlotDownloadSizes() {
           <thead>
             <tr>
               <th scope="col">Update</th>
-              {DOWNLOAD_INSTALLERS.map((item) => (
+              {INSTALLERS.map((item) => (
                 <th key={item.id} scope="col">
                   {item.label}
                 </th>
@@ -196,7 +195,7 @@ export function PlotDownloadSizes() {
             {WORKLOADS.map((workload) => (
               <tr key={workload.id}>
                 <th scope="row">{workload.label}</th>
-                {DOWNLOAD_INSTALLERS.map((installer) => (
+                {INSTALLERS.map((installer) => (
                   <td key={installer.id}>
                     {(
                       group(workload.id, installer.id, 10).total_bytes_median /

@@ -1,7 +1,7 @@
 ---
 slug: faster-delta-updates
 title: Faster Delta Updates
-description: Benchmarks of Rugix Ctrl's concurrent HTTP fetcher show faster dynamic delta updates on networks with latency and lower network traffic than RAUC.
+description: How concurrent HTTP fetching in Rugix Ctrl 1.4 makes dynamic delta updates faster on networks with latency, with benchmarks of installation time and network traffic.
 authors: koehlma
 tags: [rugix, benchmarks, delta updates, ota, embedded linux]
 ---
@@ -11,9 +11,9 @@ import {
   PlotDownloadSizes,
 } from "../../components/NativeDeltaResults.tsx"
 
-Rugix Ctrl and RAUC install system updates on embedded Linux devices. Both support _dynamic delta updates_, which reduce downloads by reusing data that is already on a device. Downloading only the missing data saves bandwidth, but it can still take a long time when an installer sends thousands of small HTTP requests one after another.
+Rugix Ctrl supports _dynamic delta updates_, which reduce downloads by reusing data that is already on a device. Downloading only the missing data saves bandwidth, but it can still take a long time when an installer sends thousands of small HTTP requests one after another.
 
-Rugix Ctrl 1.4 introduces a concurrent fetching pipeline that removes most of this waiting. In our benchmarks with 40 ms of added round-trip latency, median installation speedups ranged from about **14× to 31× compared with Rugix Ctrl 1.3.0 and RAUC 1.15.2**. Across three Debian update scenarios at 10 ms of added round-trip latency, Rugix Ctrl also transferred **25.5–28.5% fewer bytes than RAUC**, counting traffic in both directions.
+In Rugix Ctrl 1.4, we improved how the installer fetches that missing data. It combines adjacent chunks into larger HTTP ranges, reuses connections, and processes several requests concurrently. Across three Debian update scenarios with 40 ms of added round-trip latency, median installations were about **15–31× faster than with Rugix Ctrl 1.3.0**. With no added latency, we found no consistent improvement.
 
 In this article, we explain where the time goes during dynamic delta updates, present our measurements of installation time and network traffic, and discuss the limits of these results.
 
@@ -23,33 +23,33 @@ In this article, we explain where the time goes during dynamic delta updates, pr
 
 For dynamic delta updates, an update bundle carries a _block index_ for each payload. The index lists the hashes of the chunks that make up the new version, for example, of a filesystem image. The device compares these hashes with the chunks it already has, for example, in the currently installed system, and fetches only the missing chunks from the complete bundle. An ordinary HTTP server can host the bundle, as long as it supports byte-range requests, which let a client download a specific part of a file. Our earlier article, [Efficient Delta Updates](/blog/efficient-delta-updates), explains how this approach reduces downloads and compares it with other delta update techniques.
 
-The missing chunks are rarely contiguous, so downloading them can require thousands of small requests. Each request waits at least one network round trip for its response, and each new connection adds further round trips. Rugix Ctrl 1.3.0 sent its range requests one after another and frequently opened new connections, so the waiting grew with every request. On a link with noticeable latency, most of the installation time went into waiting instead of transferring data.
+The missing chunks are rarely contiguous, so downloading them can require thousands of small requests. Each request waits at least one network round trip for its response, and each new connection adds further round trips. Rugix Ctrl 1.3.0 sent its range requests one after another and frequently opened new connections, so the waiting grew with every request. At higher latency, most of the installation time went into waiting instead of transferring data.
 
 Rugix Ctrl 1.4 reduces both the number of requests and the time spent waiting for them. It combines adjacent missing chunks into larger ranges, reuses connections, and keeps several requests in flight at once. Downloads continue while the installer verifies, decompresses, and writes the data it has already received. These improvements are enabled by default and work with existing bundles that include block indices.
 
 ## Faster Installations
 
-We compared Rugix Ctrl 1.3.0, the new fetcher, and RAUC 1.15.2 using three Debian update scenarios: a monthly Bookworm update, an annual Bookworm update, and an upgrade from Bullseye to Bookworm. RAUC calls its dynamic delta mechanism _adaptive updates_. In all three scenarios, each installer reconstructed the same 1.38 GiB filesystem image, starting from a different source image per scenario.
+To measure the fetching improvements, we benchmarked Rugix Ctrl 1.3.0 and the new fetcher using three Debian update scenarios: a monthly Bookworm update, an annual Bookworm update, and an upgrade from Bullseye to Bookworm. We also included RAUC 1.15.2, which supports dynamic delta updates through its _adaptive updates_ mechanism, to put the results in context. In all three scenarios, each installer reconstructed the same 1.38 GiB filesystem image, starting from a different source image per scenario.
 
 We limited the link between the update server and the device to **20 MiB/s** and added **0, 10, or 40 ms of round-trip latency**. We repeated every measurement five times. The table shows median times for complete installations over HTTP/1.1, including downloading, decoding, verification, and writes. Select an update scenario to explore the results.
 
 <InstallationTimesTable client:visible />
 
-For the monthly update at 40 ms added latency, median installation times were **457.6 seconds with Rugix Ctrl 1.3.0**, **440.5 seconds with RAUC**, and **31.0 seconds with the new fetcher**.
+For the monthly update at 40 ms added latency, the median installation time fell from **457.6 seconds with Rugix Ctrl 1.3.0** to **31.0 seconds with the new fetcher**. RAUC 1.15.2 took 440.5 seconds under the same conditions.
 
-The request and connection counts show where this difference comes from. For the monthly update at 10 ms added latency, Rugix Ctrl 1.3.0 opened a new connection for each of its 2,750 requests. The new fetcher combined the missing chunks into 931 requests over **four connections**. RAUC reused 16 connections but issued 9,932 requests, and its installation times grew with latency much like those of Rugix Ctrl 1.3.0.
+The request and connection counts show how the fetching behavior changed. For the monthly update at 10 ms added latency, Rugix Ctrl 1.3.0 opened a new connection for each of its 2,750 requests. The new fetcher combined the missing chunks into 931 requests over **four connections**. RAUC issued 9,932 requests over 16 connections in this scenario.
 
-Across all three scenarios at 40 ms added latency, median speedups were about **15–31× over Rugix Ctrl 1.3.0 and 14–31× over RAUC**. We computed each speedup by dividing a baseline installation time by the new fetcher's time from the same repetition and then took the median of the five ratios. At 10 ms added latency, speedups over the two baselines ranged from about seven to eleven times. At zero added latency, we found no consistent improvement over Rugix Ctrl 1.3.0. The pipeline helps most when an installer would otherwise wait for sequential network requests.
+Across all three scenarios at 40 ms added latency, median speedups over Rugix Ctrl 1.3.0 ranged from about **15× to 31×**. We computed each speedup by dividing the Rugix Ctrl 1.3.0 installation time by the new fetcher's time from the same repetition and then took the median of the five ratios. At 10 ms added latency, these speedups ranged from about eight to ten times. At zero added latency, we found no consistent improvement over Rugix Ctrl 1.3.0. The pipeline helps most when an installer would otherwise wait for sequential network requests.
 
-## Less Network Traffic Than RAUC
+## Network Traffic
 
 Metered connections typically count all traffic in both directions, not only the update data itself. We therefore measured the actual traffic on the device's network interface, including response data, protocol overhead, requests, acknowledgments, and retransmissions. Packet captures and Linux interface counters agree for every accepted run.
 
 <PlotDownloadSizes client:visible />
 
-For the monthly update at 10 ms added latency, the new Rugix Ctrl fetcher transferred **175.9 MiB**, compared with **246.1 MiB for RAUC**. Across the three selected scenarios, Rugix Ctrl used about **25.5–28.5% less interface traffic**.
+For the monthly update at 10 ms added latency, total interface traffic fell from **197.1 MiB with Rugix Ctrl 1.3.0** to **175.9 MiB with the new fetcher**. RAUC transferred 246.1 MiB under the same conditions.
 
-The two systems split and compress data differently. RAUC identifies reusable data in fixed 4 KiB blocks and compresses groups of blocks together in its bundle, so fetching one missing block can require downloading the adjacent data in its group. Rugix Ctrl uses content-defined chunks, whose boundaries follow the data instead of fixed offsets, and compresses each chunk individually. These choices affect both how much data a device can reuse and how much compressed data it must fetch.
+The amount of traffic depends on the requests as well as how an installer splits and compresses data. RAUC identifies reusable data in fixed 4 KiB blocks and compresses groups of blocks together in its bundle, so fetching one missing block can require downloading the adjacent data in its group. Rugix Ctrl uses content-defined chunks, whose boundaries follow the data instead of fixed offsets, and compresses each chunk individually. These choices affect both how much data a device can reuse and how much compressed data it must fetch.
 
 The measured download sizes also informed an update to our [delta update savings calculator](/blog/efficient-delta-updates#savings-calculator). Its [calibration report](https://github.com/rugix/rugix-benchmarks/blob/main/benchmarks/dynamic-downloads/results/2026-10/calculator.md) explains how the measurements relate to the models of our earlier article.
 
