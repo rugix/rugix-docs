@@ -291,12 +291,12 @@ export const getBakeryDocsConfig = memoizeDocsConfig(
     const all = await getCollection("docs-bakery")
     const versions = [
       {
-        slug: "1.0",
-        label: "1.0",
+        slug: "0.9",
+        label: "0.9",
         status: "current" as const,
         default: true,
         pathPrefix: "/docs/bakery/",
-        editBaseUrl: `${REPO_EDIT_BASE}/docs-bakery/1.0`,
+        editBaseUrl: `${REPO_EDIT_BASE}/docs-bakery/0.9`,
       },
       {
         slug: "next",
