@@ -177,37 +177,6 @@ export function PlotDownloadSizes() {
         Medians from five installs per scenario at 10 ms added RTT. Includes
         traffic in both directions and network framing.
       </p>
-      <details className="native-delta-values">
-        <summary>Show measured values</summary>
-        <table className="native-delta-table">
-          <caption>Network traffic in both directions, MiB</caption>
-          <thead>
-            <tr>
-              <th scope="col">Update</th>
-              {INSTALLERS.map((item) => (
-                <th key={item.id} scope="col">
-                  {item.label}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {WORKLOADS.map((workload) => (
-              <tr key={workload.id}>
-                <th scope="row">{workload.label}</th>
-                {INSTALLERS.map((installer) => (
-                  <td key={installer.id}>
-                    {(
-                      group(workload.id, installer.id, 10).total_bytes_median /
-                      MIB
-                    ).toFixed(2)}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </details>
     </div>
   )
 }
