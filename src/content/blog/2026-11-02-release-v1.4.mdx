@@ -8,7 +8,7 @@ tags: [rugix, release, delta updates, ota, embedded linux]
 
 We are excited to announce the release of Rugix Ctrl 1.4. 🎉
 
-Rugix Ctrl 1.4 prepares installed systems for dynamic delta updates automatically and makes those updates much faster on networks with latency. For Rugix Apps, the release adds versioned configuration, staged deployments, and a shared store that keeps identical data only once across application versions. It also makes device initialization recoverable after interruptions and adds a Nix integration for building bundles and configuring Rugix Ctrl.
+Rugix Ctrl 1.4 prepares installed systems for dynamic delta updates automatically and makes those updates much faster on networks with latency. For Rugix Apps, the release adds versioned configuration, staged deployments, and a shared store that keeps identical data only once across application versions. It also makes bootstrapping recoverable after interruptions and adds a Nix integration for building bundles and configuring Rugix Ctrl.
 
 {/* truncate */}
 
@@ -53,7 +53,7 @@ Chunks in the store also serve as local data sources when installing app and sys
 
 Because stored files no longer appear in the generation directory, use `rugix-ctrl apps files` and `rugix-ctrl apps cat` to list and read the files of a generation, wherever they are kept. The new `rugix-ctrl store` commands inspect, verify, and garbage-collect the store. See the [store reference](/docs/ctrl/reference/store) for details.
 
-## Recoverable Device Initialization
+## Recoverable Bootstrapping
 
 When a device boots for the first time, Rugix Ctrl can _bootstrap_ it, for example, by growing the partition table and creating the data partition. Rugix Ctrl 1.4 records partition creation and filesystem initialization in a durable journal. If bootstrapping is interrupted, for example, by a power failure, the next boot resumes from that journal and preserves filesystems whose completion was recorded durably. If the disk, the bootstrapping configuration, or the planned partition geometry changed in the meantime, Rugix Ctrl rejects recovery instead of applying an outdated plan to the device.
 
