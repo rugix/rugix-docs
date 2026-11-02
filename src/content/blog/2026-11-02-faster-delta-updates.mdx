@@ -11,9 +11,11 @@ import {
   PlotDownloadSizes,
 } from "../../components/NativeDeltaResults.tsx"
 
-Rugix Ctrl supports _dynamic delta updates_, which reduce downloads by reusing data that is already on a device. Downloading only the missing data saves bandwidth, but it can still take a long time when an installer sends thousands of small HTTP requests one after another.
+Rugix Ctrl and RAUC support _dynamic delta updates_, which reduce downloads by reusing data that is already on a device. Downloading only the missing data saves bandwidth, but it can still take a long time when an installer sends thousands of small HTTP requests one after another.
 
-In Rugix Ctrl 1.4, we improved how the installer fetches that missing data. It combines adjacent chunks into larger HTTP ranges, reuses connections, and processes several requests concurrently. Across three Debian update scenarios with 40 ms of added round-trip latency, median installations were about **15–31× faster than with Rugix Ctrl 1.3.0**. With no added latency, we found no consistent improvement.
+In Rugix Ctrl 1.4, we improved how the installer fetches that missing data. It combines adjacent chunks into larger HTTP ranges, reuses connections, and processes several requests concurrently. We benchmarked the new fetcher alongside Rugix Ctrl 1.3.0 and RAUC 1.15.2.
+
+Across three Debian update scenarios with 40 ms of added round-trip latency, Rugix Ctrl 1.3.0 and RAUC had similar installation times. With the new fetcher, median installations were about **15–31× faster than with Rugix Ctrl 1.3.0**. With no added latency, we found no consistent improvement over Rugix Ctrl 1.3.0.
 
 In this article, we explain where the time goes during dynamic delta updates, present our measurements of installation time and network traffic, and discuss the limits of these results.
 
@@ -29,7 +31,7 @@ Rugix Ctrl 1.4 reduces both the number of requests and the time spent waiting fo
 
 ## Faster Installations
 
-To measure the fetching improvements, we benchmarked Rugix Ctrl 1.3.0 and the new fetcher using three Debian update scenarios: a monthly Bookworm update, an annual Bookworm update, and an upgrade from Bullseye to Bookworm. We also included RAUC 1.15.2, which supports dynamic delta updates through its _adaptive updates_ mechanism, to put the results in context. In all three scenarios, each installer reconstructed the same 1.38 GiB filesystem image, starting from a different source image per scenario.
+We benchmarked Rugix Ctrl 1.3.0, the new fetcher, and RAUC 1.15.2 using three Debian update scenarios: a monthly Bookworm update, an annual Bookworm update, and an upgrade from Bullseye to Bookworm. RAUC calls its dynamic delta mechanism _adaptive updates_. In all three scenarios, each installer reconstructed the same 1.38 GiB filesystem image, starting from a different source image per scenario.
 
 We limited the link between the update server and the device to **20 MiB/s** and added **0, 10, or 40 ms of round-trip latency**. We repeated every measurement five times. The table shows median times for complete installations over HTTP/1.1, including downloading, decoding, verification, and writes. Select an update scenario to explore the results.
 
@@ -39,7 +41,7 @@ For the monthly update at 40 ms added latency, the median installation time fell
 
 The request and connection counts show how the fetching behavior changed. For the monthly update at 10 ms added latency, Rugix Ctrl 1.3.0 opened a new connection for each of its 2,750 requests. The new fetcher combined the missing chunks into 931 requests over **four connections**. RAUC issued 9,932 requests over 16 connections in this scenario.
 
-Across all three scenarios at 40 ms added latency, median speedups over Rugix Ctrl 1.3.0 ranged from about **15× to 31×**. We computed each speedup by dividing the Rugix Ctrl 1.3.0 installation time by the new fetcher's time from the same repetition and then took the median of the five ratios. At 10 ms added latency, these speedups ranged from about eight to ten times. At zero added latency, we found no consistent improvement over Rugix Ctrl 1.3.0. The pipeline helps most when an installer would otherwise wait for sequential network requests.
+Across all three scenarios at 40 ms added latency, median speedups were about **15–31× over Rugix Ctrl 1.3.0** and **14–31× over RAUC**. We computed each speedup by dividing a baseline installation time by the new fetcher's time from the same repetition and then took the median of the five ratios. At 10 ms added latency, speedups over the two baselines ranged from about seven to eleven times. At zero added latency, we found no consistent improvement over Rugix Ctrl 1.3.0. The pipeline helps most when an installer would otherwise wait for sequential network requests.
 
 ## Network Traffic
 
