@@ -1,64 +1,73 @@
 ---
 slug: releases/1.4
 title: Rugix Ctrl 1.4
-description: Rugix Ctrl 1.4 brings faster delta updates, device-specific app settings, and shared storage for app data.
+description: Rugix Ctrl 1.4 brings faster delta updates, versioned application configuration, and shared storage for container images and other application files.
 authors: koehlma
 tags: [rugix, release, delta updates, ota, embedded linux]
 ---
 
 We are excited to announce the release of Rugix Ctrl 1.4. 🎉
 
-Rugix Ctrl 1.4 makes delta updates much faster, especially on networks where each request adds a noticeable wait. For Rugix Apps, the release adds device-specific settings that roll back together with app versions, lets you download an update now and start it later, and stores data shared between app versions only once. It also lets bootstrapping recover from interruptions and adds a Nix integration for building bundles and configuring Rugix Ctrl.
+Rugix Ctrl 1.4 makes dynamic delta updates much faster over HTTP, particularly on high-latency connections. For Rugix Apps, the release adds versioned configuration, staged deployments, and a shared store that deduplicates file content across applications and their versions. It also makes bootstrapping recoverable after interruptions and adds a Nix integration for building bundles and configuring Rugix Ctrl.
 
 {/* truncate */}
 
 ## Faster Delta Updates
 
-Delta updates reduce downloads by reusing data that is already installed on a device. Rugix Ctrl 1.4 downloads the missing parts much faster by combining small requests, reusing connections, and downloading several parts at once. This reduces the time spent waiting for the update server, especially on connections with noticeable delays. Interrupted transfers now resume automatically. These improvements are enabled by default and work with existing bundles that support delta updates.
+Dynamic delta updates reduce downloads by reusing data that is already on a device. Rugix Ctrl 1.4 fetches the missing data much more efficiently: it combines adjacent missing chunks into larger HTTP ranges, reuses connections, and keeps several requests in flight while the installer verifies, decompresses, and writes the data it has already received. Interrupted transfers now resume with bounded retries. These improvements are enabled by default.
 
-In our benchmark of a monthly Debian update with 40 ms of added round-trip latency, an early build of Rugix Ctrl 1.4 reduced the median installation time from **457.6 seconds to 31.0 seconds** compared with Rugix Ctrl 1.3.0. Read [Faster Delta Updates](/blog/faster-delta-updates) for the complete comparison with Rugix Ctrl 1.3.0 and RAUC, including the benchmark setup and its limits.
+In our benchmark of a monthly Debian update with 40 ms of added round-trip latency, the new fetcher reduced the median installation time from **457.6 seconds to 31.0 seconds** compared with Rugix Ctrl 1.3.0. Read [Faster Delta Updates](/blog/faster-delta-updates) for the complete comparison with Rugix Ctrl 1.3.0 and RAUC, including the benchmark setup and its limits.
 
-Delta updates now also happen by default on subsequent updates. After installing a regular system update, Rugix Ctrl keeps a record of the installed data so it can recognize and reuse it next time. This requires bundles with the necessary information, which Rugix Bakery includes by default, and an HTTP server that supports downloading individual parts of a bundle. Reusing factory-installed data without that record remains opt-in through `install.auto-index`; see [Delta Updates](/docs/ctrl/updates/delta-updates#slot-indices) for the requirements and configuration.
+Delta updates now also happen by default on subsequent updates. Rugix Ctrl 1.4 retains the verified _block indices_ supplied by regular system payloads: records of the installed data chunks that later updates can reuse. Rugix Bakery bundles include these indices by default, and the HTTP server must support byte-range requests. Reusing factory-installed data without matching indices remains opt-in through `install.auto-index`. See [Delta Updates](/docs/ctrl/updates/delta-updates#slot-indices) for the requirements and configuration.
 
-## Application Settings and Staged Updates
+## Application Configuration and Staged Deployments
 
-[Rugix Apps](/blog/2026-03-23-rugix-apps) manages applications independently of the base system. Rugix Ctrl keeps earlier versions of an app on the device, so it can roll back when an update does not work as expected.
+[Rugix Apps](/blog/2026-03-23-rugix-apps) manages application workloads independently of the base system. It installs each application version as an immutable _generation_ and can roll back to a previous generation when an update does not work as expected.
 
-Devices running the same app version often need different settings, for example, the address of a site-specific server. Rugix Ctrl 1.4 lets you give each device its own settings as a JSON document, which it keeps separately from the app versions. An app bundle can include default settings and a JSON Schema describing valid settings, and Rugix Ctrl checks a device's settings against the schema before starting the app. Applying the settings that an app already runs with does not restart it, so management tools can safely apply their desired settings again and again.
+Devices running the same generation often need different settings, for example, the address of a site-specific server. Rugix Ctrl 1.4 adds device-specific JSON configuration, which it manages separately from the immutable generations. An app bundle can include a JSON Schema and default settings, and Rugix Ctrl validates the resulting configuration before activating the workload.
 
-Rugix Ctrl also remembers which settings each app version ran with. When an app rolls back, Rugix Ctrl restores the settings used with the earlier version, so settings written for a newer version cannot break the older one. If a new app version no longer accepts a device's current settings, the update stops before the running app is touched, and you can supply new settings with the update using `--config`.
+Configuration has its own revision history. When an app rolls back, Rugix Ctrl restores the configuration revision that the older generation was last activated with. If the schema of a new generation no longer accepts the current configuration, supply a new document with `--config` when installing or activating that generation. Applying the document that an app already runs with no longer restarts its workload.
 
-You can now also download an update now and start it later. For example, a device can download and install a new version of an app while the current version keeps running and then switch to it during a maintenance window. Cleanup of old app versions does not remove a downloaded version before you start it or a newer one. Management tools can also record which release or deployment installed an app version, so that they can later recognize the versions they installed.
+You can now also separate installation from activation. For example, you can download and install an update while the current workload keeps running and then activate it during a maintenance window:
 
-See [Application Management](/docs/ctrl/application-management/) and [Application Configuration](/docs/ctrl/application-management/configuration) for the complete workflows. Rugix Apps remains experimental, so its interfaces may change between releases.
+```shell
+rugix-ctrl apps install --bundle-hash HASH --no-activate my-app-v2.rugixb
+rugix-ctrl apps activate my-app 2 --config config.json
+```
 
-## Shared Storage for Application Data
+Here, `HASH` is the bundle hash produced by Rugix Bundler, `my-app` is the app ID, and `2` is the generation number reported by the installation. For signed bundles, Rugix Ctrl verifies the signature against the configured root certificates instead, so you can omit `--bundle-hash`. Garbage collection keeps a staged generation until it or a newer generation is activated.
 
-Keeping earlier app versions for rollback can take substantial storage, especially for container images, even though consecutive versions usually share most of their contents. Rugix Ctrl 1.4 adds a store that keeps this shared data only once. Retaining an earlier version therefore needs little additional space beyond the data that changed.
+Management tools can attach a JSON document with `--origin` to record the release or deployment that produced a generation, so that they can later recognize the generations they installed. See [Application Management](/docs/ctrl/application-management/) and [Application Configuration](/docs/ctrl/application-management/configuration) for the complete workflows. Rugix Apps remains experimental, so its interfaces may change between releases.
 
-Docker Compose apps packed with Rugix Bundler now keep their container images in the store by default. Rugix Ctrl loads the images into Docker when needed and keeps the stored copies available for a later rollback. It frees stored data once no retained version needs it.
+## Shared Storage for Application Files
 
-The store also benefits future updates. When installing app or system bundles over HTTP, Rugix Ctrl reuses data from the store instead of downloading it again. See the [store reference](/docs/ctrl/reference/store) for details.
+Keeping several generations of a container workload can consume substantial storage, even when most of their contents are identical. Rugix Ctrl 1.4 adds a _content-addressed store_ for application files, such as container images, shared across apps and generations. The store splits files into chunks, keeps each distinct chunk only once, and stores the chunks compressed as the bundle delivered them.
+
+Docker Compose app bundles packed with Rugix Bundler now keep their container images in this store by default, instead of as files in the generation directory. When activating a generation, Rugix Ctrl streams the images from the store into Docker. When deactivating it, Rugix Ctrl removes the Rugix-owned image tags, so images of old generations no longer accumulate in Docker. Retained generations keep their stored data for later activation or rollback, and garbage collection releases data once no generation references it.
+
+Chunks in the store also serve as local data sources when installing app and system bundles, which gives dynamic delta updates more data to reuse.
+
+Because stored files no longer appear in the generation directory, use `rugix-ctrl apps files` and `rugix-ctrl apps cat` to list and read the files of a generation, wherever they are kept. The new `rugix-ctrl store` commands inspect, verify, and garbage-collect the store. See the [store reference](/docs/ctrl/reference/store) for details.
 
 ## Recoverable Bootstrapping
 
-When a device boots for the first time, Rugix Ctrl can _bootstrap_ it, for example, by growing the partition table and creating the data partition. If bootstrapping is interrupted, for example, by a power failure, Rugix Ctrl 1.4 can resume it on the next boot from its recorded progress. Filesystems whose completion Rugix Ctrl had recorded are kept as they are. Before resuming, Rugix Ctrl verifies that the disk and the bootstrapping configuration still match the interrupted run. If they do not, it refuses to resume, preventing an outdated plan from being applied to a changed device. See [Interrupted Bootstrapping](/docs/ctrl/state-management/bootstrapping#interrupted-bootstrapping) for what recovery covers, including how to make bootstrapping hooks safe to run again.
+When a device boots for the first time, Rugix Ctrl can _bootstrap_ it, for example, by growing the partition table and creating the data partition. Rugix Ctrl 1.4 records partition creation and filesystem initialization in a durable journal. If bootstrapping is interrupted, for example, by a power failure, the next boot resumes from that journal and preserves filesystems whose completion was recorded durably. If the disk, the bootstrapping configuration, or the planned partition geometry changed in the meantime, Rugix Ctrl rejects recovery instead of applying an outdated plan to the device.
 
-## Further Improvements
+On Raspberry Pi, the `rpi-tryboot` and `rpi-uboot` boot flows now preserve the contents of a prepared boot partition when `boot.img` is present, so authenticated boot images remain unchanged.
 
-The new `rugix-ctrl bundle inspect` command shows what an update bundle declares, helping you review it before installation. See [Inspecting a Bundle](/docs/ctrl/updates/update-bundles#inspecting-a-bundle) for details.
+## Bundle Inspection and Nix Integration
 
-For Nix users, the Rugix flake can now build Rugix bundles and Docker Compose app bundles in Nix. It also provides a NixOS module that configures Rugix Ctrl, its daemon, and app recovery. See the [Nix integration guide](https://github.com/rugix/rugix/blob/v1.4.0/nix/README.md).
+The new `rugix-ctrl bundle inspect` command reads a bundle from a file, an HTTP(S) URL, or standard input and reports its manifest and payload metadata.
 
-On Raspberry Pi, system updates with the `rpi-tryboot` and `rpi-uboot` boot flows now keep the contents of a prepared boot partition when it contains a `boot.img`, so authenticated boot images remain unchanged.
+For Nix users, the Rugix flake now provides `lib.mkBundle` and `lib.mkComposeBundle` for building Rugix bundles and Docker Compose app bundles in Nix. It also provides a NixOS module that sets up the Rugix Ctrl services, the daemon configuration, and app recovery. See the [Nix integration guide](https://github.com/rugix/rugix/blob/v1.4.0/nix/README.md).
 
 ## Upgrading to 1.4
 
 Before deploying Rugix Ctrl 1.4, check the following changes:
 
 - **HTTPS uses the operating system's trust store.** Rugix Ctrl now verifies HTTPS update servers against the operating system's CA certificates and no longer embeds a separate set of public CA certificates. Install and maintain `ca-certificates` on target devices. Bundle signing roots remain configured independently.
-- **Compose images use the store by default.** Stored images no longer appear as files in the installation directory of an app version. Tools that read them must use `rugix-ctrl apps cat` instead. Older Rugix Ctrl versions cannot read data kept in the store. If a device rolls back to a system with an older Rugix Ctrl version, an app version installed with stored images can only start while Docker still has those images, and custom orchestrator scripts that call `rugix-ctrl apps cat` fail. While devices may still roll back to an older Rugix Ctrl version, pack Compose bundles with `--image-location file` to keep the images as regular files.
-- **Application inspection output changes.** `rugix-ctrl apps info` now reports the recorded lifecycle state of an app as `lifecycle` instead of `state`, alongside the current `status` of its workload. It also omits `createdAt` for app versions whose metadata is missing. Update tools that consume this output.
+- **Compose images use the store by default.** Older Rugix Ctrl versions cannot read stored files. If a device rolls back to a system with an older Rugix Ctrl version, a generation installed with stored images can only activate while Docker still has those images, and custom orchestrator scripts that call `rugix-ctrl apps cat` fail. While devices may still roll back to an older Rugix Ctrl version, pack Compose bundles with `--image-location file` to keep the images as files in the generation directory.
+- **Application inspection output changes.** `rugix-ctrl apps info` now reports the persisted lifecycle state as `lifecycle` instead of `state`, alongside the live workload `status`. It also omits `createdAt` when generation metadata is missing. Update tools that consume this output.
 - **Each app bundle targets one app.** Rugix Bundler and Rugix Ctrl reject app bundles with payloads for several apps. No packing command produces such bundles, so this only affects hand-written manifests. Pack a separate bundle for each app.
 
 The [changelog](https://github.com/rugix/rugix/blob/v1.4.0/CHANGELOG.md) lists all changes, including the security fixes from the 1.3 patch releases.
