@@ -13,7 +13,7 @@ import {
 
 Rugix Ctrl supports _dynamic delta updates_, which reduce downloads by reusing data that is already on a device. Downloading only the missing data saves bandwidth, but it can still take a long time when an installer sends thousands of small HTTP requests one after another.
 
-In Rugix Ctrl 1.4, we improved how the installer fetches that missing data. We benchmarked the new fetcher alongside Rugix Ctrl 1.3.0 and RAUC (1.15.2), another popular update engine that supports dynamic delta updates.
+In Rugix Ctrl 1.4, we improved how the installer fetches that missing data. We benchmarked the new fetcher alongside Rugix Ctrl 1.3.0 and RAUC 1.15.2, another popular update engine that supports dynamic delta updates.
 
 Across three Debian update scenarios with 40 ms of added round-trip latency, Rugix Ctrl 1.3.0 and RAUC had similar installation times. With the new fetcher, median installations were about **14–31× faster than with Rugix Ctrl 1.3.0 and RAUC 1.15.2**. With no added latency, we found no consistent improvement over Rugix Ctrl 1.3.0.
 
@@ -55,7 +55,7 @@ The measurements also informed our [delta update savings calculator](/blog/effic
 
 ## Benchmark Setup and Limits
 
-We measured prerelease revision [`b82749f`](https://github.com/rugix/rugix/commit/b82749ff34ee8668fb3e53322af039a083e8bf69), labeled “Rugix Ctrl 1.4 Fetcher” in the results, rather than the final release. Speedups are medians of installation-time ratios from matching repetitions.
+We benchmarked revision [`b82749f`](https://github.com/rugix/rugix/commit/b82749ff34ee8668fb3e53322af039a083e8bf69), labeled “Rugix Ctrl 1.4 Fetcher” in the results. Its fetching implementation is unchanged in Rugix Ctrl 1.4. Speedups are medians of installation-time ratios from matching repetitions.
 
 Tests ran in fresh x86-64 KVM guests with four virtual CPUs, 8 GiB of RAM, blank target slots, prepared source indices, and warm caches. Times exclude initial index generation, booting, and rebooting. Every reconstructed image passed an independent verification check.
 
@@ -65,7 +65,7 @@ These results cover selected update pairs. Embedded CPUs, flash storage, cold ca
 
 ## Try It with Your Own Images
 
-The fetching improvements ship in [Rugix Ctrl 1.4](/blog/releases/1.4) and work with HTTP servers that support byte-range requests. See the [documentation](/docs/ctrl) to get started, or run the [benchmarks](https://github.com/rugix/rugix-benchmarks/tree/main/benchmarks/dynamic-downloads) with your own images.
+The fetching improvements ship in [Rugix Ctrl 1.4](/blog/releases/1.4) and work with HTTP servers that support byte-range requests. See the [documentation](/docs/ctrl) to get started.
 
 ---
 
