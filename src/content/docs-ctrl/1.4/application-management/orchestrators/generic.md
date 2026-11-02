@@ -1,0 +1,158 @@
+---
+title: Generic
+order: 30
+---
+
+The `generic` orchestrator delegates all lifecycle operations to a user-provided `orchestrator` script.
+This is the most flexible orchestrator and can manage any kind of workload.
+
+## Getting Started
+
+### 1. Write the Orchestrator Script
+
+Create an `orchestrator` script that handles `activate`, `status`, `deactivate`, `start`, and `stop`:
+
+```bash title="orchestrator"
+#!/bin/sh
+set -eu
+
+PID_FILE="$RUGIX_APP_DATA_DIR/daemon.pid"
+
+start_daemon() {
+    nohup "$RUGIX_APP_GENERATION_DIR/my-daemon" \
+        --data-dir "$RUGIX_APP_DATA_DIR" \
+        --pid-file "$PID_FILE" \
+        > "$RUGIX_APP_DATA_DIR/daemon.log" 2>&1 &
+}
+
+stop_daemon() {
+    if [ -f "$PID_FILE" ]; then
+        kill "$(cat "$PID_FILE")" 2>/dev/null
+        rm -f "$PID_FILE"
+    fi
+}
+
+case "$1" in
+  activate)
+    start_daemon
+    ;;
+  deactivate)
+    stop_daemon
+    ;;
+  start)
+    start_daemon
+    ;;
+  stop)
+    stop_daemon
+    ;;
+  status)
+    if [ -f "$PID_FILE" ] && kill -0 "$(cat "$PID_FILE")" 2>/dev/null; then
+        echo '{"state": "running"}'
+    else
+        echo '{"state": "stopped"}'
+    fi
+    ;;
+esac
+```
+
+### 2. Pack the Bundle
+
+Use `rugix-bundler` to package the orchestrator script into an app bundle:
+
+```shell
+rugix-bundler apps pack generic \
+    --app my-app \
+    orchestrator \
+    my-app-v1.rugixb
+```
+
+This command:
+
+1. Generates the `app.toml` manifest with `orchestrator = "generic"`.
+2. Packages the orchestrator script and any included files as an `app-archive` payload.
+3. Produces a [Rugix Bundle](../../../updates/update-bundles).
+
+**Options:**
+
+- `--include` adds extra files or directories to the bundle (e.g., binaries, configuration, data files that the orchestrator script needs).
+- `--config-schema` and `--config-default` include the app's optional [JSON configuration contract](../../configuration).
+
+### 3. Install on the Device
+
+```shell
+rugix-ctrl apps install --bundle-hash HASH my-app-v1.rugixb
+```
+
+## Generation Directory
+
+The generation directory must contain:
+
+- `app.toml` with `orchestrator = "generic"`.
+- An executable `orchestrator` script.
+
+## Large Files in the Store
+
+Large files, such as container images, can be kept in the [store](../../internals#stored-files) instead of the generation directory. The store keeps their content compressed and shares it between generations. Rugix Ctrl versions without the store cannot read such files; see [Compatibility With Older Versions](../../internals#compatibility-with-older-versions). `rugix-bundler apps pack generic` packages all files into one archive, so ship each large file as a separate `app-file` payload with `store = true` in a hand-written bundle manifest. For example, for a Podman image:
+
+```toml title="rugix-bundle.toml"
+update-type = "full"
+
+[[payloads]]
+filename = "app.tar"
+delivery = { type = "app-archive", app = "my-app" }
+block-encoding = { chunker = "casync-64", compression = { type = "xz" } }
+
+[[payloads]]
+filename = "image.tar"
+delivery = { type = "app-file", app = "my-app", path = "images/image.tar", store = true }
+block-encoding = { chunker = "casync-64", compression = { type = "xz" } }
+```
+
+`app.tar` is a tar archive with `app.toml` and the `orchestrator` script. `image.tar` is an uncompressed image archive, for example from `podman save -o image.tar IMAGE`. Compressing it would hide shared content from the store and from delta updates. Both belong in a `payloads/` directory next to the manifest. `rugix-bundler bundle DIRECTORY my-app.rugixb` packs the bundle, where `DIRECTORY` contains `rugix-bundle.toml` and `payloads/` (see [Update Bundles](../../../updates/update-bundles)).
+
+A stored file does not exist in the generation directory. In the `activate` branch, the orchestrator script streams it with `rugix-ctrl apps cat`:
+
+```bash
+rugix-ctrl apps cat "$RUGIX_APP_NAME" images/image.tar \
+    --generation "$RUGIX_APP_GENERATION" | podman load
+```
+
+Pass `--generation` because the generation being activated is not yet the active one.
+
+## Environment Variables
+
+The following environment variables are set when the orchestrator script is invoked:
+
+| Variable                   | Description                                                           |
+| -------------------------- | --------------------------------------------------------------------- |
+| `RUGIX_APP_NAME`           | The app name.                                                         |
+| `RUGIX_APP_DIR`            | Absolute path to the app directory.                                   |
+| `RUGIX_APP_GENERATION`     | The generation number.                                                |
+| `RUGIX_APP_GENERATION_DIR` | Absolute path to the generation directory.                            |
+| `RUGIX_APP_DATA_DIR`       | Absolute path to the app's persistent data directory.                 |
+| `RUGIX_APP_CONFIG_PATH`    | Absolute path to the effective JSON configuration, when one exists.   |
+| `RUGIX_APP_RECOVERY`       | `"true"` if replaying an interrupted transition, `"false"` otherwise. |
+
+The working directory is set to the generation directory.
+
+## Operations
+
+For `activate`, `deactivate`, `start`, and `stop`, a zero exit code means success and non-zero means failure (stderr is included in the error message).
+
+The `status` operation must print a JSON object to stdout:
+
+```json
+{"state": "running"}
+{"state": "unhealthy", "message": "health check failing"}
+{"state": "stopped"}
+{"state": "failed", "message": "process crashed"}
+{"state": "unknown"}
+```
+
+If the script exits with a non-zero status or produces invalid JSON, the status is reported as unknown.
+
+**Boot behavior after `stop`:** Entirely determined by the script. If the script simply kills a process, the process will not restart on boot unless the `activate` operation is re-run. Since Rugix only re-runs activation during [crash recovery](../../internals#crash-recovery), a stopped workload typically stays stopped across reboots.
+
+## Idempotency and Recovery
+
+Scripts should be written to be **idempotent** and handle being called again after a partial execution without side effects. When an operation is re-run during [crash recovery](../../internals#crash-recovery), the `RUGIX_APP_RECOVERY` environment variable is set to `"true"`. This allows scripts to take a different code path if needed (e.g., cleaning up partial state before retrying).

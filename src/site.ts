@@ -34,9 +34,9 @@ export const brand: Brand = {
   titleTemplate: "%s — Rugix",
   plausible: { domain: "rugix.org" },
   banner: {
-    id: "2026-10-emudhra-guidance",
+    id: "2026-11-rugix-ctrl-1.4",
     messageHtml:
-      '<strong>Security notice:</strong> Following the eMudhra CA key compromise, upgrade Rugix Ctrl to 1.3.1 and update the trust stores in your images. <a href="/blog/emudhra-ca-key-compromise">Read our guidance</a>.',
+      '<strong>Rugix Ctrl 1.4 is here:</strong> Faster delta updates, application configuration, and shared content storage. <a href="/blog/releases/1.4">Read the release post</a>.',
     tone: "primary",
     dismissible: true,
   },
@@ -229,7 +229,7 @@ export const getRugixDocsConfig = memoizeDocsConfig(
 )
 
 /**
- * Rugix Ctrl docs at `/docs/ctrl/`. The released `1.3` line is the
+ * Rugix Ctrl docs at `/docs/ctrl/`. The released `1.4` line is the
  * default and lives at `/docs/ctrl/`; the rolling `next` branch lives
  * at `/docs/ctrl/next/`. The docs are organized around Rugix Ctrl's
  * capabilities: a Get Started group (the Introduction page), the
@@ -243,12 +243,12 @@ export const getCtrlDocsConfig = memoizeDocsConfig(
     const all = await getCollection("docs-ctrl")
     const versions = [
       {
-        slug: "1.3",
-        label: "1.3",
+        slug: "1.4",
+        label: "1.4",
         status: "current" as const,
         default: true,
         pathPrefix: "/docs/ctrl/",
-        editBaseUrl: `${REPO_EDIT_BASE}/docs-ctrl/1.3`,
+        editBaseUrl: `${REPO_EDIT_BASE}/docs-ctrl/1.4`,
       },
       {
         slug: "next",

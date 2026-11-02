@@ -23,7 +23,7 @@ There are two ways to compute the delta between an old and a new version, and Ru
 
 ## Cost Savings Calculator
 
-Based on [our benchmarks](/blog/efficient-delta-updates), we developed a savings calculator to help you estimate the cost savings achievable through different delta update techniques for different update cadences.
+Estimate annual download costs for your image size, update schedule, and fleet. The calculator uses [two-year download-size models](/blog/efficient-delta-updates), with correction factors for block-based diffing from our [newer benchmarks](https://github.com/rugix/rugix-benchmarks/tree/main/benchmarks/dynamic-downloads).
 
 <DeltaSavingsCalculator client:only="react" />
 
@@ -36,6 +36,10 @@ When you install an update via HTTP, the server supports range queries, and the 
 ### Server Requirements
 
 Any HTTP server that supports byte-range requests works. This includes virtually every standard HTTP server, all S3-compatible object stores, and most CDNs. No special infrastructure is required.
+
+### Concurrent Fetching
+
+Rugix Ctrl 1.4 combines adjacent missing blocks into larger HTTP ranges, reuses connections, and fetches several ranges concurrently. Downloads overlap with payload verification, decompression, and writes. This reduces waiting on network round trips and is enabled by default for existing block-encoded bundles. See the [delta update benchmarks](/blog/faster-delta-updates) for measured installation times and network traffic.
 
 ### Slot Indices
 

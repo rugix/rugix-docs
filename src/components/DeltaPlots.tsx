@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react"
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -11,6 +10,7 @@ import {
 import { Bar } from "react-chartjs-2"
 
 import COMPRESSION_FACTORS, { TOTAL_SIZES } from "./delta-savings-data"
+import { PlotShell, useThemeMode } from "./DeltaPlot"
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
@@ -75,46 +75,6 @@ const METHODS: MethodSpec[] = [
   { label: "Xdelta", key: "xdelta", color: "#10b981" },
 ]
 
-/**
- * Hook returning the current effective theme — `"light"` or `"dark"`.
- * Reads the `data-theme` attribute set by the theme toggle, falling
- * back to `prefers-color-scheme` when no explicit preference is set.
- *
- * Re-runs on attribute changes (when the user toggles the theme) and
- * media-query changes (when the OS setting flips).
- */
-function useThemeMode(): "light" | "dark" {
-  const [mode, setMode] = useState<"light" | "dark">("light")
-
-  useEffect(() => {
-    const root = document.documentElement
-    const mql = window.matchMedia("(prefers-color-scheme: dark)")
-
-    const compute = () => {
-      const explicit = root.getAttribute("data-theme")
-      if (explicit === "light" || explicit === "dark") {
-        setMode(explicit)
-        return
-      }
-      setMode(mql.matches ? "dark" : "light")
-    }
-
-    compute()
-    const observer = new MutationObserver(compute)
-    observer.observe(root, {
-      attributes: true,
-      attributeFilter: ["data-theme"],
-    })
-    mql.addEventListener("change", compute)
-    return () => {
-      observer.disconnect()
-      mql.removeEventListener("change", compute)
-    }
-  }, [])
-
-  return mode
-}
-
 function plotOptions(title: string, mode: "light" | "dark") {
   const tickColor = mode === "dark" ? "#e5e7eb" : "#1f2937"
   const gridColor =
@@ -140,18 +100,6 @@ function plotOptions(title: string, mode: "light" | "dark") {
       },
     },
   }
-}
-
-interface PlotShellProps {
-  children: React.ReactNode
-}
-
-function PlotShell({ children }: PlotShellProps) {
-  return (
-    <div className="delta-plot prose-reset">
-      <div className="delta-plot-canvas">{children}</div>
-    </div>
-  )
 }
 
 /**
