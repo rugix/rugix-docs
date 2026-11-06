@@ -476,7 +476,9 @@ metadata at `/etc/rugix/system-build-info.json`.
 System outputs map published file names to artifact sources. Names must be flat
 and cannot be `.`, `..`, or `build-context.json`. The latter is always published.
 At least one other output is required. An image is optional unless the system
-is used with `run` or `test`.
+is used with `run` or `test`. Those commands use the same artifact selection as
+`bake image`: all published outputs except `system.rugixb` and
+`system.rugixb-hash`.
 
 A system may combine `rules` and `outputs` with the predefined pipeline,
 enabled by `target` or `image`. That pipeline is available as the reserved

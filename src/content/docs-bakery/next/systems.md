@@ -137,7 +137,9 @@ The pipeline's `image` output becomes `build/demo/system.img`, and its
 `rootfs.tar` output becomes `build/demo/rootfs.tar`. This example produces a
 filesystem image without a partition table, kernel, or bootloader. A bootable
 pipeline must also prepare those artifacts. Systems can publish any artifacts;
-`system.img` is required only by `run` and `test`.
+`system.img` is required by `run` and `test`. These commands publish all system
+artifacts except `system.rugixb` and `system.rugixb-hash`, preserving inventories
+and other outputs alongside the image.
 
 The rule can also live in a dependency repository. After adding that repository
 to the project, select it with a qualified name such as
