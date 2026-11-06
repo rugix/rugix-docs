@@ -36,11 +36,25 @@ To initialize a new project, pass a template name. For example, in a directory
 containing the `run-bakery` launcher and no `rugix-bakery.toml`:
 
 ```shell
-./run-bakery init debian-secure-efi
+./run-bakery init debian-grub-efi
 ```
 
-The following Debian templates support signed boot and verified root
-filesystems. Follow the linked READMEs for build and firmware setup instructions.
+Rugix Bakery includes these general-purpose templates:
+
+| Template | Description |
+| --- | --- |
+| [`quickstart-guide`](https://github.com/rugix/rugix-bakery/tree/main/container/templates/quickstart-guide) | Debian for AMD64 and ARM64 EFI systems and Raspberry Pi 4 and 5, used in the [quickstart guide](/docs/getting-started/). |
+| [`alpine-grub-efi`](https://github.com/rugix/rugix-bakery/tree/main/container/templates/alpine-grub-efi) | Alpine for AMD64 and ARM64 EFI systems, using GRUB. |
+| [`debian-grub-efi`](https://github.com/rugix/rugix-bakery/tree/main/container/templates/debian-grub-efi) | Debian for AMD64 and ARM64 EFI systems, using GRUB. |
+| [`yocto-grub-efi`](https://github.com/rugix/rugix-bakery/tree/main/container/templates/yocto-grub-efi) | Yocto for AMD64 and ARM64 QEMU systems, using GRUB. |
+| [`rpi-alpine`](https://github.com/rugix/rugix-bakery/tree/main/container/templates/rpi-alpine) | Alpine for Raspberry Pi 4, Compute Module 4, and Pi 5. |
+| [`rpi-debian`](https://github.com/rugix/rugix-bakery/tree/main/container/templates/rpi-debian) | Debian for Raspberry Pi 4, Compute Module 4, and Pi 5. |
+| [`rpi-raspios`](https://github.com/rugix/rugix-bakery/tree/main/container/templates/rpi-raspios) | Raspberry Pi OS for all Raspberry Pi models. |
+
+### Secure Boot
+
+These Debian templates support signed boot and verified root filesystems.
+Follow the linked READMEs for build and firmware setup instructions.
 
 | Template | Hardware |
 | --- | --- |
