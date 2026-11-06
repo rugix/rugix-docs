@@ -118,7 +118,7 @@ environment without sharing changes to its container filesystem.
 
 A system with a `target` uses Rugix Bakery's predefined pipeline for that boot flow.
 Rugix Bakery builds its layer, prepares boot files, creates filesystems, assembles the
-disk, and produces a Rugix Ctrl update bundle unless disabled. The pipeline uses reusable core
+disk, and produces a Rugix Ctrl update bundle for supported targets unless disabled. The pipeline uses reusable core
 rules internally.
 
 A system graph connects repository rules in `rules` and publishes named artifacts

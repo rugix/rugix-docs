@@ -34,9 +34,6 @@ does not depend on. `--output DIR` replaces that directory with exactly the
 selected artifacts and `build-context.json`. The default is `build/<system>/`.
 
 `bake image` and `bake bundle` remain available as deprecated commands.
-`bake image` publishes all outputs except `system.rugixb` and
-`system.rugixb-hash`. `bake bundle` publishes all outputs and prints the bundle
-hash. Their optional positional output paths copy the image or bundle.
 
 ## System Mixins
 
@@ -67,7 +64,7 @@ same recipe parameters and artifact input bindings as layers. See the
 
 A system's `rules` table declares named [build rules](/docs/bakery/next/build-rules).
 Its `outputs` table maps published file names to artifacts from those rules. Rugix Bakery builds the layer and prepares release metadata, then
-supplies its root filesystem and other artifacts to that rule. The rule can
+supplies its root filesystem and other artifacts to those rules. The rules can
 compose filesystem creation, boot packaging, signing, disk assembly, and update
 bundle creation.
 
@@ -160,15 +157,18 @@ outputs can extend it, but cannot replace its published names.
 
 The secure EFI template declares its verified boot pipeline as
 `systems.efi.rules.release`. An independent rule can use the same prepared
-root filesystem to create an SBOM. For example, add:
+root filesystem to create an SBOM. For example, add this rule:
 
 ```toml
 [systems.efi.rules.sbom]
 uses = "core/sbom"
 inputs.tree = { input = "rootfs" }
+```
 
-[systems.efi.outputs."sbom.spdx.json"]
-rule = { node = "sbom", output = "spdx" }
+Add this line to the existing `[systems.efi.outputs]` table:
+
+```toml
+"sbom.spdx.json" = { rule = { node = "sbom", output = "spdx" } }
 ```
 
 The `context` input binds implicitly by name. Building `efi` publishes both
@@ -177,7 +177,13 @@ this independent SBOM rule and the update bundle.
 
 ### Bundle Encoding
 
-The predefined pipeline includes `system.rugixb` and `system.rugixb-hash`.
+For `generic-grub-efi`, `rpi-tryboot`, `rpi-uboot`, and `bsp`, the predefined
+pipeline publishes `system.rugixb` and `system.rugixb-hash` by default.
+Systems without a target or with `target = "unknown"` default to no bundle;
+explicitly enabling one is rejected.
+
+Bundle payload compression defaults to true. The chunker uses the same syntax
+as the bundle CLI, such as `casync-64` or `fixed-64`, and defaults to `casync-64`.
 For example:
 
 ```toml

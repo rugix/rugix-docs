@@ -492,7 +492,9 @@ Filtering applies inside reusable compositions and deferred pipelines, so select
 an image skips independent bundle tasks. Publication replaces the output directory
 with the selected artifacts plus `build-context.json`.
 
-The predefined pipeline includes a bundle unless `bundle.enabled = false`.
+The predefined pipeline includes a bundle for supported targets unless
+`bundle.enabled = false`. Systems without a target or with an unknown target
+default to no bundle and reject `bundle.enabled = true`.
 Its `bundle.compression` and `bundle.chunker` settings control encoding.
 A repository graph configures its own bundle rules through inputs and parameters.
 
