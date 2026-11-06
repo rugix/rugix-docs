@@ -26,6 +26,43 @@ Note that you must always run `./run-bakery` directly in the project directory.
 You can initialize a project from a variety of templates with `./run-bakery init`. You can also browse the [templates on GitHub](https://github.com/rugix/rugix-bakery/tree/main/container/templates) to get an idea of how Rugix Bakery projects for different distributions and devices may look like.
 :::
 
+## Secure Boot Templates
+
+Two Debian templates combine signed boot artifacts, dm-verity root verification,
+and signed A/B update bundles:
+
+| Template | Target | Project Guide |
+| --- | --- | --- |
+| `debian-secure-efi` | AMD64 EFI; adaptable to ARM64 EFI | [EFI template](https://github.com/rugix/rugix-bakery/tree/main/container/templates/debian-secure-efi) |
+| `rpi-debian-secure` | Raspberry Pi 4/CM4 and Pi 5 | [Raspberry Pi template](https://github.com/rugix/rugix-bakery/tree/main/container/templates/rpi-debian-secure) |
+
+Use a Bakery version containing these templates. For example, initialize an EFI
+project in a directory containing the `run-bakery` launcher and no existing
+`rugix-bakery.toml`:
+
+```shell
+./run-bakery init debian-secure-efi
+./prepare.sh
+./run-bakery bake image efi --release-version v1
+```
+
+For Raspberry Pi, use `init rpi-debian-secure` and build the `pi` system.
+The host needs OpenSSL and OpenSSH's `ssh-keygen` for the preparation script.
+It generates development signing and SSH keys in ignored `keys/` and refuses
+to overwrite existing keys. Keep them for future updates to the same devices.
+
+Both templates configure Ethernet DHCP, key-only SSH, and an in-memory root
+overlay. Persistent data and SSH host keys are outside root verification and
+are unencrypted. The EFI template also reserves a secondary config partition
+for staging a replacement EFI System Partition (ESP); activating it requires a
+separate operation.
+
+Firmware trust provisioning remains separate from building signed images.
+Enroll the EFI boot certificate or provision Raspberry Pi signed boot with the
+matching key, following the template's project guide. The Raspberry Pi
+template does not update EEPROM or program one-time programmable (OTP) memory. Replace the development keys
+and choose a persistent-data protection policy before production deployment.
+
 ## Project Configuration
 
 Each project is configured in a `rugix-bakery.toml` configuration file.

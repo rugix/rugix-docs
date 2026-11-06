@@ -146,9 +146,7 @@ directory artifacts through `{ input = "rootfs" }`, for example. A root layer
 has no parent artifacts. Cycles between layers and rules are rejected.
 
 Mixins support the same `rules` and `inputs` tables. Their parent artifacts
-come from the preceding layer or mixin. See the
-[layer input example](https://github.com/rugix/rugix-bakery/tree/main/examples/layer-inputs)
-for a Cargo application packaged as a Debian package and installed into a filesystem.
+come from the preceding layer or mixin.
 
 ## Inspect and Document Definitions
 

@@ -540,8 +540,8 @@ runtime dependencies and use declared inputs for repeatable builds. Both
 execution modes are intended for trusted tooling. Tooling containers share
 Rugix Bakery's surrounding namespaces.
 
-For a recipe installing a Debian package built from a Cargo application, see the
-[layer input example](https://github.com/rugix/rugix-bakery/tree/main/examples/layer-inputs).
+To install a rule output into a root filesystem, bind it to a
+[recipe artifact input](/docs/bakery/next/layers#recipe-artifact-inputs).
 
 ## Configuration Reference
 
