@@ -15,13 +15,16 @@ Create a FAT image from a directory tree.
 
 ## Parameters
 
-| Name                  | Default | Description                                                                            |
-| --------------------- | ------- | -------------------------------------------------------------------------------------- |
-| `size`                | `0`     | Capacity in bytes. Zero sizes the image from the tree, including FAT32 overhead.       |
-| `label`               | `""`    | Volume label. Empty uses the formatter's default.                                      |
-| `volume-id`           | `""`    | Eight hexadecimal digits. Empty derives a stable ID from tree paths and file contents. |
-| `sectors-per-cluster` | `0`     | Sectors per cluster. Zero chooses a cluster size automatically.                        |
-| `mkfs-options`        | `""`    | Additional mkfs.fat arguments, separated with shell-style quoting.                     |
+| Name                  | Default | Description                                                                                                  |
+| --------------------- | ------- | ------------------------------------------------------------------------------------------------------------ |
+| `size`                | `0`     | Capacity in bytes. Zero sizes the image from the tree, including FAT32 overhead.                             |
+| `free-percent`        | `0`     | Additional free space as a percentage of the populated tree's cluster count. Used only for automatic sizing. |
+| `label`               | `""`    | Volume label. Empty uses the formatter's default.                                                            |
+| `volume-id`           | `""`    | Eight hexadecimal digits. Empty derives a stable ID from tree paths and file contents.                       |
+| `sectors-per-cluster` | `0`     | Sectors per cluster. Zero chooses a cluster size automatically.                                              |
+| `mkfs-options`        | `""`    | Additional mkfs.fat arguments, separated with shell-style quoting.                                           |
+| `minimum-size`        | `0`     | Minimum capacity in bytes when size is zero.                                                                 |
+| `size-alignment`      | `0`     | Round automatic capacity up to a multiple of this power-of-two byte count. Zero rounds up to 1 MiB.          |
 
 ## Outputs
 
@@ -44,12 +47,18 @@ FAT metadata and creates FAT32 images. Small trees still require FAT32's minimum
 cluster count. For fixed capacities, the formatter selects FAT12, FAT16, or
 FAT32 to suit the image size. Use `mkfs-options = "-F 32"` to require FAT32.
 
+With automatic sizing, `free-percent` reserves additional file-cluster capacity
+as a percentage of the current contents. `minimum-size` sets a byte floor, and
+`size-alignment` rounds the result up to a power-of-two byte multiple. All three
+default to zero; zero alignment retains the rule's 1 MiB rounding. An explicit
+`size` overrides automatic sizing and these adjustments.
+
 Contained symlinks are dereferenced. Links outside the input tree, directory
 cycles, dangling links, and special files are rejected.
 
-An explicit capacity is useful for fixed boot partitions. The rule fails if the
-tree does not fit. The default volume ID comes from tree paths and file
-contents; set `volume-id` when another component needs a particular ID.
+The rule fails if the tree does not fit an explicit capacity. The default volume
+ID comes from tree paths and file contents; set `volume-id` when another
+component needs a particular ID.
 
 The rule formats with invariant metadata and copies entries in sorted order. The
 build source epoch fixes copied-entry timestamps, using UTC. It defaults to

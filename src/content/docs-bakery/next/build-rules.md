@@ -411,7 +411,7 @@ image layout into a disk artifact. A subsequent rule patches the boot
 configuration against that disk's partition IDs. Filesystem rules create each
 populated partition. A disk assembly rule
 places those filesystem artifacts into the disk. Separate rules produce
-filesystem archives and software inventories. `bake bundle` adds a bundle rule
+filesystem archives and software inventories. The pipeline includes a bundle rule
 that consumes the same partition artifacts.
 
 The `image` and `options` settings configure its layout, boot flow, and
@@ -436,7 +436,7 @@ IDs.
 
 ## Assemble a System
 
-A system selects its assembly rule through `build.uses`. The
+A system declares assembly rules in `rules` and publishes artifacts through `outputs`. The
 [Systems guide](/docs/bakery/next/systems#repository-build-rules) provides a complete
 example. For example, if a configured `platforms` repository supplies a `release`
 rule accepting a `disk-size` parameter, select it as follows:
@@ -446,9 +446,14 @@ rule accepting a `disk-size` parameter, select it as follows:
 layer = "device"
 architecture = "amd64"
 
-[systems.device.build]
+[systems.device.rules.release]
 uses = "platforms/release"
 parameters.disk-size = 3221225472
+
+[systems.device.outputs]
+"system.img" = { rule = { node = "release", output = "image" } }
+"system.rugixb" = { rule = { node = "release", output = "bundle" } }
+"system.rugixb-hash" = { rule = { node = "release", output = "bundle-hash" } }
 ```
 
 Rugix Bakery schedules the selected layer and release preparation before the assembly
@@ -468,16 +473,28 @@ The context uses the fields `system`, `architecture`, `source-date-epoch`,
 `release-id`, and `release-version`. The root filesystem contains matching
 metadata at `/etc/rugix/system-build-info.json`.
 
-The selected rule must export an `image` file, published as
-`build/<system>/system.img`. An optional `bundle` export becomes
-`system.rugixb`; other exports retain their names. Rugix Bakery also publishes
-`build-context.json`. These destination names must not collide.
-The existing `bake image` and `bake bundle` commands use these artifacts.
+System outputs map published file names to artifact sources. Names must be flat
+and cannot be `.`, `..`, or `build-context.json`. The latter is always published.
+At least one other output is required. An image is optional unless the system
+is used with `run` or `test`.
 
-A repository pipeline owns its disk layout, boot artifacts, filesystems, and
-bundle manifest. Configure those through its parameters and inputs.
-Combining `build` with the predefined pipeline's `target`, `image`, or `options` assembly
-settings is rejected.
+A system may combine `rules` and `outputs` with the predefined pipeline,
+enabled by `target` or `image`. That pipeline is available as the reserved
+node `standard`, with `image`, `bundle`, `hash`, `filesystems`, `artifacts`,
+`bsp`, `system-build-info.json`, `sbom.spdx.json`, and `sbom.cdx.json`
+outputs. It publishes its usual files by default; user output names must not
+collide. For example, add a second inventory format or a signing rule alongside
+the standard image. Every declared system rule must be reachable from an output.
+
+Use `bake system device --artifact system.img` to build only the image and
+its dependencies. Repeating `--artifact` selects multiple published names.
+Filtering applies inside reusable compositions and deferred pipelines, so selecting
+an image skips independent bundle tasks. Publication replaces the output directory
+with the selected artifacts plus `build-context.json`.
+
+The predefined pipeline includes a bundle unless `bundle.enabled = false`.
+Its `bundle.compression` and `bundle.chunker` settings control encoding.
+A repository graph configures its own bundle rules through inputs and parameters.
 
 ## Reuse Core Rules
 

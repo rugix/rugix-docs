@@ -242,7 +242,14 @@ function page(kind, item) {
       }
     }
   }
-  if (item.documentation?.trim()) body += item.documentation.trim() + "\n"
+  if (item.documentation?.trim())
+    body +=
+      item.documentation
+        .trim()
+        .replace(
+          /\]\(((?:\.\.\/)+[^)\s]*\/)README\.md(#[^)]*)?\)/g,
+          "]($1$2)",
+        ) + "\n"
   return (
     frontmatter(item.name, configuration.description) + marker + "\n\n" + body
   )
