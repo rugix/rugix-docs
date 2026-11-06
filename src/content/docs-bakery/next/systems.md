@@ -63,8 +63,9 @@ same recipe parameters and artifact input bindings as layers. See the
 ## Repository Build Rules
 
 A system's `rules` table declares named [build rules](/docs/bakery/next/build-rules).
-Its `outputs` table maps published file names to artifacts from those rules. Rugix Bakery builds the layer and prepares release metadata, then
-supplies its root filesystem and other artifacts to those rules. The rules can
+Its `outputs` table maps published file names to artifacts from those rules.
+Rugix Bakery builds the layer and prepares release metadata, then supplies its
+root filesystem and other artifacts to those rules. The rules can
 compose filesystem creation, boot packaging, signing, disk assembly, and update
 bundle creation.
 
