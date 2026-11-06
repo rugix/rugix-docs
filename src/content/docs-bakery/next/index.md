@@ -48,8 +48,8 @@ Continue with [projects](/docs/bakery/next/projects) to configure a build.
 A rule can compile an application and supply its output to a recipe for
 installation into the root filesystem. Alternatively, an external build can
 supply prebuilt artifacts. Both approaches use the recipe's artifact inputs.
-See the [Cargo package example](https://github.com/rugix/rugix-bakery/tree/main/examples/layer-inputs)
-for a package built and installed as part of a system build.
+See [Recipe Artifact Inputs](/docs/bakery/next/layers#recipe-artifact-inputs)
+for an example binding a rule output to an installation recipe.
 
 ## Setup and Installation
 
