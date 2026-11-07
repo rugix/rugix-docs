@@ -23,7 +23,7 @@ Rugix Bakery resolves it once per build, in this order:
 All `bake` commands accept `--source-date`. For example:
 
 ```shell
-./run-bakery bake image device --source-date 2024-01-01T00:00:00Z
+./run-bakery bake system device --source-date 2024-01-01T00:00:00Z
 SOURCE_DATE_EPOCH=1704067200 ./run-bakery bake rule filesystem.toml build/filesystem
 ```
 

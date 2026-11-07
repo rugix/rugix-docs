@@ -22,21 +22,18 @@ target = "generic-grub-efi"
 Each system has a _name_ (`customized-arm64` in the example), is based on a layer providing the root filesystem and Linux kernel for that system (`customized` in the example), and has a concrete CPU architecture (`arm64` in the example).
 The `target` setting is optional and used to select defaults for supported devices (see below).
 
-You can build different types of artifacts for a given system.
-Currently, Rugix Bakery can build full system images and Rugix Ctrl update bundles.
-Generally, artifacts are built with a command of the form:
+Build all published artifacts with:
 
 ```shell
-./run-bakery bake <type> <system>
+./run-bakery bake system <system>
 ```
 
-Here, `<type>` is the type of the artifact and `<system>` is the name of the system.
+Select artifacts by published file name with repeatable `--artifact` flags.
+For example, `--artifact system.img` skips bundle and SBOM work that the image
+does not depend on. `--output DIR` replaces that directory with exactly the
+selected artifacts and `build-context.json`. The default is `build/<system>/`.
 
-For instance, to build an image for a given system, run:
-
-```shell
-./run-bakery bake image <system>
-```
+`bake image` and `bake bundle` remain available as deprecated commands.
 
 ## System Mixins
 
@@ -65,9 +62,10 @@ same recipe parameters and artifact input bindings as layers. See the
 
 ## Repository Build Rules
 
-A system's `build.uses` setting selects a [build rule](/docs/bakery/next/build-rules) as its
-image pipeline. Rugix Bakery builds the layer and prepares release metadata, then
-supplies its root filesystem and other artifacts to that rule. The rule can
+A system's `rules` table declares named [build rules](/docs/bakery/next/build-rules).
+Its `outputs` table maps published file names to artifacts from those rules.
+Rugix Bakery builds the layer and prepares release metadata, then supplies its
+root filesystem and other artifacts to those rules. The rules can
 compose filesystem creation, boot packaging, signing, disk assembly, and update
 bundle creation.
 
@@ -115,9 +113,13 @@ Select that pipeline for a system:
 layer = "demo"
 architecture = "amd64"
 
-[systems.demo.build]
+[systems.demo.rules.release]
 uses = "filesystem-release"
 parameters.label = "demo-root"
+
+[systems.demo.outputs]
+"system.img" = { rule = { node = "release", output = "image" } }
+"rootfs.tar" = { rule = { node = "release", output = "rootfs.tar" } }
 ```
 
 Here, `uses` names the rule directory. Rugix Bakery supplies the layer's `rootfs`
@@ -128,14 +130,16 @@ sizes itself from the filesystem tree.
 Build the artifacts with:
 
 ```shell
-./run-bakery bake image demo
+./run-bakery bake system demo
 ```
 
 The pipeline's `image` output becomes `build/demo/system.img`, and its
 `rootfs.tar` output becomes `build/demo/rootfs.tar`. This example produces a
 filesystem image without a partition table, kernel, or bootloader. A bootable
-pipeline must also prepare those artifacts. A pipeline can export a `bundle`
-file for `bake bundle`; this example does not create one.
+pipeline must also prepare those artifacts. Systems can publish any artifacts;
+`system.img` is required by `run` and `test`. These commands publish all system
+artifacts except `system.rugixb` and `system.rugixb-hash`, preserving inventories
+and other outputs alongside the image.
 
 The rule can also live in a dependency repository. After adding that repository
 to the project, select it with a qualified name such as
@@ -144,8 +148,66 @@ the repository supplies the reusable pipeline.
 
 See [Assemble a System](/docs/bakery/next/build-rules#assemble-a-system) for all supplied
 artifacts and output conventions. Configure a repository pipeline through its
-inputs and parameters. Combining `build` with the predefined pipeline's
-`target`, `image`, or `options` settings is rejected.
+inputs and parameters. Every declared rule must be referenced transitively by an
+output. Published names must be flat file names. `build-context.json` is reserved.
+
+When `target` or `image` is set, the predefined pipeline runs as the reserved
+node `target`. Systems that set only `image` use the `unknown` target. The
+pipeline's outputs are published by default. Rules can use its outputs, and
+`outputs` can publish additional files. Their names must not collide with the
+pipeline's files. `options` and `bundle` require this pipeline.
+
+### Add an Inventory to a Verified System
+
+The secure EFI template declares its verified boot pipeline as
+`systems.efi.rules.release`. An independent rule can use the same prepared
+root filesystem to create an SBOM. For example, add this rule:
+
+```toml
+[systems.efi.rules.sbom]
+uses = "core/sbom"
+inputs.tree = { input = "rootfs" }
+```
+
+Add this line to the existing `[systems.efi.outputs]` table:
+
+```toml
+"sbom.spdx.json" = { rule = { node = "sbom", output = "spdx" } }
+```
+
+The `context` input binds implicitly by name. Building `efi` publishes both
+the verified artifacts and the inventory. Selecting only `system.img` skips
+this independent SBOM rule and the update bundle.
+
+### Bundle Encoding
+
+For `generic-grub-efi`, `rpi-tryboot`, `rpi-uboot`, and `bsp`, the predefined
+pipeline publishes `system.rugixb` and `system.rugixb-hash` by default.
+Systems without a target or with `target = "unknown"` default to no bundle;
+explicitly enabling one is rejected.
+
+Bundle payload compression defaults to true. The chunker uses the same syntax
+as the bundle CLI, such as `casync-64` or `fixed-64`, and defaults to `casync-64`.
+For example:
+
+```toml
+[systems.device.bundle]
+compression = false
+chunker = "casync-64"
+```
+
+Set `enabled = false` to disable the bundle. BSP targets must declare
+`[[bundle.payloads]]` in `rugix-bsp.toml` or disable bundles.
+
+To speed up a development build, disable compression for a single build
+instead of changing the configuration:
+
+```shell
+./run-bakery bake system device --disable-compression
+```
+
+The flag overrides `compression` and applies only to systems with a `target` or
+`image`. Other systems configure compression in their own bundle rules.
 
 ## Targets
 
@@ -204,7 +266,7 @@ The predefined pipeline creates an image through build rules:
 6. Populate the disk with those filesystem images.
 
 Filesystem archives and software inventories are separate rule outputs.
-`bake bundle` adds an update bundle using the same partition artifacts.
+The pipeline includes an update bundle using the same partition artifacts.
 See [repository build rules](/docs/bakery/next/build-rules#standard-system-pipeline) for how the
 pipeline connects to the build graph.
 

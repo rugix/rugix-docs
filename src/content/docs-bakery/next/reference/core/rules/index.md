@@ -8,27 +8,71 @@ description:
 
 Artifact transformations and compositions supplied by this repository.
 
+## Boot Artifacts
+
+| Name                                     | Description                                                                |
+| ---------------------------------------- | -------------------------------------------------------------------------- |
+| [`core/efi-stub`](./efi-stub/)           | Select the installed systemd EFI stub for an explicit architecture.        |
+| [`core/initrd-debian`](./initrd-debian/) | Generate an initrd with the supplied root filesystem's mkinitramfs.        |
+| [`core/kernel-debian`](./kernel-debian/) | Select one installed Debian kernel and its exact version.                  |
+| [`core/systemd-boot`](./systemd-boot/)   | Select the installed systemd-boot executable for an explicit architecture. |
+| [`core/uki`](./uki/)                     | Assemble a UKI from a kernel, generated initrd, and boot parameters.       |
+
 ## Filesystem Images
 
-| Name                                       | Description                                    |
-| ------------------------------------------ | ---------------------------------------------- |
-| [`core/image-ext4`](./image-ext4/)         | Create an ext4 image from a directory tree.    |
-| [`core/image-fat`](./image-fat/)           | Create a FAT image from a directory tree.      |
-| [`core/image-squashfs`](./image-squashfs/) | Create a SquashFS image from a directory tree. |
+| Name                                                     | Description                                                          |
+| -------------------------------------------------------- | -------------------------------------------------------------------- |
+| [`core/image-ext4`](./image-ext4/)                       | Create an ext4 image from a directory tree.                          |
+| [`core/image-fat`](./image-fat/)                         | Create a FAT image from a directory tree.                            |
+| [`core/image-squashfs`](./image-squashfs/)               | Create a SquashFS image from a directory tree.                       |
+| [`core/image-squashfs-verity`](./image-squashfs-verity/) | Create a SquashFS image with appended dm-verity authentication data. |
 
 ## Image Assembly
 
-| Name                                         | Description                                                                 |
-| -------------------------------------------- | --------------------------------------------------------------------------- |
-| [`core/archive-tree`](./archive-tree/)       | Archive a directory tree while preserving Linux filesystem metadata.        |
-| [`core/assemble-disk`](./assemble-disk/)     | Populate an existing disk layout with numbered partition images.            |
-| [`core/image-layout`](./image-layout/)       | Resolve a Rugix Bakery image layout into an unpopulated disk image.         |
-| [`core/initialize-boot`](./initialize-boot/) | Install Rugix boot-flow files into boot and configuration trees.            |
-| [`core/prepare-boot`](./prepare-boot/)       | Patch an initialized Rugix boot tree against resolved disk geometry.        |
-| [`core/sbom`](./sbom/)                       | Scan a filesystem tree and produce SPDX and CycloneDX software inventories. |
+| Name                                         | Description                                                                          |
+| -------------------------------------------- | ------------------------------------------------------------------------------------ |
+| [`core/archive-tree`](./archive-tree/)       | Archive a directory tree while preserving Linux filesystem metadata.                 |
+| [`core/assemble-disk`](./assemble-disk/)     | Populate an existing disk layout with numbered partition images.                     |
+| [`core/image-gpt`](./image-gpt/)             | Assemble a GPT disk from a Rugix layout and partition images.                        |
+| [`core/image-layout`](./image-layout/)       | Resolve a Rugix Bakery image layout into an unpopulated disk image.                  |
+| [`core/image-release`](./image-release/)     | Assemble a factory GPT disk and an authenticated update bundle from shared payloads. |
+| [`core/initialize-boot`](./initialize-boot/) | Install Rugix boot-flow files into boot and configuration trees.                     |
+| [`core/prepare-boot`](./prepare-boot/)       | Patch an initialized Rugix boot tree against resolved disk geometry.                 |
+| [`core/sbom`](./sbom/)                       | Scan a filesystem tree and produce SPDX and CycloneDX software inventories.          |
+| [`core/write-text`](./write-text/)           | Create a text file from a parameter.                                                 |
+
+## Integrity
+
+| Name                                     | Description                                                           |
+| ---------------------------------------- | --------------------------------------------------------------------- |
+| [`core/append-verity`](./append-verity/) | Append a detached verity hash tree to a data image.                   |
+| [`core/dm-verity`](./dm-verity/)         | Create a detached dm-verity hash tree and root hash for a data image. |
+
+## Signing
+
+| Name                           | Description                                                           |
+| ------------------------------ | --------------------------------------------------------------------- |
+| [`core/sign-efi`](./sign-efi/) | Sign a PE executable for UEFI Secure Boot.                            |
+| [`core/sign-rpi`](./sign-rpi/) | Sign a Raspberry Pi boot image with the pinned upstream signing tool. |
 
 ## Update Bundles
 
-| Name                                   | Description                                                         |
-| -------------------------------------- | ------------------------------------------------------------------- |
-| [`core/bundle-rugix`](./bundle-rugix/) | Create an indexed Rugix update bundle from a manifest and payloads. |
+| Name                                             | Description                                                          |
+| ------------------------------------------------ | -------------------------------------------------------------------- |
+| [`core/bundle-rugix`](./bundle-rugix/)           | Create an indexed Rugix update bundle from a manifest and payloads.  |
+| [`core/sign-bundle-rugix`](./sign-bundle-rugix/) | Authenticate a Rugix bundle with a configurable signing certificate. |
+
+## Verified Boot
+
+| Name                                                             | Description                                                                                                        |
+| ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| [`core/image-debian-efi-verified`](./image-debian-efi-verified/) | Build a signed systemd-boot A/B release with a verified root from a prepared Debian root filesystem.               |
+| [`core/image-debian-rpi-verified`](./image-debian-rpi-verified/) | Build a signed Raspberry Pi 4/CM4 or Pi 5 A/B release with a verified root from a prepared Debian root filesystem. |
+| [`core/image-efi-verified`](./image-efi-verified/)               | Build a signed systemd-boot A/B release with a verified root from an existing root filesystem.                     |
+| [`core/image-rpi-verified`](./image-rpi-verified/)               | Build a signed Raspberry Pi 4/CM4 or Pi 5 A/B release with a verified root from an existing root filesystem.       |
+| [`core/layout-efi-ab`](./layout-efi-ab/)                         | Reserve the named A/B partitions for the EFI verified boot flow.                                                   |
+| [`core/layout-rpi-ab`](./layout-rpi-ab/)                         | Reserve the named A/B partitions for the Raspberry Pi verified boot flow.                                          |
+| [`core/prepare-efi-esp`](./prepare-efi-esp/)                     | Prepare an ESP tree with a signed bootloader and initial A/B UKI.                                                  |
+| [`core/prepare-rpi-boot`](./prepare-rpi-boot/)                   | Package a kernel, initrd, firmware and authenticated command line for Raspberry Pi.                                |
+| [`core/prepare-rpi-config`](./prepare-rpi-config/)               | Initialize Raspberry Pi A/B tryboot selection and Rugix bootstrap.                                                 |
+| [`core/verified-cmdline`](./verified-cmdline/)                   | Bind a verified root hash into boot arguments.                                                                     |

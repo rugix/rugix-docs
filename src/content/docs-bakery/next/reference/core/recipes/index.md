@@ -62,3 +62,11 @@ Root filesystem customizations supplied by this repository.
 | Name                                   | Description              |
 | -------------------------------------- | ------------------------ |
 | [`core/set-hostname`](./set-hostname/) | Set the system hostname. |
+
+## Verified Boot
+
+| Name                                                             | Description                                                                                    |
+| ---------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| [`core/debian-efi-verified-setup`](./debian-efi-verified-setup/) | Configure Debian for signed systemd-boot UKIs and verified A/B roots.                          |
+| [`core/debian-rpi-verified-setup`](./debian-rpi-verified-setup/) | Configure Raspberry Pi 4/CM4 or Pi 5 Debian systems for signed tryboot and verified A/B roots. |
+| [`core/debian-verified-root`](./debian-verified-root/)           | Install Debian initramfs hooks that verify A/B root partitions before mounting them.           |

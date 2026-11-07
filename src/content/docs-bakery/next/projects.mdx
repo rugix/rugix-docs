@@ -1,10 +1,9 @@
 ---
 order: 20
-
 ---
 
-import { SchemaViewer } from "@silitics/astro-schema-viewer";
-import ProjectSchema from "../../../schemas/rugix-bakery-project.schema.json";
+import { SchemaViewer } from "@silitics/astro-schema-viewer"
+import ProjectSchema from "../../../schemas/rugix-bakery-project.schema.json"
 
 # Projects
 
@@ -91,4 +90,18 @@ The `#:schema` directive is used to specify a [JSON Schema](https://json-schema.
 For reference, here is the complete schema for project configuration files:
 
 <SchemaViewer schema={ProjectSchema} />
-You will find the most recent version of this schema [on GitHub](https://github.com/rugix/rugix-bakery/blob/main/schemas/rugix-bakery-project.schema.json).
+You will find the most recent version of this schema [on
+GitHub](https://github.com/rugix/rugix-bakery/blob/main/schemas/rugix-bakery-project.schema.json).
+
+## System Artifacts
+
+A system's `rules` table instantiates reusable build rules. Its `outputs`
+table maps published file names to graph artifacts. A `target` or `image`
+also enables the predefined pipeline, whose outputs rules can use through the
+reserved node `target`.
+See [Systems](/docs/bakery/next/systems) for examples and bundle configuration.
+
+```shell
+./run-bakery bake system customized
+./run-bakery bake system customized --artifact system.img --output build/image-only
+```

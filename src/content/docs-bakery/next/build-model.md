@@ -118,14 +118,21 @@ environment without sharing changes to its container filesystem.
 
 A system with a `target` uses Rugix Bakery's predefined pipeline for that boot flow.
 Rugix Bakery builds its layer, prepares boot files, creates filesystems, assembles the
-disk, and can produce a Rugix Ctrl update bundle. The pipeline uses reusable core
-rules internally.
+disk, and produces a Rugix Ctrl update bundle for supported targets unless disabled.
+The pipeline uses reusable core rules internally.
 
-A system with `build.uses` selects a repository rule as its pipeline. Rugix Bakery
-still builds the layer and prepares release metadata, then supplies the layer's
-artifacts to that rule. The selected rule controls the resulting image and any
-additional outputs, including an optional update bundle. It can compose the
-same core rules with device-specific operations.
+A system graph connects repository rules in `rules` and publishes named artifacts
+through `outputs`. Rugix Bakery builds the layer and prepares release metadata,
+then supplies its artifacts as graph inputs. Rules can compose filesystem creation,
+boot packaging, signing, and bundle creation. If a system also sets `target` or
+`image`, its rules can use the predefined pipeline's outputs through the reserved
+node `target`. For example, a rule can convert the pipeline's image to another
+format or build a second bundle from its filesystems. The pipeline still
+publishes its own artifacts.
+
+Published artifacts determine which tasks execute. Selecting an artifact with
+`bake system --artifact` runs only its dependencies. A system can publish an
+inventory or filesystem archive without producing a disk image.
 
 The two device variants described above can therefore share their filesystem
 customizations while choosing different boot packaging and layouts.

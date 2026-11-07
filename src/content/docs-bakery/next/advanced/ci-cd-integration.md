@@ -1,5 +1,4 @@
 ---
-
 ---
 
 # CI/CD Integration
@@ -12,7 +11,7 @@ Please be aware that building an image is a rather resource-heavy process and ma
 Here is an example for using Rugpi Bakery with GitHub Actions:
 
 ```yaml
-jobs:  
+jobs:
   bake-image:
     name: Bake Image
     runs-on: ubuntu-latest
@@ -21,9 +20,9 @@ jobs:
 
       - name: Install QEMU
         run: docker run --privileged --rm tonistiigi/binfmt --install all
-      
+
       - name: Bake Image
-        run: ./run-bakery bake image customized
+        run: ./run-bakery bake system customized
 
       - name: Upload Image
         uses: actions/upload-artifact@v4

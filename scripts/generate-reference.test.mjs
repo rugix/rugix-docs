@@ -19,7 +19,8 @@ test("repository catalogs generate reference pages and detect or remove stale ge
       definitions: [
         {
           name: "vendor/compose",
-          documentation: "## Usage\n\nChoose a target image.\n",
+          documentation:
+            "## Usage\n\nChoose a target image. [Related](../index/README.md#usage)\n",
           definition: {
             description: "Compose artifacts.",
             inputs: {
@@ -122,16 +123,20 @@ test("repository catalogs generate reference pages and detect or remove stale ge
       '`""`',
       "Assets \\| resources",
       "## Usage",
+      "[Related](../index/#usage)",
       "Artifact Source",
     ]) {
       assert.ok(page.includes(expected), expected)
     }
     assert.ok(
-      (await readFile(join(output, "recipes/install/index.md"), "utf8")).includes(
-        "Default input bindings",
-      ),
+      (
+        await readFile(join(output, "recipes/install/index.md"), "utf8")
+      ).includes("Default input bindings"),
     )
-    const variants = await readFile(join(output, "layers/base/index.md"), "utf8")
+    const variants = await readFile(
+      join(output, "layers/base/index.md"),
+      "utf8",
+    )
     assert.ok(
       variants.includes("### Default") && variants.includes("### arm64"),
     )

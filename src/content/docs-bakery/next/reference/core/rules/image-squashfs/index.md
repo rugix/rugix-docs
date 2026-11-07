@@ -15,17 +15,17 @@ Create a SquashFS image from a directory tree.
 
 ## Parameters
 
-| Name           | Default  | Description                                                          |
-| -------------- | -------- | -------------------------------------------------------------------- |
-| `compression`  | `"zstd"` | Compression algorithm accepted by mksquashfs, such as zstd or xz.    |
-| `block-size`   | `131072` | Filesystem block size in bytes.                                      |
-| `mkfs-options` | `""`     | Additional mksquashfs arguments, separated with shell-style quoting. |
+| Name           | Default  | Description                                                                |
+| -------------- | -------- | -------------------------------------------------------------------------- |
+| `compression`  | `"zstd"` | Compression algorithm accepted by mksquashfs, such as zstd or xz, or none. |
+| `block-size`   | `131072` | Filesystem block size in bytes.                                            |
+| `mkfs-options` | `""`     | Additional mksquashfs arguments, separated with shell-style quoting.       |
 
 ## Outputs
 
-| Name    | Kind | Description                           |
-| ------- | ---- | ------------------------------------- |
-| `image` | file | Compressed SquashFS filesystem image. |
+| Name    | Kind | Description                |
+| ------- | ---- | -------------------------- |
+| `image` | file | SquashFS filesystem image. |
 
 ## Execution
 
@@ -37,8 +37,10 @@ Create a SquashFS image from a directory tree.
 
 ## Behavior
 
-SquashFS determines the image size from its compressed contents. The rule uses
-`mksquashfs` without appending to an existing image.
+SquashFS determines the image size from its contents. The rule uses `mksquashfs`
+without appending to an existing image. `compression` selects a compressor
+supported by `mksquashfs`, such as `zstd` or `xz`. `none` stores data, metadata,
+fragments, and extended attributes uncompressed.
 
 The build source epoch fixes the filesystem creation time and clamps file
 timestamps. It defaults to zero. The rule uses one compression worker and

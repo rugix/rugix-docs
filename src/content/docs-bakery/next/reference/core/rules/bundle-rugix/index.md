@@ -17,9 +17,10 @@ Create an indexed Rugix update bundle from a manifest and payloads.
 
 ## Outputs
 
-| Name     | Kind | Description                  |
-| -------- | ---- | ---------------------------- |
-| `bundle` | file | Indexed Rugix update bundle. |
+| Name     | Kind | Description                          |
+| -------- | ---- | ------------------------------------ |
+| `bundle` | file | Indexed Rugix update bundle.         |
+| `hash`   | file | Bundle hash for update verification. |
 
 ## Execution
 
