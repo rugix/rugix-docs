@@ -481,12 +481,14 @@ is used with `run` or `test`. Those commands use the same artifact selection as
 `system.rugixb-hash`.
 
 A system may combine `rules` and `outputs` with the predefined pipeline,
-enabled by `target` or `image`. That pipeline is available as the reserved
-node `standard`, with `image`, `bundle`, `hash`, `filesystems`, `artifacts`,
-`bsp`, `system-build-info.json`, `sbom.spdx.json`, and `sbom.cdx.json`
-outputs. It publishes its usual files by default; user output names must not
-collide. For example, add a second inventory format or a signing rule alongside
-the standard image. Every declared system rule must be reachable from an output.
+enabled by `target` or `image`. Systems that set only `image` use the `unknown`
+target. Rules can use the pipeline's outputs through the reserved node `target`:
+`image`, `bundle`, `hash`, `filesystems`, `artifacts`, `bsp`,
+`system-build-info.json`, `sbom.spdx.json`, and `sbom.cdx.json`. The pipeline
+publishes its usual files by default, and names in `outputs` must not collide
+with them. For example, a rule can convert the image to another format with
+`inputs.image = { rule = { node = "target", output = "image" } }`. Every
+declared system rule must be reachable from an output.
 
 Use `bake system device --artifact system.img` to build only the image and
 its dependencies. Repeating `--artifact` selects multiple published names.

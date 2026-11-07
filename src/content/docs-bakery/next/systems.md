@@ -152,9 +152,10 @@ inputs and parameters. Every declared rule must be referenced transitively by an
 output. Published names must be flat file names. `build-context.json` is reserved.
 
 When `target` or `image` is set, the predefined pipeline runs as the reserved
-node `standard`. Its outputs are published by default. Additional rules and
-outputs can extend it, but cannot replace its published names.
-`options` and `bundle` require this pipeline.
+node `target`. Systems that set only `image` use the `unknown` target. The
+pipeline's outputs are published by default. Rules can use its outputs, and
+`outputs` can publish additional files. Their names must not collide with the
+pipeline's files. `options` and `bundle` require this pipeline.
 
 ### Add an Inventory to a Verified System
 

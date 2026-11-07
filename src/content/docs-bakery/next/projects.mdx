@@ -56,7 +56,8 @@ GitHub](https://github.com/rugix/rugix-bakery/blob/main/schemas/rugix-bakery-pro
 
 A system's `rules` table instantiates reusable build rules. Its `outputs`
 table maps published file names to graph artifacts. A `target` or `image`
-also enables the predefined pipeline, available as node `standard`.
+also enables the predefined pipeline, whose outputs rules can use through the
+reserved node `target`.
 See [Systems](/docs/bakery/next/systems) for examples and bundle configuration.
 
 ```shell
