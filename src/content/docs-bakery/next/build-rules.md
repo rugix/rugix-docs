@@ -500,6 +500,7 @@ The predefined pipeline includes a bundle for supported targets unless
 `bundle.enabled = false`. Systems without a target or with an unknown target
 default to no bundle and reject `bundle.enabled = true`.
 Its `bundle.compression` and `bundle.chunker` settings control encoding.
+`bake system --disable-compression` overrides `bundle.compression` for one build.
 A repository graph configures its own bundle rules through inputs and parameters.
 
 ## Reuse Core Rules

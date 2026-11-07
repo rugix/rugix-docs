@@ -199,6 +199,16 @@ chunker = "casync-64"
 Set `enabled = false` to disable the bundle. BSP targets must declare
 `[[bundle.payloads]]` in `rugix-bsp.toml` or disable bundles.
 
+To speed up a development build, disable compression for a single build
+instead of changing the configuration:
+
+```shell
+./run-bakery bake system device --disable-compression
+```
+
+The flag overrides `compression` and applies only to systems with a `target` or
+`image`. Other systems configure compression in their own bundle rules.
+
 ## Targets
 
 When declaring a system within the project configuration, you can specify a _target_ that is appropriate for the respective device.
