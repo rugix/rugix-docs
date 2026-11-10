@@ -144,6 +144,8 @@ The orchestrator drives Docker directly via `docker compose` and the Docker daem
 | start      | Runs `docker compose up -d --wait` (without image loading).                    |
 | stop       | Runs `docker compose stop`.                                                    |
 
+**Boot behavior:** Rugix Ctrl does not start Docker Compose apps at boot. Docker restarts the containers of an active app after a reboot only if their services set a `restart` policy, such as `restart: unless-stopped`. Without one, the app stays stopped until `rugix-ctrl apps start` starts it.
+
 **Boot behavior after `stop`:** `docker compose stop` stops the containers but does not remove them. Whether Docker restarts them on boot depends on the `restart` policy in the compose file. With `restart: always`, Docker restarts the containers automatically. With `restart: unless-stopped`, Docker remembers that the containers were explicitly stopped and does _not_ restart them.
 
 **Image removal on deactivation:** Deactivation removes the Rugix-owned content tags recorded in `images/rugix-images.json`, so images of old generations do not accumulate. Removing the last tag of an image deletes the image. Activation loads the images again from the generation directory or the store, so rollbacks and configuration changes work without a registry.
