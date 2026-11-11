@@ -10,50 +10,81 @@ Authenticate a Rugix bundle with a configurable signing certificate.
 
 ## Inputs
 
-| Name          | Kind | Description                                                                                                       |
-| ------------- | ---- | ----------------------------------------------------------------------------------------------------------------- |
-| `bundle`      | file | Existing Rugix update bundle to authenticate.                                                                     |
-| `certificate` | file | Single PEM-encoded RSA X.509 end-entity signer certificate issued directly by the trusted root. No intermediates. |
+| Name          | Kind | Description                                                                                                                                    |
+| ------------- | ---- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `bundle`      | file | Existing Rugix update bundle to authenticate.                                                                                                  |
+| `certificate` | file | Single PEM-encoded X.509 end-entity signer certificate issued directly by the trusted root. No intermediates. The default signer requires RSA. |
 
 ## Parameters
 
-| Name           | Default | Description                                                                                  |
-| -------------- | ------- | -------------------------------------------------------------------------------------------- |
-| `signing-time` | `""`    | Signing time as Unix seconds in a string (0..2524607999). Empty uses the build source epoch. |
+| Name           | Default | Description                                                                                                            |
+| -------------- | ------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `signing-time` | `""`    | Signing time as Unix seconds in a string. Empty uses the build source epoch. The default signer accepts 0..2524607999. |
 
 ## Outputs
 
-| Name     | Kind | Description                          |
-| -------- | ---- | ------------------------------------ |
-| `bundle` | file | Authenticated Rugix update bundle.   |
-| `hash`   | file | Bundle hash for update verification. |
+| Name     | Artifact Source                                |
+| -------- | ---------------------------------------------- |
+| `bundle` | `{"rule":{"node":"signed","output":"bundle"}}` |
+| `hash`   | `{"rule":{"node":"signed","output":"hash"}}`   |
 
-## Secrets
+## Rule Parameters
 
-Required secret bindings: `key`. Secret changes invalidate cached outputs.
+Callers can replace these operations through `rules` bindings. An implementation
+receives the listed inputs and parameters and must produce the listed outputs.
+See [Rule Parameters](/docs/bakery/next/build-rules#rule-parameters).
+
+### `signer`
+
+Create a CMS signature over the bundle's signed metadata. Bakery verifies it
+against certificate.
+
+Default implementation: `core/sign-cms`.
+
+| Name           | Role      | Kind | Description                                                                      |
+| -------------- | --------- | ---- | -------------------------------------------------------------------------------- |
+| `content`      | Input     | file | Signed bundle metadata.                                                          |
+| `certificate`  | Input     | file | Signer certificate that must verify the signature.                               |
+| `signing-time` | Parameter |      | Signing time as Unix seconds in a string. Empty means the build source epoch.    |
+| `signature`    | Output    | file | DER-encoded CMS SignedData with the encapsulated content and signer certificate. |
 
 ## Execution
 
-| Setting      | Value        |
-| ------------ | ------------ |
-| Environment  | Rugix Bakery |
-| Source epoch | Consumed     |
-| Output cache | Allowed      |
+Composes other rules into a build graph.
 
 ## Behavior
 
-Authenticate an existing Rugix update bundle. The `certificate` input contains
-one PEM-encoded RSA signing certificate; the `key` secret contains its matching
-PEM-encoded private key. The bundle embeds only the signer certificate, without
-intermediates. Issue it directly from the root that Rugix Ctrl trusts. The
-signer must not be a CA certificate. Concatenated PEM certificate chains are not
-supported by this rule.
+Authenticate an existing Rugix update bundle. The rule extracts the bundle's
+signed metadata, signs it with the `signer` rule parameter, verifies the
+signature against `certificate`, and appends it to the bundle.
 
-The signature uses RSA PKCS#1 v1.5 with SHA-256. `signing-time` is Unix seconds
-encoded as a string; an empty value uses the build source epoch. Accepted values
-range from `0` through `2524607999`. Fixed inputs, key, signing time, and
-tooling produce identical signed bytes. Bind private keys through `secrets` so
-Bakery handles them as sensitive inputs.
+The `certificate` input contains one PEM-encoded signing certificate. The bundle
+embeds only the signer certificate, without intermediates. Issue it directly
+from the root that Rugix Ctrl trusts. The signer must not be a CA certificate.
+Concatenated PEM certificate chains are not supported by this rule.
+
+`signing-time` is Unix seconds encoded as a string; an empty value uses the
+build source epoch.
+
+## Signer
+
+The default signer, [`core/sign-cms`](../sign-cms/), signs with RSA PKCS#1 v1.5
+and SHA-256 using a private key file. Bind its `key` secret through
+`rules.signer`. It accepts signing times from `0` through `2524607999`. Fixed
+inputs, key, signing time, and tooling produce identical signed bytes.
+
+To sign with an HSM or a KMS, bind another rule to `signer`. It receives the
+`content` and `certificate` inputs and the `signing-time` parameter. It returns
+`signature`: a DER-encoded CMS SignedData with the encapsulated content and the
+signer certificate, such as the output of
+`openssl cms -sign -binary -nodetach -outform DER`. Bakery rejects a signature
+that `certificate` does not verify or that covers other content.
+
+Bakery verifies the signature with the checks of the current Rugix Ctrl, and
+Rugix Ctrl verifies it again on the device. Rugix Ctrl 1.4 and earlier reject
+the RSA signatures that `openssl cms` creates with PKCS#11 keys, which Bakery
+accepts. For signers using `openssl cms` with devices on these versions, use an
+ECDSA key.
 
 ## Example
 
@@ -63,9 +94,10 @@ For example, authenticate a prepared update bundle:
 uses = "core/sign-bundle-rugix"
 inputs.bundle = { path = "release/update.rugixb" }
 inputs.certificate = { path = "keys/bundle.crt" }
-secrets.key = { path = "keys/bundle.key" }
+rules.signer.secrets.key = { path = "keys/bundle.key" }
 parameters.signing-time = "1700000000"
 ```
 
 Save the invocation as `build-rule.toml` and run
-`./run-bakery bake rule build-rule.toml build/result`. The output is `bundle`.
+`./run-bakery bake rule build-rule.toml build/result`. The outputs are `bundle`
+and `hash`.
