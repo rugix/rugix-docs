@@ -16,9 +16,7 @@ mise run setup
 mise run dev
 ```
 
-Mise manages Node and pnpm; CI uses the same version declarations and tasks.
-The site runs at <http://localhost:4322>. In Isolade, the server task publishes
-port 4322 through `podctl`. Most edits to MDX, components, and
+The site runs at <http://localhost:4322>. Most edits to MDX, components, and
 styles hot-reload without restarting.
 
 ## Build
@@ -34,7 +32,7 @@ handled by the GitHub Actions workflow in `.github/workflows/build.yml`.
 
 ## Link Checks
 
-Run `mise run check:links` to build the site and validate internal links,
+With Nix and flakes enabled, run `mise run check:links` to build the site and validate internal links,
 page anchors, and GitHub edit links against their source files. The checker
 uses production redirects from the infrastructure checkout at
 `/workspace/silitics/infrastructure/hosts/production/silitics/core1/default.nix`.
