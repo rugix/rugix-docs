@@ -86,10 +86,6 @@ rugix-bundler signatures add BUNDLE signed-metadata.cms OUT
 This allows any external tool to be used to create a CMS signature for a bundle and then add it to the bundle.
 In particular, this allows PKCS#11-compatible HSMs to be used for signing through `openssl cms`.
 
-:::warning
-**While currently not enforced, Rugix Ctrl only supports CMS signatures with a single signer.**
-:::
-
 ## Verifying Bundles
 
 To verify that a bundle has been signed by a root of trust, use:
@@ -99,6 +95,18 @@ rugix-bundler signatures verify BUNDLE CERT OUT
 ```
 
 The certificate does not need to be the certificate used for signing; it can be any certificate serving as a root of trust for which a certificate chain can be established using the certificates embedded in the CMS signature.
+
+### Signer Certificate Policy
+
+Use a dedicated CA for update signing. Rugix Ctrl accepts a signer certificate only when it chains to a configured root, is valid at the device's current time, and permits digital signatures if it declares key usage. A signer certificate must not be a CA. If it declares extended key usage, that usage must include code signing. A certificate without extended key usage is also accepted, so a general-purpose CA can authorize more signers than intended.
+
+Rugix Ctrl does not check certificate revocation through CRLs or OCSP. Maintain the device clock and trusted roots as part of the signing-key lifecycle.
+
+### Verification Resource Limits
+
+A bundle can carry at most 16 CMS messages, each at most 16 KiB, within a signature section of at most 256 KiB. Each CMS message can contain at most 16 signer entries. A message succeeds when at least one signer passes verification against a configured root.
+
+These limits accommodate ordinary signing certificates and intermediate chains. Bundles exceeding them are rejected.
 
 ## Configuring Signature Verification on Devices
 
