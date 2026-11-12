@@ -53,8 +53,9 @@ a command, builds a layer, or composes other rules into a graph. Commands use Ru
 default. An optional `env` selects a [tooling environment](/docs/bakery/next/envs) for commands
 that need additional or different tools.
 
-Each input definition is an object with a required `kind` (`file` or `directory`)
-and an optional `description`.
+Each input definition is an object with a required `kind` (`file` or `directory`),
+an optional `description`, and an optional `default` described in
+[Optional Inputs](#optional-inputs).
 
 For example, this rule compresses a file with gzip:
 
@@ -233,6 +234,25 @@ Tree assembly preserves source ownership, permissions, timestamps, and extended
 attributes. It also preserves links within each imported directory. Generated
 parent directories have mode `0755` and an epoch modification time. Rugix Bakery caches assembled trees by their destinations and source
 contents and metadata.
+
+### Optional Inputs
+
+An input with a `default` binding becomes optional. For example, a rule that
+adds files to a boot image only when a caller supplies them can default the
+input to an empty directory:
+
+```toml title="rules/boot-image/rule.toml"
+[inputs.extra-files]
+kind = "directory"
+default = { tree = {} }
+```
+
+Rugix Bakery uses the default only if the invocation binds no artifact and the
+enclosing composition has no input of the same name to forward. Existing
+invocations therefore keep working when a rule gains an optional input. A
+default resolves relative to the repository defining the rule, so a `path`
+default can refer to files shipped with the rule. It cannot reference other
+inputs or graph nodes.
 
 ### Bind Secrets
 
