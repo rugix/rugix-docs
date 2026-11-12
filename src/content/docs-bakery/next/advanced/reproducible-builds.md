@@ -83,23 +83,24 @@ behavior.
 
 > Given a commit hash of Rugix, everyone should be able to reproduce all Rugix-related binaries that may end up in images as well as the Docker image for Rugix Bakery. This includes binaries of third-party software, e.g., Grub and U-Boot.
 
-Reproducible builds require a known build environment.
-To this end, we use [Debian's official snapshots](https://snapshot.debian.org/) as a basis.
-Note that most [Debian packages are also fully reproducible](https://tests.reproducible-builds.org/debian/reproducible.html), so one could in principle trace everything back to its source code.
-Building upon Debian snapshots also has the advantage that it reduces the surface area that must be checked for Rugix, provided that one trusts Debian.
+The local source build uses mise tasks and a pinned Nix environment for
+native dependencies and musl cross compilers. From the Rugix Bakery source
+checkout, install Nix with flakes enabled, mise, and rustup. The native
+environment supports x86-64 and AArch64 Linux. Initialize the Rugix
+submodule, then run:
 
-To obtain a reproducible build environment, we follow a two stage process:
+~~~shell
+git submodule update --init --recursive
+mise install
+mise run build
+~~~
 
-- Stage 0: We build a Debian Docker image containing [`mmdebstrap`](https://manpages.debian.org/bookworm/mmdebstrap/mmdebstrap.1.en.html).
-  This image will not be reproducible as it is based on the latest version of Debian Bookworm.
-  We are only using it to bootstrap Stage 1.
-- Stage 1: Using the previously built Docker image, we bootstrap a Debian Docker image based on an official snapshot.
-  This image will be fully reproducible and everything we install will be pinned to the respective snapshot.
-  Thereby, all images that we derive from it, e.g., to build Rugix, Grub, or U-Boot, are also fully reproducible.
+See the [source development setup](https://github.com/rugix/rugix-bakery#development-environment)
+for tool ownership and build artifacts.
 
-Everything else we built will be based on the reproducible Stage 1 image.
-
-The infrastructure for reproducible builds is implemented as part of Rugix's [`xtask`](https://github.com/rugix/rugix-bakery/tree/main/xtask).
+Pinned tools are one prerequisite for reproducible artifacts. Bit-for-bit
+reproducibility of the Rust executables and Bakery container still requires
+verification.
 
 ## Reproducibility of Images
 

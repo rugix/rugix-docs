@@ -1,19 +1,22 @@
 [tools]
-node = "latest"
-pnpm = "latest"
-"github:silitics/sidex" = { version = "0.4.1" }
+node = "24"
+pnpm = "9"
 
-[hooks]
-postinstall = "pnpm install"
+[tasks.setup]
+description = "Install locked site dependencies."
+run = "pnpm install --frozen-lockfile"
 
 [tasks.dev]
-description = "Run the dev server."
-run = """
-if command -v sandboxctl >/dev/null 2>&1; then
-  sandboxctl process port publish 4322 --protocol http --label "rugix-docs dev"
-fi
-pnpm exec astro dev --host 127.0.0.1 --port 4322
-"""
+description = "Run the development server."
+run = "bash scripts/serve.sh dev"
+
+[tasks.preview]
+description = "Preview the generated site, including search."
+run = "bash scripts/serve.sh preview"
+
+[tasks."test:reference"]
+description = "Test the Bakery reference generator."
+run = "node --test scripts/generate-reference.test.mjs"
 
 [tasks.build]
 description = "Build the static site into dist/."

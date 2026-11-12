@@ -8,9 +8,12 @@ packages.
 
 ## Local Development
 
+Install mise, then run:
+
 ```sh
-pnpm install
-pnpm dev
+mise install
+mise run setup
+mise run dev
 ```
 
 The site runs at <http://localhost:4322>. Most edits to MDX, components, and
@@ -19,17 +22,17 @@ styles hot-reload without restarting.
 ## Build
 
 ```sh
-pnpm build
+mise run build
 ```
 
 Produces a static site in `dist/`, including a Pagefind index of all documentation
 sets and versions. Search is available from the main header with Ctrl/Cmd+K or
-`/`. Use `pnpm preview` to test search against the built index. Deployment is
+`/`. Use `mise run preview` to test search against the built index. Deployment is
 handled by the GitHub Actions workflow in `.github/workflows/build.yml`.
 
 ## Link Checks
 
-Run `mise run check:links` to build the site and validate internal links,
+With Nix and flakes enabled, run `mise run check:links` to build the site and validate internal links,
 page anchors, and GitHub edit links against their source files. The checker
 uses production redirects from the infrastructure checkout at
 `/workspace/silitics/infrastructure/hosts/production/silitics/core1/default.nix`.
