@@ -257,13 +257,22 @@ function page(kind, item) {
 
 function inputs(definition) {
   const ports = Object.entries(definition.inputs ?? {})
+  // Only rule inputs can declare defaults; keep the column out of other tables.
+  const defaults = ports.some(([, port]) => Object.hasOwn(port, "default"))
   let result = "## Inputs\n\n"
   result += ports.length
     ? table(
-        ["Name", "Kind", "Description"],
+        ["Name", "Kind", ...(defaults ? ["Default"] : []), "Description"],
         ports.map(([name, port]) => [
           code(name),
           port.kind,
+          ...(defaults
+            ? [
+                Object.hasOwn(port, "default")
+                  ? code(JSON.stringify(port.default))
+                  : "**Required**",
+              ]
+            : []),
           port.description ?? "",
         ]),
       )

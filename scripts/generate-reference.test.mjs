@@ -25,7 +25,11 @@ test("repository catalogs generate reference pages and detect or remove stale ge
             description: "Compose artifacts.",
             inputs: {
               source: { kind: "file" },
-              assets: { kind: "directory", description: "Assets | resources" },
+              assets: {
+                kind: "directory",
+                description: "Assets | resources",
+                default: { tree: {} },
+              },
             },
             parameters: {
               required: { description: "Must be supplied." },
@@ -128,6 +132,8 @@ test("repository catalogs generate reference pages and detect or remove stale ge
     ]) {
       assert.ok(page.includes(expected), expected)
     }
+    assert.match(page, /\| Name +\| Kind +\| Default +\| Description +\|/)
+    assert.match(page, /\| `assets` +\| directory +\| `\{"tree":\{\}\}` +\|/)
     assert.ok(
       (
         await readFile(join(output, "recipes/install/index.md"), "utf8")

@@ -12,11 +12,12 @@ Debian root filesystem.
 
 ## Inputs
 
-| Name                 | Kind      | Description                                                                                                       |
-| -------------------- | --------- | ----------------------------------------------------------------------------------------------------------------- |
-| `rootfs`             | directory | Prepared root filesystem implementing the core verified-root boot contract.                                       |
-| `boot-certificate`   | file      | PEM-encoded RSA X.509 certificate for signing EFI boot artifacts.                                                 |
-| `bundle-certificate` | file      | Single PEM-encoded RSA X.509 end-entity signer certificate issued directly by the trusted root. No intermediates. |
+| Name                 | Kind      | Default       | Description                                                                                                                             |
+| -------------------- | --------- | ------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `rootfs`             | directory | **Required**  | Prepared root filesystem implementing the core verified-root boot contract.                                                             |
+| `boot-certificate`   | file      | **Required**  | PEM-encoded RSA X.509 certificate for signing EFI boot artifacts.                                                                       |
+| `bundle-certificate` | file      | **Required**  | Single PEM-encoded RSA X.509 end-entity signer certificate issued directly by the trusted root. No intermediates.                       |
+| `secure-boot-keys`   | directory | `{"tree":{}}` | Authenticated variables PK.auth, KEK.auth, and db.auth that systemd-boot enrolls in Setup Mode. Empty by default, disabling enrollment. |
 
 ## Parameters
 
@@ -71,8 +72,9 @@ bootstrap. The wrapper consumes the prepared root without modifying it.
 The required `architecture` must match the system's `architecture` setting. Set
 `kernel-version` when several installed kernels exist; its empty default
 requires a unique installed kernel. Automatic capacity defaults, optional size
-overrides, remaining release inputs, signing policy, and outputs match the
-generic EFI composition.
+overrides, remaining release inputs, signing policy, outputs, and
+[Secure Boot key enrollment](../image-efi-verified/#enroll-secure-boot-keys)
+match the generic EFI composition.
 
 ## Customize Boot Settings
 
