@@ -86,16 +86,6 @@ rugix-bundler signatures add BUNDLE signed-metadata.cms OUT
 This allows any external tool to be used to create a CMS signature for a bundle and then add it to the bundle.
 In particular, this allows PKCS#11-compatible HSMs to be used for signing through `openssl cms`.
 
-### RSA Compatibility and Rollout
-
-RSA CMS signatures can identify PKCS#1 v1.5 signing with `rsaEncryption`, with the digest declared separately in CMS. OpenSSL uses this encoding. RSA-PSS signatures explicitly declare their hash and MGF1 hash; SHA-2 identifiers can omit their optional NULL parameters.
-
-Rugix Ctrl 1.4.0 rejects generic `rsaEncryption` signatures and RSA-PSS signatures with those absent NULL parameters. The unreleased verifier fix described in the [Rugix changelog](https://github.com/rugix/rugix/blob/main/CHANGELOG.md) adds support for SHA-256, SHA-384, and SHA-512 in these encodings. RSA-PSS still requires matching signature and MGF1 hashes and a salt as long as the digest.
-
-Before switching an external signer to these encodings, update deployed devices to a release containing the fix using signatures accepted by their existing verifier. Keep rollback images compatible too if they must install future bundles. A successful OpenSSL verification or a build-time signer-certificate check alone does not establish compatibility with an older device verifier.
-
-Test the resulting bundle with `rugix-bundler signatures verify` using the device's trusted root and a Rugix Bundler version matching the target Rugix Ctrl verifier. The device also validates the certificate chain and certificate validity at installation time.
-
 ## Verifying Bundles
 
 To verify that a bundle has been signed by a root of trust, use:
@@ -114,9 +104,9 @@ Rugix Ctrl does not check certificate revocation through CRLs or OCSP. Maintain 
 
 ### Verification Resource Limits
 
-The unreleased verifier hardening described in the [Rugix changelog](https://github.com/rugix/rugix/blob/main/CHANGELOG.md) bounds work on untrusted signature metadata. A bundle can carry at most 16 CMS messages, each at most 16 KiB, within a signature section of at most 256 KiB. Each CMS message can contain at most 16 signer entries. A message succeeds when at least one signer passes verification against a configured root.
+A bundle can carry at most 16 CMS messages, each at most 16 KiB, within a signature section of at most 256 KiB. Each CMS message can contain at most 16 signer entries. A message succeeds when at least one signer passes verification against a configured root.
 
-These limits accommodate ordinary signing certificates and intermediate chains. Bundles exceeding them are rejected, even if older versions accepted their signatures. Test unusually large certificate chains before rollout.
+These limits accommodate ordinary signing certificates and intermediate chains. Bundles exceeding them are rejected.
 
 ## Configuring Signature Verification on Devices
 
