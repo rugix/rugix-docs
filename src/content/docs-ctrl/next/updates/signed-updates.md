@@ -90,6 +90,16 @@ In particular, this allows PKCS#11-compatible HSMs to be used for signing throug
 **While currently not enforced, Rugix Ctrl only supports CMS signatures with a single signer.**
 :::
 
+### RSA Compatibility and Rollout
+
+RSA CMS signatures can identify PKCS#1 v1.5 signing with `rsaEncryption`, with the digest declared separately in CMS. OpenSSL uses this encoding. RSA-PSS signatures explicitly declare their hash and MGF1 hash; SHA-2 identifiers can omit their optional NULL parameters.
+
+Rugix Ctrl 1.4.0 rejects generic `rsaEncryption` signatures and RSA-PSS signatures with those absent NULL parameters. The unreleased verifier fix described in the [Rugix changelog](https://github.com/rugix/rugix/blob/main/CHANGELOG.md) adds support for SHA-256, SHA-384, and SHA-512 in these encodings. RSA-PSS still requires matching signature and MGF1 hashes and a salt as long as the digest.
+
+Before switching an external signer to these encodings, update deployed devices to a release containing the fix using signatures accepted by their existing verifier. Keep rollback images compatible too if they must install future bundles. A successful OpenSSL verification or a build-time signer-certificate check alone does not establish compatibility with an older device verifier.
+
+Test the resulting bundle with `rugix-bundler signatures verify` using the device's trusted root and a Rugix Bundler version matching the target Rugix Ctrl verifier. The device also validates the certificate chain and certificate validity at installation time.
+
 ## Verifying Bundles
 
 To verify that a bundle has been signed by a root of trust, use:
