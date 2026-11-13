@@ -321,6 +321,116 @@ key. Tooling is trusted code and must keep secret contents out of outputs and
 logs. The fingerprint key is private cache state; do not distribute it with
 exported artifacts.
 
+## Rule Parameters
+
+A rule parameter is an operation of a composition that callers can replace.
+The composition declares the operation's interface, the inputs and parameters
+it supplies and the outputs it expects, together with a default
+implementation. Callers keep the default or bind their own rule or
+composition. A replacement can require additional inputs, parameters, and
+secrets and can run in its own tooling environment, while the rest of the
+composition stays unchanged. For example, the core verified-boot compositions
+sign with private key files by default, and a caller can bind a signer that
+keeps its key in a hardware security module (HSM) or a key management service
+(KMS).
+
+### Declare a Rule Parameter
+
+For example, this composition compresses a file and lets callers replace the
+compressor:
+
+```toml title="rules/packed-kernel/rule.toml"
+[inputs.kernel]
+kind = "file"
+
+[rule-parameters.compressor]
+description = "Compress a file."
+default = { uses = "compress-file" }
+inputs.source = { kind = "file" }
+outputs.compressed = { kind = "file" }
+
+[execution]
+type = "graph"
+
+[execution.rules.compress]
+uses = { rule-parameter = "compressor" }
+inputs.source = { input = "kernel" }
+
+[execution.outputs]
+kernel = { rule = { node = "compress", output = "compressed" } }
+```
+
+An interface declares `inputs` with their kinds, `parameters` with optional
+descriptions, and at least one output. `default` is an invocation of the
+implementation used when callers bind nothing. Its bindings resolve in the
+composition, so a default can use the composition's inputs, parameters, and
+secrets.
+
+A node calls the selected implementation with `uses = { rule-parameter = ... }`.
+Each call binds every interface input and parameter, and nothing else. A
+composition can call one rule parameter from several nodes; each call executes
+the same implementation with different inputs.
+
+### Bind an Implementation
+
+Callers bind implementations through `rules` on the invocation. For example,
+this invocation replaces the compressor with a `compress-zstd` rule that
+requires an additional `level` parameter:
+
+```toml
+uses = "packed-kernel"
+inputs.kernel = { path = "artifacts/kernel" }
+rules.compressor = { uses = "compress-zstd", parameters.level = 19 }
+```
+
+A binding supplies the implementation's additional inputs, parameters, and
+secrets, which resolve in the scope of the invocation, like its other
+bindings. The composition supplies the interface inputs and parameters at each
+call, so a binding must not bind them. The binding must supply every
+additional input and secret of the implementation. Additional parameters
+without a binding use their defaults.
+
+A binding without `uses` keeps the default implementation and adds bindings to
+it. This is how callers supply the private key of a default signer:
+
+```toml
+rules.efi-signer.secrets.key = { path = "keys/boot.key" }
+```
+
+A composition that wraps another can expose the wrapped rule parameter as its
+own. It declares a rule parameter with the same interface and forwards its
+selection:
+
+```toml
+[execution.rules.release]
+uses = "core/image-efi-verified"
+rules.efi-signer = { uses = { rule-parameter = "efi-signer" } }
+```
+
+Callers of the wrapper then bind `efi-signer` as if it belonged to the wrapped
+composition.
+
+### Validation and Caching
+
+Rugix Bakery checks implementations against their interfaces while planning,
+before it builds environments or runs commands. Planning fails if an
+implementation does not declare an interface input or parameter, expects an
+unbound input, parameter, or secret, or lacks an interface output or produces
+it with a different kind. Unknown rule parameter bindings also fail.
+
+An implementation expands into ordinary commands. Each command's cache identity
+covers its rule implementation, environment, parameters, inputs, and secrets,
+as described in [Caching and Execution](#caching-and-execution). Selecting
+another implementation or changing its bindings therefore invalidates the
+cached outputs of the affected commands. Their consumers rebuild when those
+outputs change.
+
+An implementation is trusted code like any other rule. A composition can
+check the results of an implementation with additional nodes. For example, the
+core verified-boot compositions verify every signature against the configured
+certificate or public key. See [Signing with an HSM or KMS](/docs/bakery/next/advanced/hsm-signing)
+for a complete example.
+
 ## Layer Rules
 
 A layer rule exposes an existing layer to a composition. For example:
@@ -591,4 +701,4 @@ To install a rule output into a root filesystem, bind it to a
 
 See the [rule definition schema](/docs/bakery/next/reference/schemas#rule-definitions) for
 `rule.toml` fields and the [rule invocation schema](/docs/bakery/next/reference/schemas#rule-invocations)
-for `uses`, input, parameter, and secret bindings.
+for `uses`, input, parameter, secret, and rule parameter bindings.

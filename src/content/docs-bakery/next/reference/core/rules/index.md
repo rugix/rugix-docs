@@ -50,17 +50,22 @@ Artifact transformations and compositions supplied by this repository.
 
 ## Signing
 
-| Name                           | Description                                                           |
-| ------------------------------ | --------------------------------------------------------------------- |
-| [`core/sign-efi`](./sign-efi/) | Sign a PE executable for UEFI Secure Boot.                            |
-| [`core/sign-rpi`](./sign-rpi/) | Sign a Raspberry Pi boot image with the pinned upstream signing tool. |
+| Name                               | Description                                                                        |
+| ---------------------------------- | ---------------------------------------------------------------------------------- |
+| [`core/sign-cms`](./sign-cms/)     | Create a CMS signature with an RSA key.                                            |
+| [`core/sign-efi`](./sign-efi/)     | Sign a PE executable for UEFI Secure Boot.                                         |
+| [`core/sign-rpi`](./sign-rpi/)     | Sign a Raspberry Pi boot image with the pinned upstream signing tool.              |
+| [`core/verify-efi`](./verify-efi/) | Verify an EFI signature against a certificate and attach it to the unsigned image. |
+| [`core/verify-rpi`](./verify-rpi/) | Verify a Raspberry Pi boot signature against a public key.                         |
 
 ## Update Bundles
 
-| Name                                             | Description                                                          |
-| ------------------------------------------------ | -------------------------------------------------------------------- |
-| [`core/bundle-rugix`](./bundle-rugix/)           | Create an indexed Rugix update bundle from a manifest and payloads.  |
-| [`core/sign-bundle-rugix`](./sign-bundle-rugix/) | Authenticate a Rugix bundle with a configurable signing certificate. |
+| Name                                                           | Description                                                          |
+| -------------------------------------------------------------- | -------------------------------------------------------------------- |
+| [`core/attach-bundle-signature`](./attach-bundle-signature/)   | Verify a CMS signature over a Rugix bundle's metadata and attach it. |
+| [`core/bundle-rugix`](./bundle-rugix/)                         | Create an indexed Rugix update bundle from a manifest and payloads.  |
+| [`core/prepare-bundle-signature`](./prepare-bundle-signature/) | Extract the metadata that a Rugix bundle signature covers.           |
+| [`core/sign-bundle-rugix`](./sign-bundle-rugix/)               | Authenticate a Rugix bundle with a configurable signing certificate. |
 
 ## Verified Boot
 

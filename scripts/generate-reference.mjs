@@ -206,6 +206,7 @@ function page(kind, item) {
           definition.secrets.map(code).join(", ") +
           ". Secret changes invalidate cached outputs.\n\n"
       }
+      body += ruleParameters(definition["rule-parameters"])
       body += "## Execution\n\n"
       if (execution.type === "run") {
         const owner = item.name.includes("/")
@@ -299,6 +300,45 @@ function parameters(definitions) {
       ]),
     )
   )
+}
+
+function ruleParameters(definitions) {
+  const entries = Object.entries(definitions ?? {})
+  if (!entries.length) return ""
+  let result =
+    "## Rule Parameters\n\nCallers can replace these operations through `rules` bindings. An implementation receives the listed inputs and parameters and must produce the listed outputs. See [Rule Parameters](/docs/bakery/next/build-rules#rule-parameters).\n\n"
+  for (const [name, parameter] of entries) {
+    const { uses, ...bindings } = parameter.default
+    result += `### ${code(name)}\n\n`
+    if (parameter.description) result += parameter.description + "\n\n"
+    result += "Default implementation: " + code(uses) + ".\n\n"
+    if (Object.keys(bindings).length)
+      result += "Default bindings:\n\n" + json(bindings)
+    result += table(
+      ["Name", "Role", "Kind", "Description"],
+      [
+        ...Object.entries(parameter.inputs ?? {}).map(([field, port]) => [
+          code(field),
+          "Input",
+          port.kind,
+          port.description ?? "",
+        ]),
+        ...Object.entries(parameter.parameters ?? {}).map(([field, port]) => [
+          code(field),
+          "Parameter",
+          "",
+          port.description ?? "",
+        ]),
+        ...Object.entries(parameter.outputs).map(([field, port]) => [
+          code(field),
+          "Output",
+          port.kind,
+          port.description ?? "",
+        ]),
+      ],
+    )
+  }
+  return result
 }
 
 function index(kind, items) {
