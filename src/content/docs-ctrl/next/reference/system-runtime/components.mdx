@@ -92,7 +92,7 @@ A component that claims the same resource several times owns it once.
 
 Versions consist of one or more dot-separated numeric release components, an optional prerelease after `-`, and optional build metadata after `+`, for example, `5.2.0`, `6.0.0-rc.1`, or `2024.10+build.7`. Release components and numeric prerelease identifiers must fit into an unsigned 64-bit integer. A prerelease and build metadata consist of nonempty, dot-separated identifiers of ASCII letters, digits, and hyphens. Leading zeros are accepted, and whitespace around a version or requirement is ignored.
 
-Versions compare by their release components first. Trailing zero components and build metadata do not affect comparisons, so `1.2` equals `1.2.0`. A prerelease version precedes the release with the same release components. Prerelease identifiers compare one by one: numeric identifiers precede text identifiers, text identifiers compare by ASCII order, and a shorter prerelease precedes a longer one that starts with it.
+Versions compare by their release components first. Trailing zero components and build metadata do not affect comparisons, so `1.2` equals `1.2.0`. A prerelease version precedes the release with the same release components. Prerelease identifiers compare one by one: numeric identifiers precede text identifiers, text identifiers compare lexicographically by ASCII code, and a shorter prerelease precedes a longer one that starts with it.
 
 A version requirement is a comma-separated list of comparisons that must all hold, using the operators `=`, `==`, `!=`, `>`, `>=`, `<`, and `<=`. A version without an operator means equality, and `*` on its own matches every version. For example, `>=3,<4` matches `3.0` and `3.9.1` but not `4.0`.
 
