@@ -234,12 +234,13 @@ Prerelease versions sort before the corresponding final release. Build metadata 
 
 Version requirements are comma-separated comparators. All comparators must match. Supported operators are `=`, `==`, `!=`, `>`, `>=`, `<`, and `<=`. A bare version is treated as an exact match, and `*` matches any version.
 
-Comparators follow the version order with one exception, taken from PEP 440: an exclusive upper bound without a prerelease, such as `<6`, also excludes prereleases of its version. For example, `>=5,<6` does not match `6.0.0-rc.1`, although `6.0.0-rc.1` sorts before `6`. Prereleases inside the range still match, so `>=5,<6` matches `5.3.0-rc.1`. To admit prereleases of the bound, use a prerelease bound, such as `<6.0.0-rc.2`.
+A comparator's version without a prerelease refers to a _line_ of versions: all versions whose release components start with it, including their prereleases. `>=5` matches from the start of the line `5`, and `<6` matches before the start of the line `6`, so `>=5,<6` matches `5.0.0-rc.1` and `5.3.1`, but not `6.0.0-rc.1`. `>5` matches after the end of the line `5`, and `<=5` up to its end, so `>5` does not match `5.1.0`, but `>5.0` does. `5.*` matches the line `5`, and `!=5.*` every other version. `==` and `!=` without a wildcard compare exact versions. A comparator's version with a prerelease, such as `>=6.0.0-rc.2`, follows the version order.
 
 Examples:
 
 ```toml
 version = ">=5,<6"
+version = "5.*"
 version = "!=5.2.0"
 version = "2026.05.12"
 version = "*"

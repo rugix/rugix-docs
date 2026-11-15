@@ -96,7 +96,19 @@ Versions compare by their release components first. Trailing zero components and
 
 A version requirement is a comma-separated list of comparisons that must all hold, using the operators `=`, `==`, `!=`, `>`, `>=`, `<`, and `<=`. A version without an operator means equality, and `*` on its own matches every version. For example, `>=3,<4` matches `3.0` and `3.9.1` but not `4.0`.
 
-Comparisons follow the version order with one exception, taken from PEP 440: an exclusive upper bound without a prerelease, such as `<4`, also excludes prereleases of its version. Although `4.0-rc.1` precedes `4.0`, `>=3,<4` does not match it, because a prerelease of version 4 is not what a requirement for versions before 4 means. Prereleases inside the range still match, so `>=3,<4` matches `3.5-beta`. To include prereleases of the next version, use an upper bound with a prerelease, such as `<4-rc.2`, which compares in the version order. The SemVer shorthands `^` and `~` are not supported.
+Requirements are usually written before the versions they refer to exist. Suppose an app works with version 3 of a runtime and declares `>=3,<4` while version 3 is still in development. Testing the app with the release candidate `3.0-rc.1` should not require changing the declaration. Conversely, `4.0-rc.1` already contains the changes of version 4 and should not satisfy `<4`. A comparison with a version without a prerelease therefore refers to a _line_ of versions: all versions whose release components start with the given ones, including their prereleases. The line `3` contains `3.0-rc.1`, `3`, and `3.5.1`, and the line `3.0` contains `3.0.5`, but not `3.1`. Each operator refers to the start or the end of its line:
+
+| Requirement | Meaning                          | Matches             | Does Not Match      |
+| ----------- | -------------------------------- | ------------------- | ------------------- |
+| `>=3`       | From the start of the line `3`   | `3.0-rc.1`, `3.9`   | `2.9`               |
+| `<4`        | Before the start of the line `4` | `3.9`               | `4.0-rc.1`          |
+| `>3`        | After the end of the line `3`    | `4.0-rc.1`          | `3.1`               |
+| `<=3`       | Up to the end of the line `3`    | `3.9`               | `4.0-rc.1`          |
+| `3.*`       | The line `3`                     | `3.0-rc.1`, `3.5.1` | `4.0-rc.1`          |
+| `!=3.*`     | Outside the line `3`             | `4.0`               | `3.2`               |
+| `==3`       | Exactly `3`                      | `3.0`               | `3.0-rc.1`, `3.0.1` |
+
+For `>` and `<=`, the number of release components matters: `>3` does not match `3.1`, but `>3.0` does. For `>=` and `<`, it does not, because every line starts with its first prerelease, so `>=3` and `>=3.0` are the same. `==` and `!=` compare exact versions, so a version without an operator pins exactly one version. Wildcards are only allowed with `=`, `==`, and `!=`, and their version must not have a prerelease or build metadata. A comparison with a version that has a prerelease, such as `>=3-rc.2` or `<4-rc.2`, follows the version order. The SemVer shorthands `^` and `~` are not supported.
 
 ### Compatibility Reports
 
