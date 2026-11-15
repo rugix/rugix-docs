@@ -82,7 +82,7 @@ Each status record and each metric sample has exactly one publisher. The directo
 
 ## Reading Records
 
-A reader collects the records of each kind from all directories of that kind and combines them. Records in different directories do not override each other: a file in `/etc/system-runtime` with the same name as a file in `/usr/lib/system-runtime` adds a second record instead of replacing the first. Two components with the same ID make the composition inconsistent, and two health or value records of the same kind with the same ID make evaluation fail.
+A reader collects the records of each kind from all directories of that kind and combines them. Records in different directories do not override each other, so a file in `/etc/system-runtime` with the same name as a file in `/usr/lib/system-runtime` adds a second record. Two components with the same ID make the composition inconsistent, and two health or metric records of the same kind with the same ID make evaluation fail.
 
 To read the records of one kind, a reader:
 

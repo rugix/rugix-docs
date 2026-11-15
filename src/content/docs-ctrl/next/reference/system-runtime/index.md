@@ -81,7 +81,7 @@ The status record only reports the result of one check. How the results of the c
 }
 ```
 
-On top of the nodes for its checks, the telemetry app declares a node `app.telemetry` for the health of the app as a whole. Instead of taking its state from a status record, this node has a _rule_ that derives its state from other nodes, here from the checks of the database, the PLC connection, and the upload:
+On top of the nodes for its checks, the telemetry app declares a node `app.telemetry` for the health of the app as a whole. This node has a _rule_ that derives its state from other nodes, here from the checks of the database, the PLC connection, and the upload:
 
 ```json
 {
@@ -136,7 +136,7 @@ The records do more than decide whether an update is compatible or a system is h
 - "Telemetry is degraded: the upload is unhealthy (Cannot reach upload server)."
 - "The system is not ready to commit: the free space on the data partition is 500 MB, but healthy only from 1 GiB."
 
-Each of these messages is assembled from the records and the results of evaluating them. A compatibility report names the component whose requirement is not satisfied and the requirement itself. The result of an aggregate node lists its inputs and their states, labels give nodes readable names, status records carry the message of their check, and threshold nodes declare the ranges that a measurement is compared with. An operator therefore sees which part of the system causes a problem and why, instead of a bare "unhealthy" or "incompatible". How a tool phrases and presents such explanations is up to the tool.
+Each of these messages is assembled from the records and the results of evaluating them. A compatibility report names the component whose requirement is not satisfied and the requirement itself. The result of an aggregate node lists its inputs and their states, labels give nodes readable names, status records carry the message of their check, and threshold nodes declare the ranges that a measurement is compared with. An operator therefore sees which part of the system causes a problem and why. How a tool phrases and presents such explanations is up to the tool.
 
 ## Two Independent Parts
 
