@@ -25,7 +25,7 @@ rugix-bundler apps pack generic \
     my-app.rugixb
 ```
 
-`--config-schema` includes the schema as `config.schema.json`. `--config-default` includes the default as `config.default.json`. Rugix validates the effective document when the app is activated, so an invalid bundled default cannot become active.
+`--config-schema` includes the schema as `config.schema.json`. `--config-default` includes the default as `config.default.json`. Rugix Bundler rejects a default that does not match the schema, and Rugix Ctrl checks it again before it installs the generation. When the app is activated, Rugix Ctrl validates the effective document, so an invalid document never becomes active.
 
 ## Inspecting and Setting Configuration
 

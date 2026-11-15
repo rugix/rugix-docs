@@ -3,7 +3,7 @@ title: Reference
 order: 20
 ---
 
-This page documents the technical internals of Rugix Apps: app and generation state machines, storage layout, bundle format, stored files, systemd integration, crash recovery, and the CLI reference. For an introduction, start with [Application Management](../).
+This page documents the technical internals of Rugix Apps: app and generation state machines, storage layout, bundle format, app manifest, format versions, stored files, systemd integration, crash recovery, and the CLI reference. For an introduction, start with [Application Management](../).
 
 ## App State Machine
 
@@ -32,7 +32,7 @@ If the system crashes while in the `Switching`, `Starting`, or `Stopping` state,
 
 ## Generation State Machine
 
-A generation is either **incomplete** or **complete**. When a bundle is installed, a new generation is created in the incomplete state. Once all files have been fully extracted, it transitions to complete. To remove a generation, it is first marked incomplete again and then its files are deleted.
+A generation is either **incomplete** or **complete**. When a bundle is installed, a new generation is created in the incomplete state. Once all files have been fully extracted and Rugix Ctrl has checked its [app manifest](#app-manifest), it transitions to complete. To remove a generation, it is first marked incomplete again and then its files are deleted.
 
 ```mermaid
 stateDiagram-v2
@@ -56,6 +56,7 @@ App data is stored in the Rugix state directory at `/run/rugix/state/apps/` (or 
 ```
 <apps-dir>/<app>/
 ├── .rugix/
+│   ├── format.json                  # app directory format version
 │   ├── state.json                   # app lifecycle state
 │   └── configuration-state.json     # desired and highest allocated revisions
 ├── configurations/
@@ -92,6 +93,7 @@ Key aspects:
 - **Generation metadata.** The `.rugix/generation.json` file stores the generation number, creation timestamp, `lastActivated` timestamp, the configuration revision used for the most recent successful activation, the `origin` supplied with `apps install --origin`, if any, and whether it was installed with `--no-activate` (`staged`). Rollback only considers generations where `lastActivated` is set. Garbage collection removes generations without `lastActivated`, unless they are complete, staged, and newer than every activated generation.
 - **Configuration revisions.** Device-specific JSON documents are immutable, numbered files under `configurations/`. The directory is restricted to root. `.rugix/configuration-state.json` records the desired revision and highest allocated revision independently from lifecycle state, ensuring a revision number is never reused for different content.
 - **State file.** The `.rugix/state.json` file tracks the app's lifecycle state, including the configuration revisions in intermediate states used for [crash recovery](#crash-recovery).
+- **Format file.** The `.rugix/format.json` file records the [format version](#format-versions) of the app directory. Rugix Ctrl writes it when it first changes the app. An app directory without it has version 1.
 
 ## App Bundles
 
@@ -108,10 +110,58 @@ There are currently two app payload types:
 - **`app-archive`**: delivers a tar archive that is extracted into the generation directory.
   - **`app`**: the app name.
 
-An app bundle installs exactly one app, because it becomes one generation of that app. It may carry any number of payloads for that app, applied in manifest order so that later payloads overlay earlier ones. For example, a bundle could ship a base archive followed by individual file payloads that override specific configuration files. Among `app-file` payloads, the last one for a path wins, whether it is stored or not. A stored file takes precedence over a file extracted from an `app-archive` payload at the same path, even if the archive comes later, because readers check the store first. Avoid shipping both. A manifest naming several apps is rejected when the bundle is packed, and again before it is installed. Pack one bundle per app.
+An app bundle installs exactly one app, because it becomes one generation of that app. It may carry any number of payloads for that app, applied in the order of the bundle manifest (`rugix-bundle.toml`) so that later payloads overlay earlier ones. For example, a bundle could ship a base archive followed by individual file payloads that override specific configuration files. Among `app-file` payloads, the last one for a path wins, whether it is stored or not. A stored file takes precedence over a file extracted from an `app-archive` payload at the same path, even if the archive comes later, because readers check the store first. Avoid shipping both. A bundle manifest naming several apps is rejected when the bundle is packed, and again before it is installed. Pack one bundle per app.
 
 **`app-file`** payloads are ideal for large artifacts (Docker image tarballs, binaries) because they leverage the bundle format's support for compression, block-level deduplication, and delta encoding. With `store = true`, the device also keeps the file compressed and deduplicated across generations.
 **`app-archive`** payloads are convenient for delivering many small files at once (configuration, scripts, templates) without the overhead of a separate payload per file.
+
+## App Manifest
+
+Every generation has an app manifest, `app.toml`, at the root of its generation directory. It tells Rugix Ctrl which orchestrator manages the workload and how. `rugix-bundler apps pack` generates the manifest from its command line options. A hand-written bundle must deliver it, typically in an `app-archive` payload. For example, the manifest of a Docker Compose app with configuration could look like this:
+
+```toml title="app.toml"
+format-version = 1
+orchestrator = "docker-compose"
+
+[health-check]
+timeout = 120
+
+[configuration]
+schema = "config.schema.json"
+default = "config.default.json"
+
+[docker-compose.environment]
+SERVER_URL = "/serverUrl"
+```
+
+| Field                        | Description                                                                                                                                                                                   |
+| ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `format-version`             | [Format version](#format-versions) of the manifest. Defaults to `1`.                                                                                                                          |
+| `orchestrator`               | Required. The [orchestrator](../orchestrators/) managing the workload: `docker-compose`, `binary`, or `generic`.                                                                              |
+| `health-check.timeout`       | Seconds the Docker Compose orchestrator waits for the workload to become [healthy](../orchestrators/docker-compose#health-checks) during activation. `0` disables waiting. Defaults to `120`. |
+| `configuration.schema`       | Path of the JSON Schema for the [application configuration](../configuration), relative to the generation directory.                                                                          |
+| `configuration.default`      | Path of the default configuration document, relative to the generation directory.                                                                                                             |
+| `docker-compose.environment` | Environment variables [projected from the configuration](../orchestrators/docker-compose#projecting-configuration-values), each mapped to a JSON Pointer.                                     |
+
+The [JSON Schema of the manifest](https://github.com/rugix/rugix/blob/main/schemas/rugix-app-manifest.schema.json) describes the same fields.
+
+Before Rugix Ctrl marks a new generation complete, it checks that the manifest has a supported format version and a known orchestrator, and, if the manifest declares both, that the default configuration matches the schema. A bundle that fails these checks does not install, even with `--no-activate`. Rugix Ctrl warns about fields it does not know and otherwise ignores them.
+
+## Format Versions
+
+The Rugix Ctrl version that reads a file is not always the one it was written for. A fleet may run several versions, and a system update or rollback changes the version on a device that already has apps installed. To keep a Rugix Ctrl version from misinterpreting files written for a newer one, Rugix Apps gives each file whose meaning may change a numeric format version. Rugix Ctrl does not act on files with a version it does not support:
+
+| File                       | Version field    | Written by                                                        | Behavior for newer versions                                                                                                |
+| -------------------------- | ---------------- | ----------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `app.toml`                 | `format-version` | Rugix Bundler or the author of a hand-written bundle              | Rugix Ctrl rejects the bundle on installation and refuses to activate the generation.                                      |
+| `images/rugix-images.json` | `schemaVersion`  | Rugix Bundler, for Docker Compose apps                            | Deactivation keeps the generation's images instead of removing them. Activation does not read this file and is unaffected. |
+| `.rugix/format.json`       | `formatVersion`  | Rugix Ctrl, covering every file it maintains in the app directory | Rugix Ctrl refuses to inspect, change, or recover the app.                                                                 |
+
+A missing version means version 1, so files written before format versions existed need no migration. A format version increases only for changes that an older Rugix Ctrl would misinterpret by ignoring them. New optional fields that are safe to ignore keep the version. Rugix Bundler writes the lowest version that covers the content of a bundle, so bundles that use no newer features still install on devices with an older Rugix Ctrl. All formats currently have version 1. Rugix Ctrl 1.4 and earlier ignore format versions.
+
+Payload deliveries are part of the bundle header, which is versioned differently: every field of the [bundle format](../../updates/update-bundles) declares whether an older reader may skip it. A Rugix Ctrl version that does not know a field it must not skip rejects the bundle before installing anything.
+
+A newer Rugix Ctrl reads every older format version. The reverse does not hold. After a system rollback to an older Rugix Ctrl that checks format versions, it refuses to activate generations whose manifest has a newer format version, and to manage apps whose app directory has one. Rugix Ctrl 1.4 and earlier would instead silently ignore what they do not know. Rugix Ctrl cannot check this before an automatic fallback to the previous system. As long as devices may fall back to an older Rugix Ctrl, avoid app features that require a newer format version.
 
 ## Stored Files
 
@@ -208,9 +258,9 @@ Recovery also reconciles each app's `current` symlink with its persisted lifecyc
 
 | Command                                                     | Description                                                                                                               |
 | ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| `rugix-ctrl apps install BUNDLE [--config FILE]`            | Install apps from a bundle (`-` for stdin).                                                                               |
+| `rugix-ctrl apps install BUNDLE [--config FILE]`            | Install an app from a bundle (`-` for stdin).                                                                             |
 | `rugix-ctrl apps install BUNDLE --no-activate`              | Install a generation without activating it.                                                                               |
-| `rugix-ctrl apps install BUNDLE --origin JSON`              | Install apps and record the origin of the new generation.                                                                 |
+| `rugix-ctrl apps install BUNDLE --origin JSON`              | Install an app and record the origin of the new generation.                                                               |
 | `rugix-ctrl apps list`                                      | List all installed apps with status.                                                                                      |
 | `rugix-ctrl apps info APP`                                  | Show details for an app.                                                                                                  |
 | `rugix-ctrl apps config get APP`                            | Print the effective JSON configuration.                                                                                   |
