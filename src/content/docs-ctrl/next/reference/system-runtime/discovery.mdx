@@ -1,0 +1,192 @@
+---
+title: Discovery and Transport
+order: 4
+---
+
+import { SidexViewer } from "@silitics/astro-sidex-viewer"
+import "@silitics/astro-sidex-viewer/styles.css"
+import systemRuntimeIr from "../../../../../schemas/system-runtime-ir.json"
+
+On Linux, the system image, apps, and services publish their records as JSON files in standard directories, and tools read the records from there. For example, on the gateway from the [overview](../), the system image ships its component declaration as `/usr/lib/system-runtime/components/system.gateway-os.json`, and a service of the telemetry app writes the result of its latest database check to `/run/system-runtime/health/status/app.telemetry.postgres.json`. This page describes where the files go, how to write them, how readers find and combine them, and how to send health information to another system.
+
+## Why Files
+
+Records are published as plain files rather than through a central service or API. Files let each contributor publish its records in the way that suits it best:
+
+- The system image ships its declarations as part of its root filesystem, so they change exactly when the system image does.
+- An app ships its declarations inside its installation directory, so they appear and disappear with the app.
+- A service writes its status records whenever it has run a check, without knowing which tools will read them, and without failing when none is running.
+
+Readers, in turn, load the records whenever they need them. No daemon has to run for records to be published, and a reader that starts late still sees the current records.
+
+## Directory Layout
+
+The specification defines standard directories for each kind of record:
+
+| Records                  | Standard Directories                                                                                                                      |
+| ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| Component declarations   | `/usr/lib/system-runtime/components`<br/>`/etc/system-runtime/components`<br/>`/run/system-runtime/components`                            |
+| Health nodes             | `/usr/lib/system-runtime/health/nodes`<br/>`/etc/system-runtime/health/nodes`<br/>`/run/system-runtime/health/nodes`                      |
+| Health status records    | `/run/system-runtime/health/status`                                                                                                       |
+| Metric definitions       | `/usr/lib/system-runtime/metrics/definitions`<br/>`/etc/system-runtime/metrics/definitions`<br/>`/run/system-runtime/metrics/definitions` |
+| Metric samples           | `/run/system-runtime/metrics/samples`                                                                                                     |
+| Directory configurations | `/usr/lib/system-runtime/directories`<br/>`/etc/system-runtime/directories`<br/>`/run/system-runtime/directories`                         |
+
+The three locations for definitions follow common Linux conventions:
+
+- `/usr/lib/system-runtime` holds records that belong to the system image, such as its component declaration and the health nodes of its checks.
+- `/etc/system-runtime` holds records specific to a device, such as records that an administrator adds for a single device.
+- `/run/system-runtime` holds records generated at runtime, such as the board revision that a service reads from the hardware at boot. It is typically on a temporary filesystem and empty after every boot.
+
+The standard directories for status records and metric samples exist only below `/run/system-runtime`, because these records are only valid during the boot in which they were published. Directory configurations add further directories, for example, those of apps, as described in [Adding Directories](#adding-directories).
+
+## Publishing Records
+
+Each record is a regular file with the extension `.json` that contains exactly one record of the directory's kind. The file name is up to the publisher; the record's ID determines its identity. Writers omit optional fields that are not set.
+
+Readers may load a file at any moment, including while it is being written. To prevent them from reading a partially written file, write the record to a temporary file with a different extension in the same directory, then rename it to its final name. Renaming within a directory replaces a file atomically. There are no transactions across files, so a reader may see a new version of one file and an old version of another.
+
+For example, the following script checks with `pg_isready` whether PostgreSQL accepts connections and publishes the result as a status record for the `app.telemetry.postgres` node from [Health](../health#observed-nodes-and-status-records). A systemd timer can run it every 5 seconds:
+
+```shell
+#!/bin/sh
+# Take the time before running the check, so that a slow check does
+# not extend the validity of its result. /proc/uptime contains the
+# boot-time clock in seconds.
+boot_id=$(cat /proc/sys/kernel/random/boot_id)
+observed_at_ms=$(awk '{ printf "%.0f", $1 * 1000 }' /proc/uptime)
+
+if pg_isready -q -h 127.0.0.1 -p 5432; then
+    state=healthy message="Accepting connections"
+else
+    state=unhealthy message="Not accepting connections"
+fi
+
+dir=/run/system-runtime/health/status
+mkdir -p "$dir"
+cat > "$dir/app.telemetry.postgres.json.tmp" <<EOF
+{
+  "id": "app.telemetry.postgres",
+  "owner": "rugix.apps.telemetry",
+  "state": "$state",
+  "bootId": "$boot_id",
+  "observedAtMs": $observed_at_ms,
+  "maxAgeMs": 15000,
+  "message": "$message"
+}
+EOF
+mv "$dir/app.telemetry.postgres.json.tmp" "$dir/app.telemetry.postgres.json"
+```
+
+Each status record and each metric sample has exactly one publisher. The directories do not authenticate publishers, so restrict write access to them. To let an unprivileged service publish its records without giving it access to the records of other services, give the service a directory of its own and add it with a [directory configuration](#adding-directories).
+
+## Reading Records
+
+A reader collects the records of each kind from all directories of that kind and combines them. Records in different directories do not override each other: a file in `/etc/system-runtime` with the same name as a file in `/usr/lib/system-runtime` adds a second record instead of replacing the first. Two components with the same ID make the composition inconsistent, and two health or value records of the same kind with the same ID make evaluation fail.
+
+To read the records of one kind, a reader:
+
+1. Loads the directory configurations and appends their directories to the standard directories.
+2. Visits the directories in order and traverses each recursively, visiting entries in lexical order.
+3. Reads every regular file with the extension `.json`, skipping files with other extensions and symlinks inside the directories.
+4. Reads each file only once, even when several directories overlap.
+
+Missing directories are skipped. A path that exists but is not a directory, a broken symlink in place of a directory, a file that cannot be read, and a file that does not contain a valid record are errors. Readers ignore unknown fields in records, so records with fields added by a newer version of the specification remain readable. New kinds of health rules or new units, in contrast, require updated readers.
+
+Because records can change at any moment, a reader loads a fresh set of records before acting on them. If loading fails because a file changed during the read, for example, because it was removed, the reader loads the records again. The language packages report such failures as errors and leave retrying to the caller.
+
+## Adding Directories
+
+A directory configuration adds directories in which readers look for records. Readers load directory configurations from `/usr/lib/system-runtime/directories`, `/etc/system-runtime/directories`, and `/run/system-runtime/directories`. For example, a Node-RED installation in `/opt/node-red` can add its own directories, including a status directory for its service, with `/etc/system-runtime/directories/node-red.json`:
+
+```json
+{
+  "components": ["/opt/node-red/components"],
+  "healthNodes": ["/opt/node-red/health/nodes"],
+  "healthStatuses": ["/run/node-red/health/status"]
+}
+```
+
+Paths must be absolute. A path segment consisting of only `*` matches every directory at that level, in lexical order. Readers expand such patterns every time they load records, so one configuration covers installations added later. Relative paths, `..` segments, and other wildcards, such as `*.d` or `**`, make loading fail.
+
+Wildcards only match real directories, not symlinks to directories. Explicit path segments, in contrast, may be symlinks, such as the `current` symlink of [Rugix Apps](#discovering-rugix-apps). A reader resolves every matched directory to its physical location before reading its files. If the symlink changes while the reader traverses the directory, the reader still reads all files from the directory it resolved first, never a mix of both.
+
+Directory configurations cannot add further directory configurations.
+
+### Discovering Rugix Apps
+
+[Rugix Apps](../../../application-management/) keeps each installed version of an app, a _generation_, in its own directory. A `current` symlink in the app's directory points to the active generation. An app's payloads can place health nodes in the `.rugix/health/nodes` directory of the generation, as described in [Rugix Apps Internals](../../../application-management/internals). Adding the following configuration to the system image, for example, as `/usr/lib/system-runtime/directories/rugix-apps.json`, makes the health nodes and component declarations of all active apps visible to readers:
+
+```json
+{
+  "components": ["/run/rugix/state/apps/*/current/.rugix/components"],
+  "healthNodes": ["/run/rugix/state/apps/*/current/.rugix/health/nodes"]
+}
+```
+
+If Rugix state management is not active, apps live in `/var/lib/rugix/apps` instead of `/run/rugix/state/apps`.
+
+The `current` symlink makes this configuration follow the app's lifecycle. While Rugix Apps switches to a new generation, the symlink keeps pointing to the previous generation and changes atomically once the new generation has been activated successfully. If activation fails and Rugix Apps rolls back, the symlink never changes. When an app is activated for the first time, the symlink appears once activation has succeeded. After an app has been deactivated or has entered the `Error` state, the symlink is removed, and the app's records disappear.
+
+### Rugix Ctrl's Component Directories
+
+For its [compatibility checks](../../../updates/compatibility), Rugix Ctrl reads component declarations from its own directories. The following configuration, for example, as `/usr/lib/system-runtime/directories/rugix.json`, makes them visible to readers of the specification:
+
+```json
+{
+  "components": [
+    "/usr/lib/rugix/components",
+    "/etc/rugix/components",
+    "/run/rugix/components"
+  ]
+}
+```
+
+Rugix Ctrl accepts component declarations in TOML or JSON, while readers of the specification only read `.json` files. Write declarations in JSON, including those shipped with apps, to make them visible to both. Give them an `owner` as well, because readers do not derive owners from directories.
+
+Rugix Ctrl also adds a `rugix.host` component with the capabilities `host.arch` and `rugix.ctrl` when it checks compatibility. This component does not exist as a file, so for other readers, requirements on these capabilities remain unsatisfied unless another component provides them.
+
+## Sending Health to Another System
+
+A fleet-management server or a remote diagnostic tool may want to show a device's health. Sending only the evaluated states loses the information an operator needs to understand them: which checks a function depends on, what each check reported, and when it ran. A _health snapshot_ therefore contains the records themselves, so that the receiver can evaluate and display the complete graph. It contains:
+
+- the health nodes,
+- the status records, unchanged,
+- metric definitions and samples, including at least the definition of every metric referenced by a threshold node, and
+- a _clock sample_ of the observed system.
+
+The status records carry their observation times on the boot-time clock of the device, which the receiver cannot interpret on its own. The clock sample connects that clock to the wall clock: it contains the device's boot ID and boot time together with the device's wall-clock time at the same moment. Collect the records first and take the clock sample afterwards, so that no record appears to be observed after the sample was taken.
+
+```json
+{
+  "context": {
+    "bootId": "e09a482c-4a41-4f95-891e-042af3d3c4a4",
+    "nowMs": 45000
+  },
+  "timestamp": "2026-10-14T12:00:00Z"
+}
+```
+
+With this sample, the receiver can estimate when a check ran. For a status record from the same boot, the observation time is the sample's `timestamp` minus the difference between the sample's `nowMs` and the record's `observedAtMs`. The status record of the database check from the [overview](../#how-it-works), observed at boot time 42000, ran 3 seconds before the sample, at about `2026-10-14T11:59:57Z`. The estimate is only as accurate as the device's wall clock at the time of sampling. For a record from another boot or with an observation time after the sample, no wall-clock time can be estimated.
+
+To determine the device's health, the receiver evaluates the snapshot with the sample's `context` as the current boot and time. The result describes the device's health at the moment the snapshot was taken, because transport does not renew the validity of records. A tool that needs the current health of the device evaluates the records on the device itself.
+
+## Reference
+
+### Directory Configurations
+
+<SidexViewer
+  ir={systemRuntimeIr}
+  type="filesystem.DirectoryConfig"
+  initialDepth={1}
+/>
+
+### Health Snapshots
+
+<SidexViewer
+  ir={systemRuntimeIr}
+  type="health.HealthSnapshot"
+  initialDepth={2}
+/>
+
+Clock sample timestamps use RFC 3339 in UTC, ending in `Z`, and may include fractional seconds. Estimated observation times have millisecond precision and are only defined for the years 0001 to 9999.

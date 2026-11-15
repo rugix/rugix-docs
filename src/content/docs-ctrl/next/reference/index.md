@@ -9,3 +9,4 @@ Reference material that applies across Rugix Ctrl's capabilities rather than to 
 - **[Privileged Operation Daemon](./privileged-daemon)** explains how unprivileged Rugix Ctrl clients can use a narrowly configured local privilege boundary.
 - **[Kernel Command Line](./kernel-command-line)** lists the parameters Rugix Ctrl reads during early boot.
 - **[Store](./store)** explains how Rugix Ctrl keeps large files, such as container images, on the device in a space-efficient way that still allows delta updates.
+- **[System Runtime Specification](./system-runtime/)** lets the system image, apps, and services tell update controllers and other tools whether they fit together and whether they are healthy while the system runs.

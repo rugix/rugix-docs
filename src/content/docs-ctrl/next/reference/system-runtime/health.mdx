@@ -1,0 +1,309 @@
+---
+title: Health
+order: 3
+---
+
+import { SidexViewer } from "@silitics/astro-sidex-viewer"
+import "@silitics/astro-sidex-viewer/styles.css"
+import systemRuntimeIr from "../../../../../schemas/system-runtime-ir.json"
+
+_Health_ describes whether a running system and its functions are considered healthy, independently of [components and compatibility](../components). The system image and apps declare which checks matter and how their results combine into the health of larger functions. Services run the checks and publish their results, and tools evaluate the results against the declarations. A health result therefore reflects only the declared checks and criteria; a problem that no check detects does not affect it. This page defines health states, health graphs, and metrics, and how they are evaluated. The [overview](../#how-it-works) introduces them with an example.
+
+## Design
+
+A single healthy or unhealthy flag per device does not capture enough. The health model follows from five observations about real systems.
+
+**Functions depend on several checks, and checks support several functions.**
+An app might need its HTTP server to respond and its database to accept connections. The same MQTT broker might serve several apps. Health therefore forms a graph that connects checks to the functions depending on them, where one check can contribute to several functions.
+
+**Partial failure is common.**
+A telemetry app that cannot reach the cloud might still collect data and buffer it locally. Reporting it as healthy hides the problem, while reporting it as unhealthy announces an outage that is not happening. Health therefore distinguishes a function that is still usable from one that is fully healthy.
+
+**Missing evidence is not good news.**
+If a service stops publishing results, its last result must not count forever. Likewise, a result published shortly before an app was updated describes the old version of the app, not the new one. Health results therefore expire and can be tied to a particular version of a check. A function without current evidence has an unknown state, which is different from both healthy and unhealthy.
+
+**Clocks on embedded devices are unreliable.**
+Many devices have no battery-backed real-time clock and boot with a wrong time until they synchronize it over the network. When the clock jumps, an old result could appear fresh or a fresh result could appear old. Health therefore measures the age of results with a clock that wall-clock changes do not affect.
+
+**Different questions concern different functions.**
+Whether an update can be committed might depend only on the core functions, while an operator wants to see every problem, including those that do not affect an update. A health graph can therefore have several top-level results that share the same underlying checks.
+
+## Health States
+
+The health of every check and function is one of four states. To define them, each check and function has _minimum criteria_, under which it remains usable, and _desired criteria_, under which it is fully healthy.
+
+| State       | Meaning                                                                               |
+| ----------- | ------------------------------------------------------------------------------------- |
+| `healthy`   | The desired criteria are confirmed to be met.                                         |
+| `degraded`  | The minimum criteria are confirmed to be met, but the desired ones are not confirmed. |
+| `unhealthy` | The minimum criteria are confirmed to be unmet.                                       |
+| `unknown`   | The available evidence does not determine whether the minimum criteria are met.       |
+
+For a check, the service that runs it judges the criteria and publishes the state, including `unknown` if the check cannot reach a conclusion. For a threshold node, the declared ranges define the criteria, and for an aggregate node, its rule does. A `degraded` state means that the function remains usable, but something needs attention. An `unknown` state means that the current results do not allow a conclusion, for example, because the service checking the function has crashed.
+
+## Health Graphs
+
+A _health graph_ consists of named _health nodes_. Each node represents a check or a function, and its _rule_ determines its state in one of three ways:
+
+- An **observed** node takes its state from a _status record_ that a service publishes. This is the default for a node without a rule.
+- A **threshold** node compares the current sample of a [metric](#metrics) with declared ranges.
+- An **aggregate** node combines the states of other nodes, its _inputs_.
+
+Aggregate nodes can use other aggregate nodes as inputs, and a node can be the input of several aggregate nodes. The graph must not contain cycles. Different parts of a system contribute their own nodes, and all nodes together form one graph.
+
+### Observed Nodes and Status Records
+
+An observed node is defined separately from the status records that report its state. The definition belongs to whoever decides that a check matters, typically the system image or an app. The status records come from the service that runs the check, with the same ID as the node. If the node has an `owner`, its status records must carry the same `owner`; otherwise, the node is `unknown`. [Publishing Records](../discovery#publishing-records) describes where status records go and shows an example script. Because definition and status are separate, a check remains defined even when its service stops publishing. Once the last status expires, the node becomes `unknown`, and an operator sees that the check is missing instead of not seeing it at all.
+
+A status record is valid only for a limited time. `bootId` and `observedAtMs` say when the check ran: `bootId` identifies the current boot of the system, and `observedAtMs` is the time since that boot in milliseconds. On Linux, these are the contents of `/proc/sys/kernel/random/boot_id` and the value of the `CLOCK_BOOTTIME` clock, the _boot-time clock_. This clock starts at zero when the system boots, keeps counting while the system is suspended, and is not affected by changes to the wall clock. Measuring ages with it means that correcting the wall clock cannot make an old result appear fresh. Because the clock restarts with every boot, a status from an earlier boot is never valid.
+
+The status's `maxAgeMs` states how long its result remains valid. For example, a status observed at 42000 ms on the boot-time clock with a `maxAgeMs` of 15000 expires at 57000 ms. A service that runs its check every 5 seconds can use this `maxAgeMs`, so that a single missed run does not make the node `unknown`. The node's rule can declare its own `maxAgeMs`, which caps the validity of every status. This lets whoever defines a check bound how long any result counts, regardless of what the publishing service declares. With the following node, the status from above expires at 52000 ms instead:
+
+```json
+{
+  "id": "app.telemetry.postgres",
+  "owner": "rugix.apps.telemetry",
+  "label": "PostgreSQL",
+  "rule": { "type": "observed", "maxAgeMs": 10000 }
+}
+```
+
+A node can also require status records to carry a particular _tag_, an opaque string that identifies the configuration or instance of a check. The node's rule declares the tag it expects in `expectedTag`, for example, `"rule": { "type": "observed", "expectedTag": "2.1.0" }`, and the service publishes its tag in `tag`. An app can set `expectedTag` to its version and have its service publish the same version as `tag`. After an update of the app, a status published by the old version shortly before the update then cannot confirm the health of the new version.
+
+### Aggregate Nodes
+
+An aggregate node declares its inputs. By default, it is usable only if all of its inputs are usable, and healthy only if all of them are healthy, which is the most common case. Flags on the inputs and two counts express other patterns:
+
+- An input marked as `optional` only affects the desired criteria. If it is not healthy, the aggregate is at most `degraded`; an optional input alone never makes the aggregate `unhealthy` or `unknown`.
+- The count `required` is the number of non-optional inputs that must meet their minimum criteria, and the count `healthy` is the number of non-optional inputs that must be healthy. An omitted `healthy` count means all non-optional inputs, and an omitted `required` count equals the `healthy` count. Setting `healthy` to one makes any single input sufficient, and setting only `required` below the number of inputs expresses redundancy.
+- The counts treat inputs as interchangeable. An input marked as `required` is also mandatory: in addition to counting toward the counts, it must meet its minimum criteria for the aggregate to meet its minimum criteria, and it must be healthy for the aggregate to be healthy. The input flag `required` and the count `required` are different fields.
+
+For example, suppose an app collects data from two PLCs and remains usable as long as it reaches one of them. It needs its database, and its upload to the cloud only matters for whether it is fully healthy:
+
+```json
+{
+  "id": "app.telemetry",
+  "owner": "rugix.apps.telemetry",
+  "label": "Telemetry",
+  "rule": {
+    "type": "aggregate",
+    "inputs": [
+      { "node": "app.telemetry.postgres", "required": true },
+      { "node": "app.telemetry.plc-1" },
+      { "node": "app.telemetry.plc-2" },
+      { "node": "app.telemetry.upload", "optional": true }
+    ],
+    "required": 2
+  }
+}
+```
+
+The database counts toward both counts, so `required: 2` means the database and at least one PLC. The omitted `healthy` count requires all three non-optional inputs, and the optional upload, to be healthy for the app to be healthy. An input cannot be both `required` and `optional`.
+
+An aggregate node treats an `unknown` input as one that may or may not meet its minimum criteria. The aggregate is `unhealthy` if its minimum criteria cannot be met even if every unknown input met its minimum criteria. It is `unknown` if the answer depends on unknown inputs. [Aggregate Evaluation](#aggregate-evaluation) defines these rules precisely.
+
+### Roots
+
+Nodes that are not the input of any other node are the graph's _roots_; they describe the top-level functions of the system. A system can have several roots that share the same checks, for example, one covering the functions that must be healthy before an update is committed, and one covering everything an operator should monitor.
+
+A tool that requires a root to be `healthy`, such as an update controller deciding whether to commit an update, must not treat `unknown` as healthy. Directly after booting, many services have not published their first status yet, so a root is typically `unknown` for a short time. How long to wait and when to give up are decisions of the tool.
+
+A root that combines nodes of several contributors needs care. An aggregate node references its inputs by ID, and a reference to a node that does not exist makes the whole graph invalid. A root must therefore only reference nodes that are present whenever the root is. The system image cannot know which apps a device runs, so a root covering apps belongs to whoever does, for example, a device-specific file in `/etc/system-runtime/health/nodes`. While an app is not active, for example during its first activation, its nodes are absent, and a root referencing them makes evaluation fail.
+
+## Metrics
+
+A _metric_ is a named numeric measurement with a unit, such as the CPU temperature, the free space on the data partition, or the charge of a battery. Services publish the current measurement of a metric, tools display it, and threshold nodes derive health from it. Unlike metrics in monitoring systems such as Prometheus, a metric has no history: only its current sample counts. Collecting and storing time series is left to the tools that read the samples.
+
+A measurement is useful on its own: a diagnostic tool can show the CPU temperature without anybody deciding which temperature is a problem. Whether a temperature is a problem depends on the purpose. A device might run fine at 85 °C, but its builder might not want it to install an update above 80 °C. Metrics therefore keep measurements separate from health policies. A single service publishes the CPU temperature, and any number of threshold nodes, defined by the system image or by apps, use it for their purposes. Because a threshold node declares its ranges in a structured form, a user interface can show the reading, its age, and the range it violates, such as "92 °C, usable up to 90 °C", instead of a free-form message.
+
+### Metric Definitions and Samples
+
+Like health nodes and status records, metrics come in two parts. A _metric definition_ declares the metric, its unit, and how old a sample may be:
+
+```json
+{
+  "id": "cpu.temperature",
+  "owner": "rugix.system",
+  "label": "CPU temperature",
+  "unit": "celsius",
+  "maxAgeMs": 10000
+}
+```
+
+A service, for example, one that reads the temperature from the kernel's thermal zone in `/sys/class/thermal`, publishes each measurement as a _metric sample_:
+
+```json
+{
+  "id": "cpu.temperature",
+  "owner": "rugix.system",
+  "value": 72.5,
+  "bootId": "e09a482c-4a41-4f95-891e-042af3d3c4a4",
+  "observedAtMs": 42000,
+  "maxAgeMs": 5000
+}
+```
+
+Samples expire like status records: a sample is valid in the boot it was taken in, for less than its `maxAgeMs`. The definition's `maxAgeMs` can shorten that time, and so can the `maxAgeMs` of a threshold node using the metric. [Observed Nodes and Status Records](#observed-nodes-and-status-records) explains why ages are measured on the boot-time clock.
+
+### Threshold Nodes
+
+A threshold node references a metric and declares two ranges: a `healthy` range for the desired criteria and a `usable` range for the minimum criteria. For example, the following node considers the CPU healthy up to 75 °C and usable up to 90 °C:
+
+```json
+{
+  "id": "system.thermal",
+  "owner": "rugix.system",
+  "label": "CPU temperature",
+  "rule": {
+    "type": "threshold",
+    "metric": "cpu.temperature",
+    "healthy": { "upper": { "value": 75, "inclusive": true } },
+    "usable": { "upper": { "value": 90, "inclusive": true } }
+  }
+}
+```
+
+A fresh sample inside the healthy range makes the node `healthy`, one inside the usable range only makes it `degraded`, and one outside the usable range makes it `unhealthy`. Without a fresh sample, the node is `unknown`. In the example, 75 °C is healthy, 90 °C is degraded, and anything above 90 °C is unhealthy.
+
+Each range can have a lower bound, an upper bound, or both, and each bound states whether the range includes the bound itself. A lower bound expresses a minimum, such as the free space on the data partition in the [overview's example](../#how-it-works). Two bounds express an acceptable interval, for example, for a supply voltage. The healthy range must lie within the usable range.
+
+A threshold node can be the input of aggregate nodes like any other node. Its owner may differ from the owner of the metric, so an app can define its own policy for a metric that the system image measures.
+
+Threshold nodes evaluate only the current sample and keep no history. A measurement that fluctuates around a bound makes the node's state fluctuate as well. If that is undesirable, the publishing service smooths the measurement, for example, by publishing an average over the last minute. A tool that keeps showing a sample after it has expired marks it as stale, separately from the node's current state, which is `unknown`.
+
+## Reference
+
+### Health Nodes
+
+Each node of a health graph is described by one `HealthNode`:
+
+<SidexViewer ir={systemRuntimeIr} type="health.HealthNode" initialDepth={2} />
+
+Node IDs are opaque, case-sensitive strings and must be unique within the graph. They are independent of component IDs and metric IDs. The `components` field associates a node with components, for example, to show a component's checks in a user interface; it does not create dependencies.
+
+### Status Records
+
+A `HealthStatus` reports the state of one observed node:
+
+<SidexViewer ir={systemRuntimeIr} type="health.HealthStatus" initialDepth={1} />
+
+Evaluation takes the current boot ID and the current value of the boot-time clock of the observed system as input, called the _health context_. A status record is _fresh_ if all of the following hold:
+
+- its `bootId` equals the current boot ID,
+- its `owner` equals the node's owner, if the node has one,
+- its `tag` equals the node's `expectedTag`, if the node has one,
+- its `observedAtMs` is not in the future, and
+- its age, the current boot time minus `observedAtMs`, is strictly less than its `maxAgeMs` and, if the node has one, the node's `maxAgeMs`.
+
+An observed node takes the state of its fresh status record. Without a fresh status record, its state is `unknown`, with a message explaining why: the status is missing, belongs to another boot, has a different owner or tag, is in the future, or has expired.
+
+Every status record belongs to one service; a node has at most one status record. Rewriting a status record without running the check again must not change `observedAtMs`.
+
+### Aggregate Evaluation
+
+Each non-optional input of an aggregate node is counted in up to three ways:
+
+| Count | Inputs Counted                                       |
+| ----- | ---------------------------------------------------- |
+| `H`   | Inputs that are `healthy`.                           |
+| `M`   | Inputs that are `healthy` or `degraded`.             |
+| `P`   | Inputs that are `healthy`, `degraded`, or `unknown`. |
+
+`M` counts the inputs confirmed to meet their minimum criteria, and `P` those that might meet them. The state of the aggregate node is the first state whose condition holds, where `required` and `healthy` are the counts after applying their defaults. A confirmed failure therefore takes precedence over uncertainty:
+
+1. `unhealthy` if a mandatory input is `unhealthy` or `P` is less than `required`.
+2. `unknown` if a mandatory input is `unknown` or `M` is less than `required`.
+3. `healthy` if every mandatory and every optional input is `healthy` and `H` is at least `healthy`.
+4. `degraded` otherwise.
+
+Mandatory inputs count toward `H`, `M`, and `P` like other non-optional inputs. Optional inputs count toward none of them and only appear in the third rule. For an aggregate with two non-mandatory inputs and `required: 1`, so that `healthy` defaults to 2, the rules give:
+
+| Input States             | Aggregate State |
+| ------------------------ | --------------- |
+| `healthy`, `healthy`     | `healthy`       |
+| `healthy`, `unhealthy`   | `degraded`      |
+| `healthy`, `unknown`     | `degraded`      |
+| `degraded`, `unknown`    | `degraded`      |
+| `unhealthy`, `unknown`   | `unknown`       |
+| `unhealthy`, `unhealthy` | `unhealthy`     |
+
+### Metric Definitions
+
+Each metric is defined by one `MetricDefinition`:
+
+<SidexViewer
+  ir={systemRuntimeIr}
+  type="metric.MetricDefinition"
+  initialDepth={1}
+/>
+
+Metric IDs are opaque, case-sensitive strings and must be unique among metrics. They are independent of health node IDs and component IDs. The `components` field associates a metric with components for display; it does not create dependencies. A metric without a threshold node referencing it is valid and can be displayed on its own.
+
+### Metric Samples
+
+A `MetricSample` reports one measurement of a metric:
+
+<SidexViewer ir={systemRuntimeIr} type="metric.MetricSample" initialDepth={1} />
+
+A sample is _fresh_ if all of the following hold:
+
+- its `bootId` equals the current boot ID,
+- its `owner` equals the definition's owner, if the definition has one,
+- its `tag` equals the definition's `expectedTag`, if the definition has one,
+- its `observedAtMs` is not in the future, and
+- its age is strictly less than its `maxAgeMs`, the definition's `maxAgeMs`, and the threshold node's `maxAgeMs`, where specified.
+
+The owner and tag are checked against the metric definition, not against the threshold node. A metric has at most one sample, which its service replaces with every new measurement. Samples for metrics without a definition are ignored, but must still be valid.
+
+### Units
+
+Every sample and every bound of a threshold node uses the unit of the metric definition:
+
+| Unit                     | Meaning                                              | Example Display |
+| ------------------------ | ---------------------------------------------------- | --------------- |
+| `celsius`                | Degrees Celsius                                      | 72.5 °C         |
+| `bytes`                  | Bytes                                                | 2.4 GiB         |
+| `seconds`                | Seconds                                              | 150 ms          |
+| `ratio`                  | Dimensionless fraction, where 1 corresponds to 100 % | 83 %            |
+| `count`                  | Number of items or events                            | 12              |
+| `bytes-per-second`       | Bytes per second                                     | 8.2 MiB/s       |
+| `hertz`                  | Cycles per second                                    | 1.2 GHz         |
+| `volts`                  | Electric potential                                   | 5 V             |
+| `amperes`                | Electric current                                     | 250 mA          |
+| `watts`                  | Power                                                | 12 W            |
+| `revolutions-per-minute` | Rotational speed                                     | 2400 RPM        |
+
+The unit describes what was measured. Tools choose how to display it, including precision, prefixes, and conversions such as Fahrenheit. A `ratio` is not restricted to values between 0 and 1.
+
+Measurements and bounds are finite 64-bit floating-point numbers, written as JSON numbers. They can be negative or fractional. Above 2<sup>53</sup>, not every integer can be represented exactly, so very large byte counts are approximate.
+
+### Threshold Ranges
+
+A range has an optional `lower` and an optional `upper` bound. Each bound has a `value` and an `inclusive` flag stating whether the range includes the value itself. A missing bound leaves the range unbounded on that side, so `{}` contains every number. A threshold node's `healthy` range must be a subset of its `usable` range, taking the `inclusive` flags into account.
+
+### Validation
+
+A health graph is invalid, and evaluation fails as a whole, if:
+
+- two nodes have the same ID, or two status records have the same ID,
+- an aggregate node references a missing node or the same node twice,
+- an input of an aggregate node is both `required` and `optional`,
+- the counts of an aggregate node, after applying their defaults, do not satisfy `1 <= required <= healthy <= number of non-optional inputs`, for example, because the node has no non-optional inputs,
+- the graph contains a cycle,
+- a status record exists for an aggregate or threshold node,
+- two metric definitions or two metric samples have the same ID,
+- a threshold node references a metric without a definition,
+- a measurement or bound is not a finite number,
+- a range is empty or its lower bound lies above its upper bound,
+- a `healthy` range is not a subset of the `usable` range, or
+- a `maxAgeMs` is zero.
+
+Status records for nodes that do not exist are ignored, but must still be valid.
+
+### Health Reports
+
+Evaluating a health graph produces a `HealthReport` with one result per node, in the order in which the nodes were supplied:
+
+<SidexViewer ir={systemRuntimeIr} type="health.HealthReport" initialDepth={2} />
+
+Each result carries the owner of its node. For an aggregate node, `inputs` lists the IDs of its inputs, so a user interface can show why the node has its state. For an observed or threshold node, `message` carries the message of the status record or sample, or the reason why the node is `unknown`.
