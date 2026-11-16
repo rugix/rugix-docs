@@ -1,0 +1,140 @@
+---
+title: Components
+order: 2
+---
+
+import { SidexViewer } from "@silitics/astro-sidex-viewer"
+import "@silitics/astro-sidex-viewer/styles.css"
+import systemRuntimeIr from "../../../../../schemas/system-runtime-ir.json"
+
+A _component_ is one part of a system, such as the system image, an app, a runtime, or a hardware module. Together, a system's components form its _composition_. Each component declares what it provides to the others and what it requires from them. _Compatibility checking_ evaluates these declarations together and determines whether the composition is _consistent_: every requirement is met, no conflict matches, and no resource is claimed twice. A consistent composition only means that no declared constraint is violated; how the system behaves at runtime is the subject of [health](../health). This page defines component declarations and how compatibility checking evaluates them. The [overview](../#how-it-works) introduces both with an example.
+
+## Capabilities
+
+Components do not depend on each other directly. Instead, a component provides _capabilities_, and other components require capabilities. An app that needs Docker Compose requires the capability `docker.compose` and does not care whether the system image or another component provides it. A capability has an ID and, optionally, either a version or a value:
+
+- A capability with only an ID states that something is present, for example, `hardware.can-bus` for a device with a CAN interface.
+- A capability with a version states which version of something is present, for example, `docker.engine` at version `26.1.5`.
+- A capability with a value states an exact property as a string, for example, `host.arch` with the value `"aarch64"`.
+
+Every component also implicitly provides its own ID and version as a capability, so other components can depend on it directly when that is what they need.
+
+## Constraints
+
+Components declare three kinds of constraints:
+
+- A **requirement** must be satisfied by at least one capability of any component in the composition.
+- A **conflict** must not match any capability. A component declares a conflict with something it cannot run alongside. For example, an app that ships the Chrony time daemon conflicts with `systemd.timesyncd`, because only one of them should adjust the clock.
+- A **claim** reserves a resource that only one component may own, for example, a TCP port or a systemd unit name.
+
+Requirements and conflicts are _selectors_ over capabilities: a capability ID with, optionally, a version requirement in `version` or an exact value in `value`. In a selector, `version` therefore holds a [version requirement](#versions-and-version-requirements), such as `>=2.20.3,<3`, not a version.
+
+Claims are separate from capabilities because they follow a different rule. Several components may provide the same capability, for example, `hardware.can-bus` when both the board and an add-on module have a CAN interface. A TCP port, however, can only be used by one component. If two components claim the same resource, the composition is inconsistent. Claims do not satisfy requirements; if other components should depend on a resource, the component claiming it also declares a capability for it. Claims only collide if all contributors use the same ID for a resource, so they need a shared convention, such as `network.tcp.<port>` for TCP ports.
+
+For example, an app that needs Docker Compose 2.20.3 or later and serves its dashboard on port 8080 declares:
+
+```json
+{
+  "id": "app.telemetry",
+  "owner": "rugix.apps.telemetry",
+  "version": "2.1.0",
+  "requires": [{ "id": "docker.compose", "version": ">=2.20.3,<3" }],
+  "claims": [{ "id": "network.tcp.8080" }]
+}
+```
+
+## Candidate Compositions
+
+To find problems before they occur, compatibility checking can evaluate a _candidate composition_: the composition that would result from replacing the components of one contributor, such as the system image or an app. A candidate composition is built from the current composition:
+
+1. Remove all declarations whose owner matches the contributor being replaced.
+2. Add the declarations of the replacement.
+3. Keep all other declarations unchanged, including their requirements.
+
+Each declaration names its contributor in `owner`, an opaque string compared exactly, such as `rugix.system` for the system image or `rugix.apps.telemetry` for an app (see [Owners](../#owners)). Declarations without an owner are never removed. This suits facts about the device itself, which come from components that are neither part of the system image nor of an app. For example, a hardware identification service can read the board revision at boot and publish it in [`/run/system-runtime/components`](../discovery#directory-layout) without an owner, because no update replaces the hardware. Conversely, a declaration that should be replaceable needs an owner: if an installed declaration has no owner and its replacement has the same ID, the candidate contains both, and compatibility checking reports a duplicate component.
+
+Removing by owner also removes components that the new version no longer ships. Keeping the other declarations is what lets the check find problems: the requirements of installed apps still apply to a new system image. A new version of an app replaces the declarations owned by the app, and a new app only adds declarations. Where the declarations of the replacement come from is up to the tool. An update controller, for example, might take them from metadata included in an update bundle.
+
+## Reference
+
+### Component Declarations
+
+Each component is described by one `ComponentDeclaration`:
+
+<SidexViewer
+  ir={systemRuntimeIr}
+  type="component.ComponentDeclaration"
+  initialDepth={1}
+/>
+
+Component IDs and capability IDs are opaque, case-sensitive strings. Component IDs must be unique within a composition. A capability or selector must not specify both a version and a value.
+
+### Matching and Consistency
+
+A selector matches a capability with the same ID if:
+
+- it has neither a version requirement nor a value, in which case it matches any capability with that ID,
+- it has a version requirement and the capability has a version that satisfies it, or
+- it has a value and the capability has exactly that value.
+
+A selector with a version requirement never matches a capability without a version, not even with the requirement `*`.
+
+Compatibility checking considers every capability in the composition, including the capability each component implicitly provides with its own ID and version. The composition is consistent if and only if:
+
+- no two components have the same ID,
+- no two components claim the same resource,
+- every requirement matches at least one capability, and
+- no conflict matches any capability, including the capabilities of the component declaring the conflict.
+
+A component that claims the same resource several times owns it once.
+
+### Versions and Version Requirements
+
+Versions consist of one or more dot-separated numeric release components, an optional prerelease after `-`, and optional build metadata after `+`, for example, `5.2.0`, `6.0.0-rc.1`, or `2024.10+build.7`. Release components and numeric prerelease identifiers must fit into an unsigned 64-bit integer. A prerelease and build metadata consist of nonempty, dot-separated identifiers of ASCII letters, digits, and hyphens. Leading zeros are accepted, and whitespace around a version or requirement is ignored.
+
+Versions compare by their release components first. Trailing zero components and build metadata do not affect comparisons, so `1.2` equals `1.2.0`. A prerelease version precedes the release with the same release components. Prerelease identifiers compare one by one: numeric identifiers precede text identifiers, text identifiers compare lexicographically by ASCII code, and a shorter prerelease precedes a longer one that starts with it.
+
+A version requirement is a comma-separated list of comparisons that must all hold, using the operators `=`, `==`, `!=`, `>`, `>=`, `<`, and `<=`. A version without an operator means equality, and `*` on its own matches every version. For example, `>=3,<4` matches `3.0` and `3.9.1` but not `4.0`.
+
+Requirements are usually written before the versions they refer to exist. Suppose an app works with version 3 of a runtime and declares `>=3,<4` while version 3 is still in development. Testing the app with the release candidate `3.0-rc.1` should not require changing the declaration. Conversely, `4.0-rc.1` already contains the changes of version 4 and should not satisfy `<4`. A comparison with a version without a prerelease therefore refers to a _line_ of versions: all versions whose release components start with the given ones, including their prereleases. The line `3` contains `3.0-rc.1`, `3`, and `3.5.1`, and the line `3.0` contains `3.0.5`, but not `3.1`. Each operator refers to the start or the end of its line:
+
+| Requirement | Meaning                          | Matches             | Does Not Match      |
+| ----------- | -------------------------------- | ------------------- | ------------------- |
+| `>=3`       | From the start of the line `3`   | `3.0-rc.1`, `3.9`   | `2.9`               |
+| `<4`        | Before the start of the line `4` | `3.9`               | `4.0-rc.1`          |
+| `>3`        | After the end of the line `3`    | `4.0-rc.1`          | `3.1`               |
+| `<=3`       | Up to the end of the line `3`    | `3.9`               | `4.0-rc.1`          |
+| `3.*`       | The line `3`                     | `3.0-rc.1`, `3.5.1` | `4.0-rc.1`          |
+| `!=3.*`     | Outside the line `3`             | `4.0`               | `3.2`               |
+| `==3`       | Exactly `3`                      | `3.0`               | `3.0-rc.1`, `3.0.1` |
+
+For `>` and `<=`, the number of release components matters: `>3` does not match `3.1`, but `>3.0` does. For `>=` and `<`, it does not, because every line starts with its first prerelease, so `>=3` and `>=3.0` are the same. `==` and `!=` compare exact versions, so a version without an operator pins exactly one version. Wildcards are only allowed with `=`, `==`, and `!=`, and their version must not have a prerelease or build metadata. A comparison with a version that has a prerelease, such as `>=3-rc.2` or `<4-rc.2`, follows the version order. The SemVer shorthands `^` and `~` are not supported.
+
+### Compatibility Reports
+
+Compatibility checking produces a `CompatibilityReport`:
+
+<SidexViewer
+  ir={systemRuntimeIr}
+  type="component.CompatibilityReport"
+  initialDepth={2}
+/>
+
+For example, if the system image no longer provides `docker.compose`, the report for the app above is:
+
+```json
+{
+  "consistent": false,
+  "problems": [
+    {
+      "problem": "unsatisfiedRequirement",
+      "component": "app.telemetry",
+      "selector": { "id": "docker.compose", "version": ">=2.20.3,<3" }
+    }
+  ]
+}
+```
+
+The report lists all violated constraints. Problems appear in a deterministic order: duplicate component IDs, then duplicate claims, each sorted by the Unicode scalar values of their IDs, then unsatisfied requirements and matching conflicts. Selector problems follow the order of the component declarations, with the requirements of a component before its conflicts. A conflict that matches several capabilities produces one problem per capability, in the order of the providing components, with each component's implicit capability before its explicit ones.
+
+A declaration with an invalid version or version requirement, or with a capability or selector specifying both a version and a value, cannot be checked. Compatibility checking reports an error instead of a report in that case.
