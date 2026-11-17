@@ -142,6 +142,7 @@ SERVER_URL = "/serverUrl"
 | `configuration.schema`       | Path of the JSON Schema for the [application configuration](../configuration), relative to the generation directory.                                                                          |
 | `configuration.default`      | Path of the default configuration document, relative to the generation directory.                                                                                                             |
 | `docker-compose.environment` | Environment variables [projected from the configuration](../orchestrators/docker-compose#projecting-configuration-values), each mapped to a JSON Pointer.                                     |
+| `logs.format`                | Format of the lines that the workload writes: `text` or [`json`](../logs#structured-logs). Defaults to `text`.                                                                                |
 
 The [JSON Schema of the manifest](https://github.com/rugix/rugix/blob/main/schemas/rugix-app-manifest.schema.json) describes the same fields.
 
@@ -263,6 +264,7 @@ Recovery also reconciles each app's `current` symlink with its persisted lifecyc
 | `rugix-ctrl apps install BUNDLE --origin JSON`              | Install an app and record the origin of the new generation.                                                               |
 | `rugix-ctrl apps list`                                      | List all installed apps with status.                                                                                      |
 | `rugix-ctrl apps info APP`                                  | Show details for an app.                                                                                                  |
+| `rugix-ctrl apps logs APP [--lines N] [--json]`             | Print the most recent [log records](../logs) of an app's workload.                                                        |
 | `rugix-ctrl apps config get APP`                            | Print the effective JSON configuration.                                                                                   |
 | `rugix-ctrl apps config schema APP`                         | Print the app's JSON Schema.                                                                                              |
 | `rugix-ctrl apps config set APP [SOURCE]`                   | Validate, store, and apply JSON configuration.                                                                            |

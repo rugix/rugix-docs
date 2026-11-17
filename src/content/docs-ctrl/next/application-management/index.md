@@ -152,6 +152,16 @@ rugix-ctrl apps info APP
 
 Both report two different things about an app, and it is worth keeping them apart. The **status** is the live state of the workload, observed from the orchestrator every time you ask: whether containers are running, healthy, or gone. The **lifecycle** state is what Rugix persisted about the app itself: which generation and configuration revision are deployed, and whether a transition needs recovery. An app can be lifecycle-active while its status reports `failed`, which is exactly the case where a workload crashed without Rugix having changed anything.
 
+## Reading Logs
+
+To find out why a workload failed, read its logs:
+
+```shell
+rugix-ctrl apps logs APP
+```
+
+The command reads the logs from wherever the app's orchestrator keeps them and prints them in one format, for all orchestrators. See [Application Logs](./logs) for its options, the format of log records, and structured logs.
+
 ## Garbage Collection
 
 Over time, old generations accumulate on disk. To clean them up:
