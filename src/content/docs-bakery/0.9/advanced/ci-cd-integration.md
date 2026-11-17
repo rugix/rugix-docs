@@ -4,12 +4,14 @@
 
 # CI/CD Integration
 
-You can run Rugpi Bakery as part of a CI/CD pipeline, enabling a modern development workflow.
+You can run Rugix Bakery as part of a CI/CD pipeline, enabling a modern development workflow.
 Please be aware that building an image is a rather resource-heavy process and may quickly consume your CI minutes.
+
+For rootless builds on a Linux runner, use Podman as described in [Build Privileges](/docs/bakery/#build-privileges). The Docker examples below use privileged containers, including the host emulation setup step.
 
 ## GitHub Actions
 
-Here is an example for using Rugpi Bakery with GitHub Actions:
+Here is an example for using Rugix Bakery with GitHub Actions:
 
 ```yaml
 jobs:  
@@ -34,6 +36,6 @@ jobs:
 
 ## GitLab CI/CD
 
-To run Rugpi Bakery in GitLab CI/CD it needs to be configured such that it is able to start Docker containers.
+To run Rugix Bakery in GitLab CI/CD it needs to be configured such that it is able to start Docker containers.
 If you are using the Docker-based GitLab Runner you must configure it in privileged mode.
 For details, we refer to [GitLab's documentation](https://docs.gitlab.com/ee/ci/docker/using_docker_build.html#use-docker-in-docker).
