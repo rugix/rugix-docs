@@ -133,7 +133,7 @@ For an incremental update with component metadata, Rugix Ctrl replaces only inst
 
 This lets an incremental bundle update a runtime, firmware component, or other named component without treating the bundle as a complete system replacement.
 
-If an update bundle does not declare components, Rugix Ctrl logs a warning and skips the compatibility check.
+By default, if an update bundle does not declare components, Rugix Ctrl logs a warning and skips the compatibility check. Set `compatibility.require-bundle-components = true` to reject these bundles instead.
 
 ## App Lifecycle Checks
 
@@ -219,6 +219,36 @@ id = "hardware.tpm"
 id = "hardware.tpm.provisioned"
 value = "true"
 ```
+
+### Preventing System Downgrades
+
+For full system updates, a local component can require a minimum OS version. For example, declare the OS version in each bundle's `components/os.toml` and install the same file in the system image at `/usr/lib/rugix/components/os.toml`:
+
+```toml title="components/os.toml"
+id = "system.my-os"
+version = "3.2.0"
+```
+
+On the device, add a separate policy component:
+
+```toml title="/etc/rugix/components/minimum-os.toml"
+id = "policy.minimum-os"
+
+[[requires]]
+id = "system.my-os"
+version = ">=3.2.0"
+```
+
+Require bundle component metadata in the Rugix Ctrl configuration so bundles without metadata cannot bypass the requirement:
+
+```toml title="/etc/rugix/ctrl.toml"
+[compatibility]
+require-bundle-components = true
+```
+
+During a full system update, Rugix Ctrl retains the local policy component and replaces the installed system components with the bundle's declarations. For example, this policy rejects OS version `3.1.9` and accepts `3.2.0` or `3.3.0`. It also rejects bundles without the required OS capability or without component metadata. Version requirements follow the [version comparison rules](#versions) below.
+
+Protect the policy file and Rugix Ctrl configuration against unauthorized changes and keep them present after reboot, either in each new image or through configured persistent state. Raise the required version explicitly when advancing the floor; committing an update does not advance it automatically. `--skip-compatibility-check` remains an explicit operator override.
 
 ## Versions
 
