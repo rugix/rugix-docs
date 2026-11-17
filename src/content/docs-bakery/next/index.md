@@ -53,8 +53,8 @@ for an example binding a rule output to an installation recipe.
 
 ## Setup and Installation
 
-Rugix Bakery is distributed as a Docker image (for `arm64` and `amd64`), ensuring a reproducible build environment that includes all the required tools and libraries.
-Running Rugix Bakery outside of Docker is currently not supported.
+Rugix Bakery is distributed as a container image (for `arm64` and `amd64`), ensuring a reproducible build environment that includes all the required tools and libraries.
+Running Rugix Bakery outside its container environment is currently not supported.
 Hence, to run Rugix Bakery, a working [Docker](https://www.docker.com/) or [Podman](https://podman.io/) installation is required.
 On MacOS, please make sure to use the [MacOS virtualization framework and VirtioFS](https://docs.docker.com/desktop/settings/mac/#general), which is the default with recent versions of Docker Desktop.
 For Windows, please use [WSL](https://learn.microsoft.com/en-us/windows/wsl/about).[^wsl]
@@ -62,33 +62,31 @@ For Windows, please use [WSL](https://learn.microsoft.com/en-us/windows/wsl/abou
 [^wsl]: If you are using WSL, make sure to put everything on a native filesystem, not the shared mount from your Windows host.
 
 Rugix Bakery ships as a small shell script named `run-bakery`.
-The script runs an ephemeral Docker container with Rugix Bakery and sets everything up as required.
+The script runs an ephemeral Docker or Podman container with Rugix Bakery and sets everything up as required.
 To start a fresh project, create an empty directory and then run:
 
 ```shell
-curl -sfSO https://raw.githubusercontent.com/rugix/rugix/v0.8/bakery/run-bakery && chmod +x ./run-bakery
+curl -sfSO https://raw.githubusercontent.com/rugix/rugix-bakery/v0.9/container/run-bakery && chmod +x ./run-bakery
 ```
 
 This command will download the `run-bakery` shell script from Rugix's GitHub repository and make it executable.
 You can then run Rugix Bakery with `./run-bakery`.
 If you run `./run-bakery help` you will get usage instructions.
 
-If you use a version control system to manage the project, we recommend committing the `run-bakery` shell script into the repository, so that everyone can run it without any additional setup (assuming they have Docker).
+If you use a version control system to manage the project, we recommend committing the `run-bakery` shell script into the repository, so that everyone can run it without any additional setup (assuming they have Docker or Podman).
 
 The shell script will also pin your project to a specific major version of Rugix Bakery thereby preventing breaking changes from breaking your build.
 By setting the `RUGIX_BAKERY_IMAGE` environment variable you can also pin Rugix Bakery to a specific Docker image.
 This adds an additional layer of protection against breaking changes and of security should the Rugix Bakery repository be compromised.
 For production setups, it is therefore recommended to always pin Rugix Bakery to a specific Docker image.
 
-Rugix Bakery currently requires the container to run in privileged mode such that `chroot` and bind mounts are available within the container.
-These are required to run tools inside an environment that looks like the final system.
-In the future, we plan to leverage Linux user namespaces to isolate the build and the system from the host without requiring elevated privileges.[^privileges]
+### Build Privileges
 
-[^privileges]:
-    Existing tools use different approaches to set up an environment that looks like the final system without requiring privileges.
-    For instance, Yocto uses a tool called [Pseudo](https://git.yoctoproject.org/pseudo/about/) (an alternative to the better-known tool [Fakeroot](https://manpages.debian.org/bookworm/pseudo/fakeroot.1.en.html)), to intercept calls to system APIs via `LD_PRELOAD` and thereby fake a root environment.
-    This approach has limitations, for instance, it does not work with statically-linked binaries and also does not allow starting services binding sockets to ports below 1024.
-    Rugix Bakery strives to provide a container-like environment by using Linux namespaces and process isolation which does not suffer from the same limitations as existing approaches and thereby mimics a real system more closely.
+On Linux, Rugix Bakery supports rootless builds with Podman. Configure Podman for rootless operation and run `./run-bakery` as your normal user, without `sudo`. When Podman is installed and `DOCKER` is unset, the launcher selects it and runs without `--privileged`.
+
+Recipes still run as root inside Linux user and mount namespaces, where they can use `chroot`, bind mounts, and package installation tools without host root privileges. The host must allow unprivileged user namespaces; passing a non-root container UID with `--user` is not equivalent.
+
+Docker defaults to `--privileged`. On macOS, both runtimes use `--privileged` inside their Linux VM. See the [`run-bakery` script](https://github.com/rugix/rugix-bakery/blob/main/container/run-bakery) for runtime selection, privilege flags, and device passthrough details.
 
 ## CPU Architectures
 
@@ -109,14 +107,14 @@ Rugix Bakery supports the following CPU architectures:[^architecture-plans]
 Note that different distributions have different and sometimes inconsistent names for different CPU families.
 For instance, what Debian calls `armhf` is called `armv7` for Alpine Linux and is not the same as `armhf` for Raspberry Pi OS.
 
-If you want to build distributions for foreign architectures, you need to configure [`binfmt_misc`](https://en.wikipedia.org/wiki/Binfmt_misc) for emulation.
-The easiest way to do so, and as we are already using Docker anyway, is by running the following command:
+Foreign-architecture builds need QEMU emulation through [`binfmt_misc`](https://en.wikipedia.org/wiki/Binfmt_misc). On Linux 6.7 or newer, the development image (`RUGIX_VERSION=branch-main`) attempts to register QEMU inside its private user namespace, without changing the host interpreter registry. This feature is not in the stable `v0.9` image selected by the launcher above. If private registration is unavailable, configure host emulation or build on the target architecture.
+For example, an administrator can configure host emulation with Docker:
 
 ```shell
 docker run --privileged --rm tonistiigi/binfmt --install all
 ```
 
-This will allow you to build Linux distributions for a huge variety of different architectures.
+On Linux, this command changes the host's interpreter registry and requires host root privileges, even when subsequent image builds use rootless Podman. Native-architecture builds do not need this setup.
 
 ## Comparison to Other Solutions
 

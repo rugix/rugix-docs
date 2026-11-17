@@ -30,7 +30,7 @@ Rugix Bakery is compatible with 64-bit ARM and x86 systems running MacOS or Linu
 [^supported-hosts]: The respective Docker platforms are `linux/arm64` and `linux/amd64`. Rugix Bakery will run on Apple silicon.
 
 Rugix Bakery ships as a small shell script named `run-bakery`.
-The script runs an ephemeral Docker container with Rugix Bakery and sets everything up as required.
+The script runs an ephemeral Docker or Podman container with Rugix Bakery and sets everything up as required.
 To start a fresh project, create an empty directory and then run:
 
 ```shell
@@ -41,10 +41,12 @@ This command will download the `run-bakery` shell script from Rugix's GitHub rep
 You can then run Rugix Bakery with `./run-bakery`.
 If you run `./run-bakery help` you will get usage instructions.
 
+On Linux, the launcher prefers Podman and supports rootless builds when run as your normal user. Docker defaults to privileged mode. See [Build Privileges](/docs/bakery/#build-privileges) for runtime requirements and configuration.
+
 #### Emulation of Foreign Architectures
 
 If you want to build distributions for foreign architectures, you also need to configure [`binfmt_misc`](https://en.wikipedia.org/wiki/Binfmt_misc) for emulation.[^foreign-architecture]
-The easiest way to do so, and as we are already using Docker anyway, is by running the following command:
+For example, an administrator can configure host emulation with Docker. On Linux, this setup requires host root privileges even when subsequent builds use rootless Podman:
 
 [^foreign-architecture]: A foreign architecture is a CPU architecture that is different from the one of your host machine. For instance, building images for Raspberry Pi (which has a 64-bit ARM CPU) on an x86 Intel or AMD machine requires emulation.
 
