@@ -25,7 +25,8 @@ A cached layer represents the result of applying its recipes to its parent.
 Changes to the parent, recipe implementations, effective parameters, or declared
 artifact inputs rebuild the layer. Layer configuration determines which recipes
 run and which artifacts they receive, so these choices also affect reuse.
-Recipes run in priority order; ties use a stable repository and recipe name order.
+Recipes run in a deterministic
+[execution order](/docs/bakery/next/recipes/#execution-order).
 
 The Rugix Bakery image identifies the tools used by the recipes. The standard
 `run-bakery` launcher supplies its immutable image ID. Without an immutable

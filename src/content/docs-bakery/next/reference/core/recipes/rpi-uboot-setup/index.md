@@ -18,8 +18,9 @@ No artifact inputs.
 | Priority     | `0`   |
 | Dependencies | None  |
 
-Higher priorities run first within the selected recipe set. Dependencies include
-other recipes; their priorities determine execution order.
+Higher priorities run first within the selected recipe set unless `before` or
+`after` constraints require otherwise. Dependencies include other recipes
+without ordering them.
 
 ## Behavior
 

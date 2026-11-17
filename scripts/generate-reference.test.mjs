@@ -78,6 +78,7 @@ test("repository catalogs generate reference pages and detect or remove stale ge
             "input-defaults": { application: { path: "prebuilt" } },
             dependencies: ["prepare"],
             priority: 100,
+            after: ["prepare", "core/pkg-update"],
           },
         },
       ],
@@ -150,11 +151,13 @@ test("repository catalogs generate reference pages and detect or remove stale ge
     }
     assert.match(page, /\| Name +\| Kind +\| Default +\| Description +\|/)
     assert.match(page, /\| `assets` +\| directory +\| `\{"tree":\{\}\}` +\|/)
-    assert.ok(
-      (
-        await readFile(join(output, "recipes/install/index.md"), "utf8")
-      ).includes("Default input bindings"),
+    const recipePage = await readFile(
+      join(output, "recipes/install/index.md"),
+      "utf8",
     )
+    assert.ok(recipePage.includes("Default input bindings"))
+    assert.match(recipePage, /\| After +\| `prepare`, `core\/pkg-update` +\|/)
+    assert.doesNotMatch(recipePage, /\| Before /)
     const variants = await readFile(
       join(output, "layers/base/index.md"),
       "utf8",
