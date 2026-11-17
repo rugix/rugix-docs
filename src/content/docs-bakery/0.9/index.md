@@ -105,33 +105,11 @@ For production setups, it is therefore recommended to always pin Rugix Bakery to
 
 ### Build Privileges
 
-On Linux, use rootless Podman to build images without host root privileges. Run `./run-bakery` as your normal user, without `sudo`. When Podman is installed and `DOCKER` is unset, the launcher selects Podman and defaults to `RUGIX_PRIVILEGED=false`.
+On Linux, Rugix Bakery supports rootless builds with Podman. Configure Podman for rootless operation and run `./run-bakery` as your normal user, without `sudo`. When Podman is installed and `DOCKER` is unset, the launcher selects it and runs without `--privileged`.
 
-Rugix Bakery uses Linux user and mount namespaces to run recipes with the root privileges needed for `chroot`, bind mounts, and package installation inside the build environment. With rootless Podman, this root user is mapped to an unprivileged user on the host. The host must allow unprivileged user namespaces, and Podman must be configured for rootless operation. Passing the host UID/GID with a container `--user` flag is not equivalent: bootstrap and package installation tools still need root inside the build environment.
+Recipes still run as root inside Linux user and mount namespaces, where they can use `chroot`, bind mounts, and package installation tools without host root privileges. The host must allow unprivileged user namespaces; passing a non-root container UID with `--user` is not equivalent.
 
-The launcher uses these defaults:
-
-| Host and runtime | Container privileges |
-| --- | --- |
-| Linux, automatically selected Podman | No `--privileged`; supports rootless builds. |
-| Linux, Docker | `--privileged`. |
-| macOS, Docker or Podman | `--privileged` inside the runtime's Linux VM. |
-
-To use Docker explicitly, run:
-
-```shell
-DOCKER=docker ./run-bakery help
-```
-
-With rootful Docker, `--privileged` grants broad host device and kernel access, and builds can leave root-owned files in the project directory. Prefer rootless Podman when this access is unnecessary.
-
-`RUGIX_PRIVILEGED=false` only removes `--privileged`; it does not grant the mount permissions or adjust the runtime's security policy needed for a build. A portable minimum Docker capability/device set has not been established; adding `CAP_SYS_ADMIN` alone is not a verified replacement for the default configuration.
-
-Image builds do not require `/dev/kvm`. When the device exists and privileged mode is disabled, the launcher passes it into the container for optional VM acceleration. Your user must have access to this passed-through device; its permissions can affect container startup even for image-only builds.
-
-If access to `/dev/kvm` comes from a supplementary group, Podman may need `DOCKER_FLAGS="--group-add keep-groups"` to preserve that access inside the container.
-
-When switching an existing project from rootful Docker to rootless Podman, remove or adjust ownership of root-owned `.rugix` and `build` directories before rebuilding. Both contain generated build data; removing them discards cached builds and outputs.
+Docker defaults to `--privileged`. On macOS, both runtimes use `--privileged` inside their Linux VM. See the [`run-bakery` script](https://github.com/rugix/rugix-bakery/blob/v0.9/container/run-bakery) for runtime selection, privilege flags, and device passthrough details.
 
 ## CPU Architectures
 
