@@ -12,13 +12,13 @@ payloads.
 
 ## Inputs
 
-| Name          | Kind      | Description                                                                                                       |
-| ------------- | --------- | ----------------------------------------------------------------------------------------------------------------- |
-| `layout`      | file      | GPT ImageLayout in JSON or TOML.                                                                                  |
-| `partitions`  | directory | Partition images named by their one-based partition numbers.                                                      |
-| `manifest`    | file      | Rugix bundle manifest mapping payload files to target slots.                                                      |
-| `payloads`    | directory | Bundle payload files at the paths referenced by the manifest.                                                     |
-| `certificate` | file      | Single PEM-encoded RSA X.509 end-entity signer certificate issued directly by the trusted root. No intermediates. |
+| Name          | Kind      | Description                                                                                                                                    |
+| ------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `layout`      | file      | GPT ImageLayout in JSON or TOML.                                                                                                               |
+| `partitions`  | directory | Partition images named by their one-based partition numbers.                                                                                   |
+| `manifest`    | file      | Rugix bundle manifest mapping payload files to target slots.                                                                                   |
+| `payloads`    | directory | Bundle payload files at the paths referenced by the manifest.                                                                                  |
+| `certificate` | file      | Single PEM-encoded X.509 end-entity signer certificate issued directly by the trusted root. No intermediates. The default signer requires RSA. |
 
 ## Parameters
 
@@ -35,9 +35,25 @@ payloads.
 | `bundle`      | `{"rule":{"node":"signed","output":"bundle"}}` |
 | `bundle-hash` | `{"rule":{"node":"signed","output":"hash"}}`   |
 
-## Secrets
+## Rule Parameters
 
-Required secret bindings: `key`. Secret changes invalidate cached outputs.
+Callers can replace these operations through `rules` bindings. An implementation
+receives the listed inputs and parameters and must produce the listed outputs.
+See [Rule Parameters](/docs/bakery/next/build-rules#rule-parameters).
+
+### `bundle-signer`
+
+Create a CMS signature over the bundle's signed metadata. Bakery verifies it
+against certificate.
+
+Default implementation: `core/sign-cms`.
+
+| Name           | Role      | Kind | Description                                                                      |
+| -------------- | --------- | ---- | -------------------------------------------------------------------------------- |
+| `content`      | Input     | file | Signed bundle metadata.                                                          |
+| `certificate`  | Input     | file | Signer certificate that must verify the signature.                               |
+| `signing-time` | Parameter |      | Signing time as Unix seconds in a string. Empty means the build source epoch.    |
+| `signature`    | Output    | file | DER-encoded CMS SignedData with the encapsulated content and signer certificate. |
 
 ## Execution
 
@@ -47,13 +63,16 @@ Composes other rules into a build graph.
 
 Create a factory GPT disk and a signed Rugix update bundle in one composition.
 `layout` and numbered `partitions` feed `core/image-gpt`; `manifest` and
-`payloads` feed `core/bundle-rugix`. `core/sign-bundle-rugix` authenticates the
-bundle using `certificate` and the private `key` secret.
+`payloads` feed `core/bundle-rugix`.
+[`core/sign-bundle-rugix`](../sign-bundle-rugix/) authenticates the bundle with
+the `bundle-signer` rule parameter and verifies the signature against
+`certificate`.
 
-Supply one PEM-encoded RSA signing certificate. The bundle embeds only this
-signer certificate, without intermediates. Issue it directly from the root that
-Rugix Ctrl trusts. The signer must not be a CA certificate. Concatenated PEM
-certificate chains are not supported by this signing rule.
+Supply one PEM-encoded signing certificate; the default bundle signer requires
+RSA. The bundle embeds only this signer certificate, without intermediates.
+Issue it directly from the root that Rugix Ctrl trusts. The signer must not be a
+CA certificate. Concatenated PEM certificate chains are not supported by this
+signing rule.
 
 This composition joins those operations without imposing partition roles,
 payload names, or a boot scheme. The caller connects the same artifacts to
@@ -62,7 +81,14 @@ the consuming system's Rugix Ctrl slots.
 
 `size` is the disk capacity in bytes; zero sizes it from the layout.
 `signing-time` is Unix seconds encoded as a string; an empty value uses the
-build source epoch. Outputs are `image` and `bundle`.
+build source epoch. Outputs are `image`, `bundle`, and `bundle-hash`.
+
+## Bundle Signer
+
+The default `bundle-signer`, [`core/sign-cms`](../sign-cms/), signs with a
+private key file. Bind its `key` secret through
+`rules.bundle-signer.secrets.key`. To sign with an HSM or a KMS, bind another
+rule as described in [`core/sign-bundle-rugix`](../sign-bundle-rugix/).
 
 ## Example
 
@@ -75,7 +101,7 @@ inputs.partitions = { path = "release/partitions" }
 inputs.manifest = { path = "release/rugix-bundle.toml" }
 inputs.payloads = { path = "release/payloads" }
 inputs.certificate = { path = "keys/bundle.crt" }
-secrets.key = { path = "keys/bundle.key" }
+rules.bundle-signer.secrets.key = { path = "keys/bundle.key" }
 ```
 
 Save the invocation as `build-rule.toml` and run

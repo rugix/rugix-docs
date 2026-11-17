@@ -12,15 +12,15 @@ an existing root filesystem.
 
 ## Inputs
 
-| Name                 | Kind      | Description                                                                                                       |
-| -------------------- | --------- | ----------------------------------------------------------------------------------------------------------------- |
-| `kernel`             | file      | Target Linux kernel image.                                                                                        |
-| `initrd`             | file      | Initrd implementing the core verified-root boot contract.                                                         |
-| `rootfs`             | directory | Prepared root filesystem implementing the core verified-root boot contract.                                       |
-| `boot`               | directory | Raspberry Pi firmware tree containing start4.elf, fixup4.dat, DTBs, and overlays.                                 |
-| `config`             | directory | Layer configuration partition contents.                                                                           |
-| `boot-public-key`    | file      | PEM-encoded RSA-2048 public key matching the Raspberry Pi boot signing key.                                       |
-| `bundle-certificate` | file      | Single PEM-encoded RSA X.509 end-entity signer certificate issued directly by the trusted root. No intermediates. |
+| Name                 | Kind      | Description                                                                                                                                    |
+| -------------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `kernel`             | file      | Target Linux kernel image.                                                                                                                     |
+| `initrd`             | file      | Initrd implementing the core verified-root boot contract.                                                                                      |
+| `rootfs`             | directory | Prepared root filesystem implementing the core verified-root boot contract.                                                                    |
+| `boot`               | directory | Raspberry Pi firmware tree containing start4.elf, fixup4.dat, DTBs, and overlays.                                                              |
+| `config`             | directory | Layer configuration partition contents.                                                                                                        |
+| `boot-public-key`    | file      | PEM-encoded RSA-2048 public key matching the Raspberry Pi boot signing key.                                                                    |
+| `bundle-certificate` | file      | Single PEM-encoded X.509 end-entity signer certificate issued directly by the trusted root. No intermediates. The default signer requires RSA. |
 
 ## Parameters
 
@@ -49,10 +49,39 @@ an existing root filesystem.
 | `hash-offset`    | `{"rule":{"node":"filesystem","output":"hash-offset"}}`   |
 | `data-size`      | `{"rule":{"node":"filesystem","output":"data-size"}}`     |
 
-## Secrets
+## Rule Parameters
 
-Required secret bindings: `boot-key`, `bundle-key`. Secret changes invalidate
-cached outputs.
+Callers can replace these operations through `rules` bindings. An implementation
+receives the listed inputs and parameters and must produce the listed outputs.
+See [Rule Parameters](/docs/bakery/next/build-rules#rule-parameters).
+
+### `rpi-signer`
+
+Sign the Raspberry Pi boot image. Bakery verifies the signature against
+boot-public-key.
+
+Default implementation: `core/sign-rpi`.
+
+| Name           | Role      | Kind | Description                                                                   |
+| -------------- | --------- | ---- | ----------------------------------------------------------------------------- |
+| `image`        | Input     | file | FAT boot.img to authenticate.                                                 |
+| `public-key`   | Input     | file | The boot-public-key input.                                                    |
+| `signing-time` | Parameter |      | Signing time as Unix seconds in a string. Empty means the build source epoch. |
+| `signature`    | Output    | file | Raspberry Pi RSA-2048 boot.sig.                                               |
+
+### `bundle-signer`
+
+Create a CMS signature over the bundle's signed metadata. Bakery verifies it
+against bundle-certificate.
+
+Default implementation: `core/sign-cms`.
+
+| Name           | Role      | Kind | Description                                                                      |
+| -------------- | --------- | ---- | -------------------------------------------------------------------------------- |
+| `content`      | Input     | file | Signed bundle metadata.                                                          |
+| `certificate`  | Input     | file | The bundle-certificate input.                                                    |
+| `signing-time` | Parameter |      | Signing time as Unix seconds in a string. Empty means the build source epoch.    |
+| `signature`    | Output    | file | DER-encoded CMS SignedData with the encapsulated content and signer certificate. |
 
 ## Execution
 
@@ -111,7 +140,7 @@ compressor such as `zstd` or `xz` for smaller images.
 
 `config-size`, `boot-size`, `boot-image-size`, and `disk-size` are optional
 factory capacity overrides. The signed boot image is loaded into RAM and must
-not exceed 180,000,000 bytes. `core/sign-rpi` enforces this conservative limit
+not exceed 180,000,000 bytes. `core/verify-rpi` enforces this conservative limit
 for the firmware's 180 MB RAM disk budget. The bootstrap plan controls deployed
 system capacities and data allocation. Once bootstrapped, future payloads must
 fit the deployed slots. `signing-time` is Unix seconds encoded as a string;
@@ -131,9 +160,35 @@ filesystem must configure corresponding A/B boot groups.
 | `hash-offset`    | Byte offset of the appended hash area, as decimal text              |
 | `data-size`      | SquashFS length in bytes before padding and hashes, as decimal text |
 
-Supply one PEM-encoded RSA certificate as `bundle-certificate`. The bundle
-embeds only this signer certificate, without intermediates. Issue it directly
-from the root that Rugix Ctrl trusts. The signer must not be a CA certificate.
+Supply one PEM-encoded certificate as `bundle-certificate`; the default bundle
+signer requires RSA. The bundle embeds only this signer certificate, without
+intermediates. Issue it directly from the root that Rugix Ctrl trusts. The
+signer must not be a CA certificate.
+
+## Signers
+
+Two rule parameters sign the release:
+
+- `rpi-signer` signs the boot image. It defaults to
+  [`core/sign-rpi`](../sign-rpi/), which uses a private key file.
+- `bundle-signer` signs the update bundle's metadata. It defaults to
+  [`core/sign-cms`](../sign-cms/), which uses a private key file.
+
+Bind the private keys of the default signers through `rules`:
+
+```toml
+rules.rpi-signer.secrets.key = { path = "keys/rpi.key" }
+rules.bundle-signer.secrets.key = { path = "keys/bundle.key" }
+```
+
+To keep private keys in an HSM or a KMS, bind your own rules instead. A
+replacement receives the same inputs and parameters as the default, listed under
+Rule Parameters, and may require additional inputs, parameters, and secrets,
+which its binding supplies. Bakery verifies every signature independently of the
+signer: [`core/verify-rpi`](../verify-rpi/) checks the boot signature against
+`boot-public-key`, and
+[`core/attach-bundle-signature`](../attach-bundle-signature/) checks the bundle
+signature against `bundle-certificate`.
 
 ## Customize Boot Settings
 
@@ -172,8 +227,8 @@ inputs.boot = { path = "firmware" }
 inputs.config = { tree = {} }
 inputs.boot-public-key = { path = "keys/rpi.pub" }
 inputs.bundle-certificate = { path = "keys/bundle.crt" }
-secrets.boot-key = { path = "keys/rpi.key" }
-secrets.bundle-key = { path = "keys/bundle.key" }
+rules.rpi-signer.secrets.key = { path = "keys/rpi.key" }
+rules.bundle-signer.secrets.key = { path = "keys/bundle.key" }
 ```
 
 Save the invocation as `build-rule.toml` and run

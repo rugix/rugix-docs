@@ -12,13 +12,13 @@ a prepared Debian root filesystem.
 
 ## Inputs
 
-| Name                 | Kind      | Description                                                                                                       |
-| -------------------- | --------- | ----------------------------------------------------------------------------------------------------------------- |
-| `rootfs`             | directory | Prepared root filesystem implementing the core verified-root boot contract.                                       |
-| `boot`               | directory | Raspberry Pi firmware tree containing start4.elf, fixup4.dat, DTBs, and overlays.                                 |
-| `config`             | directory | Layer configuration partition contents.                                                                           |
-| `boot-public-key`    | file      | PEM-encoded RSA-2048 public key matching the Raspberry Pi boot signing key.                                       |
-| `bundle-certificate` | file      | Single PEM-encoded RSA X.509 end-entity signer certificate issued directly by the trusted root. No intermediates. |
+| Name                 | Kind      | Description                                                                                                                                    |
+| -------------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `rootfs`             | directory | Prepared root filesystem implementing the core verified-root boot contract.                                                                    |
+| `boot`               | directory | Raspberry Pi firmware tree containing start4.elf, fixup4.dat, DTBs, and overlays.                                                              |
+| `config`             | directory | Layer configuration partition contents.                                                                                                        |
+| `boot-public-key`    | file      | PEM-encoded RSA-2048 public key matching the Raspberry Pi boot signing key.                                                                    |
+| `bundle-certificate` | file      | Single PEM-encoded X.509 end-entity signer certificate issued directly by the trusted root. No intermediates. The default signer requires RSA. |
 
 ## Parameters
 
@@ -49,10 +49,39 @@ a prepared Debian root filesystem.
 | `hash-offset`    | `{"rule":{"node":"release","output":"hash-offset"}}`    |
 | `data-size`      | `{"rule":{"node":"release","output":"data-size"}}`      |
 
-## Secrets
+## Rule Parameters
 
-Required secret bindings: `boot-key`, `bundle-key`. Secret changes invalidate
-cached outputs.
+Callers can replace these operations through `rules` bindings. An implementation
+receives the listed inputs and parameters and must produce the listed outputs.
+See [Rule Parameters](/docs/bakery/next/build-rules#rule-parameters).
+
+### `rpi-signer`
+
+Sign the Raspberry Pi boot image. Bakery verifies the signature against
+boot-public-key.
+
+Default implementation: `core/sign-rpi`.
+
+| Name           | Role      | Kind | Description                                                                   |
+| -------------- | --------- | ---- | ----------------------------------------------------------------------------- |
+| `image`        | Input     | file | FAT boot.img to authenticate.                                                 |
+| `public-key`   | Input     | file | The boot-public-key input.                                                    |
+| `signing-time` | Parameter |      | Signing time as Unix seconds in a string. Empty means the build source epoch. |
+| `signature`    | Output    | file | Raspberry Pi RSA-2048 boot.sig.                                               |
+
+### `bundle-signer`
+
+Create a CMS signature over the bundle's signed metadata. Bakery verifies it
+against bundle-certificate.
+
+Default implementation: `core/sign-cms`.
+
+| Name           | Role      | Kind | Description                                                                      |
+| -------------- | --------- | ---- | -------------------------------------------------------------------------------- |
+| `content`      | Input     | file | Signed bundle metadata.                                                          |
+| `certificate`  | Input     | file | The bundle-certificate input.                                                    |
+| `signing-time` | Parameter |      | Signing time as Unix seconds in a string. Empty means the build source epoch.    |
+| `signature`    | Output    | file | DER-encoded CMS SignedData with the encapsulated content and signer certificate. |
 
 ## Execution
 
@@ -82,7 +111,10 @@ requires a unique matching kernel. `kernel-flavor` selects the required
 installed kernel version suffix and defaults to `rpi-v8`. The selected kernel
 and firmware tree must support the target board. Automatic capacity defaults,
 optional size overrides, boot settings, remaining release inputs, signing
-policy, and outputs match the generic Raspberry Pi composition.
+policy, and outputs match the generic Raspberry Pi composition. The wrapper
+forwards its `rpi-signer` and `bundle-signer` rule parameters to it, so you can
+sign with an HSM or a KMS as described in
+[its signer documentation](../image-rpi-verified/#signers).
 
 ## Example
 
@@ -98,8 +130,8 @@ uses = "core/image-debian-rpi-verified"
 parameters.cmdline-extra = "console=serial0,115200 console=tty1"
 inputs.boot-public-key = { path = "keys/rpi.pub" }
 inputs.bundle-certificate = { path = "keys/bundle.crt" }
-secrets.boot-key = { path = "keys/rpi.key" }
-secrets.bundle-key = { path = "keys/bundle.key" }
+rules.rpi-signer.secrets.key = { path = "keys/rpi.key" }
+rules.bundle-signer.secrets.key = { path = "keys/bundle.key" }
 
 [systems.rpi.outputs]
 "system.img" = { rule = { node = "release", output = "image" } }

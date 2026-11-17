@@ -12,14 +12,14 @@ root filesystem.
 
 ## Inputs
 
-| Name                 | Kind      | Default       | Description                                                                                                                             |
-| -------------------- | --------- | ------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| `kernel`             | file      | **Required**  | Target Linux kernel image.                                                                                                              |
-| `initrd`             | file      | **Required**  | Initrd implementing the core verified-root boot contract.                                                                               |
-| `rootfs`             | directory | **Required**  | Prepared root filesystem implementing the core verified-root boot contract.                                                             |
-| `boot-certificate`   | file      | **Required**  | PEM-encoded RSA X.509 certificate for signing EFI boot artifacts.                                                                       |
-| `bundle-certificate` | file      | **Required**  | Single PEM-encoded RSA X.509 end-entity signer certificate issued directly by the trusted root. No intermediates.                       |
-| `secure-boot-keys`   | directory | `{"tree":{}}` | Authenticated variables PK.auth, KEK.auth, and db.auth that systemd-boot enrolls in Setup Mode. Empty by default, disabling enrollment. |
+| Name                 | Kind      | Default       | Description                                                                                                                                    |
+| -------------------- | --------- | ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `kernel`             | file      | **Required**  | Target Linux kernel image.                                                                                                                     |
+| `initrd`             | file      | **Required**  | Initrd implementing the core verified-root boot contract.                                                                                      |
+| `rootfs`             | directory | **Required**  | Prepared root filesystem implementing the core verified-root boot contract.                                                                    |
+| `boot-certificate`   | file      | **Required**  | PEM-encoded RSA X.509 certificate for signing EFI boot artifacts.                                                                              |
+| `bundle-certificate` | file      | **Required**  | Single PEM-encoded X.509 end-entity signer certificate issued directly by the trusted root. No intermediates. The default signer requires RSA. |
+| `secure-boot-keys`   | directory | `{"tree":{}}` | Authenticated variables PK.auth, KEK.auth, and db.auth that systemd-boot enrolls in Setup Mode. Empty by default, disabling enrollment.        |
 
 ## Parameters
 
@@ -37,21 +37,49 @@ root filesystem.
 
 ## Outputs
 
-| Name          | Artifact Source                                          |
-| ------------- | -------------------------------------------------------- |
-| `image`       | `{"rule":{"node":"release","output":"image"}}`           |
-| `bundle`      | `{"rule":{"node":"release","output":"bundle"}}`          |
-| `bundle-hash` | `{"rule":{"node":"release","output":"bundle-hash"}}`     |
-| `uki`         | `{"rule":{"node":"signed-uki","output":"image"}}`        |
-| `bootloader`  | `{"rule":{"node":"signed-bootloader","output":"image"}}` |
-| `root-hash`   | `{"rule":{"node":"filesystem","output":"root-hash"}}`    |
-| `hash-offset` | `{"rule":{"node":"filesystem","output":"hash-offset"}}`  |
-| `data-size`   | `{"rule":{"node":"filesystem","output":"data-size"}}`    |
+| Name          | Artifact Source                                            |
+| ------------- | ---------------------------------------------------------- |
+| `image`       | `{"rule":{"node":"release","output":"image"}}`             |
+| `bundle`      | `{"rule":{"node":"release","output":"bundle"}}`            |
+| `bundle-hash` | `{"rule":{"node":"release","output":"bundle-hash"}}`       |
+| `uki`         | `{"rule":{"node":"verified-uki","output":"image"}}`        |
+| `bootloader`  | `{"rule":{"node":"verified-bootloader","output":"image"}}` |
+| `root-hash`   | `{"rule":{"node":"filesystem","output":"root-hash"}}`      |
+| `hash-offset` | `{"rule":{"node":"filesystem","output":"hash-offset"}}`    |
+| `data-size`   | `{"rule":{"node":"filesystem","output":"data-size"}}`      |
 
-## Secrets
+## Rule Parameters
 
-Required secret bindings: `boot-key`, `bundle-key`. Secret changes invalidate
-cached outputs.
+Callers can replace these operations through `rules` bindings. An implementation
+receives the listed inputs and parameters and must produce the listed outputs.
+See [Rule Parameters](/docs/bakery/next/build-rules#rule-parameters).
+
+### `efi-signer`
+
+Sign an EFI executable. Bakery verifies each signature against boot-certificate.
+
+Default implementation: `core/sign-efi`.
+
+| Name           | Role      | Kind | Description                                                                   |
+| -------------- | --------- | ---- | ----------------------------------------------------------------------------- |
+| `image`        | Input     | file | Unsigned PE executable: the UKI or systemd-boot.                              |
+| `certificate`  | Input     | file | The boot-certificate input.                                                   |
+| `signing-time` | Parameter |      | Signing time as Unix seconds in a string. Empty means the build source epoch. |
+| `image`        | Output    | file | PE executable with a UEFI Secure Boot signature.                              |
+
+### `bundle-signer`
+
+Create a CMS signature over the bundle's signed metadata. Bakery verifies it
+against bundle-certificate.
+
+Default implementation: `core/sign-cms`.
+
+| Name           | Role      | Kind | Description                                                                      |
+| -------------- | --------- | ---- | -------------------------------------------------------------------------------- |
+| `content`      | Input     | file | Signed bundle metadata.                                                          |
+| `certificate`  | Input     | file | The bundle-certificate input.                                                    |
+| `signing-time` | Parameter |      | Signing time as Unix seconds in a string. Empty means the build source epoch.    |
+| `signature`    | Output    | file | DER-encoded CMS SignedData with the encapsulated content and signer certificate. |
 
 ## Execution
 
@@ -62,8 +90,8 @@ Composes other rules into a build graph.
 Build an EFI A/B release with a verified root from an existing root filesystem,
 kernel, and initrd. The composition builds a SquashFS root filesystem, appends
 dm-verity authentication data, embeds the root hash and image geometry in a
-Unified Kernel Image (UKI), signs the UKI and systemd-boot, and assembles a
-factory GPT disk and signed Rugix update bundle.
+Unified Kernel Image (UKI), signs and verifies the UKI and systemd-boot, and
+assembles a factory GPT disk and signed Rugix update bundle.
 
 The required `architecture` is `amd64` or `arm64` and must match the kernel. The
 root filesystem supplies `etc/os-release`. The initrd must implement the
@@ -114,9 +142,44 @@ The firmware must trust `boot-certificate` and enforce Secure Boot. Configure
 the firmware separately, or let the factory image enroll your keys as described
 in [Enroll Secure Boot Keys](#enroll-secure-boot-keys).
 
-Supply one PEM-encoded RSA certificate as `bundle-certificate`. The bundle
-embeds only this signer certificate, without intermediates. Issue it directly
-from the root that Rugix Ctrl trusts. The signer must not be a CA certificate.
+Supply one PEM-encoded certificate as `bundle-certificate`; the default bundle
+signer requires RSA. The bundle embeds only this signer certificate, without
+intermediates. Issue it directly from the root that Rugix Ctrl trusts. The
+signer must not be a CA certificate.
+
+## Signers
+
+Two rule parameters sign the release:
+
+- `efi-signer` signs the UKI and systemd-boot. It defaults to
+  [`core/sign-efi`](../sign-efi/), which uses a private key file.
+- `bundle-signer` signs the update bundle's metadata. It defaults to
+  [`core/sign-cms`](../sign-cms/), which uses a private key file.
+
+Bind the private keys of the default signers through `rules`:
+
+```toml
+rules.efi-signer.secrets.key = { path = "keys/boot.key" }
+rules.bundle-signer.secrets.key = { path = "keys/bundle.key" }
+```
+
+To keep private keys in an HSM or a KMS, bind your own rules instead. A
+replacement receives the same inputs and parameters as the default, listed under
+Rule Parameters, and may require additional inputs, parameters, and secrets,
+which its binding supplies. It may run in its own environment.
+
+```toml
+[rules.efi-signer]
+uses = "kms-sign-efi"
+parameters.key-uri = "pkcs11:token=release;object=boot"
+secrets.credentials = { path = "keys/kms-credentials" }
+```
+
+Bakery verifies every signature independently of the signer:
+[`core/verify-efi`](../verify-efi/) checks EFI signatures against
+`boot-certificate`, and
+[`core/attach-bundle-signature`](../attach-bundle-signature/) checks the bundle
+signature against `bundle-certificate`.
 
 ## Customize Boot Settings
 
@@ -156,18 +219,19 @@ The composition places the files in the ESP at `loader/keys/auto/` and enables
 automatic enrollment in systemd-boot's loader configuration. When the firmware
 is in Setup Mode, systemd-boot writes db, KEK, and PK, then restarts the device.
 Writing PK ends Setup Mode, so the firmware verifies signatures from the next
-boot on. The operating system therefore first starts with the final keys
-enrolled, which TPM policies bound to the Secure Boot state in PCR 7 rely on.
-Outside Setup Mode, systemd-boot leaves the keys untouched. Updates do not
-remove them from the ESP, so a device enrolls them again whenever its firmware
-returns to Setup Mode, for example after a reset of its keys.
+boot on. The operating system therefore starts only after enrollment. TPM
+policies bound to PCR 7, the register in which the firmware records its Secure
+Boot state, see the final keys from the first operating system boot on. Outside
+Setup Mode, systemd-boot leaves the keys untouched. Updates do not remove them
+from the ESP, so a device enrolls them again whenever its firmware returns to
+Setup Mode, for example after a reset of its keys.
 
 In a virtual machine, systemd-boot enrolls the keys immediately. On other
 machines, it first counts down 15 seconds; pressing a key cancels the
-enrollment. Check the device before enabling enrollment: the enrolled keys
-replace the keys the device shipped with, so the firmware no longer starts
-option ROMs, the firmware of expansion cards such as graphics or network cards,
-that are signed with a vendor certificate missing from your db.
+enrollment. Once Secure Boot is enforced, the firmware starts only software that
+your db authorizes. This includes option ROMs, the firmware of expansion cards
+such as graphics or network cards. Include the certificates of the option ROMs a
+device needs, or the device can fail to start them.
 
 For example, create the files with OpenSSL and sbsigntool from the certificates
 and private keys `keys/PK.crt`, `keys/PK.key`, `keys/KEK.crt`, `keys/KEK.key`,
@@ -205,8 +269,8 @@ inputs.kernel = { path = "kernel" }
 inputs.initrd = { path = "initrd" }
 inputs.boot-certificate = { path = "keys/boot.crt" }
 inputs.bundle-certificate = { path = "keys/bundle.crt" }
-secrets.boot-key = { path = "keys/boot.key" }
-secrets.bundle-key = { path = "keys/bundle.key" }
+rules.efi-signer.secrets.key = { path = "keys/boot.key" }
+rules.bundle-signer.secrets.key = { path = "keys/bundle.key" }
 parameters.architecture = "amd64"
 ```
 

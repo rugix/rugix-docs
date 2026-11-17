@@ -12,12 +12,12 @@ Debian root filesystem.
 
 ## Inputs
 
-| Name                 | Kind      | Default       | Description                                                                                                                             |
-| -------------------- | --------- | ------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| `rootfs`             | directory | **Required**  | Prepared root filesystem implementing the core verified-root boot contract.                                                             |
-| `boot-certificate`   | file      | **Required**  | PEM-encoded RSA X.509 certificate for signing EFI boot artifacts.                                                                       |
-| `bundle-certificate` | file      | **Required**  | Single PEM-encoded RSA X.509 end-entity signer certificate issued directly by the trusted root. No intermediates.                       |
-| `secure-boot-keys`   | directory | `{"tree":{}}` | Authenticated variables PK.auth, KEK.auth, and db.auth that systemd-boot enrolls in Setup Mode. Empty by default, disabling enrollment. |
+| Name                 | Kind      | Default       | Description                                                                                                                                    |
+| -------------------- | --------- | ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `rootfs`             | directory | **Required**  | Prepared root filesystem implementing the core verified-root boot contract.                                                                    |
+| `boot-certificate`   | file      | **Required**  | PEM-encoded RSA X.509 certificate for signing EFI boot artifacts.                                                                              |
+| `bundle-certificate` | file      | **Required**  | Single PEM-encoded X.509 end-entity signer certificate issued directly by the trusted root. No intermediates. The default signer requires RSA. |
+| `secure-boot-keys`   | directory | `{"tree":{}}` | Authenticated variables PK.auth, KEK.auth, and db.auth that systemd-boot enrolls in Setup Mode. Empty by default, disabling enrollment.        |
 
 ## Parameters
 
@@ -47,10 +47,38 @@ Debian root filesystem.
 | `hash-offset` | `{"rule":{"node":"release","output":"hash-offset"}}` |
 | `data-size`   | `{"rule":{"node":"release","output":"data-size"}}`   |
 
-## Secrets
+## Rule Parameters
 
-Required secret bindings: `boot-key`, `bundle-key`. Secret changes invalidate
-cached outputs.
+Callers can replace these operations through `rules` bindings. An implementation
+receives the listed inputs and parameters and must produce the listed outputs.
+See [Rule Parameters](/docs/bakery/next/build-rules#rule-parameters).
+
+### `efi-signer`
+
+Sign an EFI executable. Bakery verifies each signature against boot-certificate.
+
+Default implementation: `core/sign-efi`.
+
+| Name           | Role      | Kind | Description                                                                   |
+| -------------- | --------- | ---- | ----------------------------------------------------------------------------- |
+| `image`        | Input     | file | Unsigned PE executable: the UKI or systemd-boot.                              |
+| `certificate`  | Input     | file | The boot-certificate input.                                                   |
+| `signing-time` | Parameter |      | Signing time as Unix seconds in a string. Empty means the build source epoch. |
+| `image`        | Output    | file | PE executable with a UEFI Secure Boot signature.                              |
+
+### `bundle-signer`
+
+Create a CMS signature over the bundle's signed metadata. Bakery verifies it
+against bundle-certificate.
+
+Default implementation: `core/sign-cms`.
+
+| Name           | Role      | Kind | Description                                                                      |
+| -------------- | --------- | ---- | -------------------------------------------------------------------------------- |
+| `content`      | Input     | file | Signed bundle metadata.                                                          |
+| `certificate`  | Input     | file | The bundle-certificate input.                                                    |
+| `signing-time` | Parameter |      | Signing time as Unix seconds in a string. Empty means the build source epoch.    |
+| `signature`    | Output    | file | DER-encoded CMS SignedData with the encapsulated content and signer certificate. |
 
 ## Execution
 
@@ -74,7 +102,9 @@ The required `architecture` must match the system's `architecture` setting. Set
 requires a unique installed kernel. Automatic capacity defaults, optional size
 overrides, remaining release inputs, signing policy, outputs, and
 [Secure Boot key enrollment](../image-efi-verified/#enroll-secure-boot-keys)
-match the generic EFI composition.
+match the generic EFI composition. The wrapper forwards its `efi-signer` and
+`bundle-signer` rule parameters to it, so you can sign with an HSM or a KMS as
+described in [its signer documentation](../image-efi-verified/#signers).
 
 ## Customize Boot Settings
 
@@ -106,8 +136,8 @@ uses = "core/image-debian-efi-verified"
 parameters.architecture = "amd64"
 inputs.boot-certificate = { path = "keys/boot.crt" }
 inputs.bundle-certificate = { path = "keys/bundle.crt" }
-secrets.boot-key = { path = "keys/boot.key" }
-secrets.bundle-key = { path = "keys/bundle.key" }
+rules.efi-signer.secrets.key = { path = "keys/boot.key" }
+rules.bundle-signer.secrets.key = { path = "keys/bundle.key" }
 
 [systems.efi.outputs]
 "system.img" = { rule = { node = "release", output = "image" } }

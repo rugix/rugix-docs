@@ -37,6 +37,18 @@ test("repository catalogs generate reference pages and detect or remove stale ge
               count: { default: 0 },
               suffix: { default: "" },
             },
+            "rule-parameters": {
+              signer: {
+                description: "Sign the result.",
+                default: {
+                  uses: "sign",
+                  secrets: { key: { input: "key" } },
+                },
+                inputs: { image: { kind: "file" } },
+                parameters: { "signing-time": {} },
+                outputs: { image: { kind: "file", description: "Signed." } },
+              },
+            },
             execution: {
               type: "graph",
               rules: {},
@@ -129,6 +141,10 @@ test("repository catalogs generate reference pages and detect or remove stale ge
       "## Usage",
       "[Related](../index/#usage)",
       "Artifact Source",
+      "## Rule Parameters",
+      "Default implementation: `sign`.",
+      "Default bindings",
+      "| `signing-time` | Parameter |",
     ]) {
       assert.ok(page.includes(expected), expected)
     }

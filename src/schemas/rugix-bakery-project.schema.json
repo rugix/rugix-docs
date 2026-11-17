@@ -20,6 +20,10 @@
   "required": [],
   "unevaluatedProperties": false,
   "$defs": {
+    "rugix_bakery.foreign.ChunkerAlgorithm": {
+      "type": "string",
+      "description": "Bundle payload chunking algorithm, as defined by rugix-bundle."
+    },
     "rugix_bakery.foreign.NumBytes": {
       "type": [
         "string",
@@ -110,6 +114,9 @@
       "type": "object",
       "description": "Partition of an image.",
       "properties": {
+        "name": {
+          "type": "string"
+        },
         "size": {
           "$ref": "#/$defs/rugix_bakery.foreign.NumBytes"
         },
@@ -357,12 +364,12 @@
         }
       ]
     },
-    "rugix_bakery.rules.RuleInvocation": {
+    "rugix_bakery.rules.RuleBinding": {
       "type": "object",
-      "description": "An invocation of a repository-defined rule.",
+      "description": "An implementation bound to a rule parameter.\n\nBindings resolve in the scope that contains them. The graph supplies the\ninterface inputs and parameters, which a binding must not bind.",
       "properties": {
         "uses": {
-          "type": "string"
+          "$ref": "#/$defs/rugix_bakery.rules.RuleReference"
         },
         "inputs": {
           "type": "object",
@@ -380,6 +387,47 @@
           "type": "object",
           "additionalProperties": {
             "$ref": "#/$defs/rugix_bakery.rules.ArtifactSource"
+          }
+        },
+        "rules": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/rugix_bakery.rules.RuleBinding"
+          }
+        }
+      },
+      "required": [],
+      "unevaluatedProperties": false
+    },
+    "rugix_bakery.rules.RuleInvocation": {
+      "type": "object",
+      "description": "An invocation of a repository-defined rule.",
+      "properties": {
+        "uses": {
+          "$ref": "#/$defs/rugix_bakery.rules.RuleReference"
+        },
+        "inputs": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/rugix_bakery.rules.ArtifactSource"
+          }
+        },
+        "parameters": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/rugix_bakery.rules.ParameterBinding"
+          }
+        },
+        "secrets": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/rugix_bakery.rules.ArtifactSource"
+          }
+        },
+        "rules": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/rugix_bakery.rules.RuleBinding"
           }
         }
       },
@@ -405,6 +453,25 @@
       ],
       "unevaluatedProperties": false
     },
+    "rugix_bakery.rules.RuleReference": {
+      "description": "A rule name or the implementation of an enclosing rule parameter.",
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "rule-parameter": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "rule-parameter"
+          ]
+        }
+      ]
+    },
     "rugix_bakery.systems.Architecture": {
       "enum": [
         "amd64",
@@ -414,6 +481,23 @@
         "arm"
       ],
       "description": "Architecture."
+    },
+    "rugix_bakery.systems.SystemBundleConfig": {
+      "type": "object",
+      "description": "Bundle encoding for the predefined pipeline.",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "compression": {
+          "type": "boolean"
+        },
+        "chunker": {
+          "$ref": "#/$defs/rugix_bakery.foreign.ChunkerAlgorithm"
+        }
+      },
+      "required": [],
+      "unevaluatedProperties": false
     },
     "rugix_bakery.systems.SystemConfig": {
       "type": "object",
@@ -436,8 +520,20 @@
         "image": {
           "$ref": "#/$defs/rugix_bakery.systems.SystemImageConfig"
         },
-        "build": {
-          "$ref": "#/$defs/rugix_bakery.rules.RuleInvocation"
+        "rules": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/rugix_bakery.rules.RuleInvocation"
+          }
+        },
+        "outputs": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/rugix_bakery.rules.ArtifactSource"
+          }
+        },
+        "bundle": {
+          "$ref": "#/$defs/rugix_bakery.systems.SystemBundleConfig"
         },
         "options": {
           "$ref": "#/$defs/rugix_bakery.systems.SystemOptions"

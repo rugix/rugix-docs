@@ -25,7 +25,7 @@ For the relationships between these files, start with the [build model](/docs/ba
 | System mixin        | `mixins/<name>.toml`                                                | [Mixin](#mixins)                     |
 | Recipe              | `recipes/<name>/recipe.toml`                                        | [Recipe](#recipes)                   |
 | Rule definition     | `rules/<name>/rule.toml`                                            | [Rule Definition](#rule-definitions) |
-| Rule invocation     | An invocation file, a system's `build` table, or a named graph node | [Rule Invocation](#rule-invocations) |
+| Rule invocation     | An invocation file, a system's `rules` table, or a named graph node | [Rule Invocation](#rule-invocations) |
 | Repository          | `rugix-repository.toml`                                             | [Repository](#repositories)          |
 | System test         | `tests/<name>.toml`                                                 | [System Test](#system-tests)         |
 
@@ -74,7 +74,8 @@ See [Recipes](/docs/bakery/next/recipes) for step execution and scheduling.
 A rule declares an artifact interface and its implementation. An execution can
 run a command, compose other rules, or build a layer. Each input definition is an
 object with a required `kind` (`file` or `directory`) and an optional
-`description`. Source bindings determine which artifact is supplied.
+`description`. Source bindings determine which artifact is supplied. A
+composition's `rule-parameters` declare operations that callers can replace.
 
 See [Build Rules](/docs/bakery/next/build-rules) for definitions and compositions.
 
@@ -83,8 +84,10 @@ See [Build Rules](/docs/bakery/next/build-rules) for definitions and composition
 ## Rule Invocations
 
 An invocation selects a definition with `uses` and binds its inputs,
-parameters, and secrets. Named entries in a composition's `rules` table and
-a system's `build` table use this structure.
+parameters, secrets, and rule parameters. `uses` names a rule or, within a
+composition, refers to one of its rule parameters with
+`{ rule-parameter = "name" }`. Named entries in a composition's `rules` table
+and a system's `rules` table use this structure.
 
 Artifact sources include `path` for an existing repository-relative file or
 directory, `input` for an enclosing input, `rule` for a node output,
