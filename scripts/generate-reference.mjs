@@ -162,6 +162,12 @@ function page(kind, item) {
           ["Setting", "Value"],
           [
             ["Priority", code(String(definition.priority ?? 0))],
+            ...[
+              ["Before", definition.before],
+              ["After", definition.after],
+            ]
+              .filter(([, names]) => names?.length)
+              .map(([setting, names]) => [setting, names.map(code).join(", ")]),
             [
               "Dependencies",
               definition.dependencies?.map(code).join(", ") || "None",
@@ -169,7 +175,7 @@ function page(kind, item) {
           ],
         )
       body +=
-        "Higher priorities run first within the selected recipe set. Dependencies include other recipes; their priorities determine execution order.\n\n"
+        "Higher priorities run first within the selected recipe set unless `before` or `after` constraints require otherwise. Dependencies include other recipes without ordering them.\n\n"
       if (definition.rules)
         body += "## Prerequisite Rules\n\n" + json(definition.rules)
     } else {

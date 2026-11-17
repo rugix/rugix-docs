@@ -7,7 +7,7 @@ import RecipeSchema from "../../../schemas/rugix-bakery-recipe.schema.json"
 
 # Recipes
 
-As part of the build process, recipes perform the actual work, creating and modifying build outputs. Each recipe consists of a sequence of _steps_ to be executed. Recipes are defined by directories in the `recipes` directory. Each recipe gets its own directory with a _recipe configuration_ file `recipe.toml` and a `steps` subdirectory defining the individual steps to be executed. The configuration file may specify a _description_, a _priority_, _dependencies_ of the recipe, and _parameters_.
+As part of the build process, recipes perform the actual work, creating and modifying build outputs. Each recipe consists of a sequence of _steps_ to be executed. Recipes are defined by directories in the `recipes` directory. Each recipe gets its own directory with a _recipe configuration_ file `recipe.toml` and a `steps` subdirectory defining the individual steps to be executed. The configuration file may specify a _description_, a _priority_, _ordering constraints_, _dependencies_ of the recipe, and _parameters_.
 
 Here is the configuration of the [`core/ssh`](/docs/bakery/next/reference/core/recipes/ssh/) recipe as an example:
 
@@ -26,9 +26,24 @@ The `ssh` recipe depends on the [`pkg-update` recipe](/docs/bakery/next/referenc
 
 [^pkg-update-ref]: The recipe is referenced as `pkg-update` and not `core/pkg-update` here because the `ssh` recipe is itself in `core`.
 
-Recipes are always applied in the order of their priority (higher means earlier). In particular, this means that dependencies may be applied _after_ recipes that depend on them, if they have a lower priority. Note that priorities can also be negative.
-
 The [core recipe reference](/docs/bakery/next/reference/core/recipes/) lists the built-in recipes, their dependencies, parameters, and examples.
+
+## Execution Order
+
+The recipes of a layer or mixin run one after another. By default, recipes run in the order of their priority, from highest to lowest. Priorities default to `0` and can be negative. Recipes with equal priorities run in a stable order by repository and name.
+
+Dependencies do not affect the order. Without ordering constraints, which are described below, a dependency with a lower priority runs _after_ the recipe that depends on it. For example, `core/pkg-update` depends on `core/pkg-cleanup`, which has a low priority, so that it removes the package lists after other recipes have installed their packages.
+
+To run a recipe after or before specific other recipes, regardless of their priorities, use `after` and `before`:
+
+```toml title="recipes/configure-app/recipe.toml"
+after = ["install-app", "core/rugix-ctrl"]
+before = ["core/pkg-cleanup"]
+```
+
+This recipe runs after `install-app` and `core/rugix-ctrl` and before `core/pkg-cleanup`. A constraint only applies when the named recipe runs in the same layer or mixin. It does not add the named recipe; use `dependencies` for that. Names resolve like dependencies. Rugix Bakery reports an error if a name does not refer to a recipe or if constraints form a cycle.
+
+Constraints take precedence over priorities. Of the recipes whose constraints are satisfied, the one with the highest priority runs next.
 
 ## Parameters
 
