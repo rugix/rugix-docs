@@ -17,9 +17,23 @@ Authenticate a Rugix bundle with a configurable signing certificate.
 
 ## Parameters
 
-| Name           | Default | Description                                                                                                            |
-| -------------- | ------- | ---------------------------------------------------------------------------------------------------------------------- |
-| `signing-time` | `""`    | Signing time as Unix seconds in a string. Empty uses the build source epoch. The default signer accepts 0..2524607999. |
+<dl class="parameter-list">
+
+<dt>
+
+`signing-time`
+
+</dt>
+<dd>
+
+Default: `""`
+
+Signing time as Unix seconds in a string. Empty uses the build source epoch. The
+default signer accepts 0..2524607999.
+
+</dd>
+
+</dl>
 
 ## Outputs
 

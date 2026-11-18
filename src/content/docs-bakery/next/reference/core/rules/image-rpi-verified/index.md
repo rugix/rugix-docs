@@ -24,17 +24,130 @@ an existing root filesystem.
 
 ## Parameters
 
-| Name               | Default                                                                     | Description                                                                                |
-| ------------------ | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| `cmdline-extra`    | `""`                                                                        | Additional authenticated kernel arguments.                                                 |
-| `panic-timeout`    | `10`                                                                        | Kernel panic reboot delay in seconds. Zero leaves the system stopped.                      |
-| `boot-config`      | `"[all]\narm_64bit=1\nkernel=kernel8.img\ninitramfs initrd followkernel\n"` | Contents of config.txt inside the signed boot image. Must select kernel8.img and initrd.   |
-| `signing-time`     | `""`                                                                        | Signing time as Unix seconds in a string. Empty uses the build source epoch.               |
-| `config-size`      | `0`                                                                         | Configuration partition capacity in bytes. Zero sizes automatically with a 64 MiB minimum. |
-| `boot-size`        | `0`                                                                         | Boot partition capacity in bytes. Zero sizes automatically with a 256 MiB minimum.         |
-| `boot-image-size`  | `0`                                                                         | Signed boot image capacity in bytes. Zero sizes it from its contents.                      |
-| `root-compression` | `"none"`                                                                    | SquashFS compression of the root filesystem, such as zstd or xz, or none.                  |
-| `disk-size`        | `0`                                                                         | Factory disk capacity in bytes. Zero sizes the disk from its partitions.                   |
+<dl class="parameter-list">
+
+<dt>
+
+`cmdline-extra`
+
+</dt>
+<dd>
+
+Default: `""`
+
+Additional authenticated kernel arguments.
+
+</dd>
+
+<dt>
+
+`panic-timeout`
+
+</dt>
+<dd>
+
+Default: `10`
+
+Kernel panic reboot delay in seconds. Zero leaves the system stopped.
+
+</dd>
+
+<dt>
+
+`boot-config`
+
+</dt>
+<dd>
+
+Default:
+`"[all]\narm_64bit=1\nkernel=kernel8.img\ninitramfs initrd followkernel\n"`
+
+Contents of config.txt inside the signed boot image. Must select kernel8.img and
+initrd.
+
+</dd>
+
+<dt>
+
+`signing-time`
+
+</dt>
+<dd>
+
+Default: `""`
+
+Signing time as Unix seconds in a string. Empty uses the build source epoch.
+
+</dd>
+
+<dt>
+
+`config-size`
+
+</dt>
+<dd>
+
+Default: `0`
+
+Configuration partition capacity in bytes. Zero sizes automatically with a 64
+MiB minimum.
+
+</dd>
+
+<dt>
+
+`boot-size`
+
+</dt>
+<dd>
+
+Default: `0`
+
+Boot partition capacity in bytes. Zero sizes automatically with a 256 MiB
+minimum.
+
+</dd>
+
+<dt>
+
+`boot-image-size`
+
+</dt>
+<dd>
+
+Default: `0`
+
+Signed boot image capacity in bytes. Zero sizes it from its contents.
+
+</dd>
+
+<dt>
+
+`root-compression`
+
+</dt>
+<dd>
+
+Default: `"none"`
+
+SquashFS compression of the root filesystem, such as zstd or xz, or none.
+
+</dd>
+
+<dt>
+
+`disk-size`
+
+</dt>
+<dd>
+
+Default: `0`
+
+Factory disk capacity in bytes. Zero sizes the disk from its partitions.
+
+</dd>
+
+</dl>
 
 ## Outputs
 

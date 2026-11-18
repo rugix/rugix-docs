@@ -17,10 +17,35 @@ Prepare an ESP tree with a signed bootloader and initial A/B UKI.
 
 ## Parameters
 
-| Name           | Default      | Description                           |
-| -------------- | ------------ | ------------------------------------- |
-| `architecture` | **Required** | Target architecture: amd64 or arm64.  |
-| `timeout`      | `0`          | systemd-boot menu timeout in seconds. |
+<dl class="parameter-list">
+
+<dt>
+
+`architecture`
+
+</dt>
+<dd>
+
+**Required**
+
+Target architecture: amd64 or arm64.
+
+</dd>
+
+<dt>
+
+`timeout`
+
+</dt>
+<dd>
+
+Default: `0`
+
+systemd-boot menu timeout in seconds.
+
+</dd>
+
+</dl>
 
 ## Outputs
 

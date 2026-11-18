@@ -15,14 +15,88 @@ Create an ext4 image from a directory tree.
 
 ## Parameters
 
-| Name               | Default | Description                                                                            |
-| ------------------ | ------- | -------------------------------------------------------------------------------------- |
-| `size`             | `0`     | Capacity in bytes. Zero sizes the image from the tree and shrinks it after population. |
-| `label`            | `""`    | Filesystem label. Empty leaves the label unset.                                        |
-| `uuid`             | `""`    | Filesystem UUID. Empty derives a stable UUID from the normalized input archive.        |
-| `block-size`       | `4096`  | Filesystem block size in bytes.                                                        |
-| `reserved-percent` | `0`     | Percentage of blocks reserved for the superuser.                                       |
-| `mkfs-options`     | `""`    | Additional mkfs.ext4 arguments, separated with shell-style quoting.                    |
+<dl class="parameter-list">
+
+<dt>
+
+`size`
+
+</dt>
+<dd>
+
+Default: `0`
+
+Capacity in bytes. Zero sizes the image from the tree and shrinks it after
+population.
+
+</dd>
+
+<dt>
+
+`label`
+
+</dt>
+<dd>
+
+Default: `""`
+
+Filesystem label. Empty leaves the label unset.
+
+</dd>
+
+<dt>
+
+`uuid`
+
+</dt>
+<dd>
+
+Default: `""`
+
+Filesystem UUID. Empty derives a stable UUID from the normalized input archive.
+
+</dd>
+
+<dt>
+
+`block-size`
+
+</dt>
+<dd>
+
+Default: `4096`
+
+Filesystem block size in bytes.
+
+</dd>
+
+<dt>
+
+`reserved-percent`
+
+</dt>
+<dd>
+
+Default: `0`
+
+Percentage of blocks reserved for the superuser.
+
+</dd>
+
+<dt>
+
+`mkfs-options`
+
+</dt>
+<dd>
+
+Default: `""`
+
+Additional mkfs.ext4 arguments, separated with shell-style quoting.
+
+</dd>
+
+</dl>
 
 ## Outputs
 

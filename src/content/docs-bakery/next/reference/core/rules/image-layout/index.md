@@ -18,9 +18,22 @@ Resolve a Rugix Bakery image layout into an unpopulated disk image.
 
 ## Parameters
 
-| Name   | Default | Description                                                            |
-| ------ | ------- | ---------------------------------------------------------------------- |
-| `size` | `0`     | Disk capacity in bytes. Zero uses the capacity required by the layout. |
+<dl class="parameter-list">
+
+<dt>
+
+`size`
+
+</dt>
+<dd>
+
+Default: `0`
+
+Disk capacity in bytes. Zero uses the capacity required by the layout.
+
+</dd>
+
+</dl>
 
 ## Outputs
 

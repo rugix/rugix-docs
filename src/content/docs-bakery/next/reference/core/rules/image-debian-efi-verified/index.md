@@ -21,18 +21,141 @@ Debian root filesystem.
 
 ## Parameters
 
-| Name               | Default      | Description                                                                                                             |
-| ------------------ | ------------ | ----------------------------------------------------------------------------------------------------------------------- |
-| `architecture`     | **Required** | Target architecture: amd64 or arm64. Must match the system architecture.                                                |
-| `kernel-version`   | `""`         | Exact installed kernel version. Empty selects the unique installed version.                                             |
-| `cmdline-extra`    | `""`         | Additional authenticated kernel arguments.                                                                              |
-| `panic-timeout`    | `10`         | Kernel panic reboot delay in seconds. Zero leaves the system stopped.                                                   |
-| `boot-timeout`     | `0`          | systemd-boot menu timeout in seconds.                                                                                   |
-| `signing-time`     | `""`         | Signing time as Unix seconds in a string. Empty uses the build source epoch.                                            |
-| `config-size`      | `0`          | ESP capacity in bytes. Zero reserves three copies of its current files, uses at least 256 MiB, and rounds up to 64 MiB. |
-| `root-compression` | `"none"`     | SquashFS compression of the root filesystem, such as zstd or xz, or none.                                               |
-| `disk-size`        | `0`          | Factory disk capacity in bytes. Zero sizes the disk from its partitions.                                                |
-| `secondary-config` | `false`      | Reserve an empty secondary configuration partition with the same capacity as the ESP.                                   |
+<dl class="parameter-list">
+
+<dt>
+
+`architecture`
+
+</dt>
+<dd>
+
+**Required**
+
+Target architecture: amd64 or arm64. Must match the system architecture.
+
+</dd>
+
+<dt>
+
+`kernel-version`
+
+</dt>
+<dd>
+
+Default: `""`
+
+Exact installed kernel version. Empty selects the unique installed version.
+
+</dd>
+
+<dt>
+
+`cmdline-extra`
+
+</dt>
+<dd>
+
+Default: `""`
+
+Additional authenticated kernel arguments.
+
+</dd>
+
+<dt>
+
+`panic-timeout`
+
+</dt>
+<dd>
+
+Default: `10`
+
+Kernel panic reboot delay in seconds. Zero leaves the system stopped.
+
+</dd>
+
+<dt>
+
+`boot-timeout`
+
+</dt>
+<dd>
+
+Default: `0`
+
+systemd-boot menu timeout in seconds.
+
+</dd>
+
+<dt>
+
+`signing-time`
+
+</dt>
+<dd>
+
+Default: `""`
+
+Signing time as Unix seconds in a string. Empty uses the build source epoch.
+
+</dd>
+
+<dt>
+
+`config-size`
+
+</dt>
+<dd>
+
+Default: `0`
+
+ESP capacity in bytes. Zero reserves three copies of its current files, uses at
+least 256 MiB, and rounds up to 64 MiB.
+
+</dd>
+
+<dt>
+
+`root-compression`
+
+</dt>
+<dd>
+
+Default: `"none"`
+
+SquashFS compression of the root filesystem, such as zstd or xz, or none.
+
+</dd>
+
+<dt>
+
+`disk-size`
+
+</dt>
+<dd>
+
+Default: `0`
+
+Factory disk capacity in bytes. Zero sizes the disk from its partitions.
+
+</dd>
+
+<dt>
+
+`secondary-config`
+
+</dt>
+<dd>
+
+Default: `false`
+
+Reserve an empty secondary configuration partition with the same capacity as the
+ESP.
+
+</dd>
+
+</dl>
 
 ## Outputs
 

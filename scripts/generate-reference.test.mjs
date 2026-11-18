@@ -134,10 +134,11 @@ test("repository catalogs generate reference pages and detect or remove stale ge
     await access(join(output, "rules/index/index.md"))
     const page = await readFile(join(output, "rules/compose/index.md"), "utf8")
     for (const expected of [
-      "**Required**",
-      "`false`",
-      "`0`",
-      '`""`',
+      '<dl class="parameter-list">',
+      "<dt>\n\n`required`\n\n</dt>\n<dd>\n\n**Required**\n\nMust be supplied.\n\n</dd>",
+      "Default: `false`",
+      "Default: `0`",
+      'Default: `""`',
       "Assets \\| resources",
       "## Usage",
       "[Related](../index/#usage)",

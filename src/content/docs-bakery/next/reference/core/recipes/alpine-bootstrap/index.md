@@ -13,9 +13,22 @@ No artifact inputs.
 
 ## Parameters
 
-| Name      | Default      | Description                                                                  |
-| --------- | ------------ | ---------------------------------------------------------------------------- |
-| `version` | **Required** | Alpine release series, such as 3.20. The recipe downloads its .0 minirootfs. |
+<dl class="parameter-list">
+
+<dt>
+
+`version`
+
+</dt>
+<dd>
+
+**Required**
+
+Alpine release series, such as 3.20. The recipe downloads its .0 minirootfs.
+
+</dd>
+
+</dl>
 
 ## Scheduling
 

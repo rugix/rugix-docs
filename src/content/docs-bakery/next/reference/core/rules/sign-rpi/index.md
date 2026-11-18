@@ -17,9 +17,22 @@ Sign a Raspberry Pi boot image with the pinned upstream signing tool.
 
 ## Parameters
 
-| Name           | Default | Description                                                                    |
-| -------------- | ------- | ------------------------------------------------------------------------------ |
-| `signing-time` | `""`    | Timestamp in the signature as Unix seconds. Empty uses the build source epoch. |
+<dl class="parameter-list">
+
+<dt>
+
+`signing-time`
+
+</dt>
+<dd>
+
+Default: `""`
+
+Timestamp in the signature as Unix seconds. Empty uses the build source epoch.
+
+</dd>
+
+</dl>
 
 ## Outputs
 

@@ -17,11 +17,48 @@ Bind a verified root hash into boot arguments.
 
 ## Parameters
 
-| Name            | Default | Description                                                                |
-| --------------- | ------- | -------------------------------------------------------------------------- |
-| `platform`      | `"efi"` | Boot slot selection method: efi or rpi.                                    |
-| `extra`         | `""`    | Additional kernel arguments. Verified-root arguments cannot be overridden. |
-| `panic-timeout` | `10`    | Kernel panic reboot delay in seconds. Zero leaves the system stopped.      |
+<dl class="parameter-list">
+
+<dt>
+
+`platform`
+
+</dt>
+<dd>
+
+Default: `"efi"`
+
+Boot slot selection method: efi or rpi.
+
+</dd>
+
+<dt>
+
+`extra`
+
+</dt>
+<dd>
+
+Default: `""`
+
+Additional kernel arguments. Verified-root arguments cannot be overridden.
+
+</dd>
+
+<dt>
+
+`panic-timeout`
+
+</dt>
+<dd>
+
+Default: `10`
+
+Kernel panic reboot delay in seconds. Zero leaves the system stopped.
+
+</dd>
+
+</dl>
 
 ## Outputs
 

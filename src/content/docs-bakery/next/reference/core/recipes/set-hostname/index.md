@@ -13,9 +13,22 @@ No artifact inputs.
 
 ## Parameters
 
-| Name       | Default      | Description                        |
-| ---------- | ------------ | ---------------------------------- |
-| `hostname` | **Required** | Hostname written to /etc/hostname. |
+<dl class="parameter-list">
+
+<dt>
+
+`hostname`
+
+</dt>
+<dd>
+
+**Required**
+
+Hostname written to /etc/hostname.
+
+</dd>
+
+</dl>
 
 ## Scheduling
 

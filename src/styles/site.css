@@ -6,6 +6,24 @@
 @import "@silitics/astro-docs/styles.css";
 @import "@silitics/astro-schema-viewer/styles.css";
 
+/* Stacked reference entries leave parameter names the full content width. */
+.docs-prose .parameter-list dt {
+  margin-top: 1.5rem;
+  font-weight: 600;
+}
+
+.docs-prose .parameter-list dt p {
+  margin: 0;
+}
+
+.docs-prose .parameter-list dd {
+  margin: 0.5rem 0 1.5rem 1rem;
+}
+
+.docs-prose .parameter-list dd p {
+  margin: 0.5rem 0;
+}
+
 .site-banner[data-banner-id="2026-10-emudhra-guidance"] {
   --theme-primary-muted: oklch(0.5 0.2 25);
   --theme-content: oklch(0.99 0 0);

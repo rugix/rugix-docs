@@ -79,8 +79,8 @@ Keep longer explanations and examples beside the definition:
 | Layer      | `layers/<name>.toml` or `layers/<name>.<architecture>.toml` | `layers/<name>.md`         |
 
 Use the Markdown document to explain behavior, prerequisites, and composition
-choices. The generator supplies interface tables from configuration; those facts
-do not need to be repeated in prose. Layer documentation applies to all variants
+choices. The generator supplies parameter description lists and interface tables
+from configuration; those facts do not need to be repeated in prose. Layer documentation applies to all variants
 of the named layer. Markdown is appended after the generated interface sections.
 Omit frontmatter and the page title; start with second-level sections such as
 `## Behavior` and `## Example`.

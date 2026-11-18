@@ -16,10 +16,35 @@ Install Rugix boot-flow files into boot and configuration trees.
 
 ## Parameters
 
-| Name           | Default     | Description                                                                   |
-| -------------- | ----------- | ----------------------------------------------------------------------------- |
-| `target`       | `"unknown"` | Rugix boot target: rpi-tryboot, rpi-uboot, generic-grub-efi, bsp, or unknown. |
-| `architecture` | `"amd64"`   | Target architecture.                                                          |
+<dl class="parameter-list">
+
+<dt>
+
+`target`
+
+</dt>
+<dd>
+
+Default: `"unknown"`
+
+Rugix boot target: rpi-tryboot, rpi-uboot, generic-grub-efi, bsp, or unknown.
+
+</dd>
+
+<dt>
+
+`architecture`
+
+</dt>
+<dd>
+
+Default: `"amd64"`
+
+Target architecture.
+
+</dd>
+
+</dl>
 
 ## Outputs
 

@@ -15,11 +15,48 @@ Create a SquashFS image from a directory tree.
 
 ## Parameters
 
-| Name           | Default  | Description                                                                |
-| -------------- | -------- | -------------------------------------------------------------------------- |
-| `compression`  | `"zstd"` | Compression algorithm accepted by mksquashfs, such as zstd or xz, or none. |
-| `block-size`   | `131072` | Filesystem block size in bytes.                                            |
-| `mkfs-options` | `""`     | Additional mksquashfs arguments, separated with shell-style quoting.       |
+<dl class="parameter-list">
+
+<dt>
+
+`compression`
+
+</dt>
+<dd>
+
+Default: `"zstd"`
+
+Compression algorithm accepted by mksquashfs, such as zstd or xz, or none.
+
+</dd>
+
+<dt>
+
+`block-size`
+
+</dt>
+<dd>
+
+Default: `131072`
+
+Filesystem block size in bytes.
+
+</dd>
+
+<dt>
+
+`mkfs-options`
+
+</dt>
+<dd>
+
+Default: `""`
+
+Additional mksquashfs arguments, separated with shell-style quoting.
+
+</dd>
+
+</dl>
 
 ## Outputs
 

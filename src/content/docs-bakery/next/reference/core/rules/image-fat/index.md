@@ -15,16 +15,116 @@ Create a FAT image from a directory tree.
 
 ## Parameters
 
-| Name                  | Default | Description                                                                                                  |
-| --------------------- | ------- | ------------------------------------------------------------------------------------------------------------ |
-| `size`                | `0`     | Capacity in bytes. Zero sizes the image from the tree, including FAT32 overhead.                             |
-| `free-percent`        | `0`     | Additional free space as a percentage of the populated tree's cluster count. Used only for automatic sizing. |
-| `label`               | `""`    | Volume label. Empty uses the formatter's default.                                                            |
-| `volume-id`           | `""`    | Eight hexadecimal digits. Empty derives a stable ID from tree paths and file contents.                       |
-| `sectors-per-cluster` | `0`     | Sectors per cluster. Zero chooses a cluster size automatically.                                              |
-| `mkfs-options`        | `""`    | Additional mkfs.fat arguments, separated with shell-style quoting.                                           |
-| `minimum-size`        | `0`     | Minimum capacity in bytes when size is zero.                                                                 |
-| `size-alignment`      | `0`     | Round automatic capacity up to a multiple of this power-of-two byte count. Zero rounds up to 1 MiB.          |
+<dl class="parameter-list">
+
+<dt>
+
+`size`
+
+</dt>
+<dd>
+
+Default: `0`
+
+Capacity in bytes. Zero sizes the image from the tree, including FAT32 overhead.
+
+</dd>
+
+<dt>
+
+`free-percent`
+
+</dt>
+<dd>
+
+Default: `0`
+
+Additional free space as a percentage of the populated tree's cluster count.
+Used only for automatic sizing.
+
+</dd>
+
+<dt>
+
+`label`
+
+</dt>
+<dd>
+
+Default: `""`
+
+Volume label. Empty uses the formatter's default.
+
+</dd>
+
+<dt>
+
+`volume-id`
+
+</dt>
+<dd>
+
+Default: `""`
+
+Eight hexadecimal digits. Empty derives a stable ID from tree paths and file
+contents.
+
+</dd>
+
+<dt>
+
+`sectors-per-cluster`
+
+</dt>
+<dd>
+
+Default: `0`
+
+Sectors per cluster. Zero chooses a cluster size automatically.
+
+</dd>
+
+<dt>
+
+`mkfs-options`
+
+</dt>
+<dd>
+
+Default: `""`
+
+Additional mkfs.fat arguments, separated with shell-style quoting.
+
+</dd>
+
+<dt>
+
+`minimum-size`
+
+</dt>
+<dd>
+
+Default: `0`
+
+Minimum capacity in bytes when size is zero.
+
+</dd>
+
+<dt>
+
+`size-alignment`
+
+</dt>
+<dd>
+
+Default: `0`
+
+Round automatic capacity up to a multiple of this power-of-two byte count. Zero
+rounds up to 1 MiB.
+
+</dd>
+
+</dl>
 
 ## Outputs
 

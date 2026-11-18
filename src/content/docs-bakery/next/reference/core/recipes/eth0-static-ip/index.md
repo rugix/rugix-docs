@@ -13,11 +13,48 @@ No artifact inputs.
 
 ## Parameters
 
-| Name      | Default      | Description                              |
-| --------- | ------------ | ---------------------------------------- |
-| `address` | **Required** | Static IPv4 address for eth0.            |
-| `gateway` | **Required** | IPv4 default gateway.                    |
-| `netmask` | **Required** | IPv4 subnet mask in dotted-decimal form. |
+<dl class="parameter-list">
+
+<dt>
+
+`address`
+
+</dt>
+<dd>
+
+**Required**
+
+Static IPv4 address for eth0.
+
+</dd>
+
+<dt>
+
+`gateway`
+
+</dt>
+<dd>
+
+**Required**
+
+IPv4 default gateway.
+
+</dd>
+
+<dt>
+
+`netmask`
+
+</dt>
+<dd>
+
+**Required**
+
+IPv4 subnet mask in dotted-decimal form.
+
+</dd>
+
+</dl>
 
 ## Scheduling
 

@@ -16,9 +16,22 @@ Create a SquashFS image with appended dm-verity authentication data.
 
 ## Parameters
 
-| Name          | Default  | Description                                                                |
-| ------------- | -------- | -------------------------------------------------------------------------- |
-| `compression` | `"none"` | Compression algorithm accepted by mksquashfs, such as zstd or xz, or none. |
+<dl class="parameter-list">
+
+<dt>
+
+`compression`
+
+</dt>
+<dd>
+
+Default: `"none"`
+
+Compression algorithm accepted by mksquashfs, such as zstd or xz, or none.
+
+</dd>
+
+</dl>
 
 ## Outputs
 

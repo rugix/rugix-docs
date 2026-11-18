@@ -16,13 +16,75 @@ Create a detached dm-verity hash tree and root hash for a data image.
 
 ## Parameters
 
-| Name              | Default    | Description                                                                          |
-| ----------------- | ---------- | ------------------------------------------------------------------------------------ |
-| `size`            | `0`        | Hash-tree capacity in bytes. Zero allocates the required space, rounded up to 1 MiB. |
-| `hash-algorithm`  | `"sha256"` | Digest algorithm supported by veritysetup and OpenSSL, such as sha256 or sha512.     |
-| `data-block-size` | `4096`     | Data block size in bytes.                                                            |
-| `hash-block-size` | `4096`     | Hash block size in bytes.                                                            |
-| `salt`            | `""`       | Hexadecimal salt. Empty uses the SHA-256 digest of the data image.                   |
+<dl class="parameter-list">
+
+<dt>
+
+`size`
+
+</dt>
+<dd>
+
+Default: `0`
+
+Hash-tree capacity in bytes. Zero allocates the required space, rounded up to 1
+MiB.
+
+</dd>
+
+<dt>
+
+`hash-algorithm`
+
+</dt>
+<dd>
+
+Default: `"sha256"`
+
+Digest algorithm supported by veritysetup and OpenSSL, such as sha256 or sha512.
+
+</dd>
+
+<dt>
+
+`data-block-size`
+
+</dt>
+<dd>
+
+Default: `4096`
+
+Data block size in bytes.
+
+</dd>
+
+<dt>
+
+`hash-block-size`
+
+</dt>
+<dd>
+
+Default: `4096`
+
+Hash block size in bytes.
+
+</dd>
+
+<dt>
+
+`salt`
+
+</dt>
+<dd>
+
+Default: `""`
+
+Hexadecimal salt. Empty uses the SHA-256 digest of the data image.
+
+</dd>
+
+</dl>
 
 ## Outputs
 

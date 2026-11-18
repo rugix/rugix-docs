@@ -22,10 +22,35 @@ payloads.
 
 ## Parameters
 
-| Name           | Default | Description                                                                  |
-| -------------- | ------- | ---------------------------------------------------------------------------- |
-| `size`         | `0`     | Factory disk capacity in bytes. Zero sizes the disk from its partitions.     |
-| `signing-time` | `""`    | Signing time as Unix seconds in a string. Empty uses the build source epoch. |
+<dl class="parameter-list">
+
+<dt>
+
+`size`
+
+</dt>
+<dd>
+
+Default: `0`
+
+Factory disk capacity in bytes. Zero sizes the disk from its partitions.
+
+</dd>
+
+<dt>
+
+`signing-time`
+
+</dt>
+<dd>
+
+Default: `""`
+
+Signing time as Unix seconds in a string. Empty uses the build source epoch.
+
+</dd>
+
+</dl>
 
 ## Outputs
 
