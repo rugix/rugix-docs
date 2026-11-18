@@ -295,16 +295,22 @@ function parameters(definitions) {
   if (!entries.length) return ""
   return (
     "## Parameters\n\n" +
-    table(
-      ["Name", "Default", "Description"],
-      entries.map(([name, parameter]) => [
-        code(name),
-        Object.hasOwn(parameter, "default")
-          ? code(JSON.stringify(parameter.default))
-          : "**Required**",
-        parameter.description ?? "",
-      ]),
-    )
+    '<dl class="parameter-list">\n\n' +
+    entries
+      .map(([name, parameter]) => {
+        const requirement = Object.hasOwn(parameter, "default")
+          ? "Default: " + code(JSON.stringify(parameter.default))
+          : "**Required**"
+        return (
+          `<dt>\n\n${code(name)}\n\n</dt>\n<dd>\n\n` +
+          requirement +
+          "\n\n" +
+          (parameter.description ? parameter.description + "\n\n" : "") +
+          "</dd>\n\n"
+        )
+      })
+      .join("") +
+    "</dl>\n\n"
   )
 }
 

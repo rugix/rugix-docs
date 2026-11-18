@@ -13,9 +13,23 @@ No artifact inputs.
 
 ## Parameters
 
-| Name         | Default | Description                                                                                       |
-| ------------ | ------- | ------------------------------------------------------------------------------------------------- |
-| `autoremove` | `false` | With APT, remove automatically installed packages that are no longer required. Ignored on Alpine. |
+<dl class="parameter-list">
+
+<dt>
+
+`autoremove`
+
+</dt>
+<dd>
+
+Default: `false`
+
+With APT, remove automatically installed packages that are no longer required.
+Ignored on Alpine.
+
+</dd>
+
+</dl>
 
 ## Scheduling
 

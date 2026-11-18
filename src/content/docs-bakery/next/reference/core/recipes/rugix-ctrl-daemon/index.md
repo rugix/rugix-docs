@@ -13,13 +13,74 @@ No artifact inputs.
 
 ## Parameters
 
-| Name                   | Default | Description                                                      |
-| ---------------------- | ------- | ---------------------------------------------------------------- |
-| `dangerously_insecure` | `false` | Bypass normal daemon authorization checks.                       |
-| `factory_reset`        | `false` | Allow daemon clients to request a factory reset.                 |
-| `system_commit`        | `false` | Allow daemon clients to commit a trial system.                   |
-| `system_reboot`        | `false` | Allow daemon clients to reboot the system.                       |
-| `app_lifecycle`        | `false` | Allow daemon clients to manage application lifecycle operations. |
+<dl class="parameter-list">
+
+<dt>
+
+`dangerously_insecure`
+
+</dt>
+<dd>
+
+Default: `false`
+
+Bypass normal daemon authorization checks.
+
+</dd>
+
+<dt>
+
+`factory_reset`
+
+</dt>
+<dd>
+
+Default: `false`
+
+Allow daemon clients to request a factory reset.
+
+</dd>
+
+<dt>
+
+`system_commit`
+
+</dt>
+<dd>
+
+Default: `false`
+
+Allow daemon clients to commit a trial system.
+
+</dd>
+
+<dt>
+
+`system_reboot`
+
+</dt>
+<dd>
+
+Default: `false`
+
+Allow daemon clients to reboot the system.
+
+</dd>
+
+<dt>
+
+`app_lifecycle`
+
+</dt>
+<dd>
+
+Default: `false`
+
+Allow daemon clients to manage application lifecycle operations.
+
+</dd>
+
+</dl>
 
 ## Scheduling
 

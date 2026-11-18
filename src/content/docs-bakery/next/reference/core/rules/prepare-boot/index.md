@@ -17,9 +17,22 @@ Patch an initialized Rugix boot tree against resolved disk geometry.
 
 ## Parameters
 
-| Name     | Default     | Description                                                                   |
-| -------- | ----------- | ----------------------------------------------------------------------------- |
-| `target` | `"unknown"` | Rugix boot target: rpi-tryboot, rpi-uboot, generic-grub-efi, bsp, or unknown. |
+<dl class="parameter-list">
+
+<dt>
+
+`target`
+
+</dt>
+<dd>
+
+Default: `"unknown"`
+
+Rugix boot target: rpi-tryboot, rpi-uboot, generic-grub-efi, bsp, or unknown.
+
+</dd>
+
+</dl>
 
 ## Outputs
 

@@ -13,12 +13,62 @@ No artifact inputs.
 
 ## Parameters
 
-| Name         | Default    | Description                                                                             |
-| ------------ | ---------- | --------------------------------------------------------------------------------------- |
-| `suite`      | `"stable"` | Debian suite or codename, such as bookworm or trixie.                                   |
-| `snapshot`   | `""`       | Debian snapshot timestamp. Empty uses the selected mirror instead.                      |
-| `mirror`     | `""`       | Custom Debian mirror URL. Empty uses mmdebstrap's default. A snapshot takes precedence. |
-| `components` | `"main"`   | Space-separated archive components for an explicit custom mirror.                       |
+<dl class="parameter-list">
+
+<dt>
+
+`suite`
+
+</dt>
+<dd>
+
+Default: `"stable"`
+
+Debian suite or codename, such as bookworm or trixie.
+
+</dd>
+
+<dt>
+
+`snapshot`
+
+</dt>
+<dd>
+
+Default: `""`
+
+Debian snapshot timestamp. Empty uses the selected mirror instead.
+
+</dd>
+
+<dt>
+
+`mirror`
+
+</dt>
+<dd>
+
+Default: `""`
+
+Custom Debian mirror URL. Empty uses mmdebstrap's default. A snapshot takes
+precedence.
+
+</dd>
+
+<dt>
+
+`components`
+
+</dt>
+<dd>
+
+Default: `"main"`
+
+Space-separated archive components for an explicit custom mirror.
+
+</dd>
+
+</dl>
 
 ## Scheduling
 

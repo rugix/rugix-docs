@@ -30,10 +30,36 @@ Default input bindings:
 
 ## Parameters
 
-| Name               | Default      | Description                                                                                                   |
-| ------------------ | ------------ | ------------------------------------------------------------------------------------------------------------- |
-| `system_size`      | `4294967296` | Default minimum A/B system capacity in bytes after bootstrap.                                                 |
-| `secondary_config` | `false`      | Use the secondary configuration partition layout. Must match the EFI image rule's secondary-config parameter. |
+<dl class="parameter-list">
+
+<dt>
+
+`system_size`
+
+</dt>
+<dd>
+
+Default: `4294967296`
+
+Default minimum A/B system capacity in bytes after bootstrap.
+
+</dd>
+
+<dt>
+
+`secondary_config`
+
+</dt>
+<dd>
+
+Default: `false`
+
+Use the secondary configuration partition layout. Must match the EFI image
+rule's secondary-config parameter.
+
+</dd>
+
+</dl>
 
 ## Scheduling
 

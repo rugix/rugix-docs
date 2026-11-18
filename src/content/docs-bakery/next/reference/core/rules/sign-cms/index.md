@@ -16,9 +16,23 @@ Create a CMS signature with an RSA key.
 
 ## Parameters
 
-| Name           | Default | Description                                                                                  |
-| -------------- | ------- | -------------------------------------------------------------------------------------------- |
-| `signing-time` | `""`    | Signing time as Unix seconds in a string (0..2524607999). Empty uses the build source epoch. |
+<dl class="parameter-list">
+
+<dt>
+
+`signing-time`
+
+</dt>
+<dd>
+
+Default: `""`
+
+Signing time as Unix seconds in a string (0..2524607999). Empty uses the build
+source epoch.
+
+</dd>
+
+</dl>
 
 ## Outputs
 

@@ -13,11 +13,48 @@ No artifact inputs.
 
 ## Parameters
 
-| Name            | Default  | Description                                                   |
-| --------------- | -------- | ------------------------------------------------------------- |
-| `with_firmware` | `"true"` | Install firmware packages. Use true or false.                 |
-| `with_nonfree`  | `"true"` | Enable the non-free archive components. Use true or false.    |
-| `with_squashfs` | `"true"` | Include SquashFS support in the initramfs. Use true or false. |
+<dl class="parameter-list">
+
+<dt>
+
+`with_firmware`
+
+</dt>
+<dd>
+
+Default: `"true"`
+
+Install firmware packages. Use true or false.
+
+</dd>
+
+<dt>
+
+`with_nonfree`
+
+</dt>
+<dd>
+
+Default: `"true"`
+
+Enable the non-free archive components. Use true or false.
+
+</dd>
+
+<dt>
+
+`with_squashfs`
+
+</dt>
+<dd>
+
+Default: `"true"`
+
+Include SquashFS support in the initramfs. Use true or false.
+
+</dd>
+
+</dl>
 
 ## Scheduling
 

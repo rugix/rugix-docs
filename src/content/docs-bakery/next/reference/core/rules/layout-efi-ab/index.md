@@ -16,9 +16,23 @@ Reserve the named A/B partitions for the EFI verified boot flow.
 
 ## Parameters
 
-| Name               | Default | Description                                                                           |
-| ------------------ | ------- | ------------------------------------------------------------------------------------- |
-| `secondary-config` | `false` | Reserve an empty secondary configuration partition with the same capacity as the ESP. |
+<dl class="parameter-list">
+
+<dt>
+
+`secondary-config`
+
+</dt>
+<dd>
+
+Default: `false`
+
+Reserve an empty secondary configuration partition with the same capacity as the
+ESP.
+
+</dd>
+
+</dl>
 
 ## Outputs
 

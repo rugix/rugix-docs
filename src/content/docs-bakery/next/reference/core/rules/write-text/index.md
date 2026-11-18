@@ -13,9 +13,22 @@ No artifact inputs.
 
 ## Parameters
 
-| Name      | Default      | Description                |
-| --------- | ------------ | -------------------------- |
-| `content` | **Required** | Exact UTF-8 file contents. |
+<dl class="parameter-list">
+
+<dt>
+
+`content`
+
+</dt>
+<dd>
+
+**Required**
+
+Exact UTF-8 file contents.
+
+</dd>
+
+</dl>
 
 ## Outputs
 

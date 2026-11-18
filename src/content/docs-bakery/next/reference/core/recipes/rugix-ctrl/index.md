@@ -13,10 +13,35 @@ No artifact inputs.
 
 ## Parameters
 
-| Name       | Default | Description                                                                     |
-| ---------- | ------- | ------------------------------------------------------------------------------- |
-| `use_musl` | `true`  | Choose statically linked musl binaries instead of GNU libc binaries.            |
-| `version`  | `"v1"`  | Binary source: container, a release series such as v1, or an exact release tag. |
+<dl class="parameter-list">
+
+<dt>
+
+`use_musl`
+
+</dt>
+<dd>
+
+Default: `true`
+
+Choose statically linked musl binaries instead of GNU libc binaries.
+
+</dd>
+
+<dt>
+
+`version`
+
+</dt>
+<dd>
+
+Default: `"v1"`
+
+Binary source: container, a release series such as v1, or an exact release tag.
+
+</dd>
+
+</dl>
 
 ## Scheduling
 

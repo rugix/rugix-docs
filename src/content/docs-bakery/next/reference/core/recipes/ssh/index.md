@@ -13,9 +13,23 @@ No artifact inputs.
 
 ## Parameters
 
-| Name                   | Default | Description                                                                                 |
-| ---------------------- | ------- | ------------------------------------------------------------------------------------------- |
-| `root_authorized_keys` | `""`    | Public authorized_keys entries appended to root's authorized_keys file. Empty adds no keys. |
+<dl class="parameter-list">
+
+<dt>
+
+`root_authorized_keys`
+
+</dt>
+<dd>
+
+Default: `""`
+
+Public authorized_keys entries appended to root's authorized_keys file. Empty
+adds no keys.
+
+</dd>
+
+</dl>
 
 ## Scheduling
 

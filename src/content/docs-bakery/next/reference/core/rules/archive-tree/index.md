@@ -16,9 +16,23 @@ Archive a directory tree while preserving Linux filesystem metadata.
 
 ## Parameters
 
-| Name          | Default | Description                                                                              |
-| ------------- | ------- | ---------------------------------------------------------------------------------------- |
-| `clamp-mtime` | `""`    | Optional RFC 3339 upper bound for modification times. Defaults to the build source date. |
+<dl class="parameter-list">
+
+<dt>
+
+`clamp-mtime`
+
+</dt>
+<dd>
+
+Default: `""`
+
+Optional RFC 3339 upper bound for modification times. Defaults to the build
+source date.
+
+</dd>
+
+</dl>
 
 ## Outputs
 

@@ -14,9 +14,22 @@ No artifact inputs.
 
 ## Parameters
 
-| Name               | Default  | Description                               |
-| ------------------ | -------- | ----------------------------------------- |
-| `disable_swapfile` | `"true"` | Remove dphys-swapfile. Use true or false. |
+<dl class="parameter-list">
+
+<dt>
+
+`disable_swapfile`
+
+</dt>
+<dd>
+
+Default: `"true"`
+
+Remove dphys-swapfile. Use true or false.
+
+</dd>
+
+</dl>
 
 ## Scheduling
 

@@ -15,10 +15,35 @@ Select one installed Debian kernel and its exact version.
 
 ## Parameters
 
-| Name      | Default | Description                                                                |
-| --------- | ------- | -------------------------------------------------------------------------- |
-| `version` | `""`    | Exact installed kernel version. Empty selects the unique matching version. |
-| `flavor`  | `""`    | Required kernel version suffix. Empty accepts any flavor.                  |
+<dl class="parameter-list">
+
+<dt>
+
+`version`
+
+</dt>
+<dd>
+
+Default: `""`
+
+Exact installed kernel version. Empty selects the unique matching version.
+
+</dd>
+
+<dt>
+
+`flavor`
+
+</dt>
+<dd>
+
+Default: `""`
+
+Required kernel version suffix. Empty accepts any flavor.
+
+</dd>
+
+</dl>
 
 ## Outputs
 

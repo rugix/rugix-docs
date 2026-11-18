@@ -14,9 +14,22 @@ No artifact inputs.
 
 ## Parameters
 
-| Name           | Default      | Description                                                                  |
-| -------------- | ------------ | ---------------------------------------------------------------------------- |
-| `architecture` | **Required** | Target architecture: amd64 or arm64. Must match the installed EFI artifacts. |
+<dl class="parameter-list">
+
+<dt>
+
+`architecture`
+
+</dt>
+<dd>
+
+**Required**
+
+Target architecture: amd64 or arm64. Must match the installed EFI artifacts.
+
+</dd>
+
+</dl>
 
 ## Outputs
 

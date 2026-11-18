@@ -14,9 +14,22 @@ No artifact inputs.
 
 ## Parameters
 
-| Name    | Default      | Description                            |
-| ------- | ------------ | -------------------------------------- |
-| `model` | **Required** | Target Raspberry Pi model: pi4 or pi5. |
+<dl class="parameter-list">
+
+<dt>
+
+`model`
+
+</dt>
+<dd>
+
+**Required**
+
+Target Raspberry Pi model: pi4 or pi5.
+
+</dd>
+
+</dl>
 
 ## Scheduling
 

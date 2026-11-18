@@ -32,9 +32,22 @@ Default input bindings:
 
 ## Parameters
 
-| Name          | Default      | Description                                                   |
-| ------------- | ------------ | ------------------------------------------------------------- |
-| `system_size` | `4294967296` | Default minimum A/B system capacity in bytes after bootstrap. |
+<dl class="parameter-list">
+
+<dt>
+
+`system_size`
+
+</dt>
+<dd>
+
+Default: `4294967296`
+
+Default minimum A/B system capacity in bytes after bootstrap.
+
+</dd>
+
+</dl>
 
 ## Scheduling
 

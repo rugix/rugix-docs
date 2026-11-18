@@ -16,9 +16,23 @@ Append a detached verity hash tree to a data image.
 
 ## Parameters
 
-| Name        | Default | Description                                                                                |
-| ----------- | ------- | ------------------------------------------------------------------------------------------ |
-| `alignment` | `4096`  | Power-of-two byte alignment of the hash area, at least 512. Must suit the hash block size. |
+<dl class="parameter-list">
+
+<dt>
+
+`alignment`
+
+</dt>
+<dd>
+
+Default: `4096`
+
+Power-of-two byte alignment of the hash area, at least 512. Must suit the hash
+block size.
+
+</dd>
+
+</dl>
 
 ## Outputs
 

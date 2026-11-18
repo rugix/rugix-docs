@@ -16,9 +16,22 @@ Assemble a GPT disk from a Rugix layout and partition images.
 
 ## Parameters
 
-| Name   | Default | Description                                                      |
-| ------ | ------- | ---------------------------------------------------------------- |
-| `size` | `0`     | Disk capacity in bytes. Zero sizes the disk from its partitions. |
+<dl class="parameter-list">
+
+<dt>
+
+`size`
+
+</dt>
+<dd>
+
+Default: `0`
+
+Disk capacity in bytes. Zero sizes the disk from its partitions.
+
+</dd>
+
+</dl>
 
 ## Outputs
 
