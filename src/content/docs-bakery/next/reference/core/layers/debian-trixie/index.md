@@ -14,14 +14,48 @@ default is used when no matching architecture override exists.
 
 ### Default
 
-| Setting    | Value              |
-| ---------- | ------------------ |
-| Root layer | Yes                |
-| Recipes    | `debian-bootstrap` |
+<dl class="reference-list">
 
-| Recipe             | Parameter | Value      |
-| ------------------ | --------- | ---------- |
-| `debian-bootstrap` | `suite`   | `"trixie"` |
+<dt>
+
+Root layer
+
+</dt>
+<dd>
+
+Yes
+
+</dd>
+
+<dt>
+
+Recipes
+
+</dt>
+<dd>
+
+`debian-bootstrap`
+
+</dd>
+
+</dl>
+
+<dl class="reference-list">
+
+<dt>
+
+Recipe `debian-bootstrap`
+
+</dt>
+<dd>
+
+Parameter: `suite`
+
+Value: `"trixie"`
+
+</dd>
+
+</dl>
 
 ## Behavior
 

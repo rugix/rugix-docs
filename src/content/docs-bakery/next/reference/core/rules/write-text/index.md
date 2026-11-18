@@ -13,7 +13,7 @@ No artifact inputs.
 
 ## Parameters
 
-<dl class="parameter-list">
+<dl class="reference-list">
 
 <dt>
 
@@ -32,17 +32,61 @@ Exact UTF-8 file contents.
 
 ## Outputs
 
-| Name   | Kind | Description                            |
-| ------ | ---- | -------------------------------------- |
-| `file` | file | Text file containing content verbatim. |
+<dl class="reference-list">
+
+<dt>
+
+`file`
+
+</dt>
+<dd>
+
+Kind: file
+
+Text file containing content verbatim.
+
+</dd>
+
+</dl>
 
 ## Execution
 
-| Setting      | Value        |
-| ------------ | ------------ |
-| Environment  | Rugix Bakery |
-| Source epoch | Consumed     |
-| Output cache | Allowed      |
+<dl class="reference-list">
+
+<dt>
+
+Environment
+
+</dt>
+<dd>
+
+Rugix Bakery
+
+</dd>
+
+<dt>
+
+Source epoch
+
+</dt>
+<dd>
+
+Consumed
+
+</dd>
+
+<dt>
+
+Output cache
+
+</dt>
+<dd>
+
+Allowed
+
+</dd>
+
+</dl>
 
 ## Behavior
 

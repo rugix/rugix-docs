@@ -9,16 +9,78 @@ Base filesystems supplied by this repository.
 
 ## Bootstrapped Systems
 
-| Name                                         | Description                                     |
-| -------------------------------------------- | ----------------------------------------------- |
-| [`core/alpine-3-20`](./alpine-3-20/)         | Bootstrap an Alpine Linux 3.20 base filesystem. |
-| [`core/debian-bookworm`](./debian-bookworm/) | Bootstrap a Debian Bookworm base filesystem.    |
-| [`core/debian-trixie`](./debian-trixie/)     | Bootstrap a Debian Trixie base filesystem.      |
+<dl class="reference-list">
+
+<dt>
+
+[`core/alpine-3-20`](./alpine-3-20/)
+
+</dt>
+<dd>
+
+Bootstrap an Alpine Linux 3.20 base filesystem.
+
+</dd>
+
+<dt>
+
+[`core/debian-bookworm`](./debian-bookworm/)
+
+</dt>
+<dd>
+
+Bootstrap a Debian Bookworm base filesystem.
+
+</dd>
+
+<dt>
+
+[`core/debian-trixie`](./debian-trixie/)
+
+</dt>
+<dd>
+
+Bootstrap a Debian Trixie base filesystem.
+
+</dd>
+
+</dl>
 
 ## Imported Systems
 
-| Name                                           | Description                                         |
-| ---------------------------------------------- | --------------------------------------------------- |
-| [`core/raspios-bookworm`](./raspios-bookworm/) | Import a dated Raspberry Pi OS Lite Bookworm image. |
-| [`core/raspios-bullseye`](./raspios-bullseye/) | Import a dated Raspberry Pi OS Lite Bullseye image. |
-| [`core/raspios-trixie`](./raspios-trixie/)     | Import a dated Raspberry Pi OS Lite Trixie image.   |
+<dl class="reference-list">
+
+<dt>
+
+[`core/raspios-bookworm`](./raspios-bookworm/)
+
+</dt>
+<dd>
+
+Import a dated Raspberry Pi OS Lite Bookworm image.
+
+</dd>
+
+<dt>
+
+[`core/raspios-bullseye`](./raspios-bullseye/)
+
+</dt>
+<dd>
+
+Import a dated Raspberry Pi OS Lite Bullseye image.
+
+</dd>
+
+<dt>
+
+[`core/raspios-trixie`](./raspios-trixie/)
+
+</dt>
+<dd>
+
+Import a dated Raspberry Pi OS Lite Trixie image.
+
+</dd>
+
+</dl>

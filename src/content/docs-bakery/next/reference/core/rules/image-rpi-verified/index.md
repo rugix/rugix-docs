@@ -12,19 +12,106 @@ an existing root filesystem.
 
 ## Inputs
 
-| Name                 | Kind      | Description                                                                                                                                    |
-| -------------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| `kernel`             | file      | Target Linux kernel image.                                                                                                                     |
-| `initrd`             | file      | Initrd implementing the core verified-root boot contract.                                                                                      |
-| `rootfs`             | directory | Prepared root filesystem implementing the core verified-root boot contract.                                                                    |
-| `boot`               | directory | Raspberry Pi firmware tree containing start4.elf, fixup4.dat, DTBs, and overlays.                                                              |
-| `config`             | directory | Layer configuration partition contents.                                                                                                        |
-| `boot-public-key`    | file      | PEM-encoded RSA-2048 public key matching the Raspberry Pi boot signing key.                                                                    |
-| `bundle-certificate` | file      | Single PEM-encoded X.509 end-entity signer certificate issued directly by the trusted root. No intermediates. The default signer requires RSA. |
+<dl class="reference-list">
+
+<dt>
+
+`kernel`
+
+</dt>
+<dd>
+
+Kind: file
+
+Target Linux kernel image.
+
+</dd>
+
+<dt>
+
+`initrd`
+
+</dt>
+<dd>
+
+Kind: file
+
+Initrd implementing the core verified-root boot contract.
+
+</dd>
+
+<dt>
+
+`rootfs`
+
+</dt>
+<dd>
+
+Kind: directory
+
+Prepared root filesystem implementing the core verified-root boot contract.
+
+</dd>
+
+<dt>
+
+`boot`
+
+</dt>
+<dd>
+
+Kind: directory
+
+Raspberry Pi firmware tree containing start4.elf, fixup4.dat, DTBs, and
+overlays.
+
+</dd>
+
+<dt>
+
+`config`
+
+</dt>
+<dd>
+
+Kind: directory
+
+Layer configuration partition contents.
+
+</dd>
+
+<dt>
+
+`boot-public-key`
+
+</dt>
+<dd>
+
+Kind: file
+
+PEM-encoded RSA-2048 public key matching the Raspberry Pi boot signing key.
+
+</dd>
+
+<dt>
+
+`bundle-certificate`
+
+</dt>
+<dd>
+
+Kind: file
+
+Single PEM-encoded X.509 end-entity signer certificate issued directly by the
+trusted root. No intermediates. The default signer requires RSA.
+
+</dd>
+
+</dl>
 
 ## Parameters
 
-<dl class="parameter-list">
+<dl class="reference-list">
 
 <dt>
 
@@ -151,16 +238,97 @@ Factory disk capacity in bytes. Zero sizes the disk from its partitions.
 
 ## Outputs
 
-| Name             | Artifact Source                                           |
-| ---------------- | --------------------------------------------------------- |
-| `image`          | `{"rule":{"node":"release","output":"image"}}`            |
-| `bundle`         | `{"rule":{"node":"release","output":"bundle"}}`           |
-| `bundle-hash`    | `{"rule":{"node":"release","output":"bundle-hash"}}`      |
-| `boot-image`     | `{"rule":{"node":"boot-image","output":"image"}}`         |
-| `boot-signature` | `{"rule":{"node":"boot-signature","output":"signature"}}` |
-| `root-hash`      | `{"rule":{"node":"filesystem","output":"root-hash"}}`     |
-| `hash-offset`    | `{"rule":{"node":"filesystem","output":"hash-offset"}}`   |
-| `data-size`      | `{"rule":{"node":"filesystem","output":"data-size"}}`     |
+<dl class="reference-list">
+
+<dt>
+
+`image`
+
+</dt>
+<dd>
+
+Artifact Source: `{"rule":{"node":"release","output":"image"}}`
+
+</dd>
+
+<dt>
+
+`bundle`
+
+</dt>
+<dd>
+
+Artifact Source: `{"rule":{"node":"release","output":"bundle"}}`
+
+</dd>
+
+<dt>
+
+`bundle-hash`
+
+</dt>
+<dd>
+
+Artifact Source: `{"rule":{"node":"release","output":"bundle-hash"}}`
+
+</dd>
+
+<dt>
+
+`boot-image`
+
+</dt>
+<dd>
+
+Artifact Source: `{"rule":{"node":"boot-image","output":"image"}}`
+
+</dd>
+
+<dt>
+
+`boot-signature`
+
+</dt>
+<dd>
+
+Artifact Source: `{"rule":{"node":"boot-signature","output":"signature"}}`
+
+</dd>
+
+<dt>
+
+`root-hash`
+
+</dt>
+<dd>
+
+Artifact Source: `{"rule":{"node":"filesystem","output":"root-hash"}}`
+
+</dd>
+
+<dt>
+
+`hash-offset`
+
+</dt>
+<dd>
+
+Artifact Source: `{"rule":{"node":"filesystem","output":"hash-offset"}}`
+
+</dd>
+
+<dt>
+
+`data-size`
+
+</dt>
+<dd>
+
+Artifact Source: `{"rule":{"node":"filesystem","output":"data-size"}}`
+
+</dd>
+
+</dl>
 
 ## Rule Parameters
 
@@ -175,12 +343,59 @@ boot-public-key.
 
 Default implementation: `core/sign-rpi`.
 
-| Name           | Role      | Kind | Description                                                                   |
-| -------------- | --------- | ---- | ----------------------------------------------------------------------------- |
-| `image`        | Input     | file | FAT boot.img to authenticate.                                                 |
-| `public-key`   | Input     | file | The boot-public-key input.                                                    |
-| `signing-time` | Parameter |      | Signing time as Unix seconds in a string. Empty means the build source epoch. |
-| `signature`    | Output    | file | Raspberry Pi RSA-2048 boot.sig.                                               |
+<dl class="reference-list">
+
+<dt>
+
+Input `image`
+
+</dt>
+<dd>
+
+Kind: file
+
+FAT boot.img to authenticate.
+
+</dd>
+
+<dt>
+
+Input `public-key`
+
+</dt>
+<dd>
+
+Kind: file
+
+The boot-public-key input.
+
+</dd>
+
+<dt>
+
+Parameter `signing-time`
+
+</dt>
+<dd>
+
+Signing time as Unix seconds in a string. Empty means the build source epoch.
+
+</dd>
+
+<dt>
+
+Output `signature`
+
+</dt>
+<dd>
+
+Kind: file
+
+Raspberry Pi RSA-2048 boot.sig.
+
+</dd>
+
+</dl>
 
 ### `bundle-signer`
 
@@ -189,12 +404,59 @@ against bundle-certificate.
 
 Default implementation: `core/sign-cms`.
 
-| Name           | Role      | Kind | Description                                                                      |
-| -------------- | --------- | ---- | -------------------------------------------------------------------------------- |
-| `content`      | Input     | file | Signed bundle metadata.                                                          |
-| `certificate`  | Input     | file | The bundle-certificate input.                                                    |
-| `signing-time` | Parameter |      | Signing time as Unix seconds in a string. Empty means the build source epoch.    |
-| `signature`    | Output    | file | DER-encoded CMS SignedData with the encapsulated content and signer certificate. |
+<dl class="reference-list">
+
+<dt>
+
+Input `content`
+
+</dt>
+<dd>
+
+Kind: file
+
+Signed bundle metadata.
+
+</dd>
+
+<dt>
+
+Input `certificate`
+
+</dt>
+<dd>
+
+Kind: file
+
+The bundle-certificate input.
+
+</dd>
+
+<dt>
+
+Parameter `signing-time`
+
+</dt>
+<dd>
+
+Signing time as Unix seconds in a string. Empty means the build source epoch.
+
+</dd>
+
+<dt>
+
+Output `signature`
+
+</dt>
+<dd>
+
+Kind: file
+
+DER-encoded CMS SignedData with the encapsulated content and signer certificate.
+
+</dd>
+
+</dl>
 
 ## Execution
 

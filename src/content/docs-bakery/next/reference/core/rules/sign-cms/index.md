@@ -9,14 +9,39 @@ Create a CMS signature with an RSA key.
 
 ## Inputs
 
-| Name          | Kind | Description                                     |
-| ------------- | ---- | ----------------------------------------------- |
-| `content`     | file | Content to sign. The signature encapsulates it. |
-| `certificate` | file | PEM-encoded RSA X.509 signer certificate.       |
+<dl class="reference-list">
+
+<dt>
+
+`content`
+
+</dt>
+<dd>
+
+Kind: file
+
+Content to sign. The signature encapsulates it.
+
+</dd>
+
+<dt>
+
+`certificate`
+
+</dt>
+<dd>
+
+Kind: file
+
+PEM-encoded RSA X.509 signer certificate.
+
+</dd>
+
+</dl>
 
 ## Parameters
 
-<dl class="parameter-list">
+<dl class="reference-list">
 
 <dt>
 
@@ -36,9 +61,22 @@ source epoch.
 
 ## Outputs
 
-| Name        | Kind | Description                                                                      |
-| ----------- | ---- | -------------------------------------------------------------------------------- |
-| `signature` | file | DER-encoded CMS SignedData with the encapsulated content and signer certificate. |
+<dl class="reference-list">
+
+<dt>
+
+`signature`
+
+</dt>
+<dd>
+
+Kind: file
+
+DER-encoded CMS SignedData with the encapsulated content and signer certificate.
+
+</dd>
+
+</dl>
 
 ## Secrets
 
@@ -46,11 +84,42 @@ Required secret bindings: `key`. Secret changes invalidate cached outputs.
 
 ## Execution
 
-| Setting      | Value        |
-| ------------ | ------------ |
-| Environment  | Rugix Bakery |
-| Source epoch | Consumed     |
-| Output cache | Allowed      |
+<dl class="reference-list">
+
+<dt>
+
+Environment
+
+</dt>
+<dd>
+
+Rugix Bakery
+
+</dd>
+
+<dt>
+
+Source epoch
+
+</dt>
+<dd>
+
+Consumed
+
+</dd>
+
+<dt>
+
+Output cache
+
+</dt>
+<dd>
+
+Allowed
+
+</dd>
+
+</dl>
 
 ## Behavior
 

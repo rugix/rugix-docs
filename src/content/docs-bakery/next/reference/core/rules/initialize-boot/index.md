@@ -9,14 +9,39 @@ Install Rugix boot-flow files into boot and configuration trees.
 
 ## Inputs
 
-| Name     | Kind      | Description                           |
-| -------- | --------- | ------------------------------------- |
-| `boot`   | directory | Boot filesystem source tree.          |
-| `config` | directory | Configuration filesystem source tree. |
+<dl class="reference-list">
+
+<dt>
+
+`boot`
+
+</dt>
+<dd>
+
+Kind: directory
+
+Boot filesystem source tree.
+
+</dd>
+
+<dt>
+
+`config`
+
+</dt>
+<dd>
+
+Kind: directory
+
+Configuration filesystem source tree.
+
+</dd>
+
+</dl>
 
 ## Parameters
 
-<dl class="parameter-list">
+<dl class="reference-list">
 
 <dt>
 
@@ -48,18 +73,74 @@ Target architecture.
 
 ## Outputs
 
-| Name     | Kind      | Description                                                     |
-| -------- | --------- | --------------------------------------------------------------- |
-| `boot`   | directory | Initialized boot tree.                                          |
-| `config` | directory | Bootloader, firmware, and initial boot-selection configuration. |
+<dl class="reference-list">
+
+<dt>
+
+`boot`
+
+</dt>
+<dd>
+
+Kind: directory
+
+Initialized boot tree.
+
+</dd>
+
+<dt>
+
+`config`
+
+</dt>
+<dd>
+
+Kind: directory
+
+Bootloader, firmware, and initial boot-selection configuration.
+
+</dd>
+
+</dl>
 
 ## Execution
 
-| Setting      | Value        |
-| ------------ | ------------ |
-| Environment  | Rugix Bakery |
-| Source epoch | Consumed     |
-| Output cache | Allowed      |
+<dl class="reference-list">
+
+<dt>
+
+Environment
+
+</dt>
+<dd>
+
+Rugix Bakery
+
+</dd>
+
+<dt>
+
+Source epoch
+
+</dt>
+<dd>
+
+Consumed
+
+</dd>
+
+<dt>
+
+Output cache
+
+</dt>
+<dd>
+
+Allowed
+
+</dd>
+
+</dl>
 
 Initialize one of Rugix's predefined boot flows before sizing or creating its
 filesystems. The rule copies both input trees, installs bootloader or firmware

@@ -10,13 +10,26 @@ Archive a directory tree while preserving Linux filesystem metadata.
 
 ## Inputs
 
-| Name   | Kind      | Description                                                               |
-| ------ | --------- | ------------------------------------------------------------------------- |
-| `tree` | directory | Directory tree including ownership, links, ACLs, and extended attributes. |
+<dl class="reference-list">
+
+<dt>
+
+`tree`
+
+</dt>
+<dd>
+
+Kind: directory
+
+Directory tree including ownership, links, ACLs, and extended attributes.
+
+</dd>
+
+</dl>
 
 ## Parameters
 
-<dl class="parameter-list">
+<dl class="reference-list">
 
 <dt>
 
@@ -36,17 +49,61 @@ source date.
 
 ## Outputs
 
-| Name      | Kind | Description                                           |
-| --------- | ---- | ----------------------------------------------------- |
-| `archive` | file | Sorted PAX archive with normalized volatile metadata. |
+<dl class="reference-list">
+
+<dt>
+
+`archive`
+
+</dt>
+<dd>
+
+Kind: file
+
+Sorted PAX archive with normalized volatile metadata.
+
+</dd>
+
+</dl>
 
 ## Execution
 
-| Setting      | Value        |
-| ------------ | ------------ |
-| Environment  | Rugix Bakery |
-| Source epoch | Consumed     |
-| Output cache | Allowed      |
+<dl class="reference-list">
+
+<dt>
+
+Environment
+
+</dt>
+<dd>
+
+Rugix Bakery
+
+</dd>
+
+<dt>
+
+Source epoch
+
+</dt>
+<dd>
+
+Consumed
+
+</dd>
+
+<dt>
+
+Output cache
+
+</dt>
+<dd>
+
+Allowed
+
+</dd>
+
+</dl>
 
 Create a sorted PAX tar archive of a filesystem tree. The archive preserves
 ownership, permissions, hard links, symlinks, device nodes, ACLs, and extended

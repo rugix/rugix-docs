@@ -14,14 +14,48 @@ default is used when no matching architecture override exists.
 
 ### Default
 
-| Setting    | Value              |
-| ---------- | ------------------ |
-| Root layer | Yes                |
-| Recipes    | `alpine-bootstrap` |
+<dl class="reference-list">
 
-| Recipe             | Parameter | Value    |
-| ------------------ | --------- | -------- |
-| `alpine-bootstrap` | `version` | `"3.20"` |
+<dt>
+
+Root layer
+
+</dt>
+<dd>
+
+Yes
+
+</dd>
+
+<dt>
+
+Recipes
+
+</dt>
+<dd>
+
+`alpine-bootstrap`
+
+</dd>
+
+</dl>
+
+<dl class="reference-list">
+
+<dt>
+
+Recipe `alpine-bootstrap`
+
+</dt>
+<dd>
+
+Parameter: `version`
+
+Value: `"3.20"`
+
+</dd>
+
+</dl>
 
 ## Behavior
 

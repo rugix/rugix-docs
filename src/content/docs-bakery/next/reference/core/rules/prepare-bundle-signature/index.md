@@ -9,23 +9,80 @@ Extract the metadata that a Rugix bundle signature covers.
 
 ## Inputs
 
-| Name     | Kind | Description                  |
-| -------- | ---- | ---------------------------- |
-| `bundle` | file | Rugix update bundle to sign. |
+<dl class="reference-list">
+
+<dt>
+
+`bundle`
+
+</dt>
+<dd>
+
+Kind: file
+
+Rugix update bundle to sign.
+
+</dd>
+
+</dl>
 
 ## Outputs
 
-| Name       | Kind | Description                                        |
-| ---------- | ---- | -------------------------------------------------- |
-| `metadata` | file | Signed metadata containing the bundle header hash. |
+<dl class="reference-list">
+
+<dt>
+
+`metadata`
+
+</dt>
+<dd>
+
+Kind: file
+
+Signed metadata containing the bundle header hash.
+
+</dd>
+
+</dl>
 
 ## Execution
 
-| Setting      | Value        |
-| ------------ | ------------ |
-| Environment  | Rugix Bakery |
-| Source epoch | Ignored      |
-| Output cache | Allowed      |
+<dl class="reference-list">
+
+<dt>
+
+Environment
+
+</dt>
+<dd>
+
+Rugix Bakery
+
+</dd>
+
+<dt>
+
+Source epoch
+
+</dt>
+<dd>
+
+Ignored
+
+</dd>
+
+<dt>
+
+Output cache
+
+</dt>
+<dd>
+
+Allowed
+
+</dd>
+
+</dl>
 
 ## Behavior
 

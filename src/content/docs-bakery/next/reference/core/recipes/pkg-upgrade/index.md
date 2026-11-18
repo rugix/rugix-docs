@@ -16,10 +16,31 @@ No artifact inputs.
 
 ## Scheduling
 
-| Setting      | Value        |
-| ------------ | ------------ |
-| Priority     | `899900`     |
-| Dependencies | `pkg-update` |
+<dl class="reference-list">
+
+<dt>
+
+Priority
+
+</dt>
+<dd>
+
+`899900`
+
+</dd>
+
+<dt>
+
+Dependencies
+
+</dt>
+<dd>
+
+`pkg-update`
+
+</dd>
+
+</dl>
 
 Higher priorities run first within the selected recipe set unless `before` or
 `after` constraints require otherwise. Dependencies include other recipes

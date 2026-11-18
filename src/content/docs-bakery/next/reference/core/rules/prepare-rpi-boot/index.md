@@ -12,27 +12,134 @@ Pi.
 
 ## Inputs
 
-| Name      | Kind      | Description                                                                                  |
-| --------- | --------- | -------------------------------------------------------------------------------------------- |
-| `config`  | file      | Firmware config.txt selecting kernel8.img and initrd, including any board-specific settings. |
-| `boot`    | directory | Raspberry Pi firmware tree containing start4.elf, fixup4.dat, DTBs, and overlays.            |
-| `kernel`  | file      | ARM64 Linux kernel image.                                                                    |
-| `initrd`  | file      | Initrd implementing the verified-root boot contract.                                         |
-| `cmdline` | file      | Authenticated kernel command line.                                                           |
+<dl class="reference-list">
+
+<dt>
+
+`config`
+
+</dt>
+<dd>
+
+Kind: file
+
+Firmware config.txt selecting kernel8.img and initrd, including any
+board-specific settings.
+
+</dd>
+
+<dt>
+
+`boot`
+
+</dt>
+<dd>
+
+Kind: directory
+
+Raspberry Pi firmware tree containing start4.elf, fixup4.dat, DTBs, and
+overlays.
+
+</dd>
+
+<dt>
+
+`kernel`
+
+</dt>
+<dd>
+
+Kind: file
+
+ARM64 Linux kernel image.
+
+</dd>
+
+<dt>
+
+`initrd`
+
+</dt>
+<dd>
+
+Kind: file
+
+Initrd implementing the verified-root boot contract.
+
+</dd>
+
+<dt>
+
+`cmdline`
+
+</dt>
+<dd>
+
+Kind: file
+
+Authenticated kernel command line.
+
+</dd>
+
+</dl>
 
 ## Outputs
 
-| Name   | Kind      | Description                          |
-| ------ | --------- | ------------------------------------ |
-| `tree` | directory | Contents of the signed boot ramdisk. |
+<dl class="reference-list">
+
+<dt>
+
+`tree`
+
+</dt>
+<dd>
+
+Kind: directory
+
+Contents of the signed boot ramdisk.
+
+</dd>
+
+</dl>
 
 ## Execution
 
-| Setting      | Value        |
-| ------------ | ------------ |
-| Environment  | Rugix Bakery |
-| Source epoch | Consumed     |
-| Output cache | Allowed      |
+<dl class="reference-list">
+
+<dt>
+
+Environment
+
+</dt>
+<dd>
+
+Rugix Bakery
+
+</dd>
+
+<dt>
+
+Source epoch
+
+</dt>
+<dd>
+
+Consumed
+
+</dd>
+
+<dt>
+
+Output cache
+
+</dt>
+<dd>
+
+Allowed
+
+</dd>
+
+</dl>
 
 ## Behavior
 

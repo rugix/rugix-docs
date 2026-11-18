@@ -10,23 +10,80 @@ Initialize Raspberry Pi A/B tryboot selection and Rugix bootstrap.
 
 ## Inputs
 
-| Name     | Kind      | Description                                         |
-| -------- | --------- | --------------------------------------------------- |
-| `config` | directory | Layer configuration partition contents to preserve. |
+<dl class="reference-list">
+
+<dt>
+
+`config`
+
+</dt>
+<dd>
+
+Kind: directory
+
+Layer configuration partition contents to preserve.
+
+</dd>
+
+</dl>
 
 ## Outputs
 
-| Name     | Kind      | Description                                  |
-| -------- | --------- | -------------------------------------------- |
-| `config` | directory | Mutable tryboot selector partition contents. |
+<dl class="reference-list">
+
+<dt>
+
+`config`
+
+</dt>
+<dd>
+
+Kind: directory
+
+Mutable tryboot selector partition contents.
+
+</dd>
+
+</dl>
 
 ## Execution
 
-| Setting      | Value        |
-| ------------ | ------------ |
-| Environment  | Rugix Bakery |
-| Source epoch | Consumed     |
-| Output cache | Allowed      |
+<dl class="reference-list">
+
+<dt>
+
+Environment
+
+</dt>
+<dd>
+
+Rugix Bakery
+
+</dd>
+
+<dt>
+
+Source epoch
+
+</dt>
+<dd>
+
+Consumed
+
+</dd>
+
+<dt>
+
+Output cache
+
+</dt>
+<dd>
+
+Allowed
+
+</dd>
+
+</dl>
 
 ## Behavior
 

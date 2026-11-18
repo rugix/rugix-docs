@@ -13,10 +13,31 @@ No artifact inputs.
 
 ## Scheduling
 
-| Setting      | Value         |
-| ------------ | ------------- |
-| Priority     | `900000`      |
-| Dependencies | `pkg-cleanup` |
+<dl class="reference-list">
+
+<dt>
+
+Priority
+
+</dt>
+<dd>
+
+`900000`
+
+</dd>
+
+<dt>
+
+Dependencies
+
+</dt>
+<dd>
+
+`pkg-cleanup`
+
+</dd>
+
+</dl>
 
 Higher priorities run first within the selected recipe set unless `before` or
 `after` constraints require otherwise. Dependencies include other recipes

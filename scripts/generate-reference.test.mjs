@@ -65,6 +65,18 @@ test("repository catalogs generate reference pages and detect or remove stale ge
         execution: { type: "graph", rules: {}, outputs: {} },
       },
     })
+    rule.definitions.push({
+      name: "vendor/run",
+      definition: {
+        execution: {
+          type: "run",
+          env: "tools",
+          cache: false,
+          "uses-source-date-epoch": false,
+          outputs: { image: { kind: "file", description: "Generated image." } },
+        },
+      },
+    })
     const recipe = {
       kind: "recipe",
       definitions: [
@@ -134,31 +146,49 @@ test("repository catalogs generate reference pages and detect or remove stale ge
     await access(join(output, "rules/index/index.md"))
     const page = await readFile(join(output, "rules/compose/index.md"), "utf8")
     for (const expected of [
-      '<dl class="parameter-list">',
+      '<dl class="reference-list">',
       "<dt>\n\n`required`\n\n</dt>\n<dd>\n\n**Required**\n\nMust be supplied.\n\n</dd>",
       "Default: `false`",
       "Default: `0`",
       'Default: `""`',
-      "Assets \\| resources",
+      "Assets | resources",
       "## Usage",
       "[Related](../index/#usage)",
       "Artifact Source",
       "## Rule Parameters",
       "Default implementation: `sign`.",
       "Default bindings",
-      "| `signing-time` | Parameter |",
+      "Parameter `signing-time`\n\n</dt>",
     ]) {
       assert.ok(page.includes(expected), expected)
     }
-    assert.match(page, /\| Name +\| Kind +\| Default +\| Description +\|/)
-    assert.match(page, /\| `assets` +\| directory +\| `\{"tree":\{\}\}` +\|/)
+    assert.ok(
+      page.includes(
+        '`assets`\n\n</dt>\n<dd>\n\nKind: directory\n\nDefault: `{"tree":{}}`\n\nAssets | resources',
+      ),
+    )
+    assert.ok(page.includes('Artifact Source: `{"input":"source"}`'))
+    assert.doesNotMatch(page, /^\|/m)
+    const runPage = await readFile(join(output, "rules/run/index.md"), "utf8")
+    for (const expected of [
+      "`image`\n\n</dt>\n<dd>\n\nKind: file\n\nGenerated image.",
+      "Environment\n\n</dt>\n<dd>\n\n`vendor/tools`",
+      "Source epoch\n\n</dt>\n<dd>\n\nIgnored",
+      "Output cache\n\n</dt>\n<dd>\n\nDisabled",
+    ])
+      assert.ok(runPage.includes(expected), expected)
+    assert.doesNotMatch(runPage, /^\|/m)
     const recipePage = await readFile(
       join(output, "recipes/install/index.md"),
       "utf8",
     )
     assert.ok(recipePage.includes("Default input bindings"))
-    assert.match(recipePage, /\| After +\| `prepare`, `core\/pkg-update` +\|/)
-    assert.doesNotMatch(recipePage, /\| Before /)
+    assert.ok(
+      recipePage.includes(
+        "After\n\n</dt>\n<dd>\n\n`prepare`, `core/pkg-update`",
+      ),
+    )
+    assert.doesNotMatch(recipePage, /Before/)
     const variants = await readFile(
       join(output, "layers/base/index.md"),
       "utf8",
@@ -166,6 +196,11 @@ test("repository catalogs generate reference pages and detect or remove stale ge
     assert.ok(
       variants.includes("### Default") && variants.includes("### arm64"),
     )
+    assert.ok(variants.includes('Parameter: `mode`\n\nValue: `"arm"`'))
+    assert.doesNotMatch(variants, /^\|/m)
+    const ruleIndex = await readFile(join(output, "rules/index.md"), "utf8")
+    assert.ok(ruleIndex.includes("[`vendor/compose`](./compose/)\n\n</dt>"))
+    assert.doesNotMatch(ruleIndex, /^\|/m)
     const stale = join(output, "rules/removed.md")
     await writeFile(stale, page)
     await writeFile(join(output, "rules/authored.md"), "# Authored page\n")

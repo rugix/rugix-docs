@@ -9,24 +9,93 @@ Populate an existing disk layout with numbered partition images.
 
 ## Inputs
 
-| Name         | Kind      | Description                                                              |
-| ------------ | --------- | ------------------------------------------------------------------------ |
-| `image`      | file      | Unpopulated disk image with a partition table and optional raw firmware. |
-| `partitions` | directory | Filesystem images named by their partition numbers, such as 1 and 5.     |
+<dl class="reference-list">
+
+<dt>
+
+`image`
+
+</dt>
+<dd>
+
+Kind: file
+
+Unpopulated disk image with a partition table and optional raw firmware.
+
+</dd>
+
+<dt>
+
+`partitions`
+
+</dt>
+<dd>
+
+Kind: directory
+
+Filesystem images named by their partition numbers, such as 1 and 5.
+
+</dd>
+
+</dl>
 
 ## Outputs
 
-| Name    | Kind | Description                                                          |
-| ------- | ---- | -------------------------------------------------------------------- |
-| `image` | file | Populated disk image, preserving the input geometry and identifiers. |
+<dl class="reference-list">
+
+<dt>
+
+`image`
+
+</dt>
+<dd>
+
+Kind: file
+
+Populated disk image, preserving the input geometry and identifiers.
+
+</dd>
+
+</dl>
 
 ## Execution
 
-| Setting      | Value        |
-| ------------ | ------------ |
-| Environment  | Rugix Bakery |
-| Source epoch | Consumed     |
-| Output cache | Allowed      |
+<dl class="reference-list">
+
+<dt>
+
+Environment
+
+</dt>
+<dd>
+
+Rugix Bakery
+
+</dd>
+
+<dt>
+
+Source epoch
+
+</dt>
+<dd>
+
+Consumed
+
+</dd>
+
+<dt>
+
+Output cache
+
+</dt>
+<dd>
+
+Allowed
+
+</dd>
+
+</dl>
 
 Place independently built filesystem images into an existing disk layout. This
 rule supports GPT and MBR, including logical partitions. It preserves partition

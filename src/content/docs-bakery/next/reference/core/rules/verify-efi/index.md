@@ -12,25 +12,106 @@ image.
 
 ## Inputs
 
-| Name          | Kind | Description                                                   |
-| ------------- | ---- | ------------------------------------------------------------- |
-| `image`       | file | Unsigned PE executable that the signer received.              |
-| `signed`      | file | Signed PE executable returned by the signer.                  |
-| `certificate` | file | PEM-encoded X.509 certificate that must verify the signature. |
+<dl class="reference-list">
+
+<dt>
+
+`image`
+
+</dt>
+<dd>
+
+Kind: file
+
+Unsigned PE executable that the signer received.
+
+</dd>
+
+<dt>
+
+`signed`
+
+</dt>
+<dd>
+
+Kind: file
+
+Signed PE executable returned by the signer.
+
+</dd>
+
+<dt>
+
+`certificate`
+
+</dt>
+<dd>
+
+Kind: file
+
+PEM-encoded X.509 certificate that must verify the signature.
+
+</dd>
+
+</dl>
 
 ## Outputs
 
-| Name    | Kind | Description                                                  |
-| ------- | ---- | ------------------------------------------------------------ |
-| `image` | file | Unsigned PE executable with the verified signature attached. |
+<dl class="reference-list">
+
+<dt>
+
+`image`
+
+</dt>
+<dd>
+
+Kind: file
+
+Unsigned PE executable with the verified signature attached.
+
+</dd>
+
+</dl>
 
 ## Execution
 
-| Setting      | Value        |
-| ------------ | ------------ |
-| Environment  | Rugix Bakery |
-| Source epoch | Ignored      |
-| Output cache | Allowed      |
+<dl class="reference-list">
+
+<dt>
+
+Environment
+
+</dt>
+<dd>
+
+Rugix Bakery
+
+</dd>
+
+<dt>
+
+Source epoch
+
+</dt>
+<dd>
+
+Ignored
+
+</dd>
+
+<dt>
+
+Output cache
+
+</dt>
+<dd>
+
+Allowed
+
+</dd>
+
+</dl>
 
 ## Behavior
 

@@ -6,21 +6,25 @@
 @import "@silitics/astro-docs/styles.css";
 @import "@silitics/astro-schema-viewer/styles.css";
 
-/* Stacked reference entries leave parameter names the full content width. */
-.docs-prose .parameter-list dt {
+/* Long artifact URLs and bindings must fit narrow documentation layouts. */
+.docs-prose .reference-list {
+  overflow-wrap: anywhere;
+}
+
+.docs-prose .reference-list dt {
   margin-top: 1.5rem;
   font-weight: 600;
 }
 
-.docs-prose .parameter-list dt p {
+.docs-prose .reference-list dt p {
   margin: 0;
 }
 
-.docs-prose .parameter-list dd {
+.docs-prose .reference-list dd {
   margin: 0.5rem 0 1.5rem 1rem;
 }
 
-.docs-prose .parameter-list dd p {
+.docs-prose .reference-list dd p {
   margin: 0.5rem 0;
 }
 

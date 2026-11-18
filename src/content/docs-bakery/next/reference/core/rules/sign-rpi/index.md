@@ -10,14 +10,39 @@ Sign a Raspberry Pi boot image with the pinned upstream signing tool.
 
 ## Inputs
 
-| Name         | Kind | Description                                               |
-| ------------ | ---- | --------------------------------------------------------- |
-| `image`      | file | FAT boot.img to authenticate.                             |
-| `public-key` | file | PEM-encoded RSA-2048 public key matching the private key. |
+<dl class="reference-list">
+
+<dt>
+
+`image`
+
+</dt>
+<dd>
+
+Kind: file
+
+FAT boot.img to authenticate.
+
+</dd>
+
+<dt>
+
+`public-key`
+
+</dt>
+<dd>
+
+Kind: file
+
+PEM-encoded RSA-2048 public key matching the private key.
+
+</dd>
+
+</dl>
 
 ## Parameters
 
-<dl class="parameter-list">
+<dl class="reference-list">
 
 <dt>
 
@@ -36,9 +61,22 @@ Timestamp in the signature as Unix seconds. Empty uses the build source epoch.
 
 ## Outputs
 
-| Name        | Kind | Description                               |
-| ----------- | ---- | ----------------------------------------- |
-| `signature` | file | Verified Raspberry Pi RSA-2048 signature. |
+<dl class="reference-list">
+
+<dt>
+
+`signature`
+
+</dt>
+<dd>
+
+Kind: file
+
+Verified Raspberry Pi RSA-2048 signature.
+
+</dd>
+
+</dl>
 
 ## Secrets
 
@@ -46,11 +84,42 @@ Required secret bindings: `key`. Secret changes invalidate cached outputs.
 
 ## Execution
 
-| Setting      | Value        |
-| ------------ | ------------ |
-| Environment  | Rugix Bakery |
-| Source epoch | Consumed     |
-| Output cache | Allowed      |
+<dl class="reference-list">
+
+<dt>
+
+Environment
+
+</dt>
+<dd>
+
+Rugix Bakery
+
+</dd>
+
+<dt>
+
+Source epoch
+
+</dt>
+<dd>
+
+Consumed
+
+</dd>
+
+<dt>
+
+Output cache
+
+</dt>
+<dd>
+
+Allowed
+
+</dd>
+
+</dl>
 
 ## Behavior
 

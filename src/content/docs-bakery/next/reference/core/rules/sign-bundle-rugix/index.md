@@ -10,14 +10,40 @@ Authenticate a Rugix bundle with a configurable signing certificate.
 
 ## Inputs
 
-| Name          | Kind | Description                                                                                                                                    |
-| ------------- | ---- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| `bundle`      | file | Existing Rugix update bundle to authenticate.                                                                                                  |
-| `certificate` | file | Single PEM-encoded X.509 end-entity signer certificate issued directly by the trusted root. No intermediates. The default signer requires RSA. |
+<dl class="reference-list">
+
+<dt>
+
+`bundle`
+
+</dt>
+<dd>
+
+Kind: file
+
+Existing Rugix update bundle to authenticate.
+
+</dd>
+
+<dt>
+
+`certificate`
+
+</dt>
+<dd>
+
+Kind: file
+
+Single PEM-encoded X.509 end-entity signer certificate issued directly by the
+trusted root. No intermediates. The default signer requires RSA.
+
+</dd>
+
+</dl>
 
 ## Parameters
 
-<dl class="parameter-list">
+<dl class="reference-list">
 
 <dt>
 
@@ -37,10 +63,31 @@ default signer accepts 0..2524607999.
 
 ## Outputs
 
-| Name     | Artifact Source                                |
-| -------- | ---------------------------------------------- |
-| `bundle` | `{"rule":{"node":"signed","output":"bundle"}}` |
-| `hash`   | `{"rule":{"node":"signed","output":"hash"}}`   |
+<dl class="reference-list">
+
+<dt>
+
+`bundle`
+
+</dt>
+<dd>
+
+Artifact Source: `{"rule":{"node":"signed","output":"bundle"}}`
+
+</dd>
+
+<dt>
+
+`hash`
+
+</dt>
+<dd>
+
+Artifact Source: `{"rule":{"node":"signed","output":"hash"}}`
+
+</dd>
+
+</dl>
 
 ## Rule Parameters
 
@@ -55,12 +102,59 @@ against certificate.
 
 Default implementation: `core/sign-cms`.
 
-| Name           | Role      | Kind | Description                                                                      |
-| -------------- | --------- | ---- | -------------------------------------------------------------------------------- |
-| `content`      | Input     | file | Signed bundle metadata.                                                          |
-| `certificate`  | Input     | file | Signer certificate that must verify the signature.                               |
-| `signing-time` | Parameter |      | Signing time as Unix seconds in a string. Empty means the build source epoch.    |
-| `signature`    | Output    | file | DER-encoded CMS SignedData with the encapsulated content and signer certificate. |
+<dl class="reference-list">
+
+<dt>
+
+Input `content`
+
+</dt>
+<dd>
+
+Kind: file
+
+Signed bundle metadata.
+
+</dd>
+
+<dt>
+
+Input `certificate`
+
+</dt>
+<dd>
+
+Kind: file
+
+Signer certificate that must verify the signature.
+
+</dd>
+
+<dt>
+
+Parameter `signing-time`
+
+</dt>
+<dd>
+
+Signing time as Unix seconds in a string. Empty means the build source epoch.
+
+</dd>
+
+<dt>
+
+Output `signature`
+
+</dt>
+<dd>
+
+Kind: file
+
+DER-encoded CMS SignedData with the encapsulated content and signer certificate.
+
+</dd>
+
+</dl>
 
 ## Execution
 

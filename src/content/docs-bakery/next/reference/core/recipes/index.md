@@ -9,64 +9,315 @@ Root filesystem customizations supplied by this repository.
 
 ## Base Systems
 
-| Name                                           | Description                                         |
-| ---------------------------------------------- | --------------------------------------------------- |
-| [`core/alpine-bootstrap`](./alpine-bootstrap/) | Bootstrap an Alpine Linux root filesystem.          |
-| [`core/debian-bootstrap`](./debian-bootstrap/) | Bootstrap a Debian root filesystem with mmdebstrap. |
+<dl class="reference-list">
+
+<dt>
+
+[`core/alpine-bootstrap`](./alpine-bootstrap/)
+
+</dt>
+<dd>
+
+Bootstrap an Alpine Linux root filesystem.
+
+</dd>
+
+<dt>
+
+[`core/debian-bootstrap`](./debian-bootstrap/)
+
+</dt>
+<dd>
+
+Bootstrap a Debian root filesystem with mmdebstrap.
+
+</dd>
+
+</dl>
 
 ## Boot Setup
 
-| Name                                                   | Description                                                          |
-| ------------------------------------------------------ | -------------------------------------------------------------------- |
-| [`core/alpine-grub-setup`](./alpine-grub-setup/)       | Prepare Alpine Linux for the generic GRUB targets.                   |
-| [`core/debian-grub-setup`](./debian-grub-setup/)       | Prepare Debian for the generic GRUB targets.                         |
-| [`core/rpi-alpine-setup`](./rpi-alpine-setup/)         | Prepare Alpine Linux for Raspberry Pi boot.                          |
-| [`core/rpi-debian-setup`](./rpi-debian-setup/)         | Prepare Debian for Raspberry Pi boot.                                |
-| [`core/rpi-include-firmware`](./rpi-include-firmware/) | Include a Raspberry Pi EEPROM update in the configuration partition. |
-| [`core/rpi-raspios-cleanup`](./rpi-raspios-cleanup/)   | Remove Raspberry Pi OS first-boot setup that conflicts with Rugix.   |
-| [`core/rpi-raspios-setup`](./rpi-raspios-setup/)       | Adapt Raspberry Pi OS for Rugix.                                     |
-| [`core/rpi-uboot-setup`](./rpi-uboot-setup/)           | Copy the second-stage U-Boot script into the boot tree.              |
+<dl class="reference-list">
+
+<dt>
+
+[`core/alpine-grub-setup`](./alpine-grub-setup/)
+
+</dt>
+<dd>
+
+Prepare Alpine Linux for the generic GRUB targets.
+
+</dd>
+
+<dt>
+
+[`core/debian-grub-setup`](./debian-grub-setup/)
+
+</dt>
+<dd>
+
+Prepare Debian for the generic GRUB targets.
+
+</dd>
+
+<dt>
+
+[`core/rpi-alpine-setup`](./rpi-alpine-setup/)
+
+</dt>
+<dd>
+
+Prepare Alpine Linux for Raspberry Pi boot.
+
+</dd>
+
+<dt>
+
+[`core/rpi-debian-setup`](./rpi-debian-setup/)
+
+</dt>
+<dd>
+
+Prepare Debian for Raspberry Pi boot.
+
+</dd>
+
+<dt>
+
+[`core/rpi-include-firmware`](./rpi-include-firmware/)
+
+</dt>
+<dd>
+
+Include a Raspberry Pi EEPROM update in the configuration partition.
+
+</dd>
+
+<dt>
+
+[`core/rpi-raspios-cleanup`](./rpi-raspios-cleanup/)
+
+</dt>
+<dd>
+
+Remove Raspberry Pi OS first-boot setup that conflicts with Rugix.
+
+</dd>
+
+<dt>
+
+[`core/rpi-raspios-setup`](./rpi-raspios-setup/)
+
+</dt>
+<dd>
+
+Adapt Raspberry Pi OS for Rugix.
+
+</dd>
+
+<dt>
+
+[`core/rpi-uboot-setup`](./rpi-uboot-setup/)
+
+</dt>
+<dd>
+
+Copy the second-stage U-Boot script into the boot tree.
+
+</dd>
+
+</dl>
 
 ## Device Lifecycle
 
-| Name                                             | Description                                               |
-| ------------------------------------------------ | --------------------------------------------------------- |
-| [`core/rugix-ctrl`](./rugix-ctrl/)               | Install and configure Rugix Ctrl.                         |
-| [`core/rugix-ctrl-daemon`](./rugix-ctrl-daemon/) | Install and configure the privileged Rugix Ctrl daemon.   |
-| [`core/rugpi-auto-commit`](./rugpi-auto-commit/) | Commit the active Rugix system automatically during boot. |
+<dl class="reference-list">
+
+<dt>
+
+[`core/rugix-ctrl`](./rugix-ctrl/)
+
+</dt>
+<dd>
+
+Install and configure Rugix Ctrl.
+
+</dd>
+
+<dt>
+
+[`core/rugix-ctrl-daemon`](./rugix-ctrl-daemon/)
+
+</dt>
+<dd>
+
+Install and configure the privileged Rugix Ctrl daemon.
+
+</dd>
+
+<dt>
+
+[`core/rugpi-auto-commit`](./rugpi-auto-commit/)
+
+</dt>
+<dd>
+
+Commit the active Rugix system automatically during boot.
+
+</dd>
+
+</dl>
 
 ## Networking
 
-| Name                                       | Description                                              |
-| ------------------------------------------ | -------------------------------------------------------- |
-| [`core/eth0-static-ip`](./eth0-static-ip/) | Configure a static IPv4 address for eth0 using ifupdown. |
-| [`core/ssh`](./ssh/)                       | Enable SSH and persist host keys.                        |
+<dl class="reference-list">
+
+<dt>
+
+[`core/eth0-static-ip`](./eth0-static-ip/)
+
+</dt>
+<dd>
+
+Configure a static IPv4 address for eth0 using ifupdown.
+
+</dd>
+
+<dt>
+
+[`core/ssh`](./ssh/)
+
+</dt>
+<dd>
+
+Enable SSH and persist host keys.
+
+</dd>
+
+</dl>
 
 ## Package Management
 
-| Name                                 | Description                                                                        |
-| ------------------------------------ | ---------------------------------------------------------------------------------- |
-| [`core/pkg-cleanup`](./pkg-cleanup/) | Clean package caches and package lists.                                            |
-| [`core/pkg-update`](./pkg-update/)   | Refresh package lists before installing packages.                                  |
-| [`core/pkg-upgrade`](./pkg-upgrade/) | Upgrade installed packages to the versions available from configured repositories. |
+<dl class="reference-list">
+
+<dt>
+
+[`core/pkg-cleanup`](./pkg-cleanup/)
+
+</dt>
+<dd>
+
+Clean package caches and package lists.
+
+</dd>
+
+<dt>
+
+[`core/pkg-update`](./pkg-update/)
+
+</dt>
+<dd>
+
+Refresh package lists before installing packages.
+
+</dd>
+
+<dt>
+
+[`core/pkg-upgrade`](./pkg-upgrade/)
+
+</dt>
+<dd>
+
+Upgrade installed packages to the versions available from configured
+repositories.
+
+</dd>
+
+</dl>
 
 ## State Persistence
 
-| Name                                                   | Description                                                   |
-| ------------------------------------------------------ | ------------------------------------------------------------- |
-| [`core/persist-fake-hwclock`](./persist-fake-hwclock/) | Persist the fake-hwclock state file across system updates.    |
-| [`core/persist-root-home`](./persist-root-home/)       | Persist the root user's home directory across system updates. |
+<dl class="reference-list">
+
+<dt>
+
+[`core/persist-fake-hwclock`](./persist-fake-hwclock/)
+
+</dt>
+<dd>
+
+Persist the fake-hwclock state file across system updates.
+
+</dd>
+
+<dt>
+
+[`core/persist-root-home`](./persist-root-home/)
+
+</dt>
+<dd>
+
+Persist the root user's home directory across system updates.
+
+</dd>
+
+</dl>
 
 ## System Identity
 
-| Name                                   | Description              |
-| -------------------------------------- | ------------------------ |
-| [`core/set-hostname`](./set-hostname/) | Set the system hostname. |
+<dl class="reference-list">
+
+<dt>
+
+[`core/set-hostname`](./set-hostname/)
+
+</dt>
+<dd>
+
+Set the system hostname.
+
+</dd>
+
+</dl>
 
 ## Verified Boot
 
-| Name                                                             | Description                                                                                    |
-| ---------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| [`core/debian-efi-verified-setup`](./debian-efi-verified-setup/) | Configure Debian for signed systemd-boot UKIs and verified A/B roots.                          |
-| [`core/debian-rpi-verified-setup`](./debian-rpi-verified-setup/) | Configure Raspberry Pi 4/CM4 or Pi 5 Debian systems for signed tryboot and verified A/B roots. |
-| [`core/debian-verified-root`](./debian-verified-root/)           | Install Debian initramfs hooks that verify A/B root partitions before mounting them.           |
+<dl class="reference-list">
+
+<dt>
+
+[`core/debian-efi-verified-setup`](./debian-efi-verified-setup/)
+
+</dt>
+<dd>
+
+Configure Debian for signed systemd-boot UKIs and verified A/B roots.
+
+</dd>
+
+<dt>
+
+[`core/debian-rpi-verified-setup`](./debian-rpi-verified-setup/)
+
+</dt>
+<dd>
+
+Configure Raspberry Pi 4/CM4 or Pi 5 Debian systems for signed tryboot and
+verified A/B roots.
+
+</dd>
+
+<dt>
+
+[`core/debian-verified-root`](./debian-verified-root/)
+
+</dt>
+<dd>
+
+Install Debian initramfs hooks that verify A/B root partitions before mounting
+them.
+
+</dd>
+
+</dl>

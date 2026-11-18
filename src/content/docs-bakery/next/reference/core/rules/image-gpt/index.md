@@ -9,14 +9,39 @@ Assemble a GPT disk from a Rugix layout and partition images.
 
 ## Inputs
 
-| Name         | Kind      | Description                                                            |
-| ------------ | --------- | ---------------------------------------------------------------------- |
-| `layout`     | file      | Rugix ImageLayout in JSON or TOML, with GPT partition names and sizes. |
-| `partitions` | directory | Partition image files named by partition number, such as 1 and 2.      |
+<dl class="reference-list">
+
+<dt>
+
+`layout`
+
+</dt>
+<dd>
+
+Kind: file
+
+Rugix ImageLayout in JSON or TOML, with GPT partition names and sizes.
+
+</dd>
+
+<dt>
+
+`partitions`
+
+</dt>
+<dd>
+
+Kind: directory
+
+Partition image files named by partition number, such as 1 and 2.
+
+</dd>
+
+</dl>
 
 ## Parameters
 
-<dl class="parameter-list">
+<dl class="reference-list">
 
 <dt>
 
@@ -35,17 +60,61 @@ Disk capacity in bytes. Zero sizes the disk from its partitions.
 
 ## Outputs
 
-| Name    | Kind | Description            |
-| ------- | ---- | ---------------------- |
-| `image` | file | Sparse GPT disk image. |
+<dl class="reference-list">
+
+<dt>
+
+`image`
+
+</dt>
+<dd>
+
+Kind: file
+
+Sparse GPT disk image.
+
+</dd>
+
+</dl>
 
 ## Execution
 
-| Setting      | Value        |
-| ------------ | ------------ |
-| Environment  | Rugix Bakery |
-| Source epoch | Consumed     |
-| Output cache | Allowed      |
+<dl class="reference-list">
+
+<dt>
+
+Environment
+
+</dt>
+<dd>
+
+Rugix Bakery
+
+</dd>
+
+<dt>
+
+Source epoch
+
+</dt>
+<dd>
+
+Consumed
+
+</dd>
+
+<dt>
+
+Output cache
+
+</dt>
+<dd>
+
+Allowed
+
+</dd>
+
+</dl>
 
 ## Behavior
 

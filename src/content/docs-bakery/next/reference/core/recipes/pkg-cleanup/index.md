@@ -13,7 +13,7 @@ No artifact inputs.
 
 ## Parameters
 
-<dl class="parameter-list">
+<dl class="reference-list">
 
 <dt>
 
@@ -33,10 +33,31 @@ Ignored on Alpine.
 
 ## Scheduling
 
-| Setting      | Value     |
-| ------------ | --------- |
-| Priority     | `-900000` |
-| Dependencies | None      |
+<dl class="reference-list">
+
+<dt>
+
+Priority
+
+</dt>
+<dd>
+
+`-900000`
+
+</dd>
+
+<dt>
+
+Dependencies
+
+</dt>
+<dd>
+
+None
+
+</dd>
+
+</dl>
 
 Higher priorities run first within the selected recipe set unless `before` or
 `after` constraints require otherwise. Dependencies include other recipes

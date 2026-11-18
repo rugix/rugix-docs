@@ -10,26 +10,119 @@ Verify a CMS signature over a Rugix bundle's metadata and attach it.
 
 ## Inputs
 
-| Name          | Kind | Description                                                                     |
-| ------------- | ---- | ------------------------------------------------------------------------------- |
-| `bundle`      | file | Rugix update bundle that the signature authenticates.                           |
-| `signature`   | file | DER-encoded CMS SignedData over the bundle metadata, with encapsulated content. |
-| `certificate` | file | PEM-encoded X.509 signer certificate that must verify the signature.            |
+<dl class="reference-list">
+
+<dt>
+
+`bundle`
+
+</dt>
+<dd>
+
+Kind: file
+
+Rugix update bundle that the signature authenticates.
+
+</dd>
+
+<dt>
+
+`signature`
+
+</dt>
+<dd>
+
+Kind: file
+
+DER-encoded CMS SignedData over the bundle metadata, with encapsulated content.
+
+</dd>
+
+<dt>
+
+`certificate`
+
+</dt>
+<dd>
+
+Kind: file
+
+PEM-encoded X.509 signer certificate that must verify the signature.
+
+</dd>
+
+</dl>
 
 ## Outputs
 
-| Name     | Kind | Description                          |
-| -------- | ---- | ------------------------------------ |
-| `bundle` | file | Authenticated Rugix update bundle.   |
-| `hash`   | file | Bundle hash for update verification. |
+<dl class="reference-list">
+
+<dt>
+
+`bundle`
+
+</dt>
+<dd>
+
+Kind: file
+
+Authenticated Rugix update bundle.
+
+</dd>
+
+<dt>
+
+`hash`
+
+</dt>
+<dd>
+
+Kind: file
+
+Bundle hash for update verification.
+
+</dd>
+
+</dl>
 
 ## Execution
 
-| Setting      | Value        |
-| ------------ | ------------ |
-| Environment  | Rugix Bakery |
-| Source epoch | Ignored      |
-| Output cache | Allowed      |
+<dl class="reference-list">
+
+<dt>
+
+Environment
+
+</dt>
+<dd>
+
+Rugix Bakery
+
+</dd>
+
+<dt>
+
+Source epoch
+
+</dt>
+<dd>
+
+Ignored
+
+</dd>
+
+<dt>
+
+Output cache
+
+</dt>
+<dd>
+
+Allowed
+
+</dd>
+
+</dl>
 
 ## Behavior
 

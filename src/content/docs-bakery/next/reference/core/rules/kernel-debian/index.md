@@ -9,13 +9,26 @@ Select one installed Debian kernel and its exact version.
 
 ## Inputs
 
-| Name     | Kind      | Description                                                       |
-| -------- | --------- | ----------------------------------------------------------------- |
-| `rootfs` | directory | Debian root filesystem containing boot/vmlinuz-* and lib/modules. |
+<dl class="reference-list">
+
+<dt>
+
+`rootfs`
+
+</dt>
+<dd>
+
+Kind: directory
+
+Debian root filesystem containing boot/vmlinuz-* and lib/modules.
+
+</dd>
+
+</dl>
 
 ## Parameters
 
-<dl class="parameter-list">
+<dl class="reference-list">
 
 <dt>
 
@@ -47,18 +60,74 @@ Required kernel version suffix. Empty accepts any flavor.
 
 ## Outputs
 
-| Name      | Kind | Description                      |
-| --------- | ---- | -------------------------------- |
-| `kernel`  | file | Selected kernel image.           |
-| `version` | file | Selected kernel version as text. |
+<dl class="reference-list">
+
+<dt>
+
+`kernel`
+
+</dt>
+<dd>
+
+Kind: file
+
+Selected kernel image.
+
+</dd>
+
+<dt>
+
+`version`
+
+</dt>
+<dd>
+
+Kind: file
+
+Selected kernel version as text.
+
+</dd>
+
+</dl>
 
 ## Execution
 
-| Setting      | Value        |
-| ------------ | ------------ |
-| Environment  | Rugix Bakery |
-| Source epoch | Consumed     |
-| Output cache | Allowed      |
+<dl class="reference-list">
+
+<dt>
+
+Environment
+
+</dt>
+<dd>
+
+Rugix Bakery
+
+</dd>
+
+<dt>
+
+Source epoch
+
+</dt>
+<dd>
+
+Consumed
+
+</dd>
+
+<dt>
+
+Output cache
+
+</dt>
+<dd>
+
+Allowed
+
+</dd>
+
+</dl>
 
 ## Behavior
 

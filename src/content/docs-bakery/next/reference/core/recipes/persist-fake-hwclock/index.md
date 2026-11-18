@@ -13,10 +13,31 @@ No artifact inputs.
 
 ## Scheduling
 
-| Setting      | Value    |
-| ------------ | -------- |
-| Priority     | `600000` |
-| Dependencies | None     |
+<dl class="reference-list">
+
+<dt>
+
+Priority
+
+</dt>
+<dd>
+
+`600000`
+
+</dd>
+
+<dt>
+
+Dependencies
+
+</dt>
+<dd>
+
+None
+
+</dd>
+
+</dl>
 
 Higher priorities run first within the selected recipe set unless `before` or
 `after` constraints require otherwise. Dependencies include other recipes

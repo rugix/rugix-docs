@@ -12,16 +12,75 @@ Debian root filesystem.
 
 ## Inputs
 
-| Name                 | Kind      | Default       | Description                                                                                                                                    |
-| -------------------- | --------- | ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| `rootfs`             | directory | **Required**  | Prepared root filesystem implementing the core verified-root boot contract.                                                                    |
-| `boot-certificate`   | file      | **Required**  | PEM-encoded RSA X.509 certificate for signing EFI boot artifacts.                                                                              |
-| `bundle-certificate` | file      | **Required**  | Single PEM-encoded X.509 end-entity signer certificate issued directly by the trusted root. No intermediates. The default signer requires RSA. |
-| `secure-boot-keys`   | directory | `{"tree":{}}` | Authenticated variables PK.auth, KEK.auth, and db.auth that systemd-boot enrolls in Setup Mode. Empty by default, disabling enrollment.        |
+<dl class="reference-list">
+
+<dt>
+
+`rootfs`
+
+</dt>
+<dd>
+
+Kind: directory
+
+**Required**
+
+Prepared root filesystem implementing the core verified-root boot contract.
+
+</dd>
+
+<dt>
+
+`boot-certificate`
+
+</dt>
+<dd>
+
+Kind: file
+
+**Required**
+
+PEM-encoded RSA X.509 certificate for signing EFI boot artifacts.
+
+</dd>
+
+<dt>
+
+`bundle-certificate`
+
+</dt>
+<dd>
+
+Kind: file
+
+**Required**
+
+Single PEM-encoded X.509 end-entity signer certificate issued directly by the
+trusted root. No intermediates. The default signer requires RSA.
+
+</dd>
+
+<dt>
+
+`secure-boot-keys`
+
+</dt>
+<dd>
+
+Kind: directory
+
+Default: `{"tree":{}}`
+
+Authenticated variables PK.auth, KEK.auth, and db.auth that systemd-boot enrolls
+in Setup Mode. Empty by default, disabling enrollment.
+
+</dd>
+
+</dl>
 
 ## Parameters
 
-<dl class="parameter-list">
+<dl class="reference-list">
 
 <dt>
 
@@ -159,16 +218,97 @@ ESP.
 
 ## Outputs
 
-| Name          | Artifact Source                                      |
-| ------------- | ---------------------------------------------------- |
-| `image`       | `{"rule":{"node":"release","output":"image"}}`       |
-| `bundle`      | `{"rule":{"node":"release","output":"bundle"}}`      |
-| `bundle-hash` | `{"rule":{"node":"release","output":"bundle-hash"}}` |
-| `uki`         | `{"rule":{"node":"release","output":"uki"}}`         |
-| `bootloader`  | `{"rule":{"node":"release","output":"bootloader"}}`  |
-| `root-hash`   | `{"rule":{"node":"release","output":"root-hash"}}`   |
-| `hash-offset` | `{"rule":{"node":"release","output":"hash-offset"}}` |
-| `data-size`   | `{"rule":{"node":"release","output":"data-size"}}`   |
+<dl class="reference-list">
+
+<dt>
+
+`image`
+
+</dt>
+<dd>
+
+Artifact Source: `{"rule":{"node":"release","output":"image"}}`
+
+</dd>
+
+<dt>
+
+`bundle`
+
+</dt>
+<dd>
+
+Artifact Source: `{"rule":{"node":"release","output":"bundle"}}`
+
+</dd>
+
+<dt>
+
+`bundle-hash`
+
+</dt>
+<dd>
+
+Artifact Source: `{"rule":{"node":"release","output":"bundle-hash"}}`
+
+</dd>
+
+<dt>
+
+`uki`
+
+</dt>
+<dd>
+
+Artifact Source: `{"rule":{"node":"release","output":"uki"}}`
+
+</dd>
+
+<dt>
+
+`bootloader`
+
+</dt>
+<dd>
+
+Artifact Source: `{"rule":{"node":"release","output":"bootloader"}}`
+
+</dd>
+
+<dt>
+
+`root-hash`
+
+</dt>
+<dd>
+
+Artifact Source: `{"rule":{"node":"release","output":"root-hash"}}`
+
+</dd>
+
+<dt>
+
+`hash-offset`
+
+</dt>
+<dd>
+
+Artifact Source: `{"rule":{"node":"release","output":"hash-offset"}}`
+
+</dd>
+
+<dt>
+
+`data-size`
+
+</dt>
+<dd>
+
+Artifact Source: `{"rule":{"node":"release","output":"data-size"}}`
+
+</dd>
+
+</dl>
 
 ## Rule Parameters
 
@@ -182,12 +322,59 @@ Sign an EFI executable. Bakery verifies each signature against boot-certificate.
 
 Default implementation: `core/sign-efi`.
 
-| Name           | Role      | Kind | Description                                                                   |
-| -------------- | --------- | ---- | ----------------------------------------------------------------------------- |
-| `image`        | Input     | file | Unsigned PE executable: the UKI or systemd-boot.                              |
-| `certificate`  | Input     | file | The boot-certificate input.                                                   |
-| `signing-time` | Parameter |      | Signing time as Unix seconds in a string. Empty means the build source epoch. |
-| `image`        | Output    | file | PE executable with a UEFI Secure Boot signature.                              |
+<dl class="reference-list">
+
+<dt>
+
+Input `image`
+
+</dt>
+<dd>
+
+Kind: file
+
+Unsigned PE executable: the UKI or systemd-boot.
+
+</dd>
+
+<dt>
+
+Input `certificate`
+
+</dt>
+<dd>
+
+Kind: file
+
+The boot-certificate input.
+
+</dd>
+
+<dt>
+
+Parameter `signing-time`
+
+</dt>
+<dd>
+
+Signing time as Unix seconds in a string. Empty means the build source epoch.
+
+</dd>
+
+<dt>
+
+Output `image`
+
+</dt>
+<dd>
+
+Kind: file
+
+PE executable with a UEFI Secure Boot signature.
+
+</dd>
+
+</dl>
 
 ### `bundle-signer`
 
@@ -196,12 +383,59 @@ against bundle-certificate.
 
 Default implementation: `core/sign-cms`.
 
-| Name           | Role      | Kind | Description                                                                      |
-| -------------- | --------- | ---- | -------------------------------------------------------------------------------- |
-| `content`      | Input     | file | Signed bundle metadata.                                                          |
-| `certificate`  | Input     | file | The bundle-certificate input.                                                    |
-| `signing-time` | Parameter |      | Signing time as Unix seconds in a string. Empty means the build source epoch.    |
-| `signature`    | Output    | file | DER-encoded CMS SignedData with the encapsulated content and signer certificate. |
+<dl class="reference-list">
+
+<dt>
+
+Input `content`
+
+</dt>
+<dd>
+
+Kind: file
+
+Signed bundle metadata.
+
+</dd>
+
+<dt>
+
+Input `certificate`
+
+</dt>
+<dd>
+
+Kind: file
+
+The bundle-certificate input.
+
+</dd>
+
+<dt>
+
+Parameter `signing-time`
+
+</dt>
+<dd>
+
+Signing time as Unix seconds in a string. Empty means the build source epoch.
+
+</dd>
+
+<dt>
+
+Output `signature`
+
+</dt>
+<dd>
+
+Kind: file
+
+DER-encoded CMS SignedData with the encapsulated content and signer certificate.
+
+</dd>
+
+</dl>
 
 ## Execution
 

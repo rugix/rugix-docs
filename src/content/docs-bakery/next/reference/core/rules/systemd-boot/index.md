@@ -14,7 +14,7 @@ No artifact inputs.
 
 ## Parameters
 
-<dl class="parameter-list">
+<dl class="reference-list">
 
 <dt>
 
@@ -33,17 +33,61 @@ Target architecture: amd64 or arm64. Must match the installed EFI artifacts.
 
 ## Outputs
 
-| Name    | Kind | Description                                                         |
-| ------- | ---- | ------------------------------------------------------------------- |
-| `image` | file | Unsigned systemd-boot EFI executable for the selected architecture. |
+<dl class="reference-list">
+
+<dt>
+
+`image`
+
+</dt>
+<dd>
+
+Kind: file
+
+Unsigned systemd-boot EFI executable for the selected architecture.
+
+</dd>
+
+</dl>
 
 ## Execution
 
-| Setting      | Value        |
-| ------------ | ------------ |
-| Environment  | Rugix Bakery |
-| Source epoch | Consumed     |
-| Output cache | Allowed      |
+<dl class="reference-list">
+
+<dt>
+
+Environment
+
+</dt>
+<dd>
+
+Rugix Bakery
+
+</dd>
+
+<dt>
+
+Source epoch
+
+</dt>
+<dd>
+
+Consumed
+
+</dd>
+
+<dt>
+
+Output cache
+
+</dt>
+<dd>
+
+Allowed
+
+</dd>
+
+</dl>
 
 ## Behavior
 

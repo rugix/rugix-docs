@@ -13,7 +13,7 @@ No artifact inputs.
 
 ## Parameters
 
-<dl class="parameter-list">
+<dl class="reference-list">
 
 <dt>
 
@@ -32,10 +32,31 @@ Alpine release series, such as 3.20. The recipe downloads its .0 minirootfs.
 
 ## Scheduling
 
-| Setting      | Value         |
-| ------------ | ------------- |
-| Priority     | `10000000`    |
-| Dependencies | `pkg-cleanup` |
+<dl class="reference-list">
+
+<dt>
+
+Priority
+
+</dt>
+<dd>
+
+`10000000`
+
+</dd>
+
+<dt>
+
+Dependencies
+
+</dt>
+<dd>
+
+`pkg-cleanup`
+
+</dd>
+
+</dl>
 
 Higher priorities run first within the selected recipe set unless `before` or
 `after` constraints require otherwise. Dependencies include other recipes
