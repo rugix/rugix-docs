@@ -38,7 +38,7 @@ feature flags. Additional operation families are disabled by default:
   reboot behavior when `--reboot` is omitted.
 - `app-lifecycle` permits starting, stopping, activating, deactivating, rolling
   back, removing, garbage collecting, inspecting device-specific configuration,
-  and applying configuration to applications.
+  and applying configuration to applications, as well as reading their logs.
 
 The daemon applies these checks before invoking the canonical local operation
 implementation.

@@ -84,9 +84,18 @@ The generation directory must contain:
 | deactivate | Runs `systemctl stop` and `systemctl disable --runtime`, removes the runtime unit file, runs `daemon-reload`.                                                                                          |
 | start      | Runs `systemctl start`.                                                                                                                                                                                |
 | stop       | Runs `systemctl stop`.                                                                                                                                                                                 |
+| logs       | Runs `journalctl --unit` for the service of the app (see Logs).                                                                                                                                        |
 
 **Boot behavior after `stop`:** `systemctl stop` stops the service but does not disable it. The unit remains enabled via runtime symlinks, so systemd restarts the service on the next boot (once the unit has been restored and re-enabled by `restore-units`).
 
 ## Boot-Time Restoration
 
 Since `/run/` is a tmpfs, systemd units installed there do not survive reboots. A oneshot service restores them on boot. See [Systemd Integration](../../internals#systemd-integration) for details.
+
+## Logs
+
+[`rugix-ctrl apps logs`](../../logs) reads the journal entries of the app's service, `rugix-app-APP.service`, with `journalctl`. Besides the output of the workload, they include systemd's messages about the service, for example, that the workload exited with a failure. The `source` of a record is the syslog identifier of the process that logged it, by default the name of the executable, or `systemd` for systemd's messages. The severity derives from the journal priority. Fields that the workload passes to the journal through its native interface become fields of the record.
+
+When it renders the unit template, Rugix Ctrl appends a `[Service]` section with `LogExtraFields=RUGIX_APP_GENERATION=N`, so that every journal entry of the workload carries its generation. Units rendered by earlier versions of Rugix Ctrl lack this field, and their records name no generation.
+
+The journal keeps entries across reboots only if it stores them persistently. See `Storage=` in [`journald.conf`](https://www.freedesktop.org/software/systemd/man/latest/journald.conf.html).

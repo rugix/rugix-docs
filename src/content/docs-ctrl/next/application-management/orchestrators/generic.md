@@ -153,6 +153,28 @@ If the script exits with a non-zero status or produces invalid JSON, the status 
 
 **Boot behavior after `stop`:** Entirely determined by the script. If the script simply kills a process, the process will not restart on boot unless the `activate` operation is re-run. Since Rugix only re-runs activation during [crash recovery](../../internals#crash-recovery), a stopped workload typically stays stopped across reboots.
 
+The optional `logs` operation prints the logs of the workload, as described in the next section.
+
+## Logs
+
+[`rugix-ctrl apps logs`](../../logs) runs the `logs` operation of the script, which prints the logs of the workload to stdout, one record per line. Rugix Ctrl passes the selection of records in additional environment variables:
+
+| Variable           | Description                                                                       |
+| ------------------ | --------------------------------------------------------------------------------- |
+| `RUGIX_LOGS_LINES` | Maximum number of records. The script should print the most recent ones.          |
+| `RUGIX_LOGS_SINCE` | Only records logged at or after this time are selected, in RFC 3339, when given.  |
+| `RUGIX_LOGS_UNTIL` | Only records logged at or before this time are selected, in RFC 3339, when given. |
+
+Each line is either a log record as a JSON object, in the [format that `apps logs --json` prints](../../logs#log-records), or a plain line that becomes the message of a record. Plain lines are subject to the app's [log format](../../logs#structured-logs). The script should print the records in chronological order, because Rugix Ctrl keeps their order. Rugix Ctrl applies the selection to the printed records again, so a script may print more records than selected, for example, if it cannot filter by time. A non-zero exit code fails `rugix-ctrl apps logs` with the script's stderr in the error message.
+
+For example, a workload that appends its output to a file in the data directory can implement the operation with `tail`:
+
+```bash
+logs)
+    tail -n "$RUGIX_LOGS_LINES" "$RUGIX_APP_DATA_DIR/app.log"
+    ;;
+```
+
 ## Idempotency and Recovery
 
 Scripts should be written to be **idempotent** and handle being called again after a partial execution without side effects. When an operation is re-run during [crash recovery](../../internals#crash-recovery), the `RUGIX_APP_RECOVERY` environment variable is set to `"true"`. This allows scripts to take a different code path if needed (e.g., cleaning up partial state before retrying).

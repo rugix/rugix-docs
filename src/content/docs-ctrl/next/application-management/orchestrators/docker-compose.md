@@ -143,6 +143,7 @@ The orchestrator drives Docker directly via `docker compose` and the Docker daem
 | deactivate | Runs `docker compose down`, then removes Rugix-owned image tags.               |
 | start      | Runs `docker compose up -d --wait` (without image loading).                    |
 | stop       | Runs `docker compose stop`.                                                    |
+| logs       | Runs `docker logs` for each container of the app (see Logs).                   |
 
 **Boot behavior:** Rugix Ctrl does not start Docker Compose apps at boot. Docker restarts the containers of an active app after a reboot only if their services set a `restart` policy, such as `restart: unless-stopped`. Without one, the app stays stopped until `rugix-ctrl apps start` starts it.
 
@@ -164,6 +165,12 @@ timeout = 120
 ```
 
 Set `timeout` to `0` to disable waiting for health checks entirely (activation succeeds as soon as the containers are started).
+
+## Logs
+
+[`rugix-ctrl apps logs`](../../logs) reads the output of each container of the app's Compose project with `docker logs`, including containers that have stopped. The `source` of a record is the Compose service of its container, `stream` is the stream to which the container wrote it, and `generation` is the generation whose `docker-compose.yml` created the container.
+
+Docker deletes the logs of a container together with the container. Deactivation runs `docker compose down`, which removes the containers, and every update, rollback, and configuration change deactivates the previous generation. Its logs are therefore gone afterwards, unless a [logging driver](https://docs.docker.com/engine/logging/configure/), such as `journald`, keeps them elsewhere. When activation fails, Rugix Ctrl saves the state and the recent output of the containers to `.rugix/activation-diagnostics.log` in the generation directory before it removes them.
 
 ## Environment Variables
 
