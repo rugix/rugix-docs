@@ -9,13 +9,26 @@ Create an ext4 image from a directory tree.
 
 ## Inputs
 
-| Name   | Kind      | Description                                |
-| ------ | --------- | ------------------------------------------ |
-| `tree` | directory | Directory tree to populate the filesystem. |
+<dl class="reference-list">
+
+<dt>
+
+`tree`
+
+</dt>
+<dd>
+
+Kind: directory
+
+Directory tree to populate the filesystem.
+
+</dd>
+
+</dl>
 
 ## Parameters
 
-<dl class="parameter-list">
+<dl class="reference-list">
 
 <dt>
 
@@ -100,17 +113,61 @@ Additional mkfs.ext4 arguments, separated with shell-style quoting.
 
 ## Outputs
 
-| Name    | Kind | Description                      |
-| ------- | ---- | -------------------------------- |
-| `image` | file | Populated ext4 filesystem image. |
+<dl class="reference-list">
+
+<dt>
+
+`image`
+
+</dt>
+<dd>
+
+Kind: file
+
+Populated ext4 filesystem image.
+
+</dd>
+
+</dl>
 
 ## Execution
 
-| Setting      | Value        |
-| ------------ | ------------ |
-| Environment  | Rugix Bakery |
-| Source epoch | Consumed     |
-| Output cache | Allowed      |
+<dl class="reference-list">
+
+<dt>
+
+Environment
+
+</dt>
+<dd>
+
+Rugix Bakery
+
+</dd>
+
+<dt>
+
+Source epoch
+
+</dt>
+<dd>
+
+Consumed
+
+</dd>
+
+<dt>
+
+Output cache
+
+</dt>
+<dd>
+
+Allowed
+
+</dd>
+
+</dl>
 
 ## Behavior
 

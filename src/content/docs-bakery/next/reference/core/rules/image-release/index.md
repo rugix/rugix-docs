@@ -12,17 +12,79 @@ payloads.
 
 ## Inputs
 
-| Name          | Kind      | Description                                                                                                                                    |
-| ------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| `layout`      | file      | GPT ImageLayout in JSON or TOML.                                                                                                               |
-| `partitions`  | directory | Partition images named by their one-based partition numbers.                                                                                   |
-| `manifest`    | file      | Rugix bundle manifest mapping payload files to target slots.                                                                                   |
-| `payloads`    | directory | Bundle payload files at the paths referenced by the manifest.                                                                                  |
-| `certificate` | file      | Single PEM-encoded X.509 end-entity signer certificate issued directly by the trusted root. No intermediates. The default signer requires RSA. |
+<dl class="reference-list">
+
+<dt>
+
+`layout`
+
+</dt>
+<dd>
+
+Kind: file
+
+GPT ImageLayout in JSON or TOML.
+
+</dd>
+
+<dt>
+
+`partitions`
+
+</dt>
+<dd>
+
+Kind: directory
+
+Partition images named by their one-based partition numbers.
+
+</dd>
+
+<dt>
+
+`manifest`
+
+</dt>
+<dd>
+
+Kind: file
+
+Rugix bundle manifest mapping payload files to target slots.
+
+</dd>
+
+<dt>
+
+`payloads`
+
+</dt>
+<dd>
+
+Kind: directory
+
+Bundle payload files at the paths referenced by the manifest.
+
+</dd>
+
+<dt>
+
+`certificate`
+
+</dt>
+<dd>
+
+Kind: file
+
+Single PEM-encoded X.509 end-entity signer certificate issued directly by the
+trusted root. No intermediates. The default signer requires RSA.
+
+</dd>
+
+</dl>
 
 ## Parameters
 
-<dl class="parameter-list">
+<dl class="reference-list">
 
 <dt>
 
@@ -54,11 +116,42 @@ Signing time as Unix seconds in a string. Empty uses the build source epoch.
 
 ## Outputs
 
-| Name          | Artifact Source                                |
-| ------------- | ---------------------------------------------- |
-| `image`       | `{"rule":{"node":"disk","output":"image"}}`    |
-| `bundle`      | `{"rule":{"node":"signed","output":"bundle"}}` |
-| `bundle-hash` | `{"rule":{"node":"signed","output":"hash"}}`   |
+<dl class="reference-list">
+
+<dt>
+
+`image`
+
+</dt>
+<dd>
+
+Artifact Source: `{"rule":{"node":"disk","output":"image"}}`
+
+</dd>
+
+<dt>
+
+`bundle`
+
+</dt>
+<dd>
+
+Artifact Source: `{"rule":{"node":"signed","output":"bundle"}}`
+
+</dd>
+
+<dt>
+
+`bundle-hash`
+
+</dt>
+<dd>
+
+Artifact Source: `{"rule":{"node":"signed","output":"hash"}}`
+
+</dd>
+
+</dl>
 
 ## Rule Parameters
 
@@ -73,12 +166,59 @@ against certificate.
 
 Default implementation: `core/sign-cms`.
 
-| Name           | Role      | Kind | Description                                                                      |
-| -------------- | --------- | ---- | -------------------------------------------------------------------------------- |
-| `content`      | Input     | file | Signed bundle metadata.                                                          |
-| `certificate`  | Input     | file | Signer certificate that must verify the signature.                               |
-| `signing-time` | Parameter |      | Signing time as Unix seconds in a string. Empty means the build source epoch.    |
-| `signature`    | Output    | file | DER-encoded CMS SignedData with the encapsulated content and signer certificate. |
+<dl class="reference-list">
+
+<dt>
+
+Input `content`
+
+</dt>
+<dd>
+
+Kind: file
+
+Signed bundle metadata.
+
+</dd>
+
+<dt>
+
+Input `certificate`
+
+</dt>
+<dd>
+
+Kind: file
+
+Signer certificate that must verify the signature.
+
+</dd>
+
+<dt>
+
+Parameter `signing-time`
+
+</dt>
+<dd>
+
+Signing time as Unix seconds in a string. Empty means the build source epoch.
+
+</dd>
+
+<dt>
+
+Output `signature`
+
+</dt>
+<dd>
+
+Kind: file
+
+DER-encoded CMS SignedData with the encapsulated content and signer certificate.
+
+</dd>
+
+</dl>
 
 ## Execution
 

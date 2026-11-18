@@ -10,25 +10,106 @@ Create an indexed Rugix update bundle from a manifest and payloads.
 
 ## Inputs
 
-| Name       | Kind      | Description                                              |
-| ---------- | --------- | -------------------------------------------------------- |
-| `manifest` | file      | Rugix bundle manifest in TOML format.                    |
-| `payloads` | directory | Payload directory with paths referenced by the manifest. |
+<dl class="reference-list">
+
+<dt>
+
+`manifest`
+
+</dt>
+<dd>
+
+Kind: file
+
+Rugix bundle manifest in TOML format.
+
+</dd>
+
+<dt>
+
+`payloads`
+
+</dt>
+<dd>
+
+Kind: directory
+
+Payload directory with paths referenced by the manifest.
+
+</dd>
+
+</dl>
 
 ## Outputs
 
-| Name     | Kind | Description                          |
-| -------- | ---- | ------------------------------------ |
-| `bundle` | file | Indexed Rugix update bundle.         |
-| `hash`   | file | Bundle hash for update verification. |
+<dl class="reference-list">
+
+<dt>
+
+`bundle`
+
+</dt>
+<dd>
+
+Kind: file
+
+Indexed Rugix update bundle.
+
+</dd>
+
+<dt>
+
+`hash`
+
+</dt>
+<dd>
+
+Kind: file
+
+Bundle hash for update verification.
+
+</dd>
+
+</dl>
 
 ## Execution
 
-| Setting      | Value        |
-| ------------ | ------------ |
-| Environment  | Rugix Bakery |
-| Source epoch | Consumed     |
-| Output cache | Allowed      |
+<dl class="reference-list">
+
+<dt>
+
+Environment
+
+</dt>
+<dd>
+
+Rugix Bakery
+
+</dd>
+
+<dt>
+
+Source epoch
+
+</dt>
+<dd>
+
+Consumed
+
+</dd>
+
+<dt>
+
+Output cache
+
+</dt>
+<dd>
+
+Allowed
+
+</dd>
+
+</dl>
 
 ## Behavior
 

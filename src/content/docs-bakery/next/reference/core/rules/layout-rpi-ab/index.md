@@ -10,25 +10,106 @@ Reserve the named A/B partitions for the Raspberry Pi verified boot flow.
 
 ## Inputs
 
-| Name     | Kind | Description                                      |
-| -------- | ---- | ------------------------------------------------ |
-| `system` | file | Root filesystem image with appended verity data. |
-| `boot`   | file | Signed boot partition image.                     |
-| `config` | file | Configuration partition image.                   |
+<dl class="reference-list">
+
+<dt>
+
+`system`
+
+</dt>
+<dd>
+
+Kind: file
+
+Root filesystem image with appended verity data.
+
+</dd>
+
+<dt>
+
+`boot`
+
+</dt>
+<dd>
+
+Kind: file
+
+Signed boot partition image.
+
+</dd>
+
+<dt>
+
+`config`
+
+</dt>
+<dd>
+
+Kind: file
+
+Configuration partition image.
+
+</dd>
+
+</dl>
 
 ## Outputs
 
-| Name     | Kind | Description                                  |
-| -------- | ---- | -------------------------------------------- |
-| `layout` | file | Rugix ImageLayout with named A/B partitions. |
+<dl class="reference-list">
+
+<dt>
+
+`layout`
+
+</dt>
+<dd>
+
+Kind: file
+
+Rugix ImageLayout with named A/B partitions.
+
+</dd>
+
+</dl>
 
 ## Execution
 
-| Setting      | Value        |
-| ------------ | ------------ |
-| Environment  | Rugix Bakery |
-| Source epoch | Consumed     |
-| Output cache | Allowed      |
+<dl class="reference-list">
+
+<dt>
+
+Environment
+
+</dt>
+<dd>
+
+Rugix Bakery
+
+</dd>
+
+<dt>
+
+Source epoch
+
+</dt>
+<dd>
+
+Consumed
+
+</dd>
+
+<dt>
+
+Output cache
+
+</dt>
+<dd>
+
+Allowed
+
+</dd>
+
+</dl>
 
 ## Behavior
 

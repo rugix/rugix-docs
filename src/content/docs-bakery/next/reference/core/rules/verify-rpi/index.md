@@ -9,25 +9,106 @@ Verify a Raspberry Pi boot signature against a public key.
 
 ## Inputs
 
-| Name         | Kind | Description                                                     |
-| ------------ | ---- | --------------------------------------------------------------- |
-| `image`      | file | FAT boot.img that the signature authenticates.                  |
-| `signature`  | file | Raspberry Pi boot.sig returned by the signer.                   |
-| `public-key` | file | PEM-encoded RSA-2048 public key that must verify the signature. |
+<dl class="reference-list">
+
+<dt>
+
+`image`
+
+</dt>
+<dd>
+
+Kind: file
+
+FAT boot.img that the signature authenticates.
+
+</dd>
+
+<dt>
+
+`signature`
+
+</dt>
+<dd>
+
+Kind: file
+
+Raspberry Pi boot.sig returned by the signer.
+
+</dd>
+
+<dt>
+
+`public-key`
+
+</dt>
+<dd>
+
+Kind: file
+
+PEM-encoded RSA-2048 public key that must verify the signature.
+
+</dd>
+
+</dl>
 
 ## Outputs
 
-| Name        | Kind | Description                               |
-| ----------- | ---- | ----------------------------------------- |
-| `signature` | file | Verified Raspberry Pi RSA-2048 signature. |
+<dl class="reference-list">
+
+<dt>
+
+`signature`
+
+</dt>
+<dd>
+
+Kind: file
+
+Verified Raspberry Pi RSA-2048 signature.
+
+</dd>
+
+</dl>
 
 ## Execution
 
-| Setting      | Value        |
-| ------------ | ------------ |
-| Environment  | Rugix Bakery |
-| Source epoch | Ignored      |
-| Output cache | Allowed      |
+<dl class="reference-list">
+
+<dt>
+
+Environment
+
+</dt>
+<dd>
+
+Rugix Bakery
+
+</dd>
+
+<dt>
+
+Source epoch
+
+</dt>
+<dd>
+
+Ignored
+
+</dd>
+
+<dt>
+
+Output cache
+
+</dt>
+<dd>
+
+Allowed
+
+</dd>
+
+</dl>
 
 ## Behavior
 

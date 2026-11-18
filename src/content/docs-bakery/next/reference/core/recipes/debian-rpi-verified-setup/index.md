@@ -12,10 +12,35 @@ verified A/B roots.
 
 ## Inputs
 
-| Name               | Kind | Description                                                                    |
-| ------------------ | ---- | ------------------------------------------------------------------------------ |
-| `system-config`    | file | Rugix Ctrl system configuration. Defaults to the standard verified A/B layout. |
-| `bootstrap-config` | file | Rugix bootstrap layout. Optional @SYSTEM_SIZE@ placeholders use system_size.   |
+<dl class="reference-list">
+
+<dt>
+
+`system-config`
+
+</dt>
+<dd>
+
+Kind: file
+
+Rugix Ctrl system configuration. Defaults to the standard verified A/B layout.
+
+</dd>
+
+<dt>
+
+`bootstrap-config`
+
+</dt>
+<dd>
+
+Kind: file
+
+Rugix bootstrap layout. Optional @SYSTEM_SIZE@ placeholders use system_size.
+
+</dd>
+
+</dl>
 
 Default input bindings:
 
@@ -32,7 +57,7 @@ Default input bindings:
 
 ## Parameters
 
-<dl class="parameter-list">
+<dl class="reference-list">
 
 <dt>
 
@@ -51,10 +76,31 @@ Default minimum A/B system capacity in bytes after bootstrap.
 
 ## Scheduling
 
-| Setting      | Value                                      |
-| ------------ | ------------------------------------------ |
-| Priority     | `500`                                      |
-| Dependencies | `rpi-debian-setup`, `debian-verified-root` |
+<dl class="reference-list">
+
+<dt>
+
+Priority
+
+</dt>
+<dd>
+
+`500`
+
+</dd>
+
+<dt>
+
+Dependencies
+
+</dt>
+<dd>
+
+`rpi-debian-setup`, `debian-verified-root`
+
+</dd>
+
+</dl>
 
 Higher priorities run first within the selected recipe set unless `before` or
 `after` constraints require otherwise. Dependencies include other recipes

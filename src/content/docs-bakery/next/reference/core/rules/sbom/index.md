@@ -10,25 +10,106 @@ Scan a filesystem tree and produce SPDX and CycloneDX software inventories.
 
 ## Inputs
 
-| Name      | Kind      | Description                                                        |
-| --------- | --------- | ------------------------------------------------------------------ |
-| `tree`    | directory | Root filesystem tree to scan.                                      |
-| `context` | file      | Rugix Bakery build context containing system and release identity. |
+<dl class="reference-list">
+
+<dt>
+
+`tree`
+
+</dt>
+<dd>
+
+Kind: directory
+
+Root filesystem tree to scan.
+
+</dd>
+
+<dt>
+
+`context`
+
+</dt>
+<dd>
+
+Kind: file
+
+Rugix Bakery build context containing system and release identity.
+
+</dd>
+
+</dl>
 
 ## Outputs
 
-| Name        | Kind | Description                   |
-| ----------- | ---- | ----------------------------- |
-| `spdx`      | file | SPDX software inventory.      |
-| `cyclonedx` | file | CycloneDX software inventory. |
+<dl class="reference-list">
+
+<dt>
+
+`spdx`
+
+</dt>
+<dd>
+
+Kind: file
+
+SPDX software inventory.
+
+</dd>
+
+<dt>
+
+`cyclonedx`
+
+</dt>
+<dd>
+
+Kind: file
+
+CycloneDX software inventory.
+
+</dd>
+
+</dl>
 
 ## Execution
 
-| Setting      | Value        |
-| ------------ | ------------ |
-| Environment  | Rugix Bakery |
-| Source epoch | Consumed     |
-| Output cache | Allowed      |
+<dl class="reference-list">
+
+<dt>
+
+Environment
+
+</dt>
+<dd>
+
+Rugix Bakery
+
+</dd>
+
+<dt>
+
+Source epoch
+
+</dt>
+<dd>
+
+Consumed
+
+</dd>
+
+<dt>
+
+Output cache
+
+</dt>
+<dd>
+
+Allowed
+
+</dd>
+
+</dl>
 
 Scan a root filesystem with Syft and emit SPDX and CycloneDX software
 inventories. The build context supplies the system name, release version, and

@@ -135,17 +135,17 @@ function page(kind, item) {
         fields.push(["Recipes", config.recipes.map(code).join(", ")])
       if (config.exclude?.length)
         fields.push(["Excluded recipes", config.exclude.map(code).join(", ")])
-      if (fields.length) body += table(["Setting", "Value"], fields)
+      if (fields.length) body += referenceList(["Setting", "Value"], fields)
       const overrides = Object.entries(config.parameters ?? {}).flatMap(
         ([recipe, parameters]) =>
           Object.entries(parameters).map(([name, value]) => [
-            code(recipe),
+            "Recipe " + code(recipe),
             code(name),
             code(JSON.stringify(value)),
           ]),
       )
       if (overrides.length)
-        body += table(["Recipe", "Parameter", "Value"], overrides)
+        body += referenceList(["Recipe", "Parameter", "Value"], overrides)
       if (config.rules || config.inputs) {
         body +=
           "Artifact prerequisites and input bindings:\n\n" +
@@ -158,7 +158,7 @@ function page(kind, item) {
     if (kind === "recipe") {
       body +=
         "## Scheduling\n\n" +
-        table(
+        referenceList(
           ["Setting", "Value"],
           [
             ["Priority", code(String(definition.priority ?? 0))],
@@ -182,7 +182,7 @@ function page(kind, item) {
       const execution = definition.execution
       body += "## Outputs\n\n"
       if (execution.type === "run") {
-        body += table(
+        body += referenceList(
           ["Name", "Kind", "Description"],
           Object.entries(execution.outputs).map(([name, port]) => [
             code(name),
@@ -191,7 +191,7 @@ function page(kind, item) {
           ]),
         )
       } else if (execution.type === "graph") {
-        body += table(
+        body += referenceList(
           ["Name", "Artifact Source"],
           Object.entries(execution.outputs).map(([name, source]) => [
             code(name),
@@ -225,7 +225,7 @@ function page(kind, item) {
                 : owner + execution.env,
             )
           : "Rugix Bakery"
-        body += table(
+        body += referenceList(
           ["Setting", "Value"],
           [
             ["Environment", env],
@@ -264,11 +264,11 @@ function page(kind, item) {
 
 function inputs(definition) {
   const ports = Object.entries(definition.inputs ?? {})
-  // Only rule inputs can declare defaults; keep the column out of other tables.
+  // Only rule inputs can declare defaults.
   const defaults = ports.some(([, port]) => Object.hasOwn(port, "default"))
   let result = "## Inputs\n\n"
   result += ports.length
-    ? table(
+    ? referenceList(
         ["Name", "Kind", ...(defaults ? ["Default"] : []), "Description"],
         ports.map(([name, port]) => [
           code(name),
@@ -295,22 +295,16 @@ function parameters(definitions) {
   if (!entries.length) return ""
   return (
     "## Parameters\n\n" +
-    '<dl class="parameter-list">\n\n' +
-    entries
-      .map(([name, parameter]) => {
-        const requirement = Object.hasOwn(parameter, "default")
-          ? "Default: " + code(JSON.stringify(parameter.default))
-          : "**Required**"
-        return (
-          `<dt>\n\n${code(name)}\n\n</dt>\n<dd>\n\n` +
-          requirement +
-          "\n\n" +
-          (parameter.description ? parameter.description + "\n\n" : "") +
-          "</dd>\n\n"
-        )
-      })
-      .join("") +
-    "</dl>\n\n"
+    referenceList(
+      ["Name", "Default", "Description"],
+      entries.map(([name, parameter]) => [
+        code(name),
+        Object.hasOwn(parameter, "default")
+          ? code(JSON.stringify(parameter.default))
+          : "**Required**",
+        parameter.description ?? "",
+      ]),
+    )
   )
 }
 
@@ -326,24 +320,21 @@ function ruleParameters(definitions) {
     result += "Default implementation: " + code(uses) + ".\n\n"
     if (Object.keys(bindings).length)
       result += "Default bindings:\n\n" + json(bindings)
-    result += table(
-      ["Name", "Role", "Kind", "Description"],
+    result += referenceList(
+      ["Name", "Kind", "Description"],
       [
         ...Object.entries(parameter.inputs ?? {}).map(([field, port]) => [
-          code(field),
-          "Input",
+          "Input " + code(field),
           port.kind,
           port.description ?? "",
         ]),
         ...Object.entries(parameter.parameters ?? {}).map(([field, port]) => [
-          code(field),
-          "Parameter",
+          "Parameter " + code(field),
           "",
           port.description ?? "",
         ]),
         ...Object.entries(parameter.outputs).map(([field, port]) => [
-          code(field),
-          "Output",
+          "Output " + code(field),
           port.kind,
           port.description ?? "",
         ]),
@@ -376,7 +367,7 @@ function index(kind, items) {
   for (const [category, rows] of [...groups].sort(([left], [right]) =>
     left.localeCompare(right, "en"),
   )) {
-    body += `## ${category}\n\n` + table(["Name", "Description"], rows)
+    body += `## ${category}\n\n` + referenceList(["Name", "Description"], rows)
   }
   return frontmatter(title, description) + marker + "\n\n" + body
 }
@@ -389,19 +380,32 @@ function frontmatter(title, description) {
     "\n---\n\n"
   )
 }
-function table(headings, rows) {
-  const row = (cells) =>
-    "| " +
-    cells
-      .map((cell) => String(cell).replaceAll("|", "\\|").replaceAll("\n", " "))
-      .join(" | ") +
-    " |"
+function referenceList(headings, rows) {
+  if (!rows.length) return "None.\n\n"
   return (
-    [row(headings), row(headings.map(() => "---")), ...rows.map(row)].join(
-      "\n",
-    ) + "\n\n"
+    '<dl class="reference-list">\n\n' +
+    rows
+      .map(([term, ...cells]) => {
+        const details = cells
+          .flatMap((cell, index) => {
+            if (cell === "") return []
+            const heading = headings[index + 1]
+            const label =
+              heading === "Description" ||
+              (heading === "Value" && headings.length === 2) ||
+              (heading === "Default" && cell === "**Required**")
+                ? ""
+                : heading + ": "
+            return [label + cell]
+          })
+          .join("\n\n")
+        return `<dt>\n\n${term}\n\n</dt>\n<dd>\n\n${details}\n\n</dd>\n\n`
+      })
+      .join("") +
+    "</dl>\n\n"
   )
 }
+
 function code(value) {
   const text = String(value)
   const fence = "`".repeat(

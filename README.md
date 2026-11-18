@@ -59,10 +59,11 @@ node scripts/generate-reference.mjs --check /tmp/core-rules.json /tmp/core-recip
 ```
 
 Edit the definitions and their adjacent Markdown in the Rugix Bakery repository.
-The generator creates parameter description lists and interface tables from
-configuration and includes the Markdown explanations. It removes obsolete generated pages for the supplied
-catalog kinds and preserves authored pages. The site build uses the committed
-pages and does not require a Rugix Bakery installation.
+The generator creates description lists for interfaces, settings, and catalog
+indexes from configuration and includes the Markdown explanations. It removes
+obsolete generated pages for the supplied catalog kinds and preserves authored
+pages. The site build uses the committed pages and does not require a Rugix Bakery
+installation.
 
 See the [catalog guide](src/content/docs-bakery/next/reference/definition-catalogs.md) for
 metadata conventions and generation for other repositories.

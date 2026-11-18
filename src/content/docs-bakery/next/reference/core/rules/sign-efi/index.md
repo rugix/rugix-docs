@@ -9,14 +9,39 @@ Sign a PE executable for UEFI Secure Boot.
 
 ## Inputs
 
-| Name          | Kind | Description                                         |
-| ------------- | ---- | --------------------------------------------------- |
-| `image`       | file | PE executable to sign, such as a UKI or bootloader. |
-| `certificate` | file | PEM-encoded RSA X.509 signing certificate.          |
+<dl class="reference-list">
+
+<dt>
+
+`image`
+
+</dt>
+<dd>
+
+Kind: file
+
+PE executable to sign, such as a UKI or bootloader.
+
+</dd>
+
+<dt>
+
+`certificate`
+
+</dt>
+<dd>
+
+Kind: file
+
+PEM-encoded RSA X.509 signing certificate.
+
+</dd>
+
+</dl>
 
 ## Parameters
 
-<dl class="parameter-list">
+<dl class="reference-list">
 
 <dt>
 
@@ -36,9 +61,22 @@ source epoch.
 
 ## Outputs
 
-| Name    | Kind | Description                                      |
-| ------- | ---- | ------------------------------------------------ |
-| `image` | file | PE executable with a UEFI Secure Boot signature. |
+<dl class="reference-list">
+
+<dt>
+
+`image`
+
+</dt>
+<dd>
+
+Kind: file
+
+PE executable with a UEFI Secure Boot signature.
+
+</dd>
+
+</dl>
 
 ## Secrets
 
@@ -46,11 +84,42 @@ Required secret bindings: `key`. Secret changes invalidate cached outputs.
 
 ## Execution
 
-| Setting      | Value        |
-| ------------ | ------------ |
-| Environment  | Rugix Bakery |
-| Source epoch | Consumed     |
-| Output cache | Allowed      |
+<dl class="reference-list">
+
+<dt>
+
+Environment
+
+</dt>
+<dd>
+
+Rugix Bakery
+
+</dd>
+
+<dt>
+
+Source epoch
+
+</dt>
+<dd>
+
+Consumed
+
+</dd>
+
+<dt>
+
+Output cache
+
+</dt>
+<dd>
+
+Allowed
+
+</dd>
+
+</dl>
 
 ## Behavior
 

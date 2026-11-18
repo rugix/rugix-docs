@@ -9,14 +9,39 @@ Append a detached verity hash tree to a data image.
 
 ## Inputs
 
-| Name        | Kind | Description                                         |
-| ----------- | ---- | --------------------------------------------------- |
-| `image`     | file | Original data image authenticated by the hash tree. |
-| `hash-tree` | file | Detached verity image including its superblock.     |
+<dl class="reference-list">
+
+<dt>
+
+`image`
+
+</dt>
+<dd>
+
+Kind: file
+
+Original data image authenticated by the hash tree.
+
+</dd>
+
+<dt>
+
+`hash-tree`
+
+</dt>
+<dd>
+
+Kind: file
+
+Detached verity image including its superblock.
+
+</dd>
+
+</dl>
 
 ## Parameters
 
-<dl class="parameter-list">
+<dl class="reference-list">
 
 <dt>
 
@@ -36,19 +61,87 @@ block size.
 
 ## Outputs
 
-| Name          | Kind | Description                                                                  |
-| ------------- | ---- | ---------------------------------------------------------------------------- |
-| `image`       | file | Data image followed by alignment padding and the verity hash image.          |
-| `hash-offset` | file | Hash-area byte offset as decimal text.                                       |
-| `data-size`   | file | Original data length in bytes as decimal text, excluding padding and hashes. |
+<dl class="reference-list">
+
+<dt>
+
+`image`
+
+</dt>
+<dd>
+
+Kind: file
+
+Data image followed by alignment padding and the verity hash image.
+
+</dd>
+
+<dt>
+
+`hash-offset`
+
+</dt>
+<dd>
+
+Kind: file
+
+Hash-area byte offset as decimal text.
+
+</dd>
+
+<dt>
+
+`data-size`
+
+</dt>
+<dd>
+
+Kind: file
+
+Original data length in bytes as decimal text, excluding padding and hashes.
+
+</dd>
+
+</dl>
 
 ## Execution
 
-| Setting      | Value        |
-| ------------ | ------------ |
-| Environment  | Rugix Bakery |
-| Source epoch | Consumed     |
-| Output cache | Allowed      |
+<dl class="reference-list">
+
+<dt>
+
+Environment
+
+</dt>
+<dd>
+
+Rugix Bakery
+
+</dd>
+
+<dt>
+
+Source epoch
+
+</dt>
+<dd>
+
+Consumed
+
+</dd>
+
+<dt>
+
+Output cache
+
+</dt>
+<dd>
+
+Allowed
+
+</dd>
+
+</dl>
 
 ## Behavior
 

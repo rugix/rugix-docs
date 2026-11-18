@@ -10,15 +10,52 @@ Resolve a Rugix Bakery image layout into an unpopulated disk image.
 
 ## Inputs
 
-| Name     | Kind      | Description                                                      |
-| -------- | --------- | ---------------------------------------------------------------- |
-| `layout` | file      | Rugix ImageLayout definition in JSON or TOML.                    |
-| `roots`  | directory | Prepared filesystem trees addressed by each partition root path. |
-| `layer`  | directory | Layer tree containing roots/ and any referenced firmware blobs.  |
+<dl class="reference-list">
+
+<dt>
+
+`layout`
+
+</dt>
+<dd>
+
+Kind: file
+
+Rugix ImageLayout definition in JSON or TOML.
+
+</dd>
+
+<dt>
+
+`roots`
+
+</dt>
+<dd>
+
+Kind: directory
+
+Prepared filesystem trees addressed by each partition root path.
+
+</dd>
+
+<dt>
+
+`layer`
+
+</dt>
+<dd>
+
+Kind: directory
+
+Layer tree containing roots/ and any referenced firmware blobs.
+
+</dd>
+
+</dl>
 
 ## Parameters
 
-<dl class="parameter-list">
+<dl class="reference-list">
 
 <dt>
 
@@ -37,17 +74,61 @@ Disk capacity in bytes. Zero uses the capacity required by the layout.
 
 ## Outputs
 
-| Name    | Kind | Description                                                              |
-| ------- | ---- | ------------------------------------------------------------------------ |
-| `image` | file | Sparse disk image containing its partition table and raw firmware blobs. |
+<dl class="reference-list">
+
+<dt>
+
+`image`
+
+</dt>
+<dd>
+
+Kind: file
+
+Sparse disk image containing its partition table and raw firmware blobs.
+
+</dd>
+
+</dl>
 
 ## Execution
 
-| Setting      | Value        |
-| ------------ | ------------ |
-| Environment  | Rugix Bakery |
-| Source epoch | Consumed     |
-| Output cache | Allowed      |
+<dl class="reference-list">
+
+<dt>
+
+Environment
+
+</dt>
+<dd>
+
+Rugix Bakery
+
+</dd>
+
+<dt>
+
+Source epoch
+
+</dt>
+<dd>
+
+Consumed
+
+</dd>
+
+<dt>
+
+Output cache
+
+</dt>
+<dd>
+
+Allowed
+
+</dd>
+
+</dl>
 
 Resolve a Rugix Bakery `ImageLayout` into an unpopulated disk. This rule
 supports GPT, MBR with extended partitions, and raw firmware written before

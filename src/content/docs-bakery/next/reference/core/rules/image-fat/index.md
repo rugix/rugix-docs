@@ -9,13 +9,26 @@ Create a FAT image from a directory tree.
 
 ## Inputs
 
-| Name   | Kind      | Description                                                                   |
-| ------ | --------- | ----------------------------------------------------------------------------- |
-| `tree` | directory | Directory tree of files and directories. Contained symlinks are dereferenced. |
+<dl class="reference-list">
+
+<dt>
+
+`tree`
+
+</dt>
+<dd>
+
+Kind: directory
+
+Directory tree of files and directories. Contained symlinks are dereferenced.
+
+</dd>
+
+</dl>
 
 ## Parameters
 
-<dl class="parameter-list">
+<dl class="reference-list">
 
 <dt>
 
@@ -128,17 +141,61 @@ rounds up to 1 MiB.
 
 ## Outputs
 
-| Name    | Kind | Description                     |
-| ------- | ---- | ------------------------------- |
-| `image` | file | Populated FAT filesystem image. |
+<dl class="reference-list">
+
+<dt>
+
+`image`
+
+</dt>
+<dd>
+
+Kind: file
+
+Populated FAT filesystem image.
+
+</dd>
+
+</dl>
 
 ## Execution
 
-| Setting      | Value        |
-| ------------ | ------------ |
-| Environment  | Rugix Bakery |
-| Source epoch | Consumed     |
-| Output cache | Allowed      |
+<dl class="reference-list">
+
+<dt>
+
+Environment
+
+</dt>
+<dd>
+
+Rugix Bakery
+
+</dd>
+
+<dt>
+
+Source epoch
+
+</dt>
+<dd>
+
+Consumed
+
+</dd>
+
+<dt>
+
+Output cache
+
+</dt>
+<dd>
+
+Allowed
+
+</dd>
+
+</dl>
 
 ## Behavior
 

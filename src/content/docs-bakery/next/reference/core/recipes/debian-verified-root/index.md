@@ -16,10 +16,31 @@ No artifact inputs.
 
 ## Scheduling
 
-| Setting      | Value                      |
-| ------------ | -------------------------- |
-| Priority     | `100`                      |
-| Dependencies | `rugix-ctrl`, `pkg-update` |
+<dl class="reference-list">
+
+<dt>
+
+Priority
+
+</dt>
+<dd>
+
+`100`
+
+</dd>
+
+<dt>
+
+Dependencies
+
+</dt>
+<dd>
+
+`rugix-ctrl`, `pkg-update`
+
+</dd>
+
+</dl>
 
 Higher priorities run first within the selected recipe set unless `before` or
 `after` constraints require otherwise. Dependencies include other recipes

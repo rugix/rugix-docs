@@ -14,15 +14,37 @@ default is used when no matching architecture override exists.
 
 ### arm64
 
-| Setting    | Value                                                                                                                                                       |
-| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Import URL | https://downloads.raspberrypi.com/raspios_oldstable_lite_arm64/images/raspios_oldstable_lite_arm64-2024-03-12/2024-03-12-raspios-bullseye-arm64-lite.img.xz |
+<dl class="reference-list">
+
+<dt>
+
+Import URL
+
+</dt>
+<dd>
+
+https://downloads.raspberrypi.com/raspios_oldstable_lite_arm64/images/raspios_oldstable_lite_arm64-2024-03-12/2024-03-12-raspios-bullseye-arm64-lite.img.xz
+
+</dd>
+
+</dl>
 
 ### armhf
 
-| Setting    | Value                                                                                                                                                       |
-| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Import URL | https://downloads.raspberrypi.com/raspios_oldstable_lite_armhf/images/raspios_oldstable_lite_armhf-2024-03-12/2024-03-12-raspios-bullseye-armhf-lite.img.xz |
+<dl class="reference-list">
+
+<dt>
+
+Import URL
+
+</dt>
+<dd>
+
+https://downloads.raspberrypi.com/raspios_oldstable_lite_armhf/images/raspios_oldstable_lite_armhf-2024-03-12/2024-03-12-raspios-bullseye-armhf-lite.img.xz
+
+</dd>
+
+</dl>
 
 ## Behavior
 

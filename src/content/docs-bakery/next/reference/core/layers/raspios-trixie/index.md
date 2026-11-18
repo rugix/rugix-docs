@@ -14,9 +14,20 @@ default is used when no matching architecture override exists.
 
 ### arm64
 
-| Setting    | Value                                                                                                                                 |
-| ---------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| Import URL | https://downloads.raspberrypi.com/raspios_lite_arm64/images/raspios_lite_arm64-2026-04-14/2026-04-13-raspios-trixie-arm64-lite.img.xz |
+<dl class="reference-list">
+
+<dt>
+
+Import URL
+
+</dt>
+<dd>
+
+https://downloads.raspberrypi.com/raspios_lite_arm64/images/raspios_lite_arm64-2026-04-14/2026-04-13-raspios-trixie-arm64-lite.img.xz
+
+</dd>
+
+</dl>
 
 ## Behavior
 

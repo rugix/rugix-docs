@@ -10,13 +10,26 @@ Create a detached dm-verity hash tree and root hash for a data image.
 
 ## Inputs
 
-| Name    | Kind | Description                                                     |
-| ------- | ---- | --------------------------------------------------------------- |
-| `image` | file | Data image with a positive length divisible by data-block-size. |
+<dl class="reference-list">
+
+<dt>
+
+`image`
+
+</dt>
+<dd>
+
+Kind: file
+
+Data image with a positive length divisible by data-block-size.
+
+</dd>
+
+</dl>
 
 ## Parameters
 
-<dl class="parameter-list">
+<dl class="reference-list">
 
 <dt>
 
@@ -88,18 +101,74 @@ Hexadecimal salt. Empty uses the SHA-256 digest of the data image.
 
 ## Outputs
 
-| Name        | Kind | Description                                           |
-| ----------- | ---- | ----------------------------------------------------- |
-| `hash-tree` | file | Detached dm-verity hash-tree image.                   |
-| `root-hash` | file | Root hash as hexadecimal text, followed by a newline. |
+<dl class="reference-list">
+
+<dt>
+
+`hash-tree`
+
+</dt>
+<dd>
+
+Kind: file
+
+Detached dm-verity hash-tree image.
+
+</dd>
+
+<dt>
+
+`root-hash`
+
+</dt>
+<dd>
+
+Kind: file
+
+Root hash as hexadecimal text, followed by a newline.
+
+</dd>
+
+</dl>
 
 ## Execution
 
-| Setting      | Value        |
-| ------------ | ------------ |
-| Environment  | Rugix Bakery |
-| Source epoch | Consumed     |
-| Output cache | Allowed      |
+<dl class="reference-list">
+
+<dt>
+
+Environment
+
+</dt>
+<dd>
+
+Rugix Bakery
+
+</dd>
+
+<dt>
+
+Source epoch
+
+</dt>
+<dd>
+
+Consumed
+
+</dd>
+
+<dt>
+
+Output cache
+
+</dt>
+<dd>
+
+Allowed
+
+</dd>
+
+</dl>
 
 ## Behavior
 

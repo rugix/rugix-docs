@@ -13,7 +13,7 @@ No artifact inputs.
 
 ## Parameters
 
-<dl class="parameter-list">
+<dl class="reference-list">
 
 <dt>
 
@@ -45,10 +45,31 @@ Binary source: container, a release series such as v1, or an exact release tag.
 
 ## Scheduling
 
-| Setting      | Value        |
-| ------------ | ------------ |
-| Priority     | `700000`     |
-| Dependencies | `pkg-update` |
+<dl class="reference-list">
+
+<dt>
+
+Priority
+
+</dt>
+<dd>
+
+`700000`
+
+</dd>
+
+<dt>
+
+Dependencies
+
+</dt>
+<dd>
+
+`pkg-update`
+
+</dd>
+
+</dl>
 
 Higher priorities run first within the selected recipe set unless `before` or
 `after` constraints require otherwise. Dependencies include other recipes

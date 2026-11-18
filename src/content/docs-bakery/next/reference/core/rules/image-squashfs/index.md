@@ -9,13 +9,26 @@ Create a SquashFS image from a directory tree.
 
 ## Inputs
 
-| Name   | Kind      | Description                                          |
-| ------ | --------- | ---------------------------------------------------- |
-| `tree` | directory | Directory tree to package as a read-only filesystem. |
+<dl class="reference-list">
+
+<dt>
+
+`tree`
+
+</dt>
+<dd>
+
+Kind: directory
+
+Directory tree to package as a read-only filesystem.
+
+</dd>
+
+</dl>
 
 ## Parameters
 
-<dl class="parameter-list">
+<dl class="reference-list">
 
 <dt>
 
@@ -60,17 +73,61 @@ Additional mksquashfs arguments, separated with shell-style quoting.
 
 ## Outputs
 
-| Name    | Kind | Description                |
-| ------- | ---- | -------------------------- |
-| `image` | file | SquashFS filesystem image. |
+<dl class="reference-list">
+
+<dt>
+
+`image`
+
+</dt>
+<dd>
+
+Kind: file
+
+SquashFS filesystem image.
+
+</dd>
+
+</dl>
 
 ## Execution
 
-| Setting      | Value        |
-| ------------ | ------------ |
-| Environment  | Rugix Bakery |
-| Source epoch | Consumed     |
-| Output cache | Allowed      |
+<dl class="reference-list">
+
+<dt>
+
+Environment
+
+</dt>
+<dd>
+
+Rugix Bakery
+
+</dd>
+
+<dt>
+
+Source epoch
+
+</dt>
+<dd>
+
+Consumed
+
+</dd>
+
+<dt>
+
+Output cache
+
+</dt>
+<dd>
+
+Allowed
+
+</dd>
+
+</dl>
 
 ## Behavior
 

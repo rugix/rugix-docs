@@ -9,15 +9,52 @@ Bind a verified root hash into boot arguments.
 
 ## Inputs
 
-| Name          | Kind | Description                                                    |
-| ------------- | ---- | -------------------------------------------------------------- |
-| `root-hash`   | file | SHA-256 dm-verity root hash as hexadecimal text.               |
-| `hash-offset` | file | Appended hash-area byte offset as decimal text.                |
-| `data-size`   | file | Authenticated data length in bytes, excluding appended hashes. |
+<dl class="reference-list">
+
+<dt>
+
+`root-hash`
+
+</dt>
+<dd>
+
+Kind: file
+
+SHA-256 dm-verity root hash as hexadecimal text.
+
+</dd>
+
+<dt>
+
+`hash-offset`
+
+</dt>
+<dd>
+
+Kind: file
+
+Appended hash-area byte offset as decimal text.
+
+</dd>
+
+<dt>
+
+`data-size`
+
+</dt>
+<dd>
+
+Kind: file
+
+Authenticated data length in bytes, excluding appended hashes.
+
+</dd>
+
+</dl>
 
 ## Parameters
 
-<dl class="parameter-list">
+<dl class="reference-list">
 
 <dt>
 
@@ -62,17 +99,61 @@ Kernel panic reboot delay in seconds. Zero leaves the system stopped.
 
 ## Outputs
 
-| Name      | Kind | Description                                                      |
-| --------- | ---- | ---------------------------------------------------------------- |
-| `cmdline` | file | Kernel command line to embed in the authenticated boot artifact. |
+<dl class="reference-list">
+
+<dt>
+
+`cmdline`
+
+</dt>
+<dd>
+
+Kind: file
+
+Kernel command line to embed in the authenticated boot artifact.
+
+</dd>
+
+</dl>
 
 ## Execution
 
-| Setting      | Value        |
-| ------------ | ------------ |
-| Environment  | Rugix Bakery |
-| Source epoch | Consumed     |
-| Output cache | Allowed      |
+<dl class="reference-list">
+
+<dt>
+
+Environment
+
+</dt>
+<dd>
+
+Rugix Bakery
+
+</dd>
+
+<dt>
+
+Source epoch
+
+</dt>
+<dd>
+
+Consumed
+
+</dd>
+
+<dt>
+
+Output cache
+
+</dt>
+<dd>
+
+Allowed
+
+</dd>
+
+</dl>
 
 ## Behavior
 

@@ -10,27 +10,132 @@ Assemble a UKI from a kernel, generated initrd, and boot parameters.
 
 ## Inputs
 
-| Name         | Kind | Description                                        |
-| ------------ | ---- | -------------------------------------------------- |
-| `stub`       | file | Systemd EFI stub matching the target architecture. |
-| `kernel`     | file | Kernel image to embed.                             |
-| `initrd`     | file | Initrd to embed.                                   |
-| `cmdline`    | file | Text file containing the kernel command line.      |
-| `os-release` | file | OS identification file to embed.                   |
+<dl class="reference-list">
+
+<dt>
+
+`stub`
+
+</dt>
+<dd>
+
+Kind: file
+
+Systemd EFI stub matching the target architecture.
+
+</dd>
+
+<dt>
+
+`kernel`
+
+</dt>
+<dd>
+
+Kind: file
+
+Kernel image to embed.
+
+</dd>
+
+<dt>
+
+`initrd`
+
+</dt>
+<dd>
+
+Kind: file
+
+Initrd to embed.
+
+</dd>
+
+<dt>
+
+`cmdline`
+
+</dt>
+<dd>
+
+Kind: file
+
+Text file containing the kernel command line.
+
+</dd>
+
+<dt>
+
+`os-release`
+
+</dt>
+<dd>
+
+Kind: file
+
+OS identification file to embed.
+
+</dd>
+
+</dl>
 
 ## Outputs
 
-| Name    | Kind | Description                          |
-| ------- | ---- | ------------------------------------ |
-| `image` | file | Unsigned unified kernel image (UKI). |
+<dl class="reference-list">
+
+<dt>
+
+`image`
+
+</dt>
+<dd>
+
+Kind: file
+
+Unsigned unified kernel image (UKI).
+
+</dd>
+
+</dl>
 
 ## Execution
 
-| Setting      | Value        |
-| ------------ | ------------ |
-| Environment  | Rugix Bakery |
-| Source epoch | Consumed     |
-| Output cache | Allowed      |
+<dl class="reference-list">
+
+<dt>
+
+Environment
+
+</dt>
+<dd>
+
+Rugix Bakery
+
+</dd>
+
+<dt>
+
+Source epoch
+
+</dt>
+<dd>
+
+Consumed
+
+</dd>
+
+<dt>
+
+Output cache
+
+</dt>
+<dd>
+
+Allowed
+
+</dd>
+
+</dl>
 
 ## Behavior
 

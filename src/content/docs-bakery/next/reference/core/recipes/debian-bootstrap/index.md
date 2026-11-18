@@ -13,7 +13,7 @@ No artifact inputs.
 
 ## Parameters
 
-<dl class="parameter-list">
+<dl class="reference-list">
 
 <dt>
 
@@ -72,10 +72,31 @@ Space-separated archive components for an explicit custom mirror.
 
 ## Scheduling
 
-| Setting      | Value      |
-| ------------ | ---------- |
-| Priority     | `10000000` |
-| Dependencies | None       |
+<dl class="reference-list">
+
+<dt>
+
+Priority
+
+</dt>
+<dd>
+
+`10000000`
+
+</dd>
+
+<dt>
+
+Dependencies
+
+</dt>
+<dd>
+
+None
+
+</dd>
+
+</dl>
 
 Higher priorities run first within the selected recipe set unless `before` or
 `after` constraints require otherwise. Dependencies include other recipes

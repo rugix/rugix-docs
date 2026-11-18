@@ -10,13 +10,26 @@ Create a SquashFS image with appended dm-verity authentication data.
 
 ## Inputs
 
-| Name   | Kind      | Description                     |
-| ------ | --------- | ------------------------------- |
-| `tree` | directory | Root filesystem directory tree. |
+<dl class="reference-list">
+
+<dt>
+
+`tree`
+
+</dt>
+<dd>
+
+Kind: directory
+
+Root filesystem directory tree.
+
+</dd>
+
+</dl>
 
 ## Parameters
 
-<dl class="parameter-list">
+<dl class="reference-list">
 
 <dt>
 
@@ -35,12 +48,53 @@ Compression algorithm accepted by mksquashfs, such as zstd or xz, or none.
 
 ## Outputs
 
-| Name          | Artifact Source                                     |
-| ------------- | --------------------------------------------------- |
-| `image`       | `{"rule":{"node":"append","output":"image"}}`       |
-| `root-hash`   | `{"rule":{"node":"verity","output":"root-hash"}}`   |
-| `hash-offset` | `{"rule":{"node":"append","output":"hash-offset"}}` |
-| `data-size`   | `{"rule":{"node":"append","output":"data-size"}}`   |
+<dl class="reference-list">
+
+<dt>
+
+`image`
+
+</dt>
+<dd>
+
+Artifact Source: `{"rule":{"node":"append","output":"image"}}`
+
+</dd>
+
+<dt>
+
+`root-hash`
+
+</dt>
+<dd>
+
+Artifact Source: `{"rule":{"node":"verity","output":"root-hash"}}`
+
+</dd>
+
+<dt>
+
+`hash-offset`
+
+</dt>
+<dd>
+
+Artifact Source: `{"rule":{"node":"append","output":"hash-offset"}}`
+
+</dd>
+
+<dt>
+
+`data-size`
+
+</dt>
+<dd>
+
+Artifact Source: `{"rule":{"node":"append","output":"data-size"}}`
+
+</dd>
+
+</dl>
 
 ## Execution
 

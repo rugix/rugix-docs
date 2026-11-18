@@ -10,14 +10,39 @@ Patch an initialized Rugix boot tree against resolved disk geometry.
 
 ## Inputs
 
-| Name    | Kind      | Description                                      |
-| ------- | --------- | ------------------------------------------------ |
-| `image` | file      | Disk image containing the final partition table. |
-| `boot`  | directory | Boot filesystem source tree.                     |
+<dl class="reference-list">
+
+<dt>
+
+`image`
+
+</dt>
+<dd>
+
+Kind: file
+
+Disk image containing the final partition table.
+
+</dd>
+
+<dt>
+
+`boot`
+
+</dt>
+<dd>
+
+Kind: directory
+
+Boot filesystem source tree.
+
+</dd>
+
+</dl>
 
 ## Parameters
 
-<dl class="parameter-list">
+<dl class="reference-list">
 
 <dt>
 
@@ -36,17 +61,61 @@ Rugix boot target: rpi-tryboot, rpi-uboot, generic-grub-efi, bsp, or unknown.
 
 ## Outputs
 
-| Name   | Kind      | Description                                          |
-| ------ | --------- | ---------------------------------------------------- |
-| `boot` | directory | Boot tree with its root partition reference patched. |
+<dl class="reference-list">
+
+<dt>
+
+`boot`
+
+</dt>
+<dd>
+
+Kind: directory
+
+Boot tree with its root partition reference patched.
+
+</dd>
+
+</dl>
 
 ## Execution
 
-| Setting      | Value        |
-| ------------ | ------------ |
-| Environment  | Rugix Bakery |
-| Source epoch | Consumed     |
-| Output cache | Allowed      |
+<dl class="reference-list">
+
+<dt>
+
+Environment
+
+</dt>
+<dd>
+
+Rugix Bakery
+
+</dd>
+
+<dt>
+
+Source epoch
+
+</dt>
+<dd>
+
+Consumed
+
+</dd>
+
+<dt>
+
+Output cache
+
+</dt>
+<dd>
+
+Allowed
+
+</dd>
+
+</dl>
 
 Patch an initialized Rugix boot tree against an existing disk's partition table.
 The rule reads the disk and copies the boot tree before modifying it.

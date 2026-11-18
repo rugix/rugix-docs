@@ -9,14 +9,39 @@ Reserve the named A/B partitions for the EFI verified boot flow.
 
 ## Inputs
 
-| Name     | Kind | Description                                                      |
-| -------- | ---- | ---------------------------------------------------------------- |
-| `system` | file | Root filesystem image with appended verity data.                 |
-| `config` | file | EFI System Partition image, used as the configuration partition. |
+<dl class="reference-list">
+
+<dt>
+
+`system`
+
+</dt>
+<dd>
+
+Kind: file
+
+Root filesystem image with appended verity data.
+
+</dd>
+
+<dt>
+
+`config`
+
+</dt>
+<dd>
+
+Kind: file
+
+EFI System Partition image, used as the configuration partition.
+
+</dd>
+
+</dl>
 
 ## Parameters
 
-<dl class="parameter-list">
+<dl class="reference-list">
 
 <dt>
 
@@ -36,18 +61,74 @@ ESP.
 
 ## Outputs
 
-| Name         | Kind      | Description                                                          |
-| ------------ | --------- | -------------------------------------------------------------------- |
-| `layout`     | file      | Rugix ImageLayout with named A/B partitions.                         |
-| `partitions` | directory | Factory partition images named by their one-based partition numbers. |
+<dl class="reference-list">
+
+<dt>
+
+`layout`
+
+</dt>
+<dd>
+
+Kind: file
+
+Rugix ImageLayout with named A/B partitions.
+
+</dd>
+
+<dt>
+
+`partitions`
+
+</dt>
+<dd>
+
+Kind: directory
+
+Factory partition images named by their one-based partition numbers.
+
+</dd>
+
+</dl>
 
 ## Execution
 
-| Setting      | Value        |
-| ------------ | ------------ |
-| Environment  | Rugix Bakery |
-| Source epoch | Consumed     |
-| Output cache | Allowed      |
+<dl class="reference-list">
+
+<dt>
+
+Environment
+
+</dt>
+<dd>
+
+Rugix Bakery
+
+</dd>
+
+<dt>
+
+Source epoch
+
+</dt>
+<dd>
+
+Consumed
+
+</dd>
+
+<dt>
+
+Output cache
+
+</dt>
+<dd>
+
+Allowed
+
+</dd>
+
+</dl>
 
 ## Behavior
 

@@ -9,15 +9,59 @@ Prepare an ESP tree with a signed bootloader and initial A/B UKI.
 
 ## Inputs
 
-| Name               | Kind      | Default       | Description                                                                                                                             |
-| ------------------ | --------- | ------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| `uki`              | file      | **Required**  | Signed UKI for the initial A slot.                                                                                                      |
-| `bootloader`       | file      | **Required**  | Signed systemd-boot executable.                                                                                                         |
-| `secure-boot-keys` | directory | `{"tree":{}}` | Authenticated variables PK.auth, KEK.auth, and db.auth that systemd-boot enrolls in Setup Mode. Empty by default, disabling enrollment. |
+<dl class="reference-list">
+
+<dt>
+
+`uki`
+
+</dt>
+<dd>
+
+Kind: file
+
+**Required**
+
+Signed UKI for the initial A slot.
+
+</dd>
+
+<dt>
+
+`bootloader`
+
+</dt>
+<dd>
+
+Kind: file
+
+**Required**
+
+Signed systemd-boot executable.
+
+</dd>
+
+<dt>
+
+`secure-boot-keys`
+
+</dt>
+<dd>
+
+Kind: directory
+
+Default: `{"tree":{}}`
+
+Authenticated variables PK.auth, KEK.auth, and db.auth that systemd-boot enrolls
+in Setup Mode. Empty by default, disabling enrollment.
+
+</dd>
+
+</dl>
 
 ## Parameters
 
-<dl class="parameter-list">
+<dl class="reference-list">
 
 <dt>
 
@@ -49,17 +93,61 @@ systemd-boot menu timeout in seconds.
 
 ## Outputs
 
-| Name   | Kind      | Description                    |
-| ------ | --------- | ------------------------------ |
-| `tree` | directory | EFI System Partition contents. |
+<dl class="reference-list">
+
+<dt>
+
+`tree`
+
+</dt>
+<dd>
+
+Kind: directory
+
+EFI System Partition contents.
+
+</dd>
+
+</dl>
 
 ## Execution
 
-| Setting      | Value        |
-| ------------ | ------------ |
-| Environment  | Rugix Bakery |
-| Source epoch | Consumed     |
-| Output cache | Allowed      |
+<dl class="reference-list">
+
+<dt>
+
+Environment
+
+</dt>
+<dd>
+
+Rugix Bakery
+
+</dd>
+
+<dt>
+
+Source epoch
+
+</dt>
+<dd>
+
+Consumed
+
+</dd>
+
+<dt>
+
+Output cache
+
+</dt>
+<dd>
+
+Allowed
+
+</dd>
+
+</dl>
 
 ## Behavior
 
