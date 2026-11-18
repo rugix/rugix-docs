@@ -13,14 +13,14 @@ To print the most recent log records of an app:
 rugix-ctrl apps logs APP
 ```
 
-For each record, the command prints the time, the source, and the severity, as far as they are known, followed by the message and the fields of the record:
+For each record, the command prints the time, the generation as `#N`, the source, and the severity, as far as they are known, followed by the message and the fields of the record:
 
 ```text
-2026-11-17T10:21:03.123456Z web WARNING disk almost full free_mb=120
-2026-11-17T10:21:04.002117Z web 10.0.2.2 - - [17/Nov/2026:10:21:04 +0000] "GET / HTTP/1.1" 200 615
+2026-11-17T10:21:03.123456Z #3 web WARNING disk almost full free_mb=120
+2026-11-17T10:21:04.002117Z #3 web 10.0.2.2 - - [17/Nov/2026:10:21:04 +0000] "GET / HTTP/1.1" 200 615
 ```
 
-Rugix Ctrl merges the records of all sources of an app, for example, of all its containers, in chronological order. By default, it prints the 200 most recent records. You can select records with the following options:
+Rugix Ctrl merges the records of all sources of an app, for example, of all its containers, in chronological order. The records may stem from several generations, for example, from a failed update and the generation restored by its rollback. By default, it prints the 200 most recent records. You can select records with the following options:
 
 | Option         | Effect                                                      |
 | -------------- | ----------------------------------------------------------- |
