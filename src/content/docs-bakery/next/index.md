@@ -107,7 +107,7 @@ Rugix Bakery supports the following CPU architectures:[^architecture-plans]
 Note that different distributions have different and sometimes inconsistent names for different CPU families.
 For instance, what Debian calls `armhf` is called `armv7` for Alpine Linux and is not the same as `armhf` for Raspberry Pi OS.
 
-Foreign-architecture builds need QEMU emulation through [`binfmt_misc`](https://en.wikipedia.org/wiki/Binfmt_misc). On Linux 6.7 or newer, the development image (`RUGIX_VERSION=branch-main`) attempts to register QEMU inside its private user namespace, without changing the host interpreter registry. This feature is not in the stable `v0.9` image selected by the launcher above. If private registration is unavailable, configure host emulation or build on the target architecture.
+Foreign-architecture builds need QEMU emulation through [`binfmt_misc`](https://en.wikipedia.org/wiki/Binfmt_misc). On Linux 6.7 or newer, Rugix Bakery attempts to register QEMU inside its private user namespace, without changing the host interpreter registry. If private registration is unavailable, configure host emulation or build on the target architecture.
 For example, an administrator can configure host emulation with Docker:
 
 ```shell
