@@ -34,9 +34,9 @@ export const brand: Brand = {
   titleTemplate: "%s — Rugix",
   plausible: { domain: "rugix.org" },
   banner: {
-    id: "2026-11-rugix-ctrl-1.4",
+    id: "2026-11-rugix-bakery-0.9.6",
     messageHtml:
-      '<strong>Rugix Ctrl 1.4 is here:</strong> Faster delta updates, application configuration, and shared content storage. <a href="/blog/releases/1.4">Read the release post</a>.',
+      '<strong>Rugix Bakery 0.9.6 is here:</strong> Build rules for custom image pipelines and verified boot for EFI and Raspberry Pi. <a href="/blog/releases/bakery-0.9.6">Read the release post</a>.',
     tone: "primary",
     dismissible: true,
   },
