@@ -1,5 +1,4 @@
 ---
-
 ---
 
 # CI/CD Integration
@@ -14,7 +13,7 @@ For rootless builds on a Linux runner, use Podman as described in [Build Privile
 Here is an example for using Rugix Bakery with GitHub Actions:
 
 ```yaml
-jobs:  
+jobs:
   bake-image:
     name: Bake Image
     runs-on: ubuntu-latest
@@ -23,9 +22,9 @@ jobs:
 
       - name: Install QEMU
         run: docker run --privileged --rm tonistiigi/binfmt --install all
-      
+
       - name: Bake Image
-        run: ./run-bakery bake image customized
+        run: ./run-bakery bake system customized
 
       - name: Upload Image
         uses: actions/upload-artifact@v4

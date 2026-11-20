@@ -1,4 +1,5 @@
 ---
+order: 50
 ---
 
 import { SchemaViewer } from "@silitics/astro-schema-viewer"
@@ -6,28 +7,43 @@ import RecipeSchema from "../../../schemas/rugix-bakery-recipe.schema.json"
 
 # Recipes
 
-As part of the build process, recipes perform the actual work, creating and modifying build outputs. Each recipe consists of a sequence of _steps_ to be executed. Recipes are defined by directories in the `recipes` directory. Each recipe gets its own directory with a _recipe configuration_ file `recipe.toml` and a `steps` subdirectory defining the individual steps to be executed. The configuration file may specify a _description_, a _priority_, _dependencies_ of the recipe, and _parameters_.
+As part of the build process, recipes perform the actual work, creating and modifying build outputs. Each recipe consists of a sequence of _steps_ to be executed. Recipes are defined by directories in the `recipes` directory. Each recipe gets its own directory with a _recipe configuration_ file `recipe.toml` and a `steps` subdirectory defining the individual steps to be executed. The configuration file may specify a _description_, a _priority_, _ordering constraints_, _dependencies_ of the recipe, and _parameters_.
 
-Here is the configuration of the [`core/ssh`](https://github.com/rugix/rugix-bakery/tree/main/container/repositories/core/recipes/ssh) recipe as an example:
+Here is the configuration of the [`core/ssh`](/docs/bakery/reference/core/recipes/ssh/) recipe as an example:
 
-```toml title="recipes/hello-world/recipe.toml"
-#:schema https://raw.githubusercontent.com/rugix/rugix/refs/tags/v0.8.0/schemas/rugix-bakery-layer.schema.json
+```toml title="recipes/ssh/recipe.toml"
+#:schema https://raw.githubusercontent.com/rugix/rugix-bakery/main/schemas/rugix-bakery-recipe.schema.json
 
-description = "enabling SSH"
-priority = 80_000
+description = "Enable SSH and persist host keys."
+priority = 80000
 dependencies = ["pkg-update"]
 
 [parameters]
-root_authorized_keys = { default = "" }
+root_authorized_keys = { default = "", description = "Public keys authorized for root." }
 ```
 
-The `ssh` recipe depends on the [`pkg-update` recipe](https://github.com/rugix/rugix-bakery/tree/main/container/repositories/core/recipes/pkg-update)[^pkg-update-ref] from Rugix Bakery's `core` repository. The `pkg-update` recipe will update the package lists of the distribution (Debian or Alpine), which is required to be able to install SSH. It will also later remove the package lists from the build, as they are unnecessary at runtime. The configuration further defines a parameter, `root_authorized_keys`, with an empty _default value_. The steps of the recipe use this parameter to install public keys for SSH access.
+The `ssh` recipe depends on the [`pkg-update` recipe](/docs/bakery/reference/core/recipes/pkg-update/)[^pkg-update-ref] from Rugix Bakery's `core` repository. The `pkg-update` recipe will update the package lists of the distribution (Debian or Alpine), which is required to be able to install SSH. It will also later remove the package lists from the build, as they are unnecessary at runtime. The configuration further defines a parameter, `root_authorized_keys`, with an empty _default value_. The steps of the recipe use this parameter to install public keys for SSH access.
 
 [^pkg-update-ref]: The recipe is referenced as `pkg-update` and not `core/pkg-update` here because the `ssh` recipe is itself in `core`.
 
-Recipes are always applied in the order of their priority (higher means earlier). In particular, this means that dependencies may be applied _after_ recipes that depend on them, if they have a lower priority. Note that priorities can also be negative.
+The [core recipe reference](/docs/bakery/reference/core/recipes/) lists the built-in recipes, their dependencies, parameters, and examples.
 
-Check out the set of [core recipes](https://github.com/rugix/rugix-bakery/tree/main/container/repositories/core/recipes/) for examples.
+## Execution Order
+
+The recipes of a layer or mixin run one after another. By default, recipes run in the order of their priority, from highest to lowest. Priorities default to `0` and can be negative. Recipes with equal priorities run in a stable order by repository and name.
+
+Dependencies do not affect the order. Without ordering constraints, which are described below, a dependency with a lower priority runs _after_ the recipe that depends on it. For example, `core/pkg-update` depends on `core/pkg-cleanup`, which has a low priority, so that it removes the package lists after other recipes have installed their packages.
+
+To run a recipe after or before specific other recipes, regardless of their priorities, use `after` and `before`:
+
+```toml title="recipes/configure-app/recipe.toml"
+after = ["install-app", "core/rugix-ctrl"]
+before = ["core/pkg-cleanup"]
+```
+
+This recipe runs after `install-app` and `core/rugix-ctrl` and before `core/pkg-cleanup`. A constraint only applies when the named recipe runs in the same layer or mixin. It does not add the named recipe; use `dependencies` for that. Names resolve like dependencies. Rugix Bakery reports an error if a name does not refer to a recipe or if constraints form a cycle.
+
+Constraints take precedence over priorities. Of the recipes whose constraints are satisfied, the one with the highest priority runs next.
 
 ## Parameters
 
@@ -39,13 +55,118 @@ parameter_name = { default = "a default value" }
 other_parameter = {}  # Required parameter without a default value.
 ```
 
-Parameter values are provided by layer configurations in the `parameters` section. For the details, we refer back to the [layers section](/docs/bakery/layers) of this documentation. Layer configurations must provide values for all parameters that do not have a default.
+Parameter values are provided by layer configurations in the `parameters` section. For the details, we refer back to the [layers section](/docs/bakery/layers) of this documentation. Every parameter without a default requires a value when the recipe runs. A parameter file, described below, can also supply this value.
 
 Parameter values are exposed to a recipe's steps (see below) via environment variables of the form `RECIPE_PARAM_<PARAM_NAME>`. So, in case of our example, `RECIPE_PARAM_PARAMETER_NAME` and `RECIPE_PARAM_OTHER_PARAMETER`.
 
 :::tip
 Avoid hard-coding configuration values in your recipes and use parameters instead.
 :::
+
+### Parameter Files
+
+Use `--param-file` to override recipe parameters for a build without changing layer configurations. A parameter file configures recipes already used by a build. For example, with `core/ssh` included in a layer's `recipes` list, create a TOML file to provide authorized SSH keys:
+
+```toml title="parameters.toml"
+["core/ssh"]
+root_authorized_keys = "ssh-ed25519 AAAA... user@example"
+```
+
+Pass this file when baking an image:
+
+```shell
+./run-bakery bake system <system> --param-file parameters.toml
+```
+
+Each table names a recipe relative to the project repository. Use `core/ssh` for the core recipe, `<repository>/<recipe>` for a recipe from a configured repository, and a bare name for a project recipe. These references keep the same meaning when building layers or applying system mixins (optional layer fragments) from other repositories. An override applies wherever the selected recipe runs during the build.
+
+Parameter-file values take precedence over layer and mixin parameters, which take precedence over recipe defaults. You can pass `--param-file` more than once; later files override earlier values for the same recipe reference and parameter. Use one reference per recipe across parameter files; different references that resolve to the same recipe are rejected.
+
+## Artifact Inputs
+
+A recipe can declare artifacts that its steps consume, such as a compiled
+application or generated configuration. Declare each input in `inputs` as an
+object with a required `kind` and optional `description`. A layer can [supply these artifacts](/docs/bakery/layers#recipe-artifact-inputs),
+or the recipe can define default bindings and prerequisite rules itself.
+
+For example, this installation recipe builds an application by default:
+
+```toml title="recipes/install-app/recipe.toml"
+[inputs.application]
+kind = "file"
+
+[parameters.profile]
+default = "release"
+
+[rules.build-application]
+uses = "build-app"
+inputs.source = { path = "application" }
+parameters.architecture = { parameter = "architecture" }
+parameters.profile = { parameter = "profile" }
+
+[input-defaults]
+application = { rule = { node = "build-application", output = "binary" } }
+```
+
+The `application` input is a file consumed by the recipe. The `build-application`
+node invokes the `build-app` rule, and `input-defaults.application` binds its
+`binary` output to that input. Node names and input names are independent.
+
+In this example, the recipe's repository also defines a `build-app` rule.
+That rule accepts a `source` directory, `architecture` and `profile` parameters,
+and exports a `binary` file. It can select a tooling environment for compilation.
+The `application` source directory, rule name, and any environment selected by
+that rule resolve from their defining repository.
+
+A layer can use the recipe without defining its build graph:
+
+```toml title="layers/device.toml"
+parent = "core/debian-bookworm"
+recipes = ["vendor/install-app"]
+
+[parameters."vendor/install-app"]
+profile = "debug"
+```
+
+Rugix Bakery resolves recipe parameters, builds the required artifacts, then runs the
+layer's recipe steps. Local rules receive the recipe's effective parameter values,
+including layer and parameter-file overrides. A reference to the `architecture`
+parameter uses the target architecture unless the recipe declares its own
+parameter with that name.
+
+Steps read artifact inputs through `RECIPE_INPUTS_DIR`:
+
+```sh title="recipes/install-app/steps/00-run.sh"
+#!/bin/sh
+set -eu
+install -D -m 0755 "$RECIPE_INPUTS_DIR/application" "$RUGIX_ROOT_DIR/usr/bin/application"
+```
+
+To install a prebuilt application, add an input binding to the layer:
+
+```toml
+[inputs."vendor/install-app"]
+application = { path = "prebuilt/application" }
+```
+
+This path resolves from the layer's repository. For this recipe, the binding
+replaces the default and skips the compiler rule. Rugix Bakery selects each input in
+this order:
+
+1. An explicit layer or mixin binding.
+2. An enclosing input with the same name, including inputs passed through a layer rule.
+3. The recipe's `input-defaults` binding.
+
+An input without a selected binding fails before execution. Defaults support the
+same [artifact references](/docs/bakery/build-rules#bind-inputs-and-secrets) as layer bindings.
+Local rules can consume other declared recipe inputs, including their overrides
+or defaults. They can also read the parent layer's directory artifacts, such as
+`rootfs`, through input references.
+
+Rule node names are local to each recipe and separate from layer node names.
+Rugix Bakery plans only rules reachable from the selected bindings and rejects cycles
+between defaults, rules, and layers. Artifact inputs remain read-only and
+participate in layer caching.
 
 ## Steps
 
@@ -113,10 +234,16 @@ Rugix Bakery will expose the following environment variables when running steps:
 - `RUGIX_ARCH`: Architecture of the build (`arm64` or `armhf`).
 - `RUGIX_ROOT_DIR`: Directory of the root filesystem.
 - `RUGIX_PROJECT_DIR`: Directory of the Rugix Bakery project.
+- `RUGIX_REBUILD_IF_CHANGED`: File for registering project paths that affect
+  [layer caching](/docs/bakery/advanced/caching#layer-caching). Append one project-relative
+  path per line. `LAYER_REBUILD_IF_CHANGED` is an alias.
 - `RUGIX_LAYER_DIR`: Directory of the layer being built.
 - `RUGIX_ARTIFACTS_DIR`: Artifacts directory (part of the layer).
 - `RUGIX_CACHE_DIR`: Directory for global caching.
 - `RUGIX_CONTEXT_DIR`: Build context directory (typically the project directory).
+- `RECIPE_INPUTS_DIR`: Read-only directory of this recipe's
+  [artifact inputs](/docs/bakery/layers#recipe-artifact-inputs), available to `run` and
+  `install` steps.
 - `RECIPE_DIR`: Directory of the recipe which is applied.
 - `RECIPE_STEP_PATH`: Path of the step being executed.
 
@@ -147,8 +274,14 @@ This provides a very flexible mechanism to generate all kinds of build artifacts
 
 ## Custom Build Environments
 
-You may find that Rugix Bakery's build environment (where `run` steps run) lacks certain tools that you would like to use to build your system.
-If that is the case, you can create a custom Docker image based on Rugix Bakery's image to include these tools.
+For application compilation or other artifact generation, define a
+[build rule](/docs/bakery/build-rules) with a [tooling environment](/docs/bakery/envs), then pass its
+outputs to a recipe through [artifact inputs](#artifact-inputs).
+A recipe can select that rule as its default, so a repository can supply the
+tooling environment, build, and installation behavior together.
+
+A recipe's `run` steps use Rugix Bakery's own tools. If those steps need additional
+tools directly, you can create a Docker image based on Rugix Bakery's image.
 
 For instance, to add Node.js to the build environment you can use the following `Dockerfile`:
 
@@ -173,14 +306,30 @@ RUGIX_CONTEXT_DIR=".." RUGIX_BAKERY_IMAGE="custom-image" ./run-bakery
 ```
 
 As a result, the root directory of your repository will be available as the context directory (see environment variables above).
-For caching, you can rely on Rugix Bakery's [layer cache](/docs/bakery/advanced/caching), rebuilding a layer only if certain files changed (which can be in the context directory).
-In addition, you can also use the global Rugix Bakery cache exposed via the `RUGIX_CACHE_DIR` environment variable.
+Register project files used by these steps through
+`RUGIX_REBUILD_IF_CHANGED` so that changes invalidate the
+[layer cache](/docs/bakery/advanced/caching#layer-caching).
+Registered paths must remain within the project directory. Files read from a
+separate context directory are not tracked by this mechanism; pass build inputs
+through declared artifacts or keep tracked sources in the project directory.
+The shared download cache exposed by `RUGIX_CACHE_DIR` remains available for
+downloads and other reusable data.
 
-:::note
-We would like to make it more convenient in the future to include custom build tools.
-For now, however, we recommend you simply build your own version of the Rugix Bakery Docker image, which should give you all the flexibility.
-**To avoid fragmentation of the ecosystem, you should not be requiring a custom image when providing reusable recipes and layers via a repository.**
-:::
+Reusable repositories should supply artifact-producing rules and tooling
+environments so their recipes can use the standard Rugix Bakery image.
+
+## Inspect and Document Definitions
+
+Discover definitions without building them:
+
+```shell
+./run-bakery recipes list
+./run-bakery recipes inspect core/ssh --json
+```
+
+Inspection shows the selected definition and its documentation. Add `--json` to export their metadata and adjacent
+Markdown. See [definition catalogs](/docs/bakery/reference/definition-catalogs/) for
+the shared documentation format and reference generator.
 
 ## Configuration Reference
 

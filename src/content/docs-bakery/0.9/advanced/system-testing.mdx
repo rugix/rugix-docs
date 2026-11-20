@@ -43,10 +43,8 @@ Rugix will then run the workflow for each system.
 To execute commands on the system under test, Rugix Bakery connects to the system running in the VM via SSH.
 To this end, a private key needs to be specified.
 This private key must be placed somewhere in the project directory.
-It is recommended to generate a pair of keys exclusively for this purpose and inject the public key with an additional layer on-top of the actual system layer.[^key-injection]
+It is recommended to generate a pair of keys exclusively for this purpose.
 To generate a suitable pair of SSH keys in the current working directory, run:
-
-[^key-injection]: In the future, Rugix Bakery may inject a key by itself prior to running the VM.
 
 ```shell
 ssh-keygen -t rsa -b 4096 -f id_rsa
@@ -54,7 +52,16 @@ ssh-keygen -t rsa -b 4096 -f id_rsa
 
 We recommend generating the keys locally and putting them into a directory outside of version control.
 
-If you want an example for how to set everything up, you can look at the system tests that we use to [test Rugix Ctrl](https://github.com/rugix/rugix-tests).
+To authorize the public key, override the `root_authorized_keys` parameter of the `core/ssh` recipe in a parameter file:
+
+```toml title="test-parameters.toml"
+["core/ssh"]
+root_authorized_keys = "ssh-rsa AAAA..."
+```
+
+Pass the parameter file to the `test` command as shown [below](#running-tests). Only the systems baked for tests then authorize the key, while images built without the parameter file do not contain it.
+
+For a complete example, see the [test workflows of Rugix Bakery itself](https://github.com/rugix/rugix-bakery/tree/main/tests/tests).
 
 The declaration of test systems is followed by a specification of _test steps_.
 
@@ -101,8 +108,10 @@ In addition, the `run` action supports the following optional options:
 Tests can be run with the `test` command:
 
 ```shell
-./run-bakery test
+./run-bakery test --param-file test-parameters.toml
 ```
+
+Without further arguments, the command runs all workflows in the `tests` directory. To run specific workflows, pass their names, for example, `./run-bakery test --param-file test-parameters.toml boot`. The `--param-file` option is optional and can be repeated.
 
 ## Configuration Reference
 
