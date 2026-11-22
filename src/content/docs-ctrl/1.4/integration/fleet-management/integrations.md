@@ -9,7 +9,7 @@ Per-provider notes for the fleet management solutions that have ready-made Rugix
 
 [Nexigon](https://nexigon.cloud/?utm_source=rugix.org&utm_campaign=rugix-fleet-management) is developed by the creators of Rugix as a commercial complement that funds Rugix's open-source work. It pairs natively with Rugix Ctrl for device connectivity, remote access, and fleet-wide update orchestration, and ships as SaaS (EU/US), managed dedicated, or air-gapped self-hosted.
 
-To onboard a device, follow the [Nexigon quickstart guide for Rugix](https://docs.nexigon.dev/rugix/getting-started?utm_source=rugix.org&utm_campaign=rugix-fleet-management).
+To onboard a device, follow the [Nexigon guide for Rugix Bakery](https://docs.nexigon.dev/connect/rugix-bakery?utm_source=rugix.org&utm_campaign=rugix-fleet-management).
 
 ## thin-edge.io
 
