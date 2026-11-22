@@ -244,8 +244,8 @@ In particular, you should read the section on [State Management](/docs/ctrl/stat
 **Ready to operate a fleet?** [Nexigon](https://nexigon.cloud/?utm_source=rugix.org&utm_campaign=rugix-quickstart-guide)
 is the commercial fleet management platform from the creators of Rugix. It adds
 secure remote access, fleet-wide update orchestration, monitoring, and audit
-logs. Follow the [Nexigon quickstart guide for
-Rugix](https://docs.nexigon.dev/rugix/getting-started?utm_source=rugix.org&utm_campaign=rugix-quickstart-guide)
+logs. Follow the [Nexigon guide for Rugix
+Bakery](https://docs.nexigon.dev/connect/rugix-bakery?utm_source=rugix.org&utm_campaign=rugix-quickstart-guide)
 to connect this device.
 
 For other fleet management options, see [Fleet Management](/fleet-management/).
