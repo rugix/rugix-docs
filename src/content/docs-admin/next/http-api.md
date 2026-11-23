@@ -15,6 +15,23 @@ documented Rugix interfaces.**
 
 ::::
 
+## Request Headers
+
+Starting with the upcoming Rugix Admin release, every POST request requires
+`X-Rugix-Admin: 1`. For example, the following command submits a job to make
+the active system the default boot choice. Rugix Ctrl must allow system commit.
+
+```sh
+curl --fail-with-body -X POST -H 'X-Rugix-Admin: 1' \
+  http://127.0.0.1:7492/api/system/actions/commit
+```
+
+The browser interface sends this header automatically. Update existing API
+scripts to include it. Read-only requests, including event streams, can omit
+the header. Rugix Admin returns `403 cross-site-request` if the header is
+missing or invalid, or if the browser reports that the request came from
+another origin. An unapproved host name returns `421 host-not-allowed`.
+
 ## Error Responses
 
 API failures use a JSON object with a machine-readable code and an
@@ -61,7 +78,13 @@ The current API provides these operation families:
 Installations and lifecycle actions return a job. Subscribe to the job's event
 stream to follow it until its status becomes `succeeded` or `failed`. Each job
 event has a monotonically increasing SSE event ID. A reconnecting client can
-send `Last-Event-ID`; the service then replays only newer buffered events.
+send `Last-Event-ID`; the service then replays newer events from the most recent 512 events per job.
 
-Jobs and buffered events are held in memory and are cleared when Rugix Admin
-restarts.
+Starting with the upcoming release, generate a UUID for each new job ID. URL
+installation requests accept up to 64 KiB of JSON. Multipart installations
+stream the bundle to Rugix Ctrl and have no fixed bundle size limit.
+
+Rugix Admin allows up to four queued or running jobs. If all slots are in use,
+the API returns `409 too-many-jobs`. Rugix Admin keeps up to 50 jobs in memory
+and evicts the oldest finished job first. A restart clears all jobs and their
+buffered events.

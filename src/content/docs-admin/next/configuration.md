@@ -1,6 +1,6 @@
 ---
 title: Configuration
-description: Configure Rugix Admin's listen address and available operations.
+description: Configure Rugix Admin's listen address, allowed hosts, and available operations.
 order: 3
 ---
 
@@ -42,6 +42,23 @@ to the installed systemd unit:
 sudo env RUGIX_ADMIN_ADDRESS=127.0.0.1:7492 \
   bash install-rugix-admin.sh
 ```
+
+## Allowed Hosts
+
+The upcoming Rugix Admin release accepts requests addressed to IPv4 and IPv6 literals or
+`localhost` by default. To open it at `http://device.local:7492/`, add the
+host name without its port to `/etc/rugix/admin.toml` and restart
+`rugix-admin.service`:
+
+```toml title="/etc/rugix/admin.toml"
+allowed-hosts = ["device.local"]
+```
+
+Keep your existing `address` setting. The name must resolve to a device or
+proxy that can reach Rugix Admin. Requests addressed to unlisted host names
+return HTTP `421`. On NixOS, set `services.rugix-admin.allowedHosts` to the
+list of names instead. Rugix Admin 0.6.0 and earlier reject the
+`allowed-hosts` setting at startup.
 
 ## Available Operations
 

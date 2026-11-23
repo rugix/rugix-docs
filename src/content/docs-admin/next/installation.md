@@ -107,7 +107,9 @@ http://127.0.0.1:7492/
 ```
 
 To connect from another machine, first choose a trusted listen address as
-described in [Configuration](../configuration#listen-address).
+described in [Configuration](../configuration#listen-address). For the
+upcoming release, add any host name you use to connect to the
+[allowed hosts](../configuration#allowed-hosts).
 
 Check the service and follow its logs with:
 
@@ -165,8 +167,8 @@ The installer then:
    is not already installed;
 2. installs the `rugix-admin` binary at `/usr/bin/rugix-admin`;
 3. creates the `rugix-daemon` system group when needed;
-4. creates `/etc/rugix/daemon.toml` with the Rugix Admin operation families
-   enabled when that file does not already exist;
+4. creates `/etc/rugix/daemon.toml` with system commit and reboot enabled
+   when that file does not already exist;
 5. installs and enables `rugix-ctrl-daemon.service` and
    `rugix-admin.service`; and
 6. starts both services.
@@ -175,3 +177,24 @@ An existing `rugix-ctrl` installation and `/etc/rugix/daemon.toml` are
 preserved. Upgrade an existing Rugix Ctrl installation to 1.4.0 or later
 separately before installing Rugix Admin 0.6.0. The controls visible in Rugix
 Admin reflect the policy that was already configured on the device.
+
+To select different features on a fresh installation, set
+`RUGIX_DAEMON_FEATURES` to a comma-separated list. The available names are
+`system-commit`, `system-reboot`, `factory-reset`, and `app-lifecycle`.
+An empty value disables all four. For example, to enable application
+management alongside system commit and reboot, run:
+
+```sh
+sudo env RUGIX_DAEMON_FEATURES=system-commit,system-reboot,app-lifecycle \
+  bash install-rugix-admin.sh
+```
+
+On an existing installation, change the policy in `/etc/rugix/daemon.toml`
+and restart `rugix-ctrl-daemon.service`.
+
+For binaries that support `allowed-hosts`, set `RUGIX_ADMIN_ALLOWED_HOSTS` to
+comma-separated names without ports. For example, set
+`RUGIX_ADMIN_ALLOWED_HOSTS=device.local` to allow requests addressed to
+`device.local`. The installer writes the list when `/etc/rugix/admin.toml`
+is absent. For an existing file, edit
+[`allowed-hosts`](../configuration#allowed-hosts) directly.

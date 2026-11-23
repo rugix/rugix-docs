@@ -29,6 +29,19 @@ device will be operated:
 Configure the listen address as described in
 [Configuration](../configuration#listen-address).
 
+## Browser Protections
+
+The upcoming Rugix Admin release checks the request's host name to protect
+against DNS rebinding. It also requires a custom header on API requests that
+change device state to prevent other sites from submitting those requests.
+A content security policy restricts the resources the interface can load and
+prevents other sites from embedding it in a frame.
+
+If a reverse proxy forwards the original `Host` header, add the name
+operators use to reach the proxy to
+[`allowed-hosts`](../configuration#allowed-hosts). Keep the proxy's
+authentication and network access controls in place.
+
 ## Limit Available Actions
 
 Rugix Admin presents the actions allowed by the Rugix Ctrl daemon. Enable only
