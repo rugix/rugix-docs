@@ -25,10 +25,11 @@ import {
 export const brand: Brand = {
   name: "Rugix",
   logo: "/img/logo.svg",
+  favicon: "/favicon.svg",
   href: "/",
   tagline:
     "Everything you need to build and maintain robust Linux-powered products, from development to production.",
-  ogImage: "/img/logo.svg",
+  ogImage: "/img/og-logo.png",
   locale: "en",
   themeColor: { dark: "#0b0d12", light: "#fafafa" },
   titleTemplate: "%s — Rugix",
