@@ -107,7 +107,7 @@ const sorted = posts
                   <div class="mt-4 flex flex-wrap gap-2">
                     {tags.map((tag: string) => (
                       <a href={tagHref(tag)} class="relative z-[2] no-underline">
-                        <Badge>{tag}</Badge>
+                        <Badge class="font-mono">{tag}</Badge>
                       </a>
                     ))}
                   </div>
@@ -162,6 +162,18 @@ const sorted = posts
     margin: 0 0 0.5rem;
   }
   .blog-teaser p:last-child {
+    margin-bottom: 0;
+  }
+  /* Long teasers stop after their first paragraph's third line. */
+  .blog-teaser > :not(:first-child) {
+    display: none;
+  }
+  .blog-teaser > :first-child {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    overflow: hidden;
     margin-bottom: 0;
   }
   .blog-teaser a {

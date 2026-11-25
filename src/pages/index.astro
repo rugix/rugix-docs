@@ -6,7 +6,6 @@ import {
   FaIcon,
   Section,
   SpecList,
-  ThemedImage,
 } from "@silitics/astro-theme";
 import { DocsSearch } from "@silitics/astro-docs";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
@@ -341,13 +340,14 @@ const stories: {
       </div>
       <SpecList class="lg:col-span-7" items={apps} />
     </div>
-    <ThemedImage
-      class="screenshot mt-12 md:mt-16"
-      light={appsLight}
-      dark={appsDark}
-      alt="Rugix Admin Apps view showing installed applications and application generations"
-      sizes="(min-width: 1280px) 1232px, 100vw"
-    />
+    <div class="mt-12 md:mt-16">
+      <BrowserFrame
+        light={appsLight}
+        dark={appsDark}
+        alt="Rugix Admin Apps view showing installed applications and application generations"
+        url="https://device.local/#/apps"
+      />
+    </div>
   </Section>
 
   <Section class="border-divider border-t">
@@ -364,16 +364,17 @@ const stories: {
       </div>
       <SpecList class="lg:col-span-7" items={compatibility} />
     </div>
-    <ThemedImage
-      class="screenshot mt-12 md:mt-16"
-      light={componentsLight}
-      dark={componentsDark}
-      alt="Rugix Admin Components view showing component capabilities and dependencies on hardware and edge-os"
-      sizes="(min-width: 1280px) 1232px, 100vw"
-    />
+    <div class="mt-12 md:mt-16">
+      <BrowserFrame
+        light={componentsLight}
+        dark={componentsDark}
+        alt="Rugix Admin Components view showing component capabilities and dependencies on hardware and edge-os"
+        url="https://device.local/#/components"
+      />
+    </div>
   </Section>
 
-  <Section class="border-divider border-t">
+  <Section background="surface">
     <p class="eyebrow">In their words</p>
     <h2 class="title-section mt-4">Trusted in the field</h2>
     <div class="mt-12 grid gap-12 lg:grid-cols-12 lg:gap-16">
@@ -381,7 +382,7 @@ const stories: {
         <blockquote class="title-section -indent-[0.42em]">
           “{featured.text}”
         </blockquote>
-        <figcaption class="mt-8 text-sm">
+        <figcaption class="accent-rule mt-8 max-w-xs pt-5 text-sm">
           <span class="block font-semibold">{featured.author}</span>
           <span class="text-content-muted">
             {featured.role}{" "}
@@ -398,7 +399,7 @@ const stories: {
               <blockquote class="text-lg leading-relaxed">
                 “{quote.text}”
               </blockquote>
-              <figcaption class="mt-4 text-sm">
+              <figcaption class="accent-rule mt-5 max-w-xs pt-4 text-sm">
                 <span class="block font-semibold">{quote.author}</span>
                 <span class="text-content-muted">
                   {quote.role}{" "}
