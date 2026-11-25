@@ -345,6 +345,11 @@
   height: clamp(220px, 32vw, 340px);
 }
 
+/* Before Chart.js sizes it, a canvas defaults to 300 pixels wide. */
+.delta-plot-canvas canvas {
+  max-width: 100%;
+}
+
 .native-delta-plot {
   margin: 1.75em 0;
 }
