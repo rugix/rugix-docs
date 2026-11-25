@@ -263,16 +263,24 @@ const stories: {
   </section>
 
   <Section class="border-divider border-t">
-    <p class="eyebrow">The toolkit</p>
-    <h2 class="title-section mt-4 max-w-3xl">
-      Three tools, from the first image to the field
-    </h2>
-    <p class="text-content-muted mt-5 max-w-2xl leading-relaxed">
-      Rugix Ctrl works with Yocto, Buildroot, other Linux build systems, and
-      the <a href="/fleet-management" class="text-primary underline"
-        >fleet management solution</a
-      > of your choice.
-    </p>
+    <div class="grid gap-6 lg:grid-cols-12 lg:gap-16">
+      <div class="lg:col-span-5">
+        <p class="eyebrow">The toolkit</p>
+        <h2 class="title-section mt-4">
+          Three tools, from the first image to the field
+        </h2>
+      </div>
+      <p
+        class="text-content-muted leading-relaxed text-balance lg:col-span-7 lg:self-end"
+      >
+        Use them together or one at a time. Rugix Ctrl works with Yocto,
+        Buildroot, and other build systems, and with the{" "}
+        <a href="/fleet-management" class="text-primary underline"
+          >fleet management solution</a
+        >{" "}
+        of your choice.
+      </p>
+    </div>
     <ul class="border-divider mt-12 grid gap-x-12 border-t lg:grid-cols-3">
       {
         tools.map((tool) => (
