@@ -262,7 +262,7 @@ const stories: {
     </Container>
   </section>
 
-  <Section class="border-divider border-t">
+  <Section background="surface">
     <div class="grid gap-6 lg:grid-cols-12 lg:gap-16">
       <div class="lg:col-span-5">
         <p class="eyebrow">The toolkit</p>
@@ -281,10 +281,10 @@ const stories: {
         of your choice.
       </p>
     </div>
-    <ul class="border-divider mt-12 grid gap-x-12 border-t lg:grid-cols-3">
+    <ul class="mt-12 grid gap-x-12 lg:grid-cols-3">
       {
         tools.map((tool) => (
-          <li class="border-divider border-b py-8 lg:border-b-0">
+          <li class="accent-rule py-8">
             <a href={tool.href} class="group block">
               <h3 class="title-block group-hover:text-primary transition-colors">
                 {tool.title}
