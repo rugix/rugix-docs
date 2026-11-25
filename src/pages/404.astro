@@ -1,5 +1,5 @@
 ---
-import { BaseLayout, Section, Button } from "@silitics/astro-theme";
+import { BaseLayout, Container } from "@silitics/astro-theme";
 import { DocsSearch } from "@silitics/astro-docs";
 import SiteFooter from "../layouts/SiteFooter.astro";
 import { brand, nav, headerActions } from "../site.ts";
@@ -14,26 +14,22 @@ import { brand, nav, headerActions } from "../site.ts";
   noindex
 >
   <DocsSearch slot="header-pre-actions" variant="header" />
-  <Section background="none" padding="hero">
-    <div class="relative mx-auto max-w-2xl text-center">
-      <p class="text-content-subtle font-mono text-sm tracking-wider uppercase">
-        404
-      </p>
-      <h1 class="font-display mt-3 text-4xl font-bold md:text-5xl">
-        Page not found
-      </h1>
-      <p class="text-content-muted mx-auto mt-4 max-w-xl text-lg">
+  <section>
+    <Container class="pt-16 pb-24 md:pt-24 md:pb-32">
+      <p class="eyebrow">404</p>
+      <h1 class="title-display mt-5">Page not found</h1>
+      <p class="lead mt-6 max-w-xl">
         The page you were looking for moved or never existed. Try the docs or
         head back home.
       </p>
-      <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
-        <Button href="/">Back to home</Button>
-        <Button variant="secondary" href="/docs/getting-started">
+      <div class="mt-8 flex flex-wrap items-center gap-3">
+        <a href="/" class="btn-primary btn-lg">Back to home</a>
+        <a href="/docs/getting-started" class="btn-secondary btn-lg">
           Browse the docs
-        </Button>
+        </a>
       </div>
-    </div>
-  </Section>
+    </Container>
+  </section>
 
   <SiteFooter slot="footer" />
 </BaseLayout>
