@@ -105,7 +105,7 @@ export const footerColumns: FooterColumn[] = [
       { label: "Cyber Resilience Act", href: "/cyber-resilience-act" },
       { label: "Commercial Support", href: "/commercial-support" },
       { label: "Support Commitment", href: "/support-commitment" },
-      { label: "Open Source Commitment", href: "/open-source-commitment" },
+      { label: "Open Source", href: "/open-source-commitment" },
     ],
   },
   {

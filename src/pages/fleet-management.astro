@@ -1,102 +1,226 @@
 ---
-import MarketingLayout from "../layouts/MarketingLayout.astro";
+import {
+  BaseLayout,
+  Container,
+  FaIcon,
+  Section,
+  SpecList,
+} from "@silitics/astro-theme";
+import { DocsSearch } from "@silitics/astro-docs";
+import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import SiteFooter from "../layouts/SiteFooter.astro";
+import { brand, nav, headerActions } from "../site.ts";
+
+const highlights = [
+  { title: "Open interfaces", label: "For your own backend" },
+  { title: "Ready-made integrations", label: "Nexigon, thin-edge.io, Memfault, Mender" },
+];
+
+const integrations = [
+  {
+    name: "Nexigon",
+    href: "https://nexigon.cloud",
+    kind: "Native",
+    description:
+      "From the creators of Rugix, with first-class support for Rugix Apps.",
+  },
+  {
+    name: "thin-edge.io",
+    href: "https://thin-edge.io/",
+    kind: "Official support",
+    description:
+      "An open-source device agent by Cumulocity IoT, built for edge devices.",
+  },
+  {
+    name: "Memfault",
+    href: "https://memfault.com/",
+    kind: "Reference integration",
+    description:
+      "A fleet management solution with a strong focus on observability.",
+  },
+  {
+    name: "Mender",
+    href: "https://mender.io/",
+    kind: "Reference integration",
+    description:
+      "A fleet management platform that can serve as the backend for Rugix Ctrl.",
+  },
+];
+
+const nexigonFeatures = [
+  {
+    term: "Native Rugix Apps management",
+    description:
+      "Inspect installed apps, deploy new versions from a Nexigon repository, follow live logs, and start, stop, roll back, or remove apps directly from the Nexigon UI.",
+  },
+  {
+    term: "Rugix-aware OTA workflows",
+    description:
+      "Manage update artifacts, stage rollouts across the fleet, track progress in real time, and retain a complete audit trail.",
+  },
+  {
+    term: "Secure remote operations",
+    description:
+      "Access devices remotely, inspect their health, and run commands without exposing incoming ports or operating a VPN.",
+  },
+];
 ---
 
-<MarketingLayout
+<BaseLayout
   title="Fleet Management"
   description="Open fleet management interfaces, ready-made integrations, and the native Nexigon experience for Rugix Ctrl."
+  brand={brand}
+  nav={nav}
+  actions={headerActions}
 >
-  <h1>Fleet Management</h1>
+  <DocsSearch slot="header-pre-actions" variant="header" />
 
-  <p>
-    Once your devices are out in the field, you need a way to manage them
-    remotely: deploy software updates, monitor their health, and configure
-    them at scale. <em>Fleet management solutions</em> handle this, typically
-    through a cloud backend and a device-side agent that communicates with
-    it.
-  </p>
+  <section>
+    <Container
+      class="grid gap-12 pt-12 pb-16 md:pt-20 md:pb-24 lg:grid-cols-12 lg:items-end lg:gap-16"
+    >
+      <div class="lg:col-span-7">
+        <p class="eyebrow">Integrations</p>
+        <h1 class="title-display mt-5">Fleet management</h1>
+        <p class="lead mt-6">
+          Once your devices are out in the field, you need a way to manage
+          them remotely: deploy software updates, monitor their health, and
+          configure them at scale. <em>Fleet management solutions</em> handle
+          this, typically through a cloud backend and a device-side agent
+          that communicates with it.
+        </p>
+      </div>
+      <ul class="grid gap-x-10 sm:grid-cols-2 lg:col-span-5 lg:grid-cols-1">
+        {
+          highlights.map((highlight) => (
+            <li class="accent-rule py-5">
+              <p class="font-display text-2xl font-semibold tracking-tight">
+                {highlight.title}
+              </p>
+              <p class="text-content-muted mt-1">{highlight.label}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </Container>
+  </section>
 
-  <h2>Open Fleet Management Interfaces</h2>
-  <p>
-    Rugix Ctrl exposes documented, open interfaces for installing system and
-    application updates and following their progress. A fleet management agent
-    can use these interfaces to deliver an update and trigger its installation,
-    while Rugix Ctrl handles the update safely on the device.
-  </p>
-  <p>
-    These interfaces let you integrate Rugix Ctrl with your own backend or a
-    fleet management solution of your choice. We also provide ready-made
-    integrations and reference implementations for several platforms, so you
-    do not need to build that connection from scratch.
-  </p>
+  <Section class="border-divider border-t">
+    <div class="grid gap-10 lg:grid-cols-12 lg:gap-16">
+      <div class="lg:col-span-5">
+        <p class="eyebrow">Open interfaces</p>
+        <h2 class="title-section mt-4">Bring your own backend</h2>
+      </div>
+      <div class="text-content-muted space-y-5 leading-relaxed lg:col-span-7">
+        <p>
+          Rugix Ctrl exposes documented, open interfaces for installing
+          system and application updates and following their progress. A
+          fleet management agent can use these interfaces to deliver an update
+          and trigger its installation, while Rugix Ctrl handles the update
+          safely on the device.
+        </p>
+        <p>
+          These interfaces let you integrate Rugix Ctrl with your own backend
+          or a fleet management solution of your choice. You can also use
+          Rugix Ctrl without any fleet management solution at all.
+        </p>
+      </div>
+    </div>
 
-  <h2>Ready-Made Integrations</h2>
-  <p>Rugix Ctrl integrates with:</p>
-  <ul>
-    <li>
-      <strong><a href="https://nexigon.cloud">Nexigon</a>:</strong> The
-      fleet management platform from the creators of Rugix, offering the most
-      native Rugix experience, including first-class support for Rugix Apps.
-    </li>
-    <li>
-      <strong><a href="https://thin-edge.io/">thin-edge.io</a>:</strong> An
-      open-source device agent by{" "}
-      <a href="https://cumulocity.com">Cumulocity IoT</a> with official Rugix
-      support.
-    </li>
-    <li>
-      <strong><a href="https://memfault.com/">Memfault</a>:</strong> A fleet
-      management solution with a strong focus on observability, supported
-      through our reference integration.
-    </li>
-    <li>
-      <strong><a href="https://mender.io/">Mender</a>:</strong> A fleet
-      management platform that can serve as the backend for Rugix Ctrl through
-      our reference integration.
-    </li>
-  </ul>
-  <p>
-    You can also use Rugix Ctrl without any fleet management solution at all,
-    or build your own integration. For technical details on each integration,
-    see the{" "}
-    <a href="/docs/ctrl/integration/fleet-management/">fleet management documentation</a>.
-  </p>
+    <div class="mt-16 md:mt-20">
+      <div class="flex flex-wrap items-end justify-between gap-x-10 gap-y-4">
+        <div>
+          <p class="eyebrow">Ready-made integrations</p>
+          <h2 class="title-section mt-4">Works with your platform</h2>
+        </div>
+        <a
+          href="/docs/ctrl/integration/fleet-management/"
+          class="group text-primary inline-flex items-center gap-2 text-sm font-medium"
+        >
+          Integration docs
+          <FaIcon
+            icon={faArrowRight}
+            class="text-xs transition-transform group-hover:translate-x-1"
+          />
+        </a>
+      </div>
+      <dl class="spec-grid mt-10 sm:grid-cols-2 xl:grid-cols-4">
+        {
+          integrations.map((integration) => (
+            <div>
+              <dt>
+                <a
+                  href={integration.href}
+                  class="hover:text-primary transition-colors"
+                >
+                  {integration.name}
+                </a>
+              </dt>
+              <dd class="font-mono text-xs tracking-wide uppercase">
+                {integration.kind}
+              </dd>
+              <dd>{integration.description}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </Section>
 
-  <h2>Why Nexigon?</h2>
-  <p>
-    <a href="https://nexigon.cloud">Nexigon</a> is the commercial fleet
-    management platform from <a href="https://silitics.com">Silitics</a>, the
-    company behind Rugix. Because the two projects are developed side by side,
-    Nexigon offers the most native Rugix integration and a polished operator
-    experience for managing Rugix-based devices at scale.
-  </p>
-  <ul>
-    <li>
-      <strong>Native Rugix Apps management:</strong> Inspect installed apps,
-      deploy new versions from a Nexigon repository, follow live logs, and
-      start, stop, roll back, or remove apps directly from the Nexigon UI.
-    </li>
-    <li>
-      <strong>Rugix-aware OTA workflows:</strong> Manage update artifacts,
-      stage rollouts across the fleet, track progress in real time, and retain
-      a complete audit trail.
-    </li>
-    <li>
-      <strong>Secure remote operations:</strong> Access devices remotely,
-      inspect their health, and run commands without exposing incoming ports or
-      operating a VPN.
-    </li>
-  </ul>
-  <p>
-    You can start with a{" "}
-    <a href="https://nexigon.cloud">free evaluation</a> and follow the{" "}
-    <a href="https://docs.nexigon.dev/connect/rugix-bakery">getting started guide</a>{" "}
-    for using Rugix and Nexigon together.
-  </p>
-  <p>
-    Nexigon's close integration does not change our open-source commitment:
-    Rugix remains permissively licensed and contains no Nexigon-specific code,
-    and we will not degrade its functionality to steer users toward Nexigon.
-    Read our <a href="/open-source-commitment">Commitment to Open Source</a>.
-  </p>
-</MarketingLayout>
+  <Section background="surface">
+    <div class="grid gap-10 lg:grid-cols-12 lg:gap-16">
+      <div class="lg:col-span-5">
+        <p class="eyebrow">Why Nexigon?</p>
+        <h2 class="title-section mt-4">The most native Rugix experience</h2>
+        <p class="text-content-muted mt-5 leading-relaxed">
+          <a href="https://nexigon.cloud" class="text-primary underline">Nexigon</a>{" "}
+          is the commercial fleet management platform from{" "}
+          <a href="https://silitics.com" class="text-primary underline">Silitics</a>,
+          the company behind Rugix. Because the two projects are developed side
+          by side, Nexigon offers the most native Rugix integration and a
+          polished operator experience for managing Rugix-based devices at
+          scale.
+        </p>
+      </div>
+      <SpecList class="lg:col-span-7" items={nexigonFeatures} />
+    </div>
+    <p class="text-content-muted border-divider mt-12 border-t pt-6 text-sm leading-relaxed md:mt-16">
+      <span class="block max-w-3xl">
+      Nexigon's close integration does not change our open-source commitment:
+      Rugix remains permissively licensed and contains no Nexigon-specific
+      code, and we will not degrade its functionality to steer users toward
+      Nexigon. Read our{" "}
+      <a href="/open-source-commitment" class="text-primary underline"
+        >Commitment to Open Source</a
+      >.</span>
+    </p>
+  </Section>
+
+  <section class="stage">
+    <Container
+      class="grid gap-8 py-16 md:py-24 lg:grid-cols-[1fr_auto] lg:items-end lg:gap-16"
+    >
+      <div>
+        <h2 class="title-section max-w-2xl">Manage your Rugix fleet with Nexigon</h2>
+        <p class="text-content-muted mt-4">
+          Start with a free evaluation and follow the guide for using Rugix and
+          Nexigon together.
+        </p>
+      </div>
+      <div class="flex flex-wrap items-center gap-3">
+        <a href="https://nexigon.cloud" class="btn-primary btn-lg">
+          Start free evaluation
+          <FaIcon icon={faArrowRight} class="text-sm" />
+        </a>
+        <a
+          href="https://docs.nexigon.dev/connect/rugix-bakery"
+          class="btn-secondary btn-lg"
+        >
+          Getting started guide
+        </a>
+      </div>
+    </Container>
+  </section>
+
+  <SiteFooter slot="footer" />
+</BaseLayout>

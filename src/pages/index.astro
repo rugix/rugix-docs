@@ -1,20 +1,36 @@
 ---
 import {
   BaseLayout,
-  Section,
-  Button,
-  Link,
+  CodeBlock,
+  Container,
   FaIcon,
+  Section,
+  SpecList,
 } from "@silitics/astro-theme";
 import { DocsSearch } from "@silitics/astro-docs";
+import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import SiteFooter from "../layouts/SiteFooter.astro";
-import RugixAdminShowcase from "../components/RugixAdminShowcase.astro";
-import { faRocket, faArrowRight } from "@fortawesome/free-solid-svg-icons";
-import {
-  brand,
-  nav,
-  headerActions,
-} from "../site.ts";
+import BrowserFrame from "../components/BrowserFrame.astro";
+import { brand, nav, headerActions } from "../site.ts";
+
+import systemLight from "../assets/rugix-admin/cropped/system-light.png";
+import systemDark from "../assets/rugix-admin/cropped/system-dark.png";
+import appsLight from "../assets/rugix-admin/cropped/apps-light.png";
+import appsDark from "../assets/rugix-admin/cropped/apps-dark.png";
+import componentsLight from "../assets/rugix-admin/cropped/components-light.png";
+import componentsDark from "../assets/rugix-admin/cropped/components-dark.png";
+
+const workflow = `# Start a project from a template
+./run-bakery init quickstart-guide
+
+# Build an image and boot it in a VM
+./run-bakery run customized-efi-arm64
+
+# Build an update bundle
+./run-bakery bake bundle customized-efi-arm64
+
+# On the device, install the update
+rugix-ctrl update install system.rugixb`;
 
 const partners = [
   {
@@ -35,29 +51,7 @@ const partners = [
   {
     href: "https://enmo.ai/",
     src: "/img/third-party-logos/enmo.webp",
-    alt: "Enmo",
-  },
-];
-
-const stories = [
-  {
-    img: "/img/umbrel-pro.jpg",
-    alt: "Umbrel Pro device",
-    name: "Umbrel",
-    body: `<a href="https://umbrel.com/">Umbrel</a> is a personal home cloud platform that lets anyone self-host their files, media, and applications with tens of thousands of installations worldwide. Umbrel chose Rugix as the foundation for <a href="https://umbrel.com/umbrelos">umbrelOS</a>, powering devices like the <a href="https://umbrel.com/umbrel-pro">Umbrel Pro</a>, its premium home cloud server. Rugix was chosen for its robustness, built-in state management with clean factory resets, and highly efficient delta updates.`,
-  },
-  {
-    img: "/img/echecker-testbench.jpg",
-    alt: "eChecker test bench with e-bike",
-    name: "eChecker",
-    body: `<a href="https://www.ebike-checker.de/en/">eChecker</a> builds test benches for e-bikes, drive units, and e-scooters used by test institutes and manufacturers worldwide. Each test bench is controlled by an embedded Linux system, powered by and updated through Rugix. Rugix enabled eChecker to easily build custom system images and reliably deliver over-the-air software updates to test benches deployed across customer sites.`,
-  },
-  {
-    img: "/img/enmo-battery-brain.webp",
-    alt: "BatteryBrain device",
-    name: "BatteryBrain",
-    body: `"At Enmo, we use Rugix for our product, BatteryBrain, a device optimizing battery systems based on spot prices, battery health, production inputs, and electricity markets. Rugix has been essential in bringing BatteryBrain to a production-ready state as quickly and efficiently as possible. It has simplified the creation of a custom Raspberry Pi image and enabled seamless over-the-air (OTA) updates."`,
-    quote: "David Lekve, CTO at enmo",
+    alt: "enmo",
   },
 ];
 
@@ -65,29 +59,139 @@ const tools = [
   {
     href: "/docs/ctrl",
     title: "Rugix Ctrl",
-    blurb: "Deploy updates and manage workloads and state.",
-    body: "Provides atomic system updates with automatic rollback, delta delivery, and signature verification, plus management of application workloads and persistent state. Integrates with different fleet management solutions.",
+    blurb: "Update and manage devices.",
+    body: "Atomic system updates with automatic rollback, delta delivery, and signature verification, plus application workloads and persistent state.",
   },
   {
     href: "/docs/bakery",
     title: "Rugix Bakery",
     blurb: "Build custom Linux images.",
-    body: "Builds production-ready Linux images based on Debian, Alpine Linux, and Raspberry Pi OS in a consistent containerized environment, with configurable system variants, VM testing, SBOMs, and integrated Rugix Ctrl updates.",
+    body: "Production-ready images based on Debian, Alpine Linux, and Raspberry Pi OS, with system variants, VM testing, SBOMs, and Rugix Ctrl built in.",
   },
   {
     href: "/docs/admin",
     title: "Rugix Admin",
     blurb: "Operate devices through a browser.",
-    body: "Runs on the device and provides a browser-based interface to view system status, install updates, manage application workloads, and check component compatibility. Ideal for development, demos, and field service.",
+    body: "A web interface on the device to check status, install updates, and manage apps. For development, demos, and field service.",
   },
 ];
 
-const proofPoints = [
-  "Atomic & Signed Updates",
-  "Automatic Rollback",
-  "Bandwidth-Efficient Delivery",
-  "Compatibility Checks",
-  "No Lock-In",
+const updates = [
+  {
+    term: "Atomic and signed",
+    description:
+      "An update installs completely or not at all, and only after its signature checks out.",
+  },
+  {
+    term: "Automatic rollback",
+    description:
+      "Devices validate a new version on boot and fall back to the previous one if it fails.",
+  },
+  {
+    term: "Bandwidth-efficient",
+    description:
+      "Delta updates download only what changed, for slow or metered networks.",
+  },
+  {
+    term: "State management",
+    description:
+      "Declare the data that persists. Everything else returns to a known-good baseline.",
+  },
+];
+
+const apps = [
+  {
+    term: "Independent releases",
+    description:
+      "Install, update, roll back, and remove apps without a system update.",
+  },
+  {
+    term: "Instant rollback",
+    description:
+      "Previous generations stay on disk, so a rollback needs no download.",
+  },
+  {
+    term: "Shared store",
+    description:
+      "Generations share deduplicated, compressed chunks, so container images take little extra space.",
+  },
+];
+
+const compatibility = [
+  {
+    term: "Hardware",
+    description: "A system image can require the hardware revision it supports.",
+  },
+  {
+    term: "Operating system",
+    description: "An app can require the base system versions it was built for.",
+  },
+  {
+    term: "Active applications",
+    description:
+      "A system update that would break an active app fails before it installs.",
+  },
+];
+
+interface Quote {
+  text: string;
+  author: string;
+  role: string;
+  company: string;
+  href: string;
+}
+
+const quotes: Quote[] = [
+  {
+    text: "When you ship OTA updates to tens of thousands of devices in people’s homes, you need rock‑solid reliability. Rugix delivers exactly that.",
+    author: "Luke Childs",
+    role: "CTO at",
+    company: "Umbrel",
+    href: "https://umbrel.com/",
+  },
+  {
+    text: "If you’re not using Rugix, you’re making things harder than they need to be.",
+    author: "David Lekve",
+    role: "CTO at",
+    company: "enmo",
+    href: "https://enmo.ai/",
+  },
+  {
+    text: "Rugix is thoughtfully designed, fast to get started with, and flexible in all the right ways. It’s the tool suite for embedded Linux I’ve always wanted.",
+    author: "Rameen Aryanpur",
+    role: "CEO at",
+    company: "Aqa",
+    href: "https://goaqa.com/",
+  },
+];
+const [featured, ...others] = quotes as [Quote, ...Quote[]];
+
+const stories: {
+  img: string;
+  alt: string;
+  name: string;
+  body: string;
+  fit?: string;
+}[] = [
+  {
+    img: "/img/umbrel-pro.jpg",
+    alt: "Umbrel Pro home cloud server",
+    name: "Umbrel",
+    body: `<a href="https://umbrel.com/">Umbrel</a> is a personal home cloud platform with tens of thousands of installations worldwide. Umbrel chose Rugix as the foundation for <a href="https://umbrel.com/umbrelos">umbrelOS</a>, which powers devices like the <a href="https://umbrel.com/umbrel-pro">Umbrel Pro</a>, for its robustness, state management with clean factory resets, and efficient delta updates.`,
+  },
+  {
+    img: "/img/echecker-testbench.jpg",
+    alt: "eChecker test bench with an e-bike",
+    name: "eChecker",
+    body: `<a href="https://www.ebike-checker.de/en/">eChecker</a> builds test benches for e-bikes, drive units, and e-scooters used by test institutes and manufacturers worldwide. An embedded Linux system built and updated with Rugix controls each test bench, so eChecker delivers software updates reliably to benches at customer sites.`,
+  },
+  {
+    img: "/img/enmo-battery-brain.webp",
+    alt: "BatteryBrain device by enmo",
+    name: "enmo",
+    body: `<a href="https://enmo.ai/">enmo</a> builds BatteryBrain, a device that optimizes battery systems based on spot prices, battery health, production inputs, and electricity markets. “Rugix has been essential in bringing BatteryBrain to a production-ready state as quickly and efficiently as possible,” says David Lekve, CTO at enmo.`,
+    fit: "object-contain bg-black p-6",
+  },
 ];
 ---
 
@@ -99,239 +203,274 @@ const proofPoints = [
   actions={headerActions}
 >
   <DocsSearch slot="header-pre-actions" variant="header" />
-  <Section
-    background="hero"
-    padding="hero"
-    class="!py-16 md:!py-24"
-  >
-    <div slot="decoration" class="bg-grid-fade absolute inset-0" aria-hidden="true"></div>
-    <div class="relative mx-auto w-full max-w-7xl px-4 text-center sm:px-6 lg:px-8">
-      <h1
-        class="font-display mx-auto max-w-3xl text-balance text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl"
-      >
-        The Open-Source Toolkit for Embedded Linux
-      </h1>
-      <p
-        class="text-content mx-auto mt-6 max-w-2xl text-lg leading-relaxed md:text-xl"
-      >
-        Use Rugix to deploy robust updates, manage application workloads and
-        persistent state, and build custom Linux images for your devices.
-      </p>
-      <div
-        class="text-content-muted mx-auto mt-4 flex w-full flex-wrap items-center justify-center gap-x-2 gap-y-2 text-sm md:text-base"
-        aria-label="Rugix capabilities and benefits"
-      >
-        {
-          proofPoints.map((point, index) => (
-            <span class="inline-flex items-center gap-2">
-              {index > 0 && (
-                <span class="text-content-subtle hidden sm:inline" aria-hidden="true">
-                  ·
-                </span>
-              )}
-              <span>{point}</span>
-            </span>
-          ))
-        }
-      </div>
-      <div class="mt-10 flex flex-wrap items-center justify-center gap-3">
-        <Button href="/docs/getting-started">
-          <FaIcon icon={faRocket} />
-          Get Started in 30 Minutes
-        </Button>
-        <Button variant="secondary" href="/docs/ctrl">
-          Explore the Docs
-        </Button>
-      </div>
-    </div>
-  </Section>
 
-  <section class="border-divider bg-surface-1 relative border-y py-8">
-    <div class="mx-auto max-w-7xl px-4 lg:px-6">
-      <div
-        class="flex flex-col items-center gap-8 md:flex-row md:justify-center md:gap-16"
-      >
-        <p
-          class="text-content-subtle text-sm font-medium tracking-wider uppercase"
-        >
-          Trusted by
+  <section>
+    <Container
+      class="grid items-center gap-12 pt-12 pb-16 md:pt-20 md:pb-24 lg:grid-cols-12 lg:gap-16"
+    >
+      <div class="lg:col-span-6">
+        <p class="eyebrow">Open source · Embedded Linux</p>
+        <h1 class="title-display mt-5">
+          The <span class="whitespace-nowrap">open-source</span> toolkit for
+          embedded Linux
+        </h1>
+        <p class="lead mt-6">
+          Use Rugix to deploy robust updates, manage application workloads and
+          persistent state, and build custom Linux images for your devices.
         </p>
-        <div
-          class="flex flex-wrap items-center justify-center gap-x-10 gap-y-6"
-        >
-          {
-            partners.map((partner) => (
+        <div class="mt-8 flex flex-wrap items-center gap-3">
+          <a href="/docs/getting-started" class="btn-primary btn-lg">
+            Get started in 30 minutes
+            <FaIcon icon={faArrowRight} class="text-sm" />
+          </a>
+          <a href="/docs/ctrl" class="btn-secondary btn-lg">Explore the docs</a>
+        </div>
+      </div>
+      <div class="min-w-0 lg:col-span-6">
+        <CodeBlock lang="sh" title="Build, boot, and update" code={workflow} />
+      </div>
+    </Container>
+  </section>
+
+  <section class="border-divider border-t">
+    <Container
+      class="flex flex-col items-center gap-x-12 gap-y-6 py-10 lg:flex-row lg:justify-center"
+    >
+      <p class="eyebrow">Trusted by</p>
+      <ul class="flex flex-wrap items-center justify-center gap-x-12 gap-y-6">
+        {
+          partners.map((partner) => (
+            <li>
               <a
                 href={partner.href}
                 target="_blank"
                 rel="noopener"
-                class="trusted-logo opacity-70 transition-opacity hover:opacity-100"
-                aria-label={partner.alt}
+                class="block opacity-70 transition-opacity hover:opacity-100"
               >
                 <img
                   src={partner.src}
                   alt={partner.alt}
-                  class="max-h-6 max-w-36 object-contain"
+                  class="logo-mono max-h-6 max-w-36 object-contain"
                 />
               </a>
-            ))
-          }
-          <span
-            class="text-content-subtle text-xs font-medium tracking-wider uppercase"
-          >
-            and many more
-          </span>
-        </div>
-      </div>
-    </div>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="eyebrow">and many more</p>
+    </Container>
   </section>
 
-  <style is:global>
-    [data-theme="light"] .trusted-logo {
-      opacity: 0.72;
-    }
-
-    [data-theme="light"] .trusted-logo img {
-      filter: brightness(0) !important;
-    }
-
-    [data-theme="light"] .trusted-logo:hover {
-      opacity: 1;
-    }
-
-    @media (prefers-color-scheme: light) {
-      :root:not([data-theme="dark"]) .trusted-logo {
-        opacity: 0.72;
-      }
-
-      :root:not([data-theme="dark"]) .trusted-logo img {
-        filter: brightness(0) !important;
-      }
-
-      :root:not([data-theme="dark"]) .trusted-logo:hover {
-        opacity: 1;
-      }
-    }
-  </style>
-
-  <Section background="none" padding="default" class="!pt-16 md:!pt-24">
-    <div class="text-center">
-      <h2 class="font-display text-3xl font-bold md:text-4xl">
-        The Rugix Toolkit
-      </h2>
-      <p class="text-content-muted mt-4 text-lg">
-        Tools for on-device lifecycle management, custom image builds, and
-        local device operation.
+  <Section background="surface">
+    <div class="grid gap-6 lg:grid-cols-12 lg:gap-16">
+      <div class="lg:col-span-5">
+        <p class="eyebrow">The toolkit</p>
+        <h2 class="title-section mt-4">
+          Three tools, from the first image to the field
+        </h2>
+      </div>
+      <p
+        class="text-content-muted leading-relaxed text-balance lg:col-span-7 lg:self-end"
+      >
+        Use them together or one at a time. Rugix Ctrl works with Yocto,
+        Buildroot, and other build systems, and with the{" "}
+        <a href="/fleet-management" class="text-primary underline"
+          >fleet management solution</a
+        >{" "}
+        of your choice.
       </p>
     </div>
-    <div class="mx-auto mt-12 grid max-w-6xl gap-6 md:grid-cols-3">
+    <ul class="mt-12 grid gap-x-12 lg:grid-cols-3">
       {
         tools.map((tool) => (
-          <a
-            href={tool.href}
-            class="card group flex flex-col gap-3 p-6 no-underline"
-          >
-            <h3 class="font-display text-xl font-semibold">{tool.title}</h3>
-            <p class="text-content text-sm font-semibold">{tool.blurb}</p>
-            <p class="text-content-muted text-sm leading-relaxed">{tool.body}</p>
-            <span class="text-primary mt-auto inline-flex items-center gap-2 pt-2 text-sm font-medium">
-              Learn more <FaIcon icon={faArrowRight} class="text-xs" />
-            </span>
-          </a>
+          <li class="accent-rule py-8">
+            <a href={tool.href} class="group block">
+              <h3 class="title-block group-hover:text-primary transition-colors">
+                {tool.title}
+              </h3>
+              <p class="mt-2 font-medium">{tool.blurb}</p>
+              <p class="text-content-muted mt-2 leading-relaxed">{tool.body}</p>
+              <span class="text-primary mt-4 inline-flex items-center gap-2 text-sm font-medium">
+                Read the docs
+                <FaIcon
+                  icon={faArrowRight}
+                  class="text-xs transition-transform group-hover:translate-x-1"
+                />
+              </span>
+            </a>
+          </li>
         ))
       }
-    </div>
-    <p class="text-content-muted mx-auto mt-10 max-w-xl text-center text-sm leading-relaxed">
-      Rugix Ctrl works with Yocto, Buildroot, other Linux build systems, and the{" "}
-      <Link href="/fleet-management/">fleet management solution</Link>{" "}of
-      your choice.
-    </p>
+    </ul>
   </Section>
 
-  <RugixAdminShowcase />
-
-  <Section background="none" padding="default">
-    <div class="mx-auto max-w-3xl text-center">
-      <h2 class="font-display text-3xl font-bold md:text-4xl">
-        What Our Users Say
-      </h2>
+  <Section class="border-divider border-t">
+    <div class="grid gap-10 lg:grid-cols-12 lg:gap-16">
+      <div class="lg:col-span-5">
+        <p class="eyebrow">System updates</p>
+        <h2 class="title-section mt-4">Updates that never strand a device</h2>
+        <p class="text-content-muted mt-5 leading-relaxed">
+          Rugix Ctrl installs system updates into an inactive A/B slot and
+          switches over only when the new version proves itself on the device.
+        </p>
+      </div>
+      <SpecList class="lg:col-span-7" items={updates} />
     </div>
-    <div class="mx-auto mt-12 grid max-w-5xl gap-6 md:grid-cols-3">
-      <blockquote class="card flex flex-col justify-center gap-4 p-6 italic">
-        <p class="text-content leading-relaxed">
-          "When you ship OTA updates to tens of thousands of devices in
-          people's homes, you need rock-solid reliability. Rugix delivers
-          exactly that."
-        </p>
-        <footer class="text-content-muted text-sm not-italic">
-          Luke Childs, CTO at <Link href="https://umbrel.com/" external>Umbrel</Link>
-        </footer>
-      </blockquote>
-      <blockquote class="card flex flex-col justify-center gap-4 p-6 italic">
-        <p class="text-content leading-relaxed">
-          "If you're not using Rugix, you're making things harder than they
-          need to be."
-        </p>
-        <footer class="text-content-muted text-sm not-italic">
-          David Lekve, CTO at <Link href="https://enmo.ai" external>enmo</Link>
-        </footer>
-      </blockquote>
-      <blockquote class="card flex flex-col justify-center gap-4 p-6 italic">
-        <p class="text-content leading-relaxed">
-          "Rugix is thoughtfully designed, fast to get started with, and
-          flexible in all the right ways. It's the tool suite for embedded
-          Linux I've always wanted."
-        </p>
-        <footer class="text-content-muted text-sm not-italic">
-          Rameen Aryanpur, CEO at <Link href="https://goaqa.com/" external>Aqa</Link>
-        </footer>
-      </blockquote>
+    <div class="mt-12 md:mt-16">
+      <BrowserFrame
+        light={systemLight}
+        dark={systemDark}
+        alt="Rugix Admin System view showing a committed system with U-Boot, A/B boot and system slots, state management, and boot groups"
+        url="https://device.local/#/system"
+      />
     </div>
   </Section>
 
-  <Section background="section" padding="default">
-    <div class="mx-auto max-w-3xl text-center">
-      <h2 class="font-display text-3xl font-bold md:text-4xl">Success Stories</h2>
+  <Section class="border-divider border-t">
+    <div class="grid gap-10 lg:grid-cols-12 lg:gap-16">
+      <div class="lg:col-span-5">
+        <p class="eyebrow">Rugix Apps · Experimental</p>
+        <h2 class="title-section mt-4">
+          Ship apps independently of the base system
+        </h2>
+        <p class="text-content-muted mt-5 leading-relaxed">
+          Rugix Apps manages application workloads on top of a shared base
+          system, each with its own lifecycle and persistent data.
+        </p>
+      </div>
+      <SpecList class="lg:col-span-7" items={apps} />
     </div>
-    <div class="mx-auto mt-12 grid max-w-6xl gap-12 md:grid-cols-2 lg:grid-cols-3">
-      {
-        stories.map((s) => (
-          <div>
-            <img
-              src={s.img}
-              alt={s.alt}
-              class="border-divider aspect-video w-full rounded-xl border object-cover"
-              loading="lazy"
-            />
-            <h3 class="font-display mt-4 text-xl font-semibold">{s.name}</h3>
-            <p class="text-content-muted mt-2 text-sm leading-relaxed" set:html={s.body} />
-            {s.quote && <p class="text-content-subtle mt-2 text-xs">{s.quote}</p>}
-          </div>
-        ))
-      }
+    <div class="mt-12 md:mt-16">
+      <BrowserFrame
+        light={appsLight}
+        dark={appsDark}
+        alt="Rugix Admin Apps view showing installed applications and application generations"
+        url="https://device.local/#/apps"
+      />
     </div>
   </Section>
 
-  <Section background="cta" padding="default">
-    <div class="mx-auto max-w-2xl text-center">
-      <h2 class="font-display text-3xl font-bold md:text-4xl">
-        Start Using Rugix Today
-      </h2>
-      <p class="text-content-muted mt-4 text-lg">
-        Try the full Rugix workflow in under 30 minutes: build, boot, and
-        update.
-      </p>
-      <div class="mt-8 flex flex-wrap justify-center gap-3">
-        <Button href="/docs/getting-started">
-          Get Started
-          <FaIcon icon={faArrowRight} />
-        </Button>
-        <Button variant="secondary" href="/commercial-support">
-          Commercial Support
-        </Button>
+  <Section class="border-divider border-t">
+    <div class="grid gap-10 lg:grid-cols-12 lg:gap-16">
+      <div class="lg:col-span-5">
+        <p class="eyebrow">Compatibility checks · Experimental</p>
+        <h2 class="title-section mt-4">
+          Reject incompatible updates before they install
+        </h2>
+        <p class="text-content-muted mt-5 leading-relaxed">
+          Rugix Ctrl knows what each device provides and what each update
+          requires, so obviously wrong updates fail early with a clear reason.
+        </p>
+      </div>
+      <SpecList class="lg:col-span-7" items={compatibility} />
+    </div>
+    <div class="mt-12 md:mt-16">
+      <BrowserFrame
+        light={componentsLight}
+        dark={componentsDark}
+        alt="Rugix Admin Components view showing component capabilities and dependencies on hardware and edge-os"
+        url="https://device.local/#/components"
+      />
+    </div>
+  </Section>
+
+  <Section background="surface">
+    <p class="eyebrow">In their words</p>
+    <h2 class="title-section mt-4">Trusted in the field</h2>
+    <div class="mt-12 grid gap-12 lg:grid-cols-12 lg:gap-16">
+      <figure class="lg:col-span-7">
+        <blockquote class="title-section -indent-[0.42em]">
+          “{featured.text}”
+        </blockquote>
+        <figcaption class="accent-rule mt-8 max-w-xs pt-5 text-sm">
+          <span class="block font-semibold">{featured.author}</span>
+          <span class="text-content-muted">
+            {featured.role}{" "}
+            <a href={featured.href} class="hover:text-primary underline">
+              {featured.company}
+            </a>
+          </span>
+        </figcaption>
+      </figure>
+      <div class="border-divider divide-divider divide-y border-t lg:col-span-5 lg:border-t-0 lg:border-l lg:pl-12">
+        {
+          others.map((quote) => (
+            <figure class="py-8 first:pt-0 last:pb-0 max-lg:first:pt-8">
+              <blockquote class="text-lg leading-relaxed">
+                “{quote.text}”
+              </blockquote>
+              <figcaption class="accent-rule mt-5 max-w-xs pt-4 text-sm">
+                <span class="block font-semibold">{quote.author}</span>
+                <span class="text-content-muted">
+                  {quote.role}{" "}
+                  <a href={quote.href} class="hover:text-primary underline">
+                    {quote.company}
+                  </a>
+                </span>
+              </figcaption>
+            </figure>
+          ))
+        }
       </div>
     </div>
   </Section>
+
+  <Section class="border-divider border-t">
+    <p class="eyebrow">Customer stories</p>
+    <h2 class="title-section mt-4">Built on Rugix</h2>
+    <div class="mt-12 grid gap-12 lg:grid-cols-3">
+      {
+        stories.map((story) => (
+          <article>
+            <img
+              src={story.img}
+              alt={story.alt}
+              class:list={[
+                "screenshot aspect-video w-full",
+                story.fit ?? "object-cover",
+              ]}
+              loading="lazy"
+            />
+            <h3 class="title-block mt-6">{story.name}</h3>
+            <p
+              class="story-body text-content-muted mt-2 leading-relaxed"
+              set:html={story.body}
+            />
+          </article>
+        ))
+      }
+    </div>
+  </Section>
+
+  <section class="stage">
+    <Container
+      class="grid gap-8 py-16 md:py-24 lg:grid-cols-[1fr_auto] lg:items-end lg:gap-16"
+    >
+      <div>
+        <h2 class="title-section max-w-2xl">Start using Rugix today</h2>
+        <p class="text-content-muted mt-4">
+          Try the full Rugix workflow in under 30 minutes: build, boot, and
+          update.
+        </p>
+      </div>
+      <div class="flex flex-wrap items-center gap-3">
+        <a href="/docs/getting-started" class="btn-primary btn-lg">
+          Get started
+          <FaIcon icon={faArrowRight} class="text-sm" />
+        </a>
+        <a href="/commercial-support" class="btn-secondary btn-lg">
+          Commercial support
+        </a>
+      </div>
+    </Container>
+  </section>
 
   <SiteFooter slot="footer" />
 </BaseLayout>
+
+<style>
+  .story-body :global(a) {
+    color: var(--theme-primary);
+    text-decoration: underline;
+  }
+</style>

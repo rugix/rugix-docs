@@ -1,15 +1,24 @@
 ---
-import { BaseLayout } from "@silitics/astro-theme";
+import { BaseLayout, Container } from "@silitics/astro-theme";
 import { DocsSearch } from "@silitics/astro-docs";
 import SiteFooter from "./SiteFooter.astro";
 import { brand, nav, headerActions } from "../site.ts";
 
+/**
+ * Layout of a prose page outside the docs, such as a policy or an overview:
+ * a label, the page heading, and the content as an article.
+ */
 interface Props {
+  /** Title of the document, used in the browser tab and search results. */
   title: string;
   description?: string;
+  /** Label above the heading, such as the section of the site. */
+  eyebrow: string;
+  /** Page heading. Defaults to the title. */
+  heading?: string;
 }
 
-const { title, description } = Astro.props;
+const { title, description, eyebrow, heading = title } = Astro.props;
 ---
 
 <BaseLayout
@@ -20,25 +29,24 @@ const { title, description } = Astro.props;
   actions={headerActions}
 >
   <DocsSearch slot="header-pre-actions" variant="header" />
-  <div class="relative">
-    <div class="bg-grid-fade absolute inset-0 h-96 opacity-50" aria-hidden="true"></div>
-    <div class="relative mx-auto max-w-3xl px-4 py-16 md:py-24 lg:px-6">
-      <article class="article-prose marketing-prose">
+  <Container class="pt-12 pb-16 md:pt-20 md:pb-24">
+    <div class="mx-auto max-w-3xl">
+      <p class="eyebrow">{eyebrow}</p>
+      <h1 class="title-display mt-5">{heading}</h1>
+      <article class="article-prose marketing-prose mt-8">
         <slot />
       </article>
     </div>
-  </div>
+  </Container>
 
   <SiteFooter slot="footer" />
 </BaseLayout>
 
 <style is:global>
-  .marketing-prose h1 {
-    margin: 0 0 1.25rem;
-    font-family: var(--font-display);
-    font-size: clamp(2.25rem, 2rem + 1vw, 3rem);
-    font-weight: 700;
-    line-height: 1.1;
-    letter-spacing: 0;
+  /* The first paragraph introduces the page, like the lead of a landing page. */
+  .marketing-prose > p:first-child {
+    font-size: clamp(1.0625rem, 1rem + 0.3vw, 1.25rem);
+    line-height: 1.55;
+    color: var(--theme-content-muted);
   }
 </style>

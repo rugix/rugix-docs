@@ -1,61 +1,153 @@
 ---
-import MarketingLayout from "../layouts/MarketingLayout.astro";
+import {
+  BaseLayout,
+  Container,
+  FaIcon,
+  Section,
+  SpecList,
+} from "@silitics/astro-theme";
+import { DocsSearch } from "@silitics/astro-docs";
+import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import SiteFooter from "../layouts/SiteFooter.astro";
+import { brand, nav, headerActions } from "../site.ts";
+
+const contact = "mailto:contact@silitics.com?subject=Rugix%20commercial%20support";
+
+const services = [
+  {
+    term: "Linux platform development",
+    description:
+      "From initial architecture through production images and release pipelines.",
+  },
+  {
+    term: "Production-readiness reviews",
+    description:
+      "Architecture reviews for updates, persistent state, recovery, security, and compliance.",
+  },
+  {
+    term: "Hardware and boot-flow integrations",
+    description:
+      "For devices that Rugix Bakery or the Rugix Yocto layers do not support out of the box.",
+  },
+  {
+    term: "Security engineering",
+    description:
+      "Secure boot, encrypted storage, update signing, and hardened device access.",
+  },
+  {
+    term: "Fleet management integration",
+    description:
+      "With Nexigon, another supported platform, or your own backend.",
+  },
+];
+
+const subscription = [
+  {
+    term: "Long-term support",
+    description: "Maintenance for selected Rugix versions.",
+  },
+  {
+    term: "Advice and consulting",
+    description:
+      "Tailored to your product, at a reduced rate compared to non-subscription clients.",
+  },
+  {
+    term: "Priority email support",
+    description: "Direct help when you run into an issue.",
+  },
+  {
+    term: "Roadmap influence",
+    description: "A direct say in where Rugix goes next.",
+  },
+  {
+    term: "Enterprise library",
+    description:
+      "Ready-made integrations for a variety of use cases and common challenges.",
+  },
+];
 ---
 
-<MarketingLayout
+<BaseLayout
   title="Commercial Support"
-  description="Tailored services and an enterprise subscription for companies using Rugix."
+  description="Engineering services and an enterprise subscription for companies using Rugix."
+  brand={brand}
+  nav={nav}
+  actions={headerActions}
 >
-  <h1>Commercial Support</h1>
+  <DocsSearch slot="header-pre-actions" variant="header" />
 
-  <p>
-    Rugix is created and maintained by <a href="https://silitics.com">Silitics</a>,
-    an independent software company specializing in embedded Linux products.
-    We provide engineering services and commercial support for teams that use
-    Rugix in production.
-  </p>
+  <section>
+    <Container class="pt-12 pb-16 md:pt-20 md:pb-24">
+      <p class="eyebrow">Commercial support</p>
+      <h1 class="title-display mt-5 max-w-4xl">
+        Ship Rugix-based products with the team behind Rugix
+      </h1>
+      <p class="lead mt-6 max-w-2xl">
+        Rugix is created and maintained by{" "}
+        <a href="https://silitics.com" class="text-primary underline">Silitics</a
+        >, an independent software company specializing in embedded Linux
+        products. We provide engineering services and commercial support for
+        teams that use Rugix in production.
+      </p>
+      <div class="mt-8 flex flex-wrap items-center gap-3">
+        <a href={contact} class="btn-primary btn-lg">
+          Talk to us
+          <FaIcon icon={faArrowRight} class="text-sm" />
+        </a>
+        <a href="/support-commitment" class="btn-secondary btn-lg">
+          Public support
+        </a>
+      </div>
+    </Container>
+  </section>
 
-  <p>Our services include:</p>
-  <ul>
-    <li>
-      <strong>Linux platform development</strong>, from initial architecture
-      through production images and release pipelines.
-    </li>
-    <li>
-      <strong>Architecture and production-readiness reviews</strong> for
-      updates, persistent state, recovery, security, and compliance.
-    </li>
-    <li>
-      <strong>Hardware and boot-flow integrations</strong> for devices that
-      Rugix Bakery or the Rugix Yocto layers do not support out of the box.
-    </li>
-    <li>
-      <strong>Security engineering</strong>, including secure boot, encrypted
-      storage, update signing, and hardened device access.
-    </li>
-    <li>
-      <strong>Fleet management integration</strong> with Nexigon, another
-      supported platform, or your own backend.
-    </li>
-  </ul>
+  <Section class="border-divider border-t">
+    <div class="grid gap-10 lg:grid-cols-12 lg:gap-16">
+      <div class="lg:col-span-5">
+        <p class="eyebrow">Services</p>
+        <h2 class="title-section mt-4">Engineering for your product</h2>
+        <p class="text-content-muted mt-5 leading-relaxed">
+          Tailored work on your platform, from the first board bring-up to
+          the devices in the field.
+        </p>
+      </div>
+      <SpecList class="lg:col-span-7" items={services} />
+    </div>
+  </Section>
 
-  <p>
-    In addition to tailored services, we also offer an <em>enterprise
-    subscription</em> for companies using Rugix in their products. The
-    enterprise subscription includes <strong>long-term support</strong> for
-    selected Rugix versions, <strong>tailored advice and consulting</strong>
-    for your product (at a reduced rate compared to non-subscription
-    clients), <strong>priority email support</strong> in case you run into
-    any issues, <strong>direct influence on Rugix's roadmap</strong>, and
-    access to an <strong>enterprise library</strong> with ready-made
-    integrations for a variety of different use cases and common challenges.
-    The enterprise subscription ensures the consistent maintenance of Rugix
-    while also providing you with tangible benefits in return.
-  </p>
+  <Section background="surface">
+    <div class="grid gap-10 lg:grid-cols-12 lg:gap-16">
+      <div class="lg:col-span-5">
+        <p class="eyebrow">Enterprise subscription</p>
+        <h2 class="title-section mt-4">Support that keeps Rugix going</h2>
+        <p class="text-content-muted mt-5 leading-relaxed">
+          The subscription gives companies using Rugix in their products
+          tangible benefits and funds the consistent maintenance of Rugix.
+        </p>
+      </div>
+      <SpecList class="lg:col-span-7" items={subscription} />
+    </div>
+  </Section>
 
-  <p>
-    Ready to take your project to the next level? Contact us today to discuss
-    how our services can help you achieve your goals. Reach out to us via{" "}
-    <a href="mailto:contact@silitics.com">contact@silitics.com</a>.
-  </p>
-</MarketingLayout>
+  <section class="stage">
+    <Container
+      class="grid gap-8 py-16 md:py-24 lg:grid-cols-[1fr_auto] lg:items-end lg:gap-16"
+    >
+      <div>
+        <h2 class="title-section max-w-2xl">Let's talk about your project</h2>
+        <p class="text-content-muted mt-4">
+          Reach us at{" "}
+          <a href={contact} class="text-primary underline"
+            >contact@silitics.com</a
+          >.
+        </p>
+      </div>
+      <a href={contact} class="btn-primary btn-lg">
+        Talk to us
+        <FaIcon icon={faArrowRight} class="text-sm" />
+      </a>
+    </Container>
+  </section>
+
+  <SiteFooter slot="footer" />
+</BaseLayout>

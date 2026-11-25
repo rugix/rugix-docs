@@ -3,7 +3,7 @@ import { getCollection } from "astro:content";
 import { marked } from "marked";
 import {
   BaseLayout,
-  Section,
+  Container,
   Badge,
   FaIcon,
 } from "@silitics/astro-theme";
@@ -64,32 +64,27 @@ const sorted = posts
   actions={headerActions}
 >
   <DocsSearch slot="header-pre-actions" variant="header" />
-  <Section background="hero" padding="compact">
-    <div slot="decoration" class="bg-grid-fade absolute inset-0" aria-hidden="true"></div>
-    <div class="relative mx-auto max-w-3xl text-center">
-      <p class="text-content-subtle font-mono text-sm tracking-wider uppercase">
-        Blog tag
-      </p>
-      <h1 class="font-display mt-3 text-4xl font-bold md:text-5xl">{label}</h1>
-      <p class="text-content-muted mt-4 text-lg">
-        Posts tagged with {label}.
-      </p>
-    </div>
-  </Section>
+  <section>
+    <Container class="pt-12 pb-8 md:pt-20 md:pb-12">
+      <p class="eyebrow">Blog tag</p>
+      <h1 class="title-display mt-5">{label}</h1>
+      <p class="lead mt-6 max-w-2xl">Posts tagged with {label}.</p>
+    </Container>
+  </section>
 
   <div class="mx-auto flex w-full max-w-7xl flex-col gap-10 px-4 pt-8 pb-16 md:pb-24 lg:flex-row lg:px-6">
     <aside class="lg:sticky lg:top-20 lg:max-h-[calc(100dvh-6rem)] lg:w-60 lg:shrink-0 lg:self-start lg:overflow-y-auto">
       <BlogSidebar currentSlug="" />
     </aside>
-    <ul class="flex max-w-3xl flex-1 flex-col gap-6">
+    <ul class="border-divider max-w-3xl flex-1 border-t">
       {
         sorted.map(({ post, date, teaserHtml }) => {
           const href = `/blog/${slugFromEntry(post)}`;
           const tags = post.data.tags ?? [];
           return (
             <li>
-              <article class="card group relative p-6">
-                <div class="text-content-subtle font-mono text-xs tracking-wider uppercase">
+              <article class="border-divider group relative border-b py-8">
+                <div class="text-content-subtle font-mono text-sm">
                   <time datetime={date.toISOString()}>
                     {date.toLocaleDateString("en-US", {
                       year: "numeric",
@@ -98,7 +93,7 @@ const sorted = posts
                     })}
                   </time>
                 </div>
-                <h2 class="font-display mt-2 text-2xl font-semibold">
+                <h2 class="title-block mt-2 text-xl">
                   <a
                     href={href}
                     class="text-content group-hover:text-primary stretched-link transition-colors no-underline"
@@ -108,7 +103,7 @@ const sorted = posts
                 </h2>
                 {teaserHtml && (
                   <div
-                    class="blog-teaser text-content-muted mt-2 text-sm leading-relaxed"
+                    class="blog-teaser text-content-muted mt-2 leading-relaxed"
                     set:html={teaserHtml}
                   />
                 )}
@@ -189,8 +184,18 @@ const sorted = posts
   .blog-teaser h4,
   .blog-teaser h5,
   .blog-teaser h6,
+  .blog-teaser img {
+    display: none;
+  }
   .blog-teaser ul,
   .blog-teaser ol {
-    display: none;
+    margin: 0 0 0.5rem;
+    padding-left: 1.25rem;
+  }
+  .blog-teaser ul {
+    list-style: disc;
+  }
+  .blog-teaser ol {
+    list-style: decimal;
   }
 </style>
