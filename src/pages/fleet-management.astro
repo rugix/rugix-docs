@@ -11,6 +11,11 @@ import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import SiteFooter from "../layouts/SiteFooter.astro";
 import { brand, nav, headerActions } from "../site.ts";
 
+const highlights = [
+  { title: "Open interfaces", label: "For your own backend" },
+  { title: "Ready-made integrations", label: "Nexigon, thin-edge.io, Memfault, Mender" },
+];
+
 const integrations = [
   {
     name: "Nexigon",
@@ -71,16 +76,32 @@ const nexigonFeatures = [
   <DocsSearch slot="header-pre-actions" variant="header" />
 
   <section>
-    <Container class="pt-12 pb-16 md:pt-20 md:pb-24">
-      <p class="eyebrow">Integrations</p>
-      <h1 class="title-display mt-5 max-w-4xl">Fleet management</h1>
-      <p class="lead mt-6 max-w-2xl">
-        Once your devices are out in the field, you need a way to manage them
-        remotely: deploy software updates, monitor their health, and
-        configure them at scale. <em>Fleet management solutions</em> handle
-        this, typically through a cloud backend and a device-side agent that
-        communicates with it.
-      </p>
+    <Container
+      class="grid gap-12 pt-12 pb-16 md:pt-20 md:pb-24 lg:grid-cols-12 lg:items-end lg:gap-16"
+    >
+      <div class="lg:col-span-7">
+        <p class="eyebrow">Integrations</p>
+        <h1 class="title-display mt-5">Fleet management</h1>
+        <p class="lead mt-6">
+          Once your devices are out in the field, you need a way to manage
+          them remotely: deploy software updates, monitor their health, and
+          configure them at scale. <em>Fleet management solutions</em> handle
+          this, typically through a cloud backend and a device-side agent
+          that communicates with it.
+        </p>
+      </div>
+      <ul class="grid gap-x-10 sm:grid-cols-2 lg:col-span-5 lg:grid-cols-1">
+        {
+          highlights.map((highlight) => (
+            <li class="accent-rule py-5">
+              <p class="font-display text-2xl font-semibold tracking-tight">
+                {highlight.title}
+              </p>
+              <p class="text-content-muted mt-1">{highlight.label}</p>
+            </li>
+          ))
+        }
+      </ul>
     </Container>
   </section>
 
