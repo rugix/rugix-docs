@@ -106,7 +106,7 @@ A complete update solution must additionally handle:
 - installing, validating, and committing candidates while preserving compatible application state; and
 - delivering updates through staged rollouts with fleet-wide monitoring and failure handling.
 
-Update authenticity and secure boot are also separate from rollback. Signed update bundles protect the delivery and installation process. Verified or secure boot protects what the device will execute after power-on. Neither follows automatically from using A/B partitions or `tryboot`.
+Update authenticity and secure boot are also separate from rollback. Signed update bundles protect the delivery and installation process. Verified or [secure boot](/blog/raspberry-pi-secure-boot) protects what the device will execute after power-on. Neither follows automatically from using A/B partitions or `tryboot`.
 
 ## Supported Raspberry Pi Models
 
